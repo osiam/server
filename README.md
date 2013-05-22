@@ -1,10 +1,10 @@
-# OSIAM NG Authorization Server
+# OSIAM NG Server
 
 This is the combined authorization and resource server of the OSIAM NG project.
 
 Right now only PostgreSQL is supported as a database.
 
-## Build and Deployment
+# Build and Deployment
 
 To build the authorization-server run
 ```sh
@@ -23,18 +23,21 @@ To deploy the authorization-server into a running Tomcat copy the "authorization
 
 ## Authorization Server
 
-The Authorization Server project handles the authorization requests. It is based on:
+The osiam-server is based on:
 
-* Spring Security OAuth2 1.0.0.RC3
+* Srping-Core 3.2
+* Spring Security OAuth2 1.0.0.RC3 
+* Hibernate
 
 and provides
 
 * [OAuth2 Authorization Code Flow](http://tools.ietf.org/html/rfc6749#section-4.1)
+* [SCIM 2.0 API](http://tools.ietf.org/html/draft-ietf-scim-api-01)
 
 
 ### Configuration
 
-To create the database scheme you have to execute init.sql. 
+To create the database scheme you have to execute src/mein/ressources/sql/init.sql. 
 
 This SQL-Script will create you all the needed tables as well as create a demo user called Marissa and a password 'koala'.
 
@@ -91,18 +94,15 @@ The client authentication is done via [Basic Access Authentication](http://tools
 
 ## Resource Server
 
-All resource rest calls are implemented by the scim project.
-
-https://github.com/osiam-dev/scim
-
 All scim calls are secured by oauth2, so have to send an access_token in order to get access, e.q.:
 
 ```sh
 curl -H "Authorization: Bearer {YOUR_ACCESS_TOKEN}" http://localhost:8080/authorization-server/User/{id}
 ```
 
-### User Services
+### Search
 
-See https://github.com/osiam-dev/scim/blob/master/README.md#crud-user
+### User
 
+### Group
 
