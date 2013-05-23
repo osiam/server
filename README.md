@@ -134,22 +134,31 @@ lt = less than
 le = less equals
 
 ```http
-<http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&filter=userName%20eq%20"TheUserName">
-<http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&filter=userName%20co%20"someValue">
-<http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&filter=userName%20sw%20"someValue">
-<http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&filter=displayName%20pr>
-<http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&filter=meta.created%20gt%20"2013-05-23T13:12:45.672#;4302:00">
-<http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&filter=meta.created%20ge%20<an existing time>>
-<http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&filter=meta.created%20lt%20"2013-05-23T13:12:45.672#;4302:00">
-<http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&filter=meta.created%20le%20<an existing time>>
+http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&filter=userName%20eq%20"TheUserName"
+
+http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&filter=userName%20co%20"someValue"
+
+http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&filter=userName%20sw%20"someValue"
+
+http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&filter=displayName%20pr
+
+http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&filter=meta.created%20gt%20"2013-05-23T13:12:45.672#;4302:00"
+
+http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&filter=meta.created%20ge%20<an existing time>
+
+http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&filter=meta.created%20lt%20"2013-05-23T13:12:45.672#;4302:00"
+
+http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&filter=meta.created%20le%20<an existing time>
 ```
 
 Additionally "AND" and "OR" as logical operators are supported, including grouping with parentheses.
 
 ```http
-<http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&filter=userName%20eq%20"TheUserName"%20and%20meta.created%20lt%20"2013-05-23T13:12:45.672#;4302:00">
-<http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&filter=userName%20eq%20"TheUserName"%20or%20userName%20eq%20"TheUserName1">
-<http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&filter=(userName%20eq%20"TheUserName"%20or%20userName%20eq%20"TheUserName1")%20and%20meta.created%20gt%20"2013-05-23T13:12:45.672#;4302:00">
+http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&filter=userName%20eq%20"TheUserName"%20and%20meta.created%20lt%20"2013-05-23T13:12:45.672#;4302:00"
+
+http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&filter=userName%20eq%20"TheUserName"%20or%20userName%20eq%20"TheUserName1"
+
+http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&filter=(userName%20eq%20"TheUserName"%20or%20userName%20eq%20"TheUserName1")%20and%20meta.created%20gt%20"2013-05-23T13:12:45.672#;4302:00"
 ```
 
 #### Limiting the output to predefined attributes
@@ -161,7 +170,7 @@ The parameter is:
 attributes = defining the attributes to be included in the response
 
 ```http
-<http://localhost:8080/authorization-server/User?access_token=YOUR_ACCESSTOKEN&attributes=userName,displayName,meta.created>
+http://localhost:8080/authorization-server/User?access_token=YOUR_ACCESSTOKEN&attributes=userName,displayName,meta.created
 ```
 
 #### Sorting
@@ -175,8 +184,9 @@ sortOrder = ascending and descending. Default is ascending
 sortBy = the attribute so sort by. For example "userName". The default is "id"
 
 ```http
-<http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&sortBy=meta.created&sortOrder=ascending>
-<http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&sortBy=meta.created&sortOrder=descending>
+http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&sortBy=meta.created&sortOrder=ascending
+
+http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&sortBy=meta.created&sortOrder=descending
 ```
 
 #### Paging
@@ -192,8 +202,9 @@ startIndex = will define the start index of searching
 To paginate through the results increase the startIndex to the next desired position.
 
 ```http
-<http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&count=5&startIndex=0>
-<http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&count=5&startIndex=5>
+http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&count=5&startIndex=0
+
+http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&count=5&startIndex=5
 ```
 
 ### User
