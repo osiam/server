@@ -20,10 +20,9 @@ package org.osiam.ng.resourceserver;
 
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
+import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
@@ -32,7 +31,6 @@ import java.util.regex.Pattern;
 public class SingularFilterChain implements FilterChain {
     static final Pattern SINGULAR_CHAIN_PATTERN =
             Pattern.compile("(\\S+) (" + Constraints.createOrConstraints() + ")[ ]??([\\S ]*?)");
-    final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-d HH:mm:ss");
     private final String key;
     private final Constraints constraint;
     private final Object value;
@@ -50,15 +48,32 @@ public class SingularFilterChain implements FilterChain {
     }
 
     private Object castToOriginValue(String group) {
-        if (!group.startsWith("\"") && group.matches("[0-9]+")) {
+
+        if (isNumber(group)) {
             return Long.valueOf(group);
         }
+        return getStringOrDate(group);
+    }
+
+    private Object getStringOrDate(String group) {
+        String result = group.replace("\"", "");
         try {
-            group = group.replace("\"", "");
-            return DATE_FORMAT.parse(group);
-        } catch (ParseException e) {
+            return tryToGetDate(result);
+        } catch (IllegalArgumentException e) {
             return group;
         }
+    }
+
+    private Object tryToGetDate(String result) {
+        DateTime time = ISODateTimeFormat.dateTimeParser().parseDateTime(result);
+        return time.toDate();
+    }
+
+    private boolean isNumber(String group) {
+        if (!group.startsWith("\"") && group.matches("[0-9]+")) {
+            return true;
+        }
+        return false;
     }
 
     @Override

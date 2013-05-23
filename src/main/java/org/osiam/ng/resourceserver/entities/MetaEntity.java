@@ -60,6 +60,7 @@ public class MetaEntity {
     private String version;
 
     public MetaEntity(Calendar instance) {
+        instance.set(Calendar.MILLISECOND, 0);
         created = instance.getTime();
         lastModified = instance.getTime();
     }

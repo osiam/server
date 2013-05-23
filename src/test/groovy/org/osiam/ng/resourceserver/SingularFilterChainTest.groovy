@@ -104,7 +104,7 @@ class SingularFilterChainTest extends Specification{
 
     def "should parse less than or equal (le)"(){
         when:
-        def result = new SingularFilterChain("meta.lastModified le \"2011-05-13 04:42:34\"").buildCriterion()
+        def result = new SingularFilterChain("meta.lastModified le \"2011-05-13T04:42:34Z\"").buildCriterion()
         then:
         result.propertyName == 'meta.lastModified'
         result.op == "<="
