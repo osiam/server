@@ -1,5 +1,9 @@
 package org.osiam.ng.scim.mvc.user
 
+import org.joda.time.DateTime
+import org.joda.time.DateTimeZone
+import org.joda.time.format.DateTimeFormatter
+import org.joda.time.format.ISODateTimeFormat
 import org.osiam.ng.resourceserver.dao.SCIMSearchResult
 import scim.schema.v2.Meta
 import scim.schema.v2.User
@@ -93,13 +97,18 @@ class JsonResponseEnrichHelperSpec extends Specification {
         def set = ["schemas:urn:scim:schemas:core:1.0"] as Set
         String[] pA = ["meta", "created"]
         def param = ["attributes": pA, "count": 23, "startIndex": 23]
-        def created = GregorianCalendar.getInstance().getTime()
-        def user = new User.Builder("username").setMeta(new Meta.Builder(created, null).build()).build()
+
+        def actualDate = GregorianCalendar.getInstance().getTime()
+        def dateTimeFormatter = ISODateTimeFormat.dateTime();
+        def date = new DateTime(actualDate)
+        def created = dateTimeFormatter.print(date)
+
+        def user = new User.Builder("username").setMeta(new Meta.Builder(actualDate, null).build()).build()
         def scimSearchResult = new SCIMSearchResult([user], 23)
         when:
         def result = jsonResponseEnrichHelper.getJsonFromSearchResult(scimSearchResult, param, set)
         then:
-        result == '{"totalResults":23,"itemsPerPage":23,"startIndex":23,"schemas":"schemas:urn:scim:schemas:core:1.0","Resources":[{"meta":{"created":'+created.time+'}}]}'
+        result == '{"totalResults":23,"itemsPerPage":23,"startIndex":23,"schemas":"schemas:urn:scim:schemas:core:1.0","Resources":[{"meta":{"created":"' + created + '"}}]}'
 
     }
 
