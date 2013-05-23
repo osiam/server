@@ -41,8 +41,6 @@ To create the database scheme you have to execute src/mein/ressources/sql/init.s
 
 This SQL-Script will create you all the needed tables as well as create a demo user called Marissa and a password 'koala'.
 
-The database configuration is done via
-
 The client credentials are as well hardcoded:
  * client_id=tonr
  * client_secret=secret
