@@ -5,6 +5,8 @@ import org.osiam.ng.scim.dao.SCIMRootProvisioning
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.ResponseBody
+import scim.schema.v2.Meta
+import scim.schema.v2.User
 import spock.lang.Specification
 
 import javax.servlet.http.HttpServletRequest
