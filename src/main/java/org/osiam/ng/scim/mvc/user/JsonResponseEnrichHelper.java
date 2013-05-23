@@ -36,8 +36,8 @@ public class JsonResponseEnrichHelper {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        String[] ignorableFieldNames = (String[]) parameterMap.get("attributes");
-        ObjectWriter writer = getObjectWriter(mapper, ignorableFieldNames);
+        String[] fieldsToReturn = (String[]) parameterMap.get("attributes");
+        ObjectWriter writer = getObjectWriter(mapper, fieldsToReturn);
 
         try {
             String jsonString = writer.writeValueAsString(scimSearchResult.getResult());

@@ -23,14 +23,24 @@ public class RequestParamHelper {
         parameterMap.put("sortBy", request.getParameter("sortBy") != null ? request.getParameter("sortBy") : "internal_id");
         parameterMap.put("sortOrder", request.getParameter("sortOrder") != null ? request.getParameter("sortOrder") : "ascending");
         parameterMap.put("startIndex", request.getParameter("startIndex") != null ? Integer.parseInt(request.getParameter("startIndex")) : 0);
-        parameterMap.put("attributes", (request.getParameter("attributes") != null ? request.getParameter("attributes").split(",") : new String[0]) );
+        translateAttributesForJackson(request, parameterMap);
 
-        int count = request.getParameter("count") != null ? Integer.parseInt(request.getParameter("count")): 100;
-        if (count <= 0)
-            throw new RuntimeException("Negative count values are not allowed");
-
-        parameterMap.put("count", count);
+        validateCount(request, parameterMap);
 
         return parameterMap;
+    }
+
+    private void translateAttributesForJackson(HttpServletRequest request, Map<String, Object> parameterMap) {
+        String[] strings =
+                request.getParameter("attributes") != null ? request.getParameter("attributes").split("[,|\\.]") :
+                        new String[0];
+        parameterMap.put("attributes", strings);
+    }
+
+    private void validateCount(HttpServletRequest request, Map<String, Object> parameterMap) {
+        int count = request.getParameter("count") != null ? Integer.parseInt(request.getParameter("count")): 100;
+        if (count <= 0)
+            throw new IllegalArgumentException("Negative count values are not allowed");
+        parameterMap.put("count", count);
     }
 }

@@ -177,4 +177,21 @@ class RequestParamHelperSpec extends Specification {
         result.get("attributes") == []
     }
 
+    def "should split parameter by , and ."() {
+        given:
+        servletRequestMock.getParameter("filter") >> "someFilter"
+        servletRequestMock.getParameter("sortBy") >> null
+        servletRequestMock.getParameter("sortOrder") >> "someSortOrder"
+        servletRequestMock.getParameter("startIndex") >> "1"
+        servletRequestMock.getParameter("count") >> "10"
+        servletRequestMock.getParameter("attributes") >> "userName,title,meta.created"
+
+        when:
+        Map result = requestParamHelper.getRequestParameterValues(servletRequestMock)
+
+        then:
+        result.get("attributes") == ["userName", "title", "meta", "created"]
+    }
+
+
 }

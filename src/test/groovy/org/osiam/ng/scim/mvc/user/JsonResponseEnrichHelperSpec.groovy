@@ -1,6 +1,7 @@
 package org.osiam.ng.scim.mvc.user
 
 import org.osiam.ng.resourceserver.dao.SCIMSearchResult
+import scim.schema.v2.Meta
 import scim.schema.v2.User
 import spock.lang.Specification
 
@@ -62,7 +63,7 @@ class JsonResponseEnrichHelperSpec extends Specification {
         jsonResult.contains("\"totalResults\":1337,\"itemsPerPage\":10,\"startIndex\":0,\"schemas\":\"schemas:urn:scim:schemas:core:1.0\",\"Resources\":[{\"userName\":\"username\"}]")
     }
 
-    def"should not filter the search result if attributes are empty"() {
+    def "should not filter the search result if attributes are empty"() {
         given:
         def user = new User.Builder("username").setSchemas(["schemas:urn:scim:schemas:core:1.0"] as Set).build()
         def userList = [user] as List<User>
@@ -84,6 +85,21 @@ class JsonResponseEnrichHelperSpec extends Specification {
 
         then:
         jsonResult.contains("\"totalResults\":1337,\"itemsPerPage\":10,\"startIndex\":0,\"schemas\":\"schemas:urn:scim:schemas:core:1.0\",\"Resources\":[{\"schemas\":[\"schemas:urn:scim:schemas:core:1.0\"],\"userName\":\"username\"}]")
+
+    }
+
+    def "should return only data of a complex type"() {
+        given:
+        def set = ["schemas:urn:scim:schemas:core:1.0"] as Set
+        String[] pA = ["meta", "created"]
+        def param = ["attributes": pA, "count": 23, "startIndex": 23]
+        def created = GregorianCalendar.getInstance().getTime()
+        def user = new User.Builder("username").setMeta(new Meta.Builder(created, null).build()).build()
+        def scimSearchResult = new SCIMSearchResult([user], 23)
+        when:
+        def result = jsonResponseEnrichHelper.getJsonFromSearchResult(scimSearchResult, param, set)
+        then:
+        result == '{"totalResults":23,"itemsPerPage":23,"startIndex":23,"schemas":"schemas:urn:scim:schemas:core:1.0","Resources":[{"meta":{"created":'+created.time+'}}]}'
 
     }
 
