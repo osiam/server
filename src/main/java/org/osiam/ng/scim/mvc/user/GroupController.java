@@ -60,7 +60,7 @@ public class GroupController {
 
     private void setLocationUriWithNewId(HttpServletRequest request, HttpServletResponse response, String id) {
         String requestUrl = request.getRequestURL().toString();
-        URI uri = new UriTemplate("{requestUrl}{internalId}").expand(requestUrl, id);
+        URI uri = new UriTemplate("{requestUrl}{internalId}").expand(requestUrl + "/", id);
         response.setHeader("Location", uri.toASCIIString());
     }
 

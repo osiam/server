@@ -81,7 +81,7 @@ public class UserController {
     public User create(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) throws IOException {
         User createdUser = scimUserProvisioning.create(user);
         String requestUrl = request.getRequestURL().toString();
-        URI uri = new UriTemplate("{requestUrl}{internalId}").expand(requestUrl, createdUser.getId());
+        URI uri = new UriTemplate("{requestUrl}{internalId}").expand(requestUrl + "/", createdUser.getId());
         response.setHeader("Location", uri.toASCIIString());
         return User.Builder.generateForOuput(createdUser);
     }

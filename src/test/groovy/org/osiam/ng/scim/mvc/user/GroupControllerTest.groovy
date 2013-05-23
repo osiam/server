@@ -63,8 +63,8 @@ class GroupControllerTest extends Specification {
 
     def "should set LocationURI to the new created Group on POST"() {
         given:
-        httpServletRequest.getRequestURL() >> new StringBuffer("http://host:port/deployment/User/")
-        def uri = new URI("http://host:port/deployment/User/" + group.id)
+        httpServletRequest.getRequestURL() >> new StringBuffer("http://host:port/deployment/Group")
+        def uri = new URI("http://host:port/deployment/Group/" + group.id)
 
         when:
         def result = underTest.create(group, httpServletRequest, httpServletResponse)

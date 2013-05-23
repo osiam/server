@@ -86,7 +86,6 @@ class UserControllerTest extends Specification {
         mapping.value() == ["/{id}"]
         mapping.method() == [RequestMethod.GET]
         body
-        //@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 
     }
 
@@ -185,7 +184,7 @@ class UserControllerTest extends Specification {
 
     def "should create the user and add the location header"() {
         given:
-        httpServletRequest.getRequestURL() >> new StringBuffer("http://host:port/deployment/User/")
+        httpServletRequest.getRequestURL() >> new StringBuffer("http://host:port/deployment/User")
         def uri = new URI("http://host:port/deployment/User/id")
 
         when:
