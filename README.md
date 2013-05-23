@@ -195,9 +195,9 @@ The paging is done via two parameters which will limit the output shown per page
 
 The parameters are:
 
-count = will limit the items per page to the given value
+count = will limit the items per page to the given value. Default is 100
 
-startIndex = will define the start index of searching
+startIndex = will define the start index of searching. Default is 0
 
 To paginate through the results increase the startIndex to the next desired position.
 
