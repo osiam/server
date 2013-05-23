@@ -67,13 +67,12 @@ class FilteredSearchTest extends Specification{
 
     }
     def "should parse greater than (gt)"(){
-        //
         when:
         def result = parser.parse("meta.lastModified gt \"2011-05-13T04:42:34Z\"")
         then:
         result.key == 'meta.lastModified'
         result.constraint == SingularFilterChain.Constraints.GREATER_THAN
-        result.value == "2011-05-13T04:42:34Z"
+        result.value
 
     }
     def "should parse greater than or equal (ge)"(){
@@ -82,7 +81,7 @@ class FilteredSearchTest extends Specification{
         then:
         result.key == 'meta.lastModified'
         result.constraint == SingularFilterChain.Constraints.GREATER_EQUALS
-        result.value == "2011-05-13T04:42:34Z"
+        result.value
 
     }
     def "should parse less than (lt)"(){
@@ -91,7 +90,7 @@ class FilteredSearchTest extends Specification{
         then:
         result.key == 'meta.lastModified'
         result.constraint == SingularFilterChain.Constraints.LESS_THAN
-        result.value == "2011-05-13T04:42:34Z"
+        result.value
 
     }
     def "should parse less than or equal (le)"(){
@@ -100,7 +99,7 @@ class FilteredSearchTest extends Specification{
         then:
         result.key == 'meta.lastModified'
         result.constraint == SingularFilterChain.Constraints.LESS_EQUALS
-        result.value == "2011-05-13T04:42:34Z"
+        result.value
 
     }
 

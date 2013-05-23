@@ -78,7 +78,7 @@ class SingularFilterChainTest extends Specification{
         then:
         result.propertyName == 'meta.lastModified'
         result.op == ">"
-        result.value == "2011-05-13T04:42:34Z"
+        result.value
 
     }
 
@@ -88,7 +88,7 @@ class SingularFilterChainTest extends Specification{
         then:
         result.propertyName == 'meta.lastModified'
         result.op == ">="
-        result.value == "2011-05-13T04:42:34Z"
+        result.value
 
     }
 
@@ -98,7 +98,7 @@ class SingularFilterChainTest extends Specification{
         then:
         result.propertyName == 'meta.lastModified'
         result.op == "<"
-        result.value == "2011-05-13T04:42:34Z"
+        result.value
 
     }
 
@@ -111,6 +111,17 @@ class SingularFilterChainTest extends Specification{
         result.value instanceof Date
 
     }
+
+    def "should parse iso time"(){
+        when:
+        def result = new SingularFilterChain("meta.lastModified le \"2011-05-13T04:42:34+02\"").buildCriterion()
+        then:
+        result.propertyName == 'meta.lastModified'
+        result.op == "<="
+        result.value instanceof Date
+
+    }
+
 
     def "should throw exception if no constraint matches"(){
         when:

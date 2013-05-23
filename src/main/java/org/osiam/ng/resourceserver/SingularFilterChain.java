@@ -60,7 +60,7 @@ public class SingularFilterChain implements FilterChain {
         try {
             return tryToGetDate(result);
         } catch (IllegalArgumentException e) {
-            return group;
+            return result;
         }
     }
 
