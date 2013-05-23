@@ -110,7 +110,7 @@ public class GroupEntity extends InternalIdSkeleton {
     @Override
     public Group toScim() {
         return new Group.Builder().setDisplayName(getDisplayName()).setMembers(membersToScim())
-                .setExternalId(getExternalId()).setId(getId().toString()).build();
+                .setExternalId(getExternalId()).setId(getId().toString()).setMeta(getMeta().toScim()).build();
     }
 
     private Set<MultiValuedAttribute> membersToScim() {
