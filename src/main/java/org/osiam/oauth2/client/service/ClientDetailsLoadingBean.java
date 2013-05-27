@@ -23,11 +23,13 @@
 
 package org.osiam.oauth2.client.service;
 
+import org.osiam.ng.resourceserver.dao.ClientDao;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.util.*;
 
 
@@ -38,105 +40,12 @@ import java.util.*;
 @Component("clientDetails")
 public class ClientDetailsLoadingBean implements ClientDetailsService {
 
+    @Inject
+    private ClientDao clientDao;
+
     @Override
     public ClientDetails loadClientByClientId(final String clientId) {
-        //TODO implement DAO to get real client ...
-        return new ClientDetails() {
 
-            private static final long serialVersionUID = -3542902414837379208L;
-
-            @Override
-            public String getClientId() {
-                return clientId;
-            }
-
-            @Override
-            public Set<String> getResourceIds() {
-                //                resources.add("oauth2res");
-                return new HashSet<>();
-            }
-
-            @Override
-            public boolean isSecretRequired() {
-                return true;
-            }
-
-            @Override
-            public String getClientSecret() {
-                return "secret";
-            }
-
-            @Override
-            public boolean isScoped() {
-                return true;
-            }
-
-            @Override
-            public Set<String> getScope() {
-                Set<String> scopes = new HashSet<>();
-                scopes.add("GET");
-                scopes.add("PUT");
-                scopes.add("POST");
-                scopes.add("PATCH");
-                scopes.add("DELETE");
-                return scopes;
-            }
-
-            @Override
-            public Set<String> getAuthorizedGrantTypes() {
-                Set<String> grants = new HashSet<>();
-                grants.add("authorization_code");
-                grants.add("implicit");
-                grants.add("refresh-token");
-                return grants;
-            }
-
-            @Override
-            public Set<String> getRegisteredRedirectUri() {
-
-                return new HashSet<>(Arrays.asList(
-                        "http://localhost:8080/oauth2-client/accessToken",
-                        "http://ong01-systemtest.lan.tarent.de:5000/oauth2",
-                        "http://ong01-devel10.lan.tarent.de:5000/oauth2",
-                        "http://ong01-devel00.lan.tarent.de:5000/oauth2",
-                        "http://ong01-devel01.lan.tarent.de:5000/oauth2",
-                        "http://ong01-devel02.lan.tarent.de:5000/oauth2",
-                        "http://ong01-devel03.lan.tarent.de:5000/oauth2",
-                        "http://ong01-devel04.lan.tarent.de:5000/oauth2",
-                        "http://ong01-devel05.lan.tarent.de:5000/oauth2",
-                        "http://ong01-devel11.lan.tarent.de:5000/oauth2",
-                        "http://ong01-devel12.lan.tarent.de:5000/oauth2",
-                        "http://ong01-devel13.lan.tarent.de:5000/oauth2",
-                        "http://ong01-devel14.lan.tarent.de:5000/oauth2",
-                        "http://ong01-systemtest.lan.tarent.de:8080/oauth2-client/accessToken",
-                        "http://ong00-systemtest:8080/oauth2-client/accessToken",
-                        "http://localhost:5000/oauth2",
-                        "http://ong01-exclient.lan.tarent.de:5000/oauth2",
-                        "http://127.0.0.1:5000/oauth2"));
-            }
-
-            @Override
-            public Collection<GrantedAuthority> getAuthorities() {
-                return new ArrayList<>();
-
-            }
-
-            @Override
-            public Integer getAccessTokenValiditySeconds() {
-                return 1337;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public Integer getRefreshTokenValiditySeconds() {
-                return 1337;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public Map<String, Object> getAdditionalInformation() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-        };
+        return clientDao.getClient(clientId);
     }
-
-
 }

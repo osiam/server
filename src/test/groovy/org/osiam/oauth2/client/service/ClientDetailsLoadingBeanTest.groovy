@@ -23,32 +23,19 @@
 
 package org.osiam.oauth2.client.service
 
+import org.osiam.ng.resourceserver.dao.ClientDao
 import spock.lang.Specification
 
 class ClientDetailsLoadingBeanTest extends Specification {
-    def underTest = new ClientDetailsLoadingBean()
 
-    def "should return one fake client"(){
+    def clientDaoMock = Mock(ClientDao)
+    def underTest = new ClientDetailsLoadingBean(clientDao: clientDaoMock)
+
+    def "should return a client"(){
         when:
-        def result = underTest.loadClientByClientId("client!")
+        underTest.loadClientByClientId("hanz")
+
         then:
-        result.clientId == "client!"
-        result.isScoped()
-        result.isSecretRequired()
-        result.getAccessTokenValiditySeconds() == 1337
-        result.getRefreshTokenValiditySeconds() == 1337
-
-        result.getScope().contains("GET")
-        result.getScope().contains("PUT")
-        result.getScope().contains("PUT")
-        result.getScope().contains("DELETE")
-        result.getResourceIds().size() == 0
-        result.getAuthorizedGrantTypes().size() == 3
-        result.getRegisteredRedirectUri().size() > 1
-        !result.getAuthorities()
-        !result.getAdditionalInformation()
-        result.getClientSecret() == "secret"
-
-
+        1 * clientDaoMock.getClient("hanz")
     }
 }
