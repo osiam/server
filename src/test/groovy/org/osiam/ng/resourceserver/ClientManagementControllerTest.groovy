@@ -18,10 +18,10 @@ import java.lang.reflect.Method
  * Time: 11:09
  * To change this template use File | Settings | File Templates.
  */
-class ClientRegistrationControllerSpec extends Specification {
+class ClientManagementControllerTest extends Specification {
 
     def clientDao = Mock(ClientDao)
-    def clientRegistrationController = new ClientManagementController(clientDao: clientDao)
+    def clientManagementController = new ClientManagementController(clientDao: clientDao)
 
     def "should contain a method to GET a client"(){
         given:
@@ -30,7 +30,7 @@ class ClientRegistrationControllerSpec extends Specification {
         when:
         RequestMapping mapping = method.getAnnotation(RequestMapping)
         ResponseBody body = method.getAnnotation(ResponseBody)
-        clientRegistrationController.getClient("f47ac10b-58cc-4372-a567-0e02b2c3d479")
+        clientManagementController.getClient("f47ac10b-58cc-4372-a567-0e02b2c3d479")
 
         then:
         mapping.value() == ["/{id}"]
@@ -48,7 +48,7 @@ class ClientRegistrationControllerSpec extends Specification {
         ResponseBody body = method.getAnnotation(ResponseBody)
         ResponseStatus defaultStatus = method.getAnnotation(ResponseStatus)
 
-        clientRegistrationController.create(entity)
+        clientManagementController.create(entity)
 
         then:
         mapping.method() == [RequestMethod.POST]
@@ -64,7 +64,7 @@ class ClientRegistrationControllerSpec extends Specification {
         when:
         RequestMapping mapping = method.getAnnotation(RequestMapping)
         ResponseStatus defaultStatus = method.getAnnotation(ResponseStatus)
-        clientRegistrationController.delete("f47ac10b-58cc-4372-a567-0e02b2c3d479")
+        clientManagementController.delete("f47ac10b-58cc-4372-a567-0e02b2c3d479")
 
         then:
         mapping.method() == [RequestMethod.DELETE]
