@@ -25,10 +25,10 @@ public class ClientEntity implements ClientDetails {
     private UUID id = UUID.randomUUID();
     @JsonProperty
     @Transient
-    private final int access_token_validity = 1337;
+    private int accessTokenValiditySeconds;
     @JsonProperty
     @Transient
-    private final int refresh_token_validity = 1337;
+    private int refreshTokenValiditySeconds;
     @JsonProperty
     @Column(unique = true, nullable = false)
     private String redirect_uri;
@@ -107,12 +107,12 @@ public class ClientEntity implements ClientDetails {
 
     @Override
     public Integer getAccessTokenValiditySeconds() {
-        return access_token_validity;
+        return accessTokenValiditySeconds;
     }
 
     @Override
     public Integer getRefreshTokenValiditySeconds() {
-        return refresh_token_validity;
+        return refreshTokenValiditySeconds;
     }
 
     @Override
@@ -152,5 +152,13 @@ public class ClientEntity implements ClientDetails {
 
     public String getRedirect_uri() {
         return redirect_uri;
+    }
+
+    public void setAccessTokenValiditySeconds(int accessTokenValiditySeconds) {
+        this.accessTokenValiditySeconds = accessTokenValiditySeconds;
+    }
+
+    public void setRefreshTokenValiditySeconds(int refreshTokenValiditySeconds) {
+        this.refreshTokenValiditySeconds = refreshTokenValiditySeconds;
     }
 }

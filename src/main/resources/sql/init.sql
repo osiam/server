@@ -123,7 +123,9 @@ CREATE TABLE osiam_client (
   internal_id bigint PRIMARY KEY,
   id uuid NOT NULL UNIQUE ,
   redirect_uri text not null unique ,
-  client_secret text not null unique
+  client_secret text not null unique,
+  accessTokenValiditySeconds int,
+  refreshTokenValiditySeconds int
 );
 
 CREATE TABLE osiam_client_scopes (
@@ -326,7 +328,7 @@ INSERT INTO scim_group VALUES (NULL, 'testGroup2', 2);
 
 INSERT INTO scim_id VALUES (1, NULL, NULL, 'cef9452e-00a9-4cec-a086-d171374ffbef');
 INSERT INTO scim_id VALUES (2, NULL, NULL, '2a820312-67b3-4275-963d-b235c6525207');
-INSERT INTO osiam_client VALUES(3, '23f9452e-00a9-4cec-a086-d171374ffb42', 'http://localhost:5000/oauth2', 'secret');
+INSERT INTO osiam_client VALUES(3, '23f9452e-00a9-4cec-a086-d171374ffb42', 'http://localhost:5000/oauth2', 'secret', 2342, 2342);
 INSERT INTO osiam_client_scopes VALUES(3, 'GET');
 INSERT INTO osiam_client_scopes VALUES(3, 'POST');
 INSERT INTO osiam_client_scopes VALUES(3, 'PUT');

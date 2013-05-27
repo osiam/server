@@ -1,9 +1,9 @@
 package org.osiam.ng.scim.mvc.user;
 
+import scim.schema.v2.Constants;
+
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -15,14 +15,17 @@ import java.util.Map;
  */
 public class RequestParamHelper {
 
-    public Map<String,Object> getRequestParameterValues(HttpServletRequest request) {
+    public Map<String, Object> getRequestParameterValues(HttpServletRequest request) {
 
-        Map<String,Object> parameterMap = new HashMap<>();
+        Map<String, Object> parameterMap = new HashMap<>();
 
         parameterMap.put("filter", request.getParameter("filter"));
-        parameterMap.put("sortBy", request.getParameter("sortBy") != null ? request.getParameter("sortBy") : "internal_id");
-        parameterMap.put("sortOrder", request.getParameter("sortOrder") != null ? request.getParameter("sortOrder") : "ascending");
-        parameterMap.put("startIndex", request.getParameter("startIndex") != null ? Integer.parseInt(request.getParameter("startIndex")) : 0);
+        parameterMap
+                .put("sortBy", request.getParameter("sortBy") != null ? request.getParameter("sortBy") : "internal_id");
+        parameterMap.put("sortOrder",
+                request.getParameter("sortOrder") != null ? request.getParameter("sortOrder") : "ascending");
+        parameterMap.put("startIndex",
+                request.getParameter("startIndex") != null ? Integer.parseInt(request.getParameter("startIndex")) : 0);
         translateAttributesForJackson(request, parameterMap);
 
         validateCount(request, parameterMap);
@@ -38,9 +41,9 @@ public class RequestParamHelper {
     }
 
     private void validateCount(HttpServletRequest request, Map<String, Object> parameterMap) {
-        int count = request.getParameter("count") != null ? Integer.parseInt(request.getParameter("count")): 100;
-        if (count <= 0)
-            throw new IllegalArgumentException("Negative count values are not allowed");
+        int count = Constants.MAX_RESULT;
+        if (request.getParameter("count") != null) { count = Integer.parseInt(request.getParameter("count")); }
+        if (count <= 0) { throw new IllegalArgumentException("Negative count values are not allowed"); }
         parameterMap.put("count", count);
     }
 }

@@ -21,18 +21,19 @@ class ClientEntityTest extends Specification {
         b.getAuthorizedGrantTypes() == ["authorization_code", "implicit", "refresh-token"] as Set
     }
 
-    def "should deliver the same access_token length"(){
+    def "should be able to set access_token length"(){
         when:
-        def b = new ClientEntity()
+        under_test.setAccessTokenValiditySeconds(2342)
         then:
-        b.accessTokenValiditySeconds == under_test.accessTokenValiditySeconds
-    }
+        under_test.getAccessTokenValiditySeconds() == 2342
+   }
 
-    def "should deliver the same refresh_token length"(){
+    def "should be able to set refresh token validity"(){
         when:
-        def b = new ClientEntity()
+        under_test.setRefreshTokenValiditySeconds(2342)
         then:
-        b.refreshTokenValiditySeconds == under_test.refreshTokenValiditySeconds
+        under_test.getRefreshTokenValiditySeconds() == 2342
+
 
     }
 

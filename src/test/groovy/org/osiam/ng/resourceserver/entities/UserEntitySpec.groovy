@@ -55,7 +55,15 @@ class UserEntitySpec extends Specification {
         userEntity.isAccountNonLocked()
         userEntity.isCredentialsNonExpired()
         userEntity.isEnabled()
+    }
 
+    def "should be able to insert meta"(){
+        given:
+        def meta = new MetaEntity()
+        when:
+        userEntity.setMeta(meta)
+        then:
+        userEntity.getMeta() == meta
     }
 
     def "setter and getter for the Id should be present"() {
