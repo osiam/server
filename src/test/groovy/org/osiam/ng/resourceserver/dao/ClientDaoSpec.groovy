@@ -23,7 +23,7 @@ class ClientDaoSpec extends Specification {
         def result = clientDao.getClient("f47ac10b-58cc-4372-a567-0e02b2c3d479")
 
         then:
-        1 * em.createNamedQuery("getById") >> queryMock
+        1 * em.createNamedQuery("getClientById") >> queryMock
         1 * queryMock.getResultList() >> resultList
         result == resultList.first()
 
@@ -33,7 +33,7 @@ class ClientDaoSpec extends Specification {
         given:
         def queryMock = Mock(Query)
         def resultList = []
-        em.createNamedQuery("getById") >> queryMock
+        em.createNamedQuery("getClientById") >> queryMock
         queryMock.getResultList() >> resultList
 
         when:
@@ -58,7 +58,7 @@ class ClientDaoSpec extends Specification {
     def "should be able to delete a client"() {
         given:
         def queryMock = Mock(Query)
-        em.createNamedQuery("getById") >> queryMock
+        em.createNamedQuery("getClientById") >> queryMock
         queryMock.getResultList() >> resultList
 
         when:
