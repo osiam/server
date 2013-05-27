@@ -1,6 +1,7 @@
 package org.osiam.ng.resourceserver
 
 import org.osiam.ng.resourceserver.dao.ClientDao
+import org.osiam.ng.resourceserver.entities.ClientEntity
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
@@ -20,11 +21,11 @@ import java.lang.reflect.Method
 class ClientRegistrationControllerSpec extends Specification {
 
     def clientDao = Mock(ClientDao)
-    def clientRegistrationController = new ClientRegistrationController(clientDao: clientDao)
+    def clientRegistrationController = new ClientManagementController(clientDao: clientDao)
 
     def "should contain a method to GET a client"(){
         given:
-        Method method = ClientRegistrationController.class.getDeclaredMethod("getClient", String)
+        Method method = ClientManagementController.class.getDeclaredMethod("getClient", String)
 
         when:
         RequestMapping mapping = method.getAnnotation(RequestMapping)
@@ -40,24 +41,25 @@ class ClientRegistrationControllerSpec extends Specification {
 
     def "should contain a method to POST a client"(){
         given:
-        Method method = ClientRegistrationController.class.getDeclaredMethod("create", Object)
-
+        Method method = ClientManagementController.class.getDeclaredMethod("create", ClientEntity)
+        def entity = new ClientEntity()
         when:
         RequestMapping mapping = method.getAnnotation(RequestMapping)
         ResponseBody body = method.getAnnotation(ResponseBody)
         ResponseStatus defaultStatus = method.getAnnotation(ResponseStatus)
-        clientRegistrationController.create("hanz")
+
+        clientRegistrationController.create(entity)
 
         then:
         mapping.method() == [RequestMethod.POST]
         body
         defaultStatus.value() == HttpStatus.CREATED
-        1 * clientDao.create("hanz")
+        1 * clientDao.create(entity)
     }
 
     def "should contain a method to DELETE a client"(){
         given:
-        Method method = ClientRegistrationController.class.getDeclaredMethod("delete", String)
+        Method method = ClientManagementController.class.getDeclaredMethod("delete", String)
 
         when:
         RequestMapping mapping = method.getAnnotation(RequestMapping)

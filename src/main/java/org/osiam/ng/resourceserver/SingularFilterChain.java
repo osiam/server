@@ -70,7 +70,7 @@ public class SingularFilterChain implements FilterChain {
     }
 
     private boolean isNumber(String group) {
-        if (!group.startsWith("\"") && group.matches("[0-9]+")) {
+        if (group.matches("[0-9]+")) {
             return true;
         }
         return false;

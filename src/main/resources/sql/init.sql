@@ -22,6 +22,8 @@ DROP TABLE scim_address CASCADE;
 DROP SEQUENCE hibernate_sequence CASCADE;
 DROP TABLE database_scheme_version CASCADE;
 DROP EXTENSION plpgsql;
+DROP TABLE osiam_client_scopes CASCADE;
+DROP TABLE osiam_client CASCADE;
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
@@ -115,6 +117,22 @@ CREATE TABLE scim_group (
     displayname character varying(255) NOT NULL UNIQUE,
     internal_id bigint NOT NULL
 );
+
+
+CREATE TABLE osiam_client (
+  internal_id bigint PRIMARY KEY,
+  id uuid NOT NULL UNIQUE ,
+  redirect_uri text not null unique ,
+  client_secret text not null unique
+);
+
+CREATE TABLE osiam_client_scopes (
+  id bigint references osiam_client(internal_id),
+  scope text NOT NULL UNIQUE
+);
+
+
+
 
 
 CREATE TABLE scim_meta (
@@ -289,46 +307,9 @@ CREATE TABLE scim_user_scim_roles (
 INSERT INTO database_scheme_version VALUES (0.0200000000000000004);
 
 
---
--- Name: hibernate_sequence; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('hibernate_sequence', 3, false);
+SELECT pg_catalog.setval('hibernate_sequence', 4, false);
 
 
---
--- Data for Name: scim_address; Type: TABLE DATA; Schema: public; Owner: -
---
-
-
-
---
--- Data for Name: scim_certificate; Type: TABLE DATA; Schema: public; Owner: -
---
-
-
-
---
--- Data for Name: scim_email; Type: TABLE DATA; Schema: public; Owner: -
---
-
-
-
---
--- Data for Name: scim_enterprise; Type: TABLE DATA; Schema: public; Owner: -
---
-
-
-
---
--- Data for Name: scim_entitlements; Type: TABLE DATA; Schema: public; Owner: -
---
-
-
-
---
--- Data for Name: scim_group; Type: TABLE DATA; Schema: public; Owner: -
---
 
 INSERT INTO scim_group VALUES (NULL, 'testGroup2', 2);
 
@@ -345,91 +326,18 @@ INSERT INTO scim_group VALUES (NULL, 'testGroup2', 2);
 
 INSERT INTO scim_id VALUES (1, NULL, NULL, 'cef9452e-00a9-4cec-a086-d171374ffbef');
 INSERT INTO scim_id VALUES (2, NULL, NULL, '2a820312-67b3-4275-963d-b235c6525207');
+INSERT INTO osiam_client VALUES(3, '23f9452e-00a9-4cec-a086-d171374ffb42', 'http://localhost:5000/oauth2', 'secret');
+INSERT INTO osiam_client_scopes VALUES(3, 'GET');
+INSERT INTO osiam_client_scopes VALUES(3, 'POST');
+INSERT INTO osiam_client_scopes VALUES(3, 'PUT');
+INSERT INTO osiam_client_scopes VALUES(3, 'PATCH');
+INSERT INTO osiam_client_scopes VALUES(3, 'DELETE');
 
-
---
--- Data for Name: scim_im; Type: TABLE DATA; Schema: public; Owner: -
---
-
-
-
---
--- Data for Name: scim_manager; Type: TABLE DATA; Schema: public; Owner: -
---
-
-
-
---
--- Data for Name: scim_meta; Type: TABLE DATA; Schema: public; Owner: -
---
-
-
-
---
--- Data for Name: scim_name; Type: TABLE DATA; Schema: public; Owner: -
---
-
-
-
---
--- Data for Name: scim_phonenumber; Type: TABLE DATA; Schema: public; Owner: -
---
-
-
-
---
--- Data for Name: scim_photo; Type: TABLE DATA; Schema: public; Owner: -
---
-
-
-
---
--- Data for Name: scim_roles; Type: TABLE DATA; Schema: public; Owner: -
---
-
-
-
---
--- Data for Name: scim_user; Type: TABLE DATA; Schema: public; Owner: -
---
 
 INSERT INTO scim_user VALUES (NULL, NULL, NULL, NULL, 'cbae73fac0893291c4792ef19d158a589402288b35cb18fb8406e951b9d95f6b8b06a3526ffebe96ae0d91c04ae615a7fe2af362763db386ccbf3b55c29ae800', NULL, NULL, NULL, NULL, 'marissa', NULL, 1, NULL);
 INSERT INTO scim_roles VALUES('USER');
 INSERT INTO scim_user_scim_roles VALUES(1, 'USER');
 
---
--- Data for Name: scim_user_additional; Type: TABLE DATA; Schema: public; Owner: -
---
-
-
-
---
--- Data for Name: scim_user_scim_address; Type: TABLE DATA; Schema: public; Owner: -
---
-
-
-
---
--- Data for Name: scim_user_scim_entitlements; Type: TABLE DATA; Schema: public; Owner: -
---
-
-
-
---
--- Data for Name: scim_user_scim_group; Type: TABLE DATA; Schema: public; Owner: -
---
-
-
-
---
--- Data for Name: scim_user_scim_roles; Type: TABLE DATA; Schema: public; Owner: -
---
-
-
-
---
--- Name: database_scheme_version_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
---
 
 ALTER TABLE ONLY database_scheme_version
     ADD CONSTRAINT database_scheme_version_pkey PRIMARY KEY (version);

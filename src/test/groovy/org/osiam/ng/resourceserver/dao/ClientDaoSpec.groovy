@@ -1,35 +1,32 @@
 package org.osiam.ng.resourceserver.dao
 
+import org.osiam.ng.resourceserver.entities.ClientEntity
 import org.osiam.ng.scim.exceptions.ResourceNotFoundException
 import spock.lang.Specification
 
 import javax.persistence.EntityManager
 import javax.persistence.Query
 
-/**
- * Created with IntelliJ IDEA.
- * User: jtodea
- * Date: 27.05.13
- * Time: 12:03
- * To change this template use File | Settings | File Templates.
- */
 class ClientDaoSpec extends Specification {
 
     def em = Mock(EntityManager)
     def clientDao = new ClientDao(em: em)
 
+    def resultList = [new ClientEntity()]
+
     def "should be able to get an registered client"() {
         given:
         def queryMock = Mock(Query)
-        def resultList = ["hanz"]
-        em.createNamedQuery("getById") >> queryMock
-        queryMock.getResultList() >> resultList
+
 
         when:
         def result = clientDao.getClient("f47ac10b-58cc-4372-a567-0e02b2c3d479")
 
         then:
-        result == "hanz"
+        1 * em.createNamedQuery("getById") >> queryMock
+        1 * queryMock.getResultList() >> resultList
+        result == resultList.first()
+
     }
 
     def "should throw exception if no result was found"() {
@@ -48,18 +45,19 @@ class ClientDaoSpec extends Specification {
     }
 
     def "should be able to create a new client"() {
+        given:
+        ClientEntity clientEntity = new ClientEntity()
         when:
-        def result = clientDao.create("hanz")
+        def result = clientDao.create(clientEntity)
 
         then:
-        result == "hanz"
-        1 * em.persist("hanz")
+        result == clientEntity
+        1 * em.persist(clientEntity)
     }
 
     def "should be able to delete a client"() {
         given:
         def queryMock = Mock(Query)
-        def resultList = ["hanz"]
         em.createNamedQuery("getById") >> queryMock
         queryMock.getResultList() >> resultList
 
@@ -67,6 +65,6 @@ class ClientDaoSpec extends Specification {
         clientDao.delete("f47ac10b-58cc-4372-a567-0e02b2c3d479")
 
         then:
-        1 * em.remove("hanz")
+        1 * em.remove(resultList.first())
     }
 }
