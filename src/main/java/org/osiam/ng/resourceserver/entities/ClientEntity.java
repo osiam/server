@@ -13,7 +13,7 @@ import java.util.*;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity(name = "osiam_client")
-@NamedQueries({@NamedQuery(name = "getById", query = "SELECT i FROM osiam_client i WHERE i.id= :id")})
+@NamedQueries({@NamedQuery(name = "getClientById", query = "SELECT i FROM osiam_client i WHERE i.id= :id")})
 public class ClientEntity implements ClientDetails {
     @Id
     @GeneratedValue

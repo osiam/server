@@ -32,7 +32,7 @@ public class ClientDao {
     }
 
     private ClientEntity getClientById(String id) {
-        Query query = em.createNamedQuery("getById");
+        Query query = em.createNamedQuery("getClientById");
         query.setParameter("id", UUID.fromString(id));
         List result = query.getResultList();
         if (result.isEmpty()) {
