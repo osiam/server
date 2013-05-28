@@ -18,7 +18,7 @@ If you want to run the osiam-server in a embedded tomcat instance run
  mvn jetty:run
 ```
 
-To deploy the osiam-server into a running Tomcat copy the "authorization-server.war" into the webapp folder in your Tomcat installation.
+To deploy the osiam-server into a running Tomcat copy the "osiam-server.war" into the webapp folder in your Tomcat installation.
 
 
 ## Authorization Server
@@ -37,11 +37,11 @@ and provides
 
 ### Configuration
 
-To create the database scheme you have to execute src/mein/ressources/sql/init.sql. 
+To create the database scheme you have to execute src/main/ressources/sql/init.sql. 
 
-This SQL-Script will create you all the needed tables as well as create a demo user called Marissa and a password 'koala'.
+This SQL-Script will create all necessary tables as well as a demo user called Marissa with password 'koala'.
 
-The client credentials are as well hardcoded:
+The client credentials are hardcoded:
  * client_id=tonr
  * client_secret=secret
  * redirect_uri=http://localhost:8080/oauth2-client/accessToken
@@ -92,14 +92,14 @@ The client authentication is done via [Basic Access Authentication](http://tools
 
 ## Resource Server
 
-All scim calls are secured by oauth2, so have to send an access_token in order to get access, e.g.:
+All scim calls are secured by oauth2, so you'll have to send an access_token in order to get access, e.g.:
 
 ```sh
 curl -H "Authorization: Bearer {YOUR_ACCESS_TOKEN}" http://localhost:8080/osiam-server/User/{id}
 ```
 
 ### Search
-Searches are possible for users, groups and on the root URI through both.
+Searches are possible for users, groups and both at the same time through the root URI.
 
 User URI:
 
@@ -197,7 +197,7 @@ The parameters are:
 
 count = will limit the items per page to the given value. Default is 100
 
-startIndex = will define the start index of searching. Default is 0
+startIndex = will define the start index of the search. Default is 0
 
 To paginate through the results increase the startIndex to the next desired position.
 
