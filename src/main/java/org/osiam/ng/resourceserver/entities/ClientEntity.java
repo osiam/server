@@ -1,5 +1,6 @@
 package org.osiam.ng.resourceserver.entities;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
@@ -11,12 +12,13 @@ import javax.persistence.*;
 import java.util.*;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Entity(name = "osiam_client")
 @NamedQueries({@NamedQuery(name = "getClientById", query = "SELECT i FROM osiam_client i WHERE i.id= :id")})
 public class ClientEntity implements ClientDetails {
+
     @Id
     @GeneratedValue
+    @JsonIgnore
     private long internal_id;
 
     @JsonProperty
@@ -24,10 +26,8 @@ public class ClientEntity implements ClientDetails {
     @Column(unique = true, nullable = false)
     private UUID id = UUID.randomUUID();
     @JsonProperty
-    @Transient
     private int accessTokenValiditySeconds;
     @JsonProperty
-    @Transient
     private int refreshTokenValiditySeconds;
     @JsonProperty
     @Column(unique = true, nullable = false)
@@ -45,6 +45,24 @@ public class ClientEntity implements ClientDetails {
     @CollectionTable(name = "osiam_client_scopes", joinColumns = @JoinColumn(name = "id"))
     @Column
     private Set<String> scope;
+
+    public ClientEntity(){}
+
+    /* Used to Map Json to ClientEntity, because some Fields are generated. */
+    public ClientEntity(ClientEntity entity) {
+        if (entity.getId() != null) {
+            id = entity.getId();
+        }
+
+        if(entity.getClientSecret() !=null) {
+            clientSecret = entity.getClientSecret();
+        }
+
+        accessTokenValiditySeconds = entity.getAccessTokenValiditySeconds();
+        refreshTokenValiditySeconds = entity.getRefreshTokenValiditySeconds();
+        redirect_uri = entity.getRedirect_uri();
+        scope = entity.getScope();
+    }
 
     private Set<String> generateGrants() {
         Set<String> result = new HashSet<>();

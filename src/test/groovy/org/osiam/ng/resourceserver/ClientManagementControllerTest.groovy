@@ -1,7 +1,9 @@
 package org.osiam.ng.resourceserver
 
+import org.codehaus.jackson.map.ObjectMapper
 import org.osiam.ng.resourceserver.dao.ClientDao
 import org.osiam.ng.resourceserver.entities.ClientEntity
+import org.osiam.ng.resourceserver.entities.UserEntity
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
@@ -41,20 +43,21 @@ class ClientManagementControllerTest extends Specification {
 
     def "should contain a method to POST a client"(){
         given:
-        Method method = ClientManagementController.class.getDeclaredMethod("create", ClientEntity)
-        def entity = new ClientEntity()
+        Method method = ClientManagementController.class.getDeclaredMethod("create", String)
+        def json = "{\"accessTokenValiditySeconds\":1337,\"refreshTokenValiditySeconds\":1337,\"redirect_uri\":\"test\",\"scope\":[\"get\",\"post\",\"put\"]}"
+
         when:
         RequestMapping mapping = method.getAnnotation(RequestMapping)
         ResponseBody body = method.getAnnotation(ResponseBody)
         ResponseStatus defaultStatus = method.getAnnotation(ResponseStatus)
 
-        clientManagementController.create(entity)
+        clientManagementController.create(json)
 
         then:
         mapping.method() == [RequestMethod.POST]
         body
         defaultStatus.value() == HttpStatus.CREATED
-        1 * clientDao.create(entity)
+        1 * clientDao.create(_)
     }
 
     def "should contain a method to DELETE a client"(){
