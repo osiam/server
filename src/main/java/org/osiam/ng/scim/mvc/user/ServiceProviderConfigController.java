@@ -45,11 +45,11 @@ public class ServiceProviderConfigController {
 
         @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
         public static class FilterSupported extends Supported{
-            public final Integer maxresults;
+            public final Integer maxResults;
 
             public FilterSupported(boolean b, Integer maxresults) {
                 super(b);
-                this.maxresults = maxresults;
+                this.maxResults = maxresults;
             }
         }
 
