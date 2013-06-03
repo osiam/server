@@ -43,7 +43,6 @@ This SQL-Script will create all necessary tables as well as a demo user called M
 
 It also creates the first client entry with redirect URI set to localhost.
 
-
 The client configuration is done via the database and the client management component.
 
 The following values can be submited:
@@ -55,6 +54,7 @@ The following values can be submited:
 The client_id and the client_secret are generated values.
 
 URI to create a client:
+
 http://localhost:8080/osiam-server/Client
 
 The client JSON representation will look like:
@@ -66,8 +66,8 @@ The client JSON representation will look like:
 ```
 
 URI for getting and deleting a client:
-http://localhost:8080/osiam-server/Client/{client_id}
 
+http://localhost:8080/osiam-server/Client/{client_id}
 
 The database configuration is done via properties file named
 
