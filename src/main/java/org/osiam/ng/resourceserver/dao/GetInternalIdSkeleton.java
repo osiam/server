@@ -83,7 +83,7 @@ public abstract class GetInternalIdSkeleton {
         criteria.setMaxResults(count);
         long totalResult = getTotalResults(criteria);
         setSortOrder(sortBy, sortOrder, criteria);
-        //criteria.setCacheMode()
+        criteria.setFirstResult(startIndex);
         Criteria criteria1 =
                 criteria.setProjection(null).setResultTransformer(Criteria.ROOT_ENTITY).setCacheMode(CacheMode.IGNORE)
                         .setCacheable(false);

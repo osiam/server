@@ -227,6 +227,8 @@ class UserDAOTest extends Specification {
         criteriaMock.add(criterionMock) >> criteriaMock
         criteriaMock.setProjection(_) >> criteriaMock
         criteriaMock.setResultTransformer(_) >> criteriaMock
+        criteriaMock.setCacheMode(_) >> criteriaMock
+        criteriaMock.setCacheable(_) >> criteriaMock
         criteriaMock.uniqueResult() >> 1000.toLong()
         criteriaMock.list() >> userList
 
@@ -255,6 +257,8 @@ class UserDAOTest extends Specification {
         criteriaMock.add(criterionMock) >> criteriaMock
         criteriaMock.setProjection(_) >> criteriaMock
         criteriaMock.setResultTransformer(_) >> criteriaMock
+        criteriaMock.setCacheMode(_) >> criteriaMock
+        criteriaMock.setCacheable(_) >> criteriaMock
         criteriaMock.uniqueResult() >> 1000.toLong()
         criteriaMock.list() >> userList
 

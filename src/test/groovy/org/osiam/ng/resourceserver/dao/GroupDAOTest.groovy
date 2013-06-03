@@ -137,6 +137,8 @@ class GroupDAOTest extends Specification {
         criteriaMock.setProjection(_) >> criteriaMock
         criteriaMock.uniqueResult() >> 1000.toLong()
         criteriaMock.setResultTransformer(_) >> criteriaMock
+        criteriaMock.setCacheMode(_) >> criteriaMock
+        criteriaMock.setCacheable(_) >> criteriaMock
         criteriaMock.list() >> groupList
 
         when:
