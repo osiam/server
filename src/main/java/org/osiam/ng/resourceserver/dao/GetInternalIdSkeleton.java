@@ -23,6 +23,7 @@
 
 package org.osiam.ng.resourceserver.dao;
 
+import org.hibernate.CacheMode;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
@@ -43,7 +44,6 @@ public abstract class GetInternalIdSkeleton {
     protected final static Logger LOGGER = Logger.getLogger(GetInternalIdSkeleton.class.getName());
     @PersistenceContext
     protected EntityManager em;
-
     @Inject
     protected FilterParser filterParser;
 
@@ -54,7 +54,6 @@ public abstract class GetInternalIdSkeleton {
     public void setFilterParser(FilterParser filterParser) {
         this.filterParser = filterParser;
     }
-
 
     protected <T extends InternalIdSkeleton> T getInternalIdSkeleton(String id) {
         Query query = em.createNamedQuery("getById");
@@ -72,8 +71,11 @@ public abstract class GetInternalIdSkeleton {
 
     }
 
-    protected <T> SCIMSearchResult<T> search(Class<T> clazz, String filter, int count, int startIndex, String sortBy, String sortOrder) {
-        Criteria criteria = ((Session) em.getDelegate()).createCriteria(clazz);
+    protected <T> SCIMSearchResult<T> search(Class<T> clazz, String filter, int count, int startIndex, String sortBy,
+                                             String sortOrder) {
+        Session session = (Session) em.getDelegate();
+        Criteria criteria = session.createCriteria(clazz);
+        session.setCacheMode(CacheMode.IGNORE);
         if (filter != null && !filter.isEmpty()) {
             criteria = criteria.add(filterParser.parse(filter).buildCriterion());
         }
@@ -81,16 +83,18 @@ public abstract class GetInternalIdSkeleton {
         criteria.setMaxResults(count);
         long totalResult = getTotalResults(criteria);
         setSortOrder(sortBy, sortOrder, criteria);
-        criteria.setFirstResult(startIndex);
-        List list = criteria.setProjection(null).setResultTransformer(Criteria.ROOT_ENTITY).list();
+        //criteria.setCacheMode()
+        Criteria criteria1 =
+                criteria.setProjection(null).setResultTransformer(Criteria.ROOT_ENTITY).setCacheMode(CacheMode.IGNORE)
+                        .setCacheable(false);
+        List list = criteria1.list();
         return new SCIMSearchResult(list, totalResult);
     }
 
     private void setSortOrder(String sortBy, String sortOrder, Criteria criteria) {
         if (sortOrder.equalsIgnoreCase("descending")) {
             criteria.addOrder(Order.desc(sortBy));
-        }
-        else {
+        } else {
             criteria.addOrder(Order.asc(sortBy));
         }
     }
