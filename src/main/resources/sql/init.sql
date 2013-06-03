@@ -130,7 +130,7 @@ CREATE TABLE osiam_client (
 
 CREATE TABLE osiam_client_scopes (
   id bigint references osiam_client(internal_id),
-  scope text NOT NULL UNIQUE
+  scope text NOT NULL
 );
 
 

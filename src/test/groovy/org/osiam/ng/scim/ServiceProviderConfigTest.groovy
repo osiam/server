@@ -16,7 +16,7 @@ class ServiceProviderConfigTest extends Specification {
         !config.bulk.maxOperations
         !config.bulk.maxPayloadSize
         config.filter.supported
-        config.filter.maxresults == 100
+        config.filter.maxResults == 100
         !config.changePassword.supported
         config.sort.supported
         !config.etag.supported

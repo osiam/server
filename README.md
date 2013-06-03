@@ -41,12 +41,33 @@ To create the database scheme you have to execute src/main/ressources/sql/init.s
 
 This SQL-Script will create all necessary tables as well as a demo user called Marissa with password 'koala'.
 
-The client credentials are hardcoded:
- * client_id=tonr
- * client_secret=secret
- * redirect_uri=http://localhost:8080/oauth2-client/accessToken
+It also creates the first client entry with redirect URI set to localhost.
 
-This will change very soon.
+The client configuration is done via the database and the client management component.
+
+The following values can be submited:
+* token_scope
+* redirect_uri
+* accesstoken_validity_in_seconds
+* refreshtoken_validity_in_seconds
+
+The client_id and the client_secret are generated values.
+
+URI to create a client:
+
+http://localhost:8080/osiam-server/Client
+
+The client JSON representation will look like:
+
+```
+{"accessTokenValiditySeconds": "1337", "refreshTokenValiditySeconds": "1337",
+"redirect_uri": "http://localhost:5000/stuff", "scope": ["POST", "PUT", "GET", "DELETE", "PATCH"]}
+
+```
+
+URI for getting and deleting a client:
+
+http://localhost:8080/osiam-server/Client/{client_id}
 
 The database configuration is done via properties file named
 
@@ -97,6 +118,13 @@ All scim calls are secured by oauth2, so you'll have to send an access_token in 
 ```sh
 curl -H "Authorization: Bearer {YOUR_ACCESS_TOKEN}" http://localhost:8080/osiam-server/User/{id}
 ```
+
+### Service provider configuration
+
+The following URI provides the actual supported service provider configuration
+
+URI:
+http://localhost:8080/osiam-server/ServiceProviderConfig
 
 ### Search
 Searches are possible for users, groups and both at the same time through the root URI.
