@@ -198,7 +198,7 @@ The parameter is:
 attributes = defining the attributes to be included in the response
 
 ```http
-http://localhost:8080/authorization-server/User?access_token=YOUR_ACCESSTOKEN&attributes=userName,displayName,meta.created
+http://localhost:8080/osiam-server/User?access_token=YOUR_ACCESSTOKEN&attributes=userName,displayName,meta.created
 ```
 
 #### Sorting

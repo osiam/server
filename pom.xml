@@ -268,7 +268,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.1.1</version>
                 <configuration>
-                    <warName>authorization-server</warName>
+                    <warName>osiam-server</warName>
                 </configuration>
             </plugin>
             <plugin>
@@ -297,7 +297,7 @@
                 <artifactId>maven-jetty-plugin</artifactId>
                 <configuration>
                     <webAppConfig>
-                        <war>target/authorization-server.war</war>
+                        <war>target/osiam-server.war</war>
                         <extraClasspath>example/</extraClasspath>
                     </webAppConfig>
                 </configuration>
