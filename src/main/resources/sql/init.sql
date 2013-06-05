@@ -308,7 +308,7 @@ CREATE TABLE scim_user_scim_roles (
 INSERT INTO database_scheme_version VALUES (0.0200000000000000004);
 
 
-SELECT pg_catalog.setval('hibernate_sequence', 4, false);
+SELECT pg_catalog.setval('hibernate_sequence', 5, false);
 
 
 
@@ -325,7 +325,8 @@ INSERT INTO scim_group VALUES (NULL, 'testGroup2', 2);
 -- Data for Name: scim_id; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO scim_id VALUES (1, NULL, NULL, 'cef9452e-00a9-4cec-a086-d171374ffbef');
+Insert INTO scim_meta VALUES (4, '2011-10-10', '2011-10-10');
+INSERT INTO scim_id VALUES (1, NULL, 4, 'cef9452e-00a9-4cec-a086-d171374ffbef');
 INSERT INTO scim_id VALUES (2, NULL, NULL, '2a820312-67b3-4275-963d-b235c6525207');
 INSERT INTO osiam_client VALUES(3, '23f9452e-00a9-4cec-a086-d171374ffb42', 'http://localhost:5000/oauth2', 'secret', 2342, 2342);
 INSERT INTO osiam_client_scopes VALUES(3, 'GET');
