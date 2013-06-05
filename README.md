@@ -13,7 +13,7 @@ mvn clean install
 
 in the osiam-server folder.
 
-If you want to run the osiam-server in a embedded tomcat instance run
+If you want to run the osiam-server in a embedded jetty instance run
 ```sh
  mvn jetty:run
 ```
