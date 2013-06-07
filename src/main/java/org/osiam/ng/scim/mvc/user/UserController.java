@@ -23,9 +23,6 @@
 
 package org.osiam.ng.scim.mvc.user;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ObjectNode;
 import org.osiam.ng.resourceserver.dao.SCIMSearchResult;
 import org.osiam.ng.scim.dao.SCIMUserProvisioning;
 import org.springframework.http.HttpStatus;
@@ -39,7 +36,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -83,6 +79,7 @@ public class UserController {
         String requestUrl = request.getRequestURL().toString();
         URI uri = new UriTemplate("{requestUrl}{internalId}").expand(requestUrl + "/", createdUser.getId());
         response.setHeader("Location", uri.toASCIIString());
+        createdUser.getMeta().setLocation(uri.toASCIIString());
         return User.Builder.generateForOuput(createdUser);
     }
 
@@ -98,6 +95,7 @@ public class UserController {
                                                       User createdUser) {
         String requestUrl = request.getRequestURL().toString();
         response.setHeader("Location", requestUrl);
+        createdUser.getMeta().setLocation(requestUrl);
         return User.Builder.generateForOuput(createdUser);
     }
 

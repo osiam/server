@@ -48,7 +48,6 @@ class UserControllerTest extends Specification {
     def httpServletRequest = Mock(HttpServletRequest)
     def httpServletResponse = Mock(HttpServletResponse)
     User user = new User.Builder("test").setActive(true)
-
             .setAny(["ha"] as Set)
             .setDisplayName("display")
             .setLocale("locale")
@@ -60,7 +59,9 @@ class UserControllerTest extends Specification {
             .setTimezone("time")
             .setTitle("title")
             .setUserType("userType")
-            .setExternalId("externalid").setId("id").setMeta(new Meta.Builder().build())
+            .setExternalId("externalid")
+            .setId("id")
+            .setMeta(new Meta.Builder().build())
             .build()
 
 
@@ -124,7 +125,6 @@ class UserControllerTest extends Specification {
 
     def "should contain a method to PUT a user"(){
         given:
-        //create(@RequestBody User user,HttpServletRequest request, HttpServletResponse response)
         Method method = UserController.class.getDeclaredMethod("replace",String, User, HttpServletRequest, HttpServletResponse)
         when:
         RequestMapping mapping = method.getAnnotation(RequestMapping)
