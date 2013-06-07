@@ -49,14 +49,14 @@ CREATE SEQUENCE hibernate_sequence
 
 CREATE TABLE scim_address (
     id bigint NOT NULL,
-    country character varying(255),
-    formatted character varying(255),
-    locality character varying(255),
-    postalcode character varying(255),
+    country text,
+    formatted text,
+    locality text,
+    postalcode text,
     postgresql_does_not_like_primary boolean,
-    region character varying(255),
-    streetaddress character varying(255),
-    type character varying(255),
+    region text,
+    streetaddress text,
+    type text,
     user_internal_id bigint
 );
 
@@ -66,7 +66,7 @@ CREATE TABLE scim_address (
 --
 
 CREATE TABLE scim_certificate (
-    value character varying(255) NOT NULL,
+    value text NOT NULL,
     user_internal_id bigint
 );
 
@@ -76,9 +76,9 @@ CREATE TABLE scim_certificate (
 --
 
 CREATE TABLE scim_email (
-    value character varying(255) NOT NULL,
+    value text NOT NULL,
     postgresql_does_not_like_primary boolean,
-    type character varying(255),
+    type text,
     user_internal_id bigint NOT NULL
 );
 
@@ -89,11 +89,11 @@ CREATE TABLE scim_email (
 
 CREATE TABLE scim_enterprise (
     id bigint NOT NULL,
-    costcenter character varying(255),
-    department character varying(255),
-    division character varying(255),
-    employeenumber character varying(255),
-    organization character varying(255),
+    costcenter text,
+    department text,
+    division text,
+    employeenumber text,
+    organization text,
     manager_id bigint
 );
 
@@ -103,7 +103,7 @@ CREATE TABLE scim_enterprise (
 --
 
 CREATE TABLE scim_entitlements (
-    value character varying(255) NOT NULL
+    value text NOT NULL
 );
 
 
@@ -112,8 +112,8 @@ CREATE TABLE scim_entitlements (
 --
 
 CREATE TABLE scim_group (
-    additional character varying(255),
-    displayname character varying(255) NOT NULL UNIQUE,
+    additional text,
+    displayname text NOT NULL UNIQUE,
     internal_id bigint NOT NULL
 );
 
@@ -140,8 +140,8 @@ CREATE TABLE scim_meta (
   id bigint NOT NULL UNIQUE ,
   created timestamp without time zone,
   lastmodified timestamp without time zone,
-  location character varying(255),
-  version character varying(255),
+  location text,
+  version text,
   resourceType text
 );
 
@@ -157,7 +157,7 @@ CREATE TABLE scim_group_scim_id (
 
 CREATE TABLE scim_id (
     internal_id bigint NOT NULL,
-    externalid character varying(255) unique ,
+    externalid text unique ,
     meta_id bigint references scim_meta(id),
     id uuid NOT NULL
 );
@@ -168,8 +168,8 @@ CREATE TABLE scim_id (
 --
 
 CREATE TABLE scim_im (
-    value character varying(255) NOT NULL,
-    type character varying(255),
+    value text NOT NULL,
+    type text,
     user_internal_id bigint
 );
 
@@ -180,7 +180,7 @@ CREATE TABLE scim_im (
 
 CREATE TABLE scim_manager (
     id bigint NOT NULL,
-    displayname character varying(255),
+    displayname text,
     managerid bytea
 );
 
@@ -191,12 +191,12 @@ CREATE TABLE scim_manager (
 
 CREATE TABLE scim_name (
     id bigint NOT NULL,
-    familyname character varying(255),
-    formatted character varying(255),
-    givenname character varying(255),
-    honorificprefix character varying(255),
-    honorificsuffix character varying(255),
-    middlename character varying(255)
+    familyname text,
+    formatted text,
+    givenname text,
+    honorificprefix text,
+    honorificsuffix text,
+    middlename text
 );
 
 
@@ -205,8 +205,8 @@ CREATE TABLE scim_name (
 --
 
 CREATE TABLE scim_phonenumber (
-    value character varying(255) NOT NULL,
-    type character varying(255),
+    value text NOT NULL,
+    type text,
     user_internal_id bigint
 );
 
@@ -216,8 +216,8 @@ CREATE TABLE scim_phonenumber (
 --
 
 CREATE TABLE scim_photo (
-    value character varying(255) NOT NULL,
-    type character varying(255),
+    value text NOT NULL,
+    type text,
     user_internal_id bigint
 );
 
@@ -227,7 +227,7 @@ CREATE TABLE scim_photo (
 --
 
 CREATE TABLE scim_roles (
-    value character varying(255) NOT NULL
+    value text NOT NULL
 );
 
 
@@ -237,16 +237,16 @@ CREATE TABLE scim_roles (
 
 CREATE TABLE scim_user (
     active boolean,
-    displayname character varying(255),
-    locale character varying(255),
-    nickname character varying(255),
-    password character varying(255) NOT NULL,
-    preferredlanguage character varying(255),
-    profileurl character varying(255),
-    timezone character varying(255),
-    title character varying(255),
-    username character varying(255) NOT NULL UNIQUE,
-    usertype character varying(255),
+    displayname text,
+    locale text,
+    nickname text,
+    password text NOT NULL,
+    preferredlanguage text,
+    profileurl text,
+    timezone text,
+    title text,
+    username text NOT NULL UNIQUE,
+    usertype text,
     internal_id bigint NOT NULL,
     name_id bigint
 );
@@ -258,7 +258,7 @@ CREATE TABLE scim_user (
 
 CREATE TABLE scim_user_additional (
     id bigint NOT NULL,
-    additional character varying(255)
+    additional text
 );
 
 
@@ -278,7 +278,7 @@ CREATE TABLE scim_user_scim_address (
 
 CREATE TABLE scim_user_scim_entitlements (
     scim_user_internal_id bigint NOT NULL,
-    entitlements_value character varying(255) NOT NULL
+    entitlements_value text NOT NULL
 );
 
 
@@ -298,7 +298,7 @@ CREATE TABLE scim_user_scim_group (
 
 CREATE TABLE scim_user_scim_roles (
     scim_user_internal_id bigint NOT NULL,
-    roles_value character varying(255) NOT NULL
+    roles_value text NOT NULL
 );
 
 
