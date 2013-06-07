@@ -130,6 +130,10 @@ public class UserEntity extends InternalIdSkeleton implements UserDetails {
     @Column(name = "additional")
     private Set<String> any;
 
+    public UserEntity() {
+        this.meta.setResourceType("User");
+    }
+
     public static UserEntity fromScim(User user) {
         UserEntity userEntity = new UserEntity();
         userEntity.setActive(user.isActive());
@@ -717,5 +721,6 @@ public class UserEntity extends InternalIdSkeleton implements UserDetails {
         }
         return addresses;
     }
+
 
 }

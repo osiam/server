@@ -115,4 +115,14 @@ class GroupEntitySpec extends Specification {
         result != null
         !result.members.first().toScim()
     }
+
+    def "Group entity should set resourceType to Group"(){
+        when:
+        def result = new GroupEntity(displayName: "blubb", id: UUID.randomUUID())
+
+        then:
+        result.meta.resourceType == "Group"
+        result.toScim().meta.resourceType == "Group"
+
+    }
 }

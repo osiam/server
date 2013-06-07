@@ -141,7 +141,8 @@ CREATE TABLE scim_meta (
   created timestamp without time zone,
   lastmodified timestamp without time zone,
   location character varying(255),
-  version character varying(255)
+  version character varying(255),
+  resourceType text
 );
 
 CREATE TABLE scim_group_scim_id (

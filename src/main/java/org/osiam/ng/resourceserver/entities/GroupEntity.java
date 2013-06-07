@@ -48,6 +48,9 @@ public class GroupEntity extends InternalIdSkeleton {
     @Column(unique = true, nullable = false)
     private String displayName;
 
+    public GroupEntity() {
+        meta.setResourceType("Group");
+    }
 
     public static GroupEntity fromScim(Group group) {
         GroupEntity groupEntity = new GroupEntity();

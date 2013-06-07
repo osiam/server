@@ -558,4 +558,14 @@ class UserEntitySpec extends Specification {
         then:
         userEntity.getInternal_id() == 23
     }
+
+    def "User entity should set resourceType to User"(){
+        when:
+        def result = new UserEntity(username: "blubb", id: UUID.randomUUID())
+
+        then:
+        result.meta.resourceType == "User"
+        result.toScim().meta.resourceType == "User"
+
+    }
 }

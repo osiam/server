@@ -59,6 +59,9 @@ public class MetaEntity {
     @Column
     private String version;
 
+    @Column
+    protected String resourceType;
+
     public MetaEntity(Calendar instance) {
         created = instance.getTime();
         lastModified = instance.getTime();
@@ -108,7 +111,16 @@ public class MetaEntity {
         this.version = version;
     }
 
-    public Meta toScim() {
-        return new Meta.Builder(created, lastModified).build();
+    public String getResourceType() {
+        return resourceType;
     }
+
+    public void setResourceType(String resourceType) {
+        this.resourceType = resourceType;
+    }
+
+    public Meta toScim() {
+        return new Meta.Builder(created, lastModified).setResourceType(resourceType).build();
+    }
+
 }
