@@ -104,6 +104,10 @@ public class GenericSCIMToEntityWrapper {
     private void deleteSimpleAttribute(Map<String, Field> entityFields, EntityFieldWrapper entityFieldWrapper,
                                        Set<String> doNotUpdateThem, String key) throws IllegalAccessException {
         Field entityField = entityFields.get(key);
+        if (entityField == null) {
+            throw new IllegalArgumentException("Field " + key + " is unknown.");
+        }
+
         entityField.setAccessible(true);
         if (scimEntities.fromString(key) != null) {
 
@@ -177,6 +181,11 @@ public class GenericSCIMToEntityWrapper {
 
         public void nullValue(String s) throws IllegalAccessException {
             Field field = entityFields.get(s);
+            if (field == null) {
+                throw new IllegalArgumentException("Field " + s + " is unknown.");
+            } else if (lastObjectOfField == null) {
+                throw new IllegalArgumentException("Field " + key + " is unknown.");
+            }
             field.setAccessible(true);
             field.set(lastObjectOfField, null);
         }
