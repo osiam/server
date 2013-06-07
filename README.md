@@ -55,19 +55,28 @@ The client_id and the client_secret are generated values.
 
 URI to create a client:
 
+
+To create a new client you need to get an access_token, with an existing
+client, and call:
+
+
 http://localhost:8080/osiam-server/Client
 
-The client JSON representation will look like:
+with a valid client e.q.:
 
 ```
 {"accessTokenValiditySeconds": "1337", "refreshTokenValiditySeconds": "1337",
 "redirect_uri": "http://localhost:5000/stuff", "scope": ["POST", "PUT", "GET", "DELETE", "PATCH"]}
+```
+and an access_token in the header.
 
+```sh
+curl -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer {YOUR_ACCESS_TOKEN}" -X POST localhost:8080/osiam-server/Client -d '{YOUR_CLIENT_AS_JSON}'
 ```
 
 URI for getting and deleting a client:
 
-http://localhost:8080/osiam-server/Client/{client_id}
+DELETE http://localhost:8080/osiam-server/Client/{client_id}
 
 The database configuration is done via properties file named
 
