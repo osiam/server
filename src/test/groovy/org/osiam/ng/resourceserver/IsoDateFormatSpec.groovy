@@ -3,10 +3,10 @@ package org.osiam.ng.resourceserver
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
 import org.osiam.ng.resourceserver.dao.SCIMSearchResult
-import org.osiam.ng.scim.dao.SCIMRootProvisioning
+import org.osiam.ng.scim.dao.SCIMUserProvisioning
 import org.osiam.ng.scim.mvc.user.JsonResponseEnrichHelper
 import org.osiam.ng.scim.mvc.user.RequestParamHelper
-import org.osiam.ng.scim.mvc.user.RootController
+import org.osiam.ng.scim.mvc.user.UserController
 import scim.schema.v2.Meta
 import scim.schema.v2.User
 import spock.lang.Specification
@@ -22,8 +22,8 @@ import javax.servlet.http.HttpServletRequest
  */
 class IsoDateFormatSpec extends Specification{
 
-    def provisioning = Mock(SCIMRootProvisioning)
-    def rootController = new RootController(scimRootProvisioning: provisioning, requestParamHelper: new RequestParamHelper(),
+    def provisioning = Mock(SCIMUserProvisioning)
+    def userController = new UserController(scimUserProvisioning: provisioning, requestParamHelper: new RequestParamHelper(),
             jsonResponseEnrichHelper: new JsonResponseEnrichHelper())
     def servletRequestMock = Mock(HttpServletRequest)
 
@@ -38,7 +38,7 @@ class IsoDateFormatSpec extends Specification{
         def scimSearchResult = new SCIMSearchResult([user], 23)
 
         when:
-        def result = rootController.searchWithGet(servletRequestMock)
+        def result = userController.searchWithGet(servletRequestMock)
 
         then:
         2 * servletRequestMock.getParameter("attributes") >> "meta.created"

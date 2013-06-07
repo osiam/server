@@ -20,10 +20,10 @@ package org.osiam.ng.resourceserver
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
 import org.osiam.ng.resourceserver.dao.SCIMSearchResult
-import org.osiam.ng.scim.dao.SCIMRootProvisioning
+import org.osiam.ng.scim.dao.SCIMUserProvisioning
 import org.osiam.ng.scim.mvc.user.JsonResponseEnrichHelper
 import org.osiam.ng.scim.mvc.user.RequestParamHelper
-import org.osiam.ng.scim.mvc.user.RootController
+import org.osiam.ng.scim.mvc.user.UserController
 import scim.schema.v2.Meta
 import scim.schema.v2.User
 import spock.lang.Specification
@@ -31,8 +31,8 @@ import spock.lang.Specification
 import javax.servlet.http.HttpServletRequest
 
 class ShowComplexAttributeFilterTest extends Specification {
-    def provisioning = Mock(SCIMRootProvisioning)
-    def underTest = new RootController(scimRootProvisioning: provisioning, requestParamHelper: new RequestParamHelper(),
+    def provisioning = Mock(SCIMUserProvisioning)
+    def underTest = new UserController(scimUserProvisioning: provisioning, requestParamHelper: new RequestParamHelper(),
             jsonResponseEnrichHelper: new JsonResponseEnrichHelper())
     def servletRequestMock = Mock(HttpServletRequest)
 

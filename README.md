@@ -127,7 +127,7 @@ URI:
 http://localhost:8080/osiam-server/ServiceProviderConfig
 
 ### Search
-Searches are possible for users, groups and both at the same time through the root URI.
+Searches are possible for users and groups.
 
 User URI:
 
@@ -136,10 +136,6 @@ http://localhost:8080/osiam-server/User
 Group URI:
 
 http://localhost:8080/osiam-server/Group
-
-Root URI:
-
-http://localhost:8080/osiam-server/
 
 #### Filtering including logical operators
 
