@@ -32,9 +32,9 @@ class RootControllerSpec extends Specification{
         mapping.method() == [RequestMethod.GET]
         body
         def e = thrown(UnsupportedOperationException)
-        e.getMessage() == "We do not support search across resources at the moment. " +
-                "Please get in contact with us info@osiam.org and explain your usecase, " +
-                "so we can prioritize the implementation of the proper search across all resources."
+        e.getMessage() == "We do not support search on the root endpoint. If you have an use case " +
+                "that requires this search implementation please file a bug report with our bugtracker " +
+                "(see https://github.com/osiam/osiam/blob/master/README.md for details on the bug tracker)."
     }
 
     def "should throw Unsupported exception on /.search URI with POST method" () {
@@ -51,8 +51,8 @@ class RootControllerSpec extends Specification{
         mapping.method() == [RequestMethod.POST]
         body
         def e = thrown(UnsupportedOperationException)
-        e.getMessage() == "We do not support search across resources at the moment. " +
-                "Please get in contact with us info@osiam.org and explain your usecase, " +
-                "so we can prioritize the implementation of the proper search across all resources."
+        e.getMessage() == "We do not support search on the root endpoint. If you have an use case " +
+                "that requires this search implementation please file a bug report with our bugtracker " +
+                "(see https://github.com/osiam/osiam/blob/master/README.md for details on the bug tracker)."
     }
 }
