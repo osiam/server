@@ -326,7 +326,7 @@ INSERT INTO scim_group VALUES (NULL, 'testGroup2', 2);
 -- Data for Name: scim_id; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-Insert INTO scim_meta VALUES (4, '2011-10-10', '2011-10-10');
+Insert INTO scim_meta VALUES (4, '2011-10-10', '2011-10-10', NULL, NULL, 'User');
 INSERT INTO scim_id VALUES (1, NULL, 4, 'cef9452e-00a9-4cec-a086-d171374ffbef');
 INSERT INTO scim_id VALUES (2, NULL, NULL, '2a820312-67b3-4275-963d-b235c6525207');
 INSERT INTO osiam_client VALUES(3, '23f9452e-00a9-4cec-a086-d171374ffb42', 'http://localhost:5000/oauth2', 'secret', 2342, 2342);
