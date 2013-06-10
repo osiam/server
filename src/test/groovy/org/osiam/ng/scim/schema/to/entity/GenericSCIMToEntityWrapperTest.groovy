@@ -289,9 +289,59 @@ class GenericSCIMToEntityWrapperTest extends Specification {
 
     }
 
+    def "should throw illegal argument exception instead of a null pointer exception if the field is unknown for the resource (e.g. familyName)"() {
+        given:
+        def meta = new Meta.Builder(null, null).setAttributes(["familyName"] as Set).build()
+        def user = new User.Builder().setMeta(meta).build()
+        UserEntity entity = createEntityWithInternalId()
+        entity.setUsername("haha")
+        def underTest = new GenericSCIMToEntityWrapper(userTarget, user, entity, GenericSCIMToEntityWrapper.Mode.PATCH, FakeSCIMEntities.ENTITIES)
 
+        when:
+        underTest.setFields()
 
+        then:
+        def e = thrown(IllegalArgumentException)
+        e.getMessage() == "Field familyname is unknown."
+    }
 
+    def "should throw illegal argument exception instead of a null pointer exception if Name is not present for the resource"() {
+        given:
+        def meta = new Meta.Builder(null, null).setAttributes(["name.familyName"] as Set).build()
+        def user = new User.Builder().setMeta(meta).build()
+        UserEntity entity = createEntityWithInternalId()
+        entity.setUsername("haha")
+        def underTest = new GenericSCIMToEntityWrapper(userTarget, user, entity, GenericSCIMToEntityWrapper.Mode.PATCH, FakeSCIMEntities.ENTITIES)
 
+        when:
+        underTest.setFields()
 
+        then:
+        def e = thrown(IllegalArgumentException)
+        e.getMessage() == "Field name is unknown."
+    }
+
+    def "should throw illegal argument exception instead of a null pointer exception if sub attributes of Name are unknown (e.g. name.firstName)"() {
+        given:
+        def meta = new Meta.Builder(null, null).setAttributes(["name.firstName"] as Set).build()
+        def user = new User.Builder().setMeta(meta).build()
+        UserEntity entity = createEntityWithInternalId()
+        def name = new NameEntity()
+        name.setGivenName("Harvey")
+        name.setFamilyName("Dent")
+        name.setFormatted("Dent Harvey")
+        name.honorificPrefix = "Mr."
+        name.honorificSuffix = "I"
+        name.setMiddleName('Two-Face')
+        entity.setName(name)
+        entity.setUsername("haha")
+        def underTest = new GenericSCIMToEntityWrapper(userTarget, user, entity, GenericSCIMToEntityWrapper.Mode.PATCH, FakeSCIMEntities.ENTITIES)
+
+        when:
+        underTest.setFields()
+
+        then:
+        def e = thrown(IllegalArgumentException)
+        e.getMessage() == "Field firstname is unknown."
+    }
 }
