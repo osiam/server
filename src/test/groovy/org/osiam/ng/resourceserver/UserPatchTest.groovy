@@ -226,11 +226,11 @@ class UserPatchTest extends Specification {
 
     def "should update a single attribute"() {
         given:
-
         def user = new User.Builder("username").setDisplayName("hallo").build()
 
         when:
         bean.update(id, user)
+
         then:
         1 * userDao.getById(id) >> entity
         entity.username == "username"
@@ -412,5 +412,31 @@ class UserPatchTest extends Specification {
         entity.groups.size() == 1
     }
 
+    def "should set Meta.lastModified to actual date on update resource"() {
+        given:
+        def user = new User.Builder("username").setDisplayName("hallo").build()
+        def lastModified = entity.getMeta().getLastModified()
 
+        when:
+        bean.update(id, user)
+
+        then:
+        1 * userDao.getById(id) >> entity
+        1 * userDao.update(entity) >> entity
+        lastModified < entity.getMeta().getLastModified()
+    }
+
+    def "should set Meta.lastModified to actual date on replace resource"() {
+        given:
+        def user = new User.Builder("username").setDisplayName("hallo").build()
+        def lastModified = entity.getMeta().getLastModified()
+
+        when:
+        bean.replace(id, user)
+
+        then:
+        1 * userDao.getById(id) >> entity
+        1 * userDao.update(entity) >> entity
+        lastModified < entity.getMeta().getLastModified()
+    }
 }

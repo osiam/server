@@ -29,6 +29,8 @@ import org.osiam.ng.scim.schema.to.entity.GenericSCIMToEntityWrapper;
 import org.osiam.ng.scim.schema.to.entity.SCIMEntities;
 import scim.schema.v2.Resource;
 
+import java.util.GregorianCalendar;
+
 public abstract class SCIMProvisiongSkeleton<T extends Resource> implements SCIMProvisioning<T> {
 
     protected abstract GenericDAO getDao();
@@ -50,6 +52,7 @@ public abstract class SCIMProvisiongSkeleton<T extends Resource> implements SCIM
                         getScimEntities());
         setFieldsWrapException(genericSCIMToEntityWrapper);
 
+        setLastModified(entity);
         getDao().update(entity);
         return entity.toScim();
     }
@@ -70,6 +73,8 @@ public abstract class SCIMProvisiongSkeleton<T extends Resource> implements SCIM
         GenericSCIMToEntityWrapper genericSCIMToEntityWrapper =
                 new GenericSCIMToEntityWrapper(getTarget(), user, entity, GenericSCIMToEntityWrapper.Mode.PATCH, getScimEntities());
         setFieldsWrapException(genericSCIMToEntityWrapper);
+
+        setLastModified(entity);
         return getDao().update(entity).toScim();
     }
 
@@ -79,5 +84,9 @@ public abstract class SCIMProvisiongSkeleton<T extends Resource> implements SCIM
     }
 
     public abstract GenericSCIMToEntityWrapper.For getTarget();
+
+    private void setLastModified(InternalIdSkeleton resource) {
+        resource.getMeta().setLastModified(GregorianCalendar.getInstance().getTime());
+    }
 }
 

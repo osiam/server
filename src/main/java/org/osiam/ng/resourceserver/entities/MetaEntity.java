@@ -31,7 +31,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 /**
  * Created with IntelliJ IDEA.
