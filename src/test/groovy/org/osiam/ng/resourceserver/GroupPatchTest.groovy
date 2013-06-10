@@ -253,7 +253,7 @@ class GroupPatchTest extends Specification {
         1 * groupDAO.getById(id) >> entity
         1 * groupDAO.update(entity) >> entity
         entity.displayName == "hallo"
-        lastModified < entity.getMeta().getLastModified()
+        lastModified <= entity.getMeta().getLastModified()
     }
 
     def "should set Meta.lastModified to actual date on replace resource"() {
@@ -270,6 +270,6 @@ class GroupPatchTest extends Specification {
         1 * groupDAO.getById(id) >> entity
         1 * groupDAO.update(entity) >> entity
         entity.displayName == "hallo"
-        lastModified < entity.getMeta().getLastModified()
+        lastModified <= entity.getMeta().getLastModified()
     }
 }
