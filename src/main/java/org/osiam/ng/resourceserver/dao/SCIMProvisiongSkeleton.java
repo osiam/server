@@ -52,9 +52,7 @@ public abstract class SCIMProvisiongSkeleton<T extends Resource> implements SCIM
                         getScimEntities());
         setFieldsWrapException(genericSCIMToEntityWrapper);
 
-        setLastModified(entity);
-        getDao().update(entity);
-        return entity.toScim();
+        return updateLastModified(entity);
     }
 
     protected abstract SCIMEntities getScimEntities();
@@ -74,8 +72,7 @@ public abstract class SCIMProvisiongSkeleton<T extends Resource> implements SCIM
                 new GenericSCIMToEntityWrapper(getTarget(), user, entity, GenericSCIMToEntityWrapper.Mode.PATCH, getScimEntities());
         setFieldsWrapException(genericSCIMToEntityWrapper);
 
-        setLastModified(entity);
-        return getDao().update(entity).toScim();
+        return updateLastModified(entity);
     }
 
     @Override
@@ -85,8 +82,9 @@ public abstract class SCIMProvisiongSkeleton<T extends Resource> implements SCIM
 
     public abstract GenericSCIMToEntityWrapper.For getTarget();
 
-    private void setLastModified(InternalIdSkeleton resource) {
+    private T updateLastModified(InternalIdSkeleton resource) {
         resource.getMeta().setLastModified(GregorianCalendar.getInstance().getTime());
+        return getDao().update(resource).toScim();
     }
 }
 

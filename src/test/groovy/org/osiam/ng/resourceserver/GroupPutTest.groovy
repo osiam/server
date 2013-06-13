@@ -27,9 +27,7 @@ import org.osiam.ng.resourceserver.dao.GroupDAO
 import org.osiam.ng.resourceserver.dao.SCIMGroupProvisioningBean
 import org.osiam.ng.resourceserver.entities.GroupEntity
 import org.osiam.ng.resourceserver.entities.UserEntity
-import org.osiam.ng.scim.exceptions.ResourceExistsException
 import org.osiam.ng.scim.exceptions.ResourceNotFoundException
-import org.springframework.dao.DataIntegrityViolationException
 import scim.schema.v2.Group
 import scim.schema.v2.MultiValuedAttribute
 import spock.lang.Specification
@@ -86,7 +84,6 @@ class GroupPutTest extends Specification {
 
     def "should replace a group with known group member"() {
         given:
-
         members.add(new MultiValuedAttribute.Builder().setValue(memberId.toString()).build())
         def group = new Group.Builder().setMembers(members).build()
         def groupToUpdate = [GroupEntity.fromScim(group)]
@@ -97,6 +94,7 @@ class GroupPutTest extends Specification {
         2 * em.createNamedQuery("getById") >> query
         2 * query.setParameter("id", _);
         2 * query.getResultList() >>> [groupToUpdate, queryResults]
+        1 * em.merge(_) >> GroupEntity.fromScim(group)
         result.members.size() == 1
     }
 
@@ -115,6 +113,7 @@ class GroupPutTest extends Specification {
         3 * em.createNamedQuery("getById") >> query
         3 * query.setParameter("id", _);
         3 * query.getResultList() >>> [groupToUpdate, queryResults, userToUpdate ]
+        1 * em.merge(_) >> GroupEntity.fromScim(group)
         result.members.size() == 2
     }
 
@@ -129,6 +128,7 @@ class GroupPutTest extends Specification {
         1 * em.createNamedQuery("getById") >> query
         1 * query.setParameter("id", _);
         1 * query.getResultList() >> groupToUpdate
+        1 * em.merge(_) >> GroupEntity.fromScim(group)
         result.members.size() == 0
     }
 

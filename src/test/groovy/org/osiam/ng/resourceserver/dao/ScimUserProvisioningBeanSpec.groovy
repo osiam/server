@@ -70,7 +70,7 @@ class ScimUserProvisioningBeanSpec extends Specification {
         scimUserProvisioningBean.replace(internalId.toString(), scimUser)
         then:
         1 * userDao.getById(internalId.toString()) >> entity
-        1 * userDao.update(entity)
+        1 * userDao.update(entity) >> entity
     }
 
     def "should wrap IllegalAccessEsception to an IllegalState"() {

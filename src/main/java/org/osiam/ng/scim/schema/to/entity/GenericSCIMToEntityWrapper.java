@@ -105,7 +105,7 @@ public class GenericSCIMToEntityWrapper {
                                        Set<String> doNotUpdateThem, String key) throws IllegalAccessException {
         Field entityField = entityFields.get(key);
         if (entityField == null) {
-            throw new IllegalArgumentException("Field " + key + " is unknown.");
+            throw generateIllegalArgumentException(key);
         }
 
         entityField.setAccessible(true);
@@ -159,6 +159,10 @@ public class GenericSCIMToEntityWrapper {
         }
     }
 
+    private IllegalArgumentException generateIllegalArgumentException(Object field) {
+        return new IllegalArgumentException("Field " + field + " is unknown.");
+    }
+
     private class GetComplexEntityFields {
         private Map<String, Field> entityFields;
         private String key;
@@ -182,9 +186,9 @@ public class GenericSCIMToEntityWrapper {
         public void nullValue(String s) throws IllegalAccessException {
             Field field = entityFields.get(s);
             if (field == null) {
-                throw new IllegalArgumentException("Field " + s + " is unknown.");
+                throw generateIllegalArgumentException(s);
             } else if (lastObjectOfField == null) {
-                throw new IllegalArgumentException("Field " + key + " is unknown.");
+                throw generateIllegalArgumentException(key);
             }
             field.setAccessible(true);
             field.set(lastObjectOfField, null);
