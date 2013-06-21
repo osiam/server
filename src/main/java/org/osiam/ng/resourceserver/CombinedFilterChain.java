@@ -27,8 +27,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CombinedFilterChain implements FilterChain {
+    // will be used to identify combined filter chain, the expression can be expressed in bracelets or without.
+    //e.q.: title pr or userType eq Intern, title pr or (userType eq Intern and userName pr)
+    // The first block is term1, the second is combinedWith and the third is term2.
+    // Bracelets will be cut off for further processing.
     static final Pattern COMBINED_FILTER_CHAIN =
-            Pattern.compile("(?i)[\\(]{0,1}([\\S ]+?)[\\)]{0,1} (and|or) [\\(]{0,1}([\\S ]+?)[\\)]{0,1}");
+            Pattern.compile("(?i)[\\(]??([\\S ]+?)[\\)]?? (and|or) [\\(]??([\\S ]+?)[\\)]??");
     private final FilterChain term1;
     private final Combiner combinedWith;
     private final FilterChain term2;
