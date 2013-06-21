@@ -58,6 +58,29 @@ class CombinedFilteredSearchTest extends Specification {
         cf.term2.term2.value == 'example.org'
     }
 
+    def "should be able to parse userType eq Employee aNd (emails co example.com Or emails co example.org)"() {
+        given:
+        def filter = 'userType eq "Employee" aNd (emails co "example.com" Or emails co "example.org")'
+        when:
+        def cf = new CombinedFilterChain(filter)
+        then:
+        cf.term1 instanceof SingularFilterChain
+        cf.term1.key == 'userType'
+        cf.term1.constraint == SingularFilterChain.Constraints.EQUALS
+        cf.term1.value == 'Employee'
+        cf.combinedWith == CombinedFilterChain.Combiner.AND
+        cf.term2 instanceof CombinedFilterChain
+        cf.term2.combinedWith == CombinedFilterChain.Combiner.OR
+        cf.term2.term1 instanceof SingularFilterChain
+        cf.term2.term1.key == 'emails'
+        cf.term2.term1.constraint == SingularFilterChain.Constraints.CONTAINS
+        cf.term2.term1.value == 'example.com'
+        cf.term2.term2 instanceof SingularFilterChain
+        cf.term2.term2.key == 'emails'
+        cf.term2.term2.constraint == SingularFilterChain.Constraints.CONTAINS
+        cf.term2.term2.value == 'example.org'
+    }
+
     def "should throw an exception when filter does not match"(){
         when:
         new CombinedFilterChain("xxx NOR xxx")

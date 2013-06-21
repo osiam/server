@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 
 public class CombinedFilterChain implements FilterChain {
     static final Pattern COMBINED_FILTER_CHAIN =
-            Pattern.compile("[\\(]{0,1}([\\S ]+?)[\\)]{0,1} (and|AND|OR|or) [\\(]{0,1}([\\S ]+?)[\\)]{0,1}");
+            Pattern.compile("(?i)[\\(]{0,1}([\\S ]+?)[\\)]{0,1} (and|or) [\\(]{0,1}([\\S ]+?)[\\)]{0,1}");
     private final FilterChain term1;
     private final Combiner combinedWith;
     private final FilterChain term2;
