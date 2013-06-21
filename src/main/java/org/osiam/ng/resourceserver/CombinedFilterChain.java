@@ -32,7 +32,7 @@ public class CombinedFilterChain implements FilterChain {
     // The first block is term1, the second is combinedWith and the third is term2.
     // Bracelets will be cut off for further processing.
     static final Pattern COMBINED_FILTER_CHAIN =
-            Pattern.compile("(?i)[\\(]??([\\S ]+?)[\\)]?? (and|or) [\\(]??([\\S ]+?)[\\)]??");
+            Pattern.compile("(?i)[\\(]{0,1}([\\S ]+?)[\\)]{0,1} (and|or) [\\(]{0,1}([\\S ]+?)[\\)]{0,1}");
     private final FilterChain term1;
     private final Combiner combinedWith;
     private final FilterChain term2;
@@ -44,7 +44,7 @@ public class CombinedFilterChain implements FilterChain {
             throw new IllegalArgumentException(chain + " is not a CombinedFilterChain.");
         }
         this.term1 = filterParser.parse(matcher.group(1));
-        this.combinedWith = Combiner.fromString(matcher.group(2));
+        this.combinedWith = Combiner.valueOf(matcher.group(2).toUpperCase());
         this.term2 = filterParser.parse(matcher.group(3));
     }
 
@@ -59,26 +59,7 @@ public class CombinedFilterChain implements FilterChain {
 
 
     public enum Combiner {
-        AND("and"),
-        OR("or");
-        private static Map<String, Combiner> fromString = new ConcurrentHashMap<>();
-
-        static {
-            for (Combiner k : values()) {
-                fromString.put(k.constraint, k);
-            }
-        }
-
-        private final String constraint;
-
-
-        Combiner(String constraint) {
-            this.constraint = constraint;
-        }
-
-
-        public static Combiner fromString(String group) {
-            return fromString.get(group.toLowerCase());
-        }
+        AND,
+        OR;
     }
 }
