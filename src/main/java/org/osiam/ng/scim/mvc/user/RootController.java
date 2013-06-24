@@ -1,9 +1,17 @@
 package org.osiam.ng.scim.mvc.user;
 
+import org.springframework.http.HttpRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.token.InMemoryTokenStore;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * This Controller is used to manage Root URI actions
@@ -35,4 +43,6 @@ public class RootController {
                 "that requires this search implementation please file a bug report with our bugtracker " +
                 "(see https://github.com/osiam/osiam/blob/master/README.md for details on the bug tracker).");
     }
+
+
 }
