@@ -27,8 +27,6 @@ class MeControllerTest extends Specification {
 
     def setup() {
         authentication.getUserAuthentication() >> userAuthentication
-
-
     }
 
     def "should return correct facebook representation"() {

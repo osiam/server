@@ -44,9 +44,16 @@
         <!-- use http basic with this entry point authentication method to authenticate the client -->
         <http-basic entry-point-ref="clientAuthenticationEntryPoint" />
 
+        <!-- include this only if you need to authenticate clients via request parameters -->
+        <custom-filter ref="clientCredentialsTokenEndpointFilter" after="BASIC_AUTH_FILTER" />
+
         <!-- uses general oauthAccessDeniedHandler -->
         <access-denied-handler ref="oauthAccessDeniedHandler" />
     </http>
+
+    <bean id="clientCredentialsTokenEndpointFilter" class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
+        <property name="authenticationManager" ref="clientAuthenticationManager" />
+    </bean>
 
     <!-- client authentication manager -->
     <authentication-manager id="clientAuthenticationManager" xmlns="http://www.springframework.org/schema/security">
