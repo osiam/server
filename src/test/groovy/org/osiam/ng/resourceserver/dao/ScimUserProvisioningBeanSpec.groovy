@@ -46,10 +46,12 @@ class ScimUserProvisioningBeanSpec extends Specification {
         user.id ==~ "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
     }
 
-    def "should throw exception if user already exists"() {
+    def "should throw exception if user name already exists"() {
         given:
-        userDao.create(_) >> { throw new Exception() }
+        def exception = Mock(Exception)
+        userDao.create(_) >> { throw exception }
         scimUser.getUserName() >> "Bäm"
+        exception.getMessage() >> "scim_user_username_key"
 
         when:
         scimUserProvisioningBean.create(scimUser)
@@ -57,6 +59,21 @@ class ScimUserProvisioningBeanSpec extends Specification {
         then:
         def e = thrown(ResourceExistsException)
         e.getMessage() == "The user with name Bäm already exists."
+    }
+
+    def "should throw exception if externalId already exists"() {
+        given:
+        def exception = Mock(Exception)
+        userDao.create(_) >> { throw exception }
+        scimUser.getExternalId() >> "Boom"
+        exception.getMessage() >> "scim_id_externalid_key"
+
+        when:
+        scimUserProvisioningBean.create(scimUser)
+
+        then:
+        def e = thrown(ResourceExistsException)
+        e.getMessage() == "The user with the externalId Boom already exists."
     }
 
     def "should get an user before update, set the expected fields, merge the result"() {
