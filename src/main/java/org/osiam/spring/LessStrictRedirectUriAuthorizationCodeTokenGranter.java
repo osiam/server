@@ -22,11 +22,10 @@ import java.util.Map;
 /**
  * This class is a fork of  AuthorizationCodeTokenGranter the only difference is that we want to check if the pending
  * redirect uri startsWith the send redirect uri.
- *
+ * <p/>
  * The reason for this is that some connector do build different redirect uris when getting an authorization_code
  * (like Liferay) and send a simpler redirect uri when getting the access_token (because it doesn't matter on
  * exchanging the auth_code with an access_token)
- *
  */
 public class LessStrictRedirectUriAuthorizationCodeTokenGranter extends AbstractTokenGranter {
 
@@ -84,8 +83,10 @@ public class LessStrictRedirectUriAuthorizationCodeTokenGranter extends Abstract
         String redirectUriApprovalParameter =
                 pendingAuthorizationRequest.getAuthorizationParameters().get(AuthorizationRequest.REDIRECT_URI);
 
-        if ((redirectUri != null || redirectUriApprovalParameter != null) &&
-                !pendingAuthorizationRequest.getRedirectUri().startsWith(redirectUri)) {
+        String uri = pendingAuthorizationRequest.getRedirectUri();
+
+        if ((redirectUriApprovalParameter != null && redirectUri == null) ||
+                (redirectUriApprovalParameter != null && (!uri.startsWith(redirectUri)))) {
             throw new RedirectMismatchException("Redirect URI mismatch.");
         }
     }

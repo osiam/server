@@ -48,13 +48,14 @@ public class FbTokenEndpoint {
     private AuthorizationRequestManager authorizationRequestManager;
     @Inject
     private AuthorizationRequestManager defaultAuthorizationRequestManager;
+    private TokenEndpoint tokenEndpoint = new TokenEndpoint();
 
     @RequestMapping(value = "/fb/oauth/access_token")
     @ResponseBody
     public String access_token(Principal principal,
                                @RequestParam(value = "grant_type", defaultValue = "authorization_code")
                                String grantType, @RequestParam Map<String, String> parameters) {
-        TokenEndpoint tokenEndpoint = new TokenEndpoint();
+
         tokenEndpoint.setAuthorizationRequestManager(authorizationRequestManager);
         tokenEndpoint.setClientDetailsService(clientDetailsService);
         tokenEndpoint.setProviderExceptionHandler(providerExceptionHandler);
