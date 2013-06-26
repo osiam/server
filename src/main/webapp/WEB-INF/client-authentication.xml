@@ -51,6 +51,28 @@
         <access-denied-handler ref="oauthAccessDeniedHandler" />
     </http>
 
+    <http pattern="/fb/oauth/access_token" create-session="stateless" authentication-manager-ref="clientAuthenticationManager"
+          xmlns="http://www.springframework.org/schema/security">
+
+        <!-- the client needs to authenticate itself -->
+        <intercept-url pattern="/fb/oauth/access_token" access="IS_AUTHENTICATED_FULLY" />
+        <anonymous enabled="false" />
+
+        <!-- use http basic with this entry point authentication method to authenticate the client -->
+        <http-basic entry-point-ref="clientAuthenticationEntryPoint" />
+
+        <!-- include this only if you need to authenticate clients via request parameters -->
+        <custom-filter ref="fbClientCredentialsTokenEndpointFilter" after="BASIC_AUTH_FILTER" />
+
+        <!-- uses general oauthAccessDeniedHandler -->
+        <access-denied-handler ref="oauthAccessDeniedHandler" />
+    </http>
+
+    <bean id="fbClientCredentialsTokenEndpointFilter" class="org.osiam.spring.FBClientCredentialsTokenEndpointFilter">
+        <property name="authenticationManager" ref="clientAuthenticationManager" />
+    </bean>
+
+
     <bean id="clientCredentialsTokenEndpointFilter" class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
         <property name="authenticationManager" ref="clientAuthenticationManager" />
     </bean>
