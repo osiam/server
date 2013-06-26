@@ -37,6 +37,26 @@ class FBClientCredentialsTokenEndpointFilterTest extends Specification {
         result == authentication
     }
 
+    def "should set null client_secret to empty string"() {
+        when:
+        def result = underTest.attemptAuthentication(request, response)
+        then:
+        1 * request.getParameter("client_id") >> "client_id"
+        1 * request.getParameter("client_secret") >> null
+        1 * authNmanager.authenticate(_) >> authentication
+        result == authentication
+    }
+
+    def "should create handler"() {
+        when:
+        underTest.afterPropertiesSet()
+        then:
+        underTest.failureHandler
+        underTest.successHandler
+
+    }
+
+
     def "should return null when client_id is null"() {
         when:
         def result = underTest.attemptAuthentication(request, response)
@@ -56,7 +76,18 @@ class FBClientCredentialsTokenEndpointFilterTest extends Specification {
         when:
         def result = underTest.requiresAuthentication(request, response)
         then:
+        0 * request.getRequestURI()
         1 * request.getParameter("client_id") >> null
         !result
+    }
+
+    def "should return true on requiresAuthentication when client_id got submitted"() {
+        when:
+        def result = underTest.requiresAuthentication(request, response)
+        then:
+        1 * request.getContextPath() >> ""
+        1 * request.getRequestURI() >> "localhost/fb/oauth/access_token"
+        1 * request.getParameter("client_id") >> "client_id"
+        result
     }
 }

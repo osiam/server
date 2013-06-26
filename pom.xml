@@ -255,6 +255,12 @@
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
         </dependency>
+        <!-- will be used to verify phone numbers according to http://www.ietf.org/rfc/rfc3966.txt -->
+        <dependency>
+            <groupId>com.googlecode.libphonenumber</groupId>
+            <artifactId>libphonenumber</artifactId>
+            <version>4.3</version>
+        </dependency>
     </dependencies>
 
     <build>

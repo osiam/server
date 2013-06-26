@@ -1,5 +1,7 @@
 package org.osiam.spring;
 
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -55,6 +57,7 @@ public class FbTokenEndpoint {
     public String access_token(Principal principal,
                                @RequestParam(value = "grant_type", defaultValue = "authorization_code")
                                String grantType, @RequestParam Map<String, String> parameters) {
+
 
         tokenEndpoint.setAuthorizationRequestManager(authorizationRequestManager);
         tokenEndpoint.setClientDetailsService(clientDetailsService);
