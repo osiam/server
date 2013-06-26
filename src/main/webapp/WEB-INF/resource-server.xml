@@ -95,6 +95,7 @@
         </constructor-arg>
     </bean>
 
+
     <!-- filter to validate the delivered access token -->
     <oauth:resource-server id="resourceServerFilter" resource-id="oauth2res" token-services-ref="tokenServices"/>
 </beans>
