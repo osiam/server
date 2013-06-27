@@ -34,17 +34,34 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @ControllerAdvice
 public class HandleException extends ResponseEntityExceptionHandler {
     private static final Logger LOGGER = Logger.getLogger(HandleException.class.getName());
+    //Contains all known ErrorMessageTransformer to validate and manipulate error messages
+    private static final ErrorMessageTransformer[] knownErrorMsgTransformer = {new TypeErrorMessageTransformer()};
 
     @ExceptionHandler(value = {RuntimeException.class})
     protected ResponseEntity<Object> handleConflict(RuntimeException ex, WebRequest request) {
         LOGGER.log(Level.WARNING, "An exception occurred", ex);
         HttpStatus status = setStatus(ex);
-        JsonErrorResult error = new JsonErrorResult(status.name(), ex.getMessage());
+        JsonErrorResult error = new JsonErrorResult(status.name(), constructMessage(ex.getMessage()));
         return handleExceptionInternal(ex, error, new HttpHeaders(), status, request);
+    }
+
+    /**
+     * This method may transform error messages to a more human readable message if the message contains some
+     * known buzzwords to trigger the effect.
+     *
+     * @param message the message to check and transform
+     * @return the original message or a transformed message
+     */
+    private String constructMessage(String message) {
+        String result = message;
+        for (ErrorMessageTransformer et : knownErrorMsgTransformer) { result = et.transform(message); }
+        return result;
     }
 
     private HttpStatus setStatus(RuntimeException ex) {
@@ -54,8 +71,7 @@ public class HandleException extends ResponseEntityExceptionHandler {
         if (ex instanceof SchemaUnknownException) {
             return HttpStatus.I_AM_A_TEAPOT;
         }
-        if (ex instanceof UnsupportedOperationException)
-            return HttpStatus.NOT_IMPLEMENTED;
+        if (ex instanceof UnsupportedOperationException) { return HttpStatus.NOT_IMPLEMENTED; }
 
         return HttpStatus.CONFLICT;
     }

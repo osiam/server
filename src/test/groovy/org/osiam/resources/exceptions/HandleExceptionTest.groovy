@@ -69,5 +69,15 @@ class HandleExceptionTest extends Specification {
         (result.getBody() as HandleException.JsonErrorResult).description == "Delivered schema is unknown."
     }
 
+    def "should transform PhotoEntity No enum constant error message to a more readable error response"(){
+        given:
+        def exception = new IllegalArgumentException(
+                "No enum constant org.osiam.storage.entities.PhotoEntity.CanonicalPhotoTypes.huch")
+        when:
+           def result = underTest.handleConflict(exception, request)
+        then:
+        (result.getBody() as HandleException.JsonErrorResult).description == "huch is not a valid Photo type"
+    }
+
 
 }

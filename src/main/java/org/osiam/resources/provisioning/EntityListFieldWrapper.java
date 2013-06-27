@@ -147,7 +147,7 @@ public class EntityListFieldWrapper {
             throws InstantiationException, IllegalAccessException {
         Object target = clazz.newInstance();
 
-        ((ChildOfMultiValueAttribute) target).setValue(String.valueOf(m.getValue()));
+        ((ChildOfMultiValueAttribute) target).setValue(m.getValue() == null ? null : String.valueOf(m.getValue()));
 
         if (target instanceof ChildOfMultiValueAttributeWithType) {
             ((ChildOfMultiValueAttributeWithType) target).setType(m.getType());

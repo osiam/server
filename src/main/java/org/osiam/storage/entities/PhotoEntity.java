@@ -50,7 +50,7 @@ public class PhotoEntity extends MultiValueAttributeEntitySkeleton implements Ch
 
     @Override
     public void setValue(String value) {
-        if(value != null && isValueIncorrect(value)) {
+        if(isValueIncorrect(value)) {
             throw new IllegalArgumentException("The photo value  MUST be a URL which points to an " +
                     "JPEG, GIF, PNG file.");
         }
@@ -58,6 +58,8 @@ public class PhotoEntity extends MultiValueAttributeEntitySkeleton implements Ch
     }
 
     private boolean isValueIncorrect(String value) {
+        if (value == null || value.isEmpty())
+            return false;
         return !PHOTO_SUFFIX.matcher(value).matches();
     }
 

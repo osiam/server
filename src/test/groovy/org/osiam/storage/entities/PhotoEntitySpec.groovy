@@ -28,13 +28,6 @@ import org.osiam.storage.entities.PhotoEntity
 import org.osiam.storage.entities.UserEntity
 import spock.lang.Specification
 
-/**
- * Created with IntelliJ IDEA.
- * User: jtodea
- * Date: 15.03.13
- * Time: 16:04
- * To change this template use File | Settings | File Templates.
- */
 class PhotoEntitySpec extends Specification {
 
     PhotoEntity photoEntity = new PhotoEntity()
@@ -95,5 +88,14 @@ class PhotoEntitySpec extends Specification {
 
         then:
         photoEntity.getValue() == "file.JPG"
+    }
+
+    def "should throw an exception if the type is unknown"() {
+        when:
+        photoEntity.setType("huch")
+
+        then:
+        def e = thrown(IllegalArgumentException)
+        e.message == "No enum constant org.osiam.storage.entities.PhotoEntity.CanonicalPhotoTypes.huch"
     }
 }
