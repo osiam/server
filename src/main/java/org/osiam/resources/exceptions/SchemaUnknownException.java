@@ -21,23 +21,16 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.ng.scim.exceptions
+package org.osiam.resources.exceptions;
 
-import spock.lang.Specification
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-class SchemaUnknownExceptionTest extends Specification {
-    def "should contain a specific message on creation"(){
-        when:
-           def e = new SchemaUnknownException()
-        then:
-        e.message == "Delivered schema is unknown."
+@ResponseStatus(value = HttpStatus.I_AM_A_TEAPOT)
+public class SchemaUnknownException extends IllegalArgumentException {
+    private static final long serialVersionUID = 8136231295498687655L;
+
+    public SchemaUnknownException() {
+        super("Delivered schema is unknown.");
     }
-
-    def "should be instance of IllegalArgumentException"(){
-        when:
-        def e = new SchemaUnknownException()
-        then:
-        e instanceof IllegalArgumentException
-    }
-
 }

@@ -26,7 +26,7 @@ package org.osiam.ng.scim.interceptor
 import org.aspectj.lang.JoinPoint
 import org.aspectj.lang.annotation.Before
 import org.aspectj.lang.annotation.Pointcut
-import org.osiam.ng.scim.exceptions.SchemaUnknownException
+import org.osiam.resources.exceptions.SchemaUnknownException
 import org.osiam.resources.scim.Constants
 import org.osiam.resources.scim.User
 import spock.lang.Specification
@@ -57,7 +57,7 @@ class CheckSchemaTest extends Specification {
     }
 
 
-    def "should throw an org.osiam.ng.scim.exceptions.SchemaUnknownException when User schema is empty"() {
+    def "should throw an org.osiam.resources.exceptions.SchemaUnknownException when User schema is empty"() {
         given:
         def schema = [] as Set
         User user = new User.Builder("test").setSchemas(schema).build()
@@ -68,7 +68,7 @@ class CheckSchemaTest extends Specification {
         thrown(SchemaUnknownException)
     }
 
-    def "should throw an org.osiam.ng.scim.exceptions.SchemaUnknownException when User schema is null"() {
+    def "should throw an org.osiam.resources.exceptions.SchemaUnknownException when User schema is null"() {
         given:
         User user = new User.Builder("test").setSchemas(null).build()
         joint.args >> [user]
@@ -78,7 +78,7 @@ class CheckSchemaTest extends Specification {
         thrown(SchemaUnknownException)
     }
 
-    def "should throw an org.osiam.ng.scim.exceptions.SchemaUnknownException when User schema is unknown"() {
+    def "should throw an org.osiam.resources.exceptions.SchemaUnknownException when User schema is unknown"() {
         given:
         def schema = ["moep"] as Set
         User user = new User.Builder("test").setSchemas(schema).build()

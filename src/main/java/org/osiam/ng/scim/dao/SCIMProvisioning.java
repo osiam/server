@@ -35,7 +35,7 @@ public interface SCIMProvisioning<T extends Resource> {
      *
      * @param id the external identifier of an resource
      * @return the found resource
-     * @throws org.osiam.ng.scim.exceptions.ResourceNotFoundException
+     * @throws org.osiam.resources.exceptions.ResourceNotFoundException
      *          if no resource with the given id got found
      */
     T getById(String id);
@@ -45,7 +45,7 @@ public interface SCIMProvisioning<T extends Resource> {
      *
      * @param resource A resource representation which should be created
      * @return the created resource representation
-     * @throws org.osiam.ng.scim.exceptions.ResourceExistsException
+     * @throws org.osiam.resources.exceptions.ResourceExistsException
      *          if the resource already exists
      */
     T create(T resource);
@@ -56,7 +56,7 @@ public interface SCIMProvisioning<T extends Resource> {
      * @param id,       the external identifier of an resource
      * @param resource, an resource representation which should be created
      * @return the updated resource
-     * @throws org.osiam.ng.scim.exceptions.ResourceNotFoundException
+     * @throws org.osiam.resources.exceptions.ResourceNotFoundException
      *          if no resource with the given id got found
      */
     T replace(String id, T resource);
@@ -67,7 +67,7 @@ public interface SCIMProvisioning<T extends Resource> {
      * @param id,       the external identifier of an resource
      * @param resource, an resource representation which should be created
      * @return the updated resource
-     * @throws org.osiam.ng.scim.exceptions.ResourceNotFoundException
+     * @throws org.osiam.resources.exceptions.ResourceNotFoundException
      *          if no resource with the given id got found
      */
     T update(String id, T resource);

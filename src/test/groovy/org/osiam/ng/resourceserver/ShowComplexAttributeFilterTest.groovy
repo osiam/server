@@ -21,9 +21,9 @@ import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
 import org.osiam.ng.resourceserver.dao.SCIMSearchResult
 import org.osiam.ng.scim.dao.SCIMUserProvisioning
-import org.osiam.ng.scim.mvc.user.JsonResponseEnrichHelper
-import org.osiam.ng.scim.mvc.user.RequestParamHelper
-import org.osiam.ng.scim.mvc.user.UserController
+import org.osiam.resources.helper.JsonResponseEnrichHelper
+import org.osiam.resources.helper.RequestParamHelper
+import org.osiam.resources.controller.UserController
 import org.osiam.resources.scim.Meta
 import org.osiam.resources.scim.User
 import spock.lang.Specification

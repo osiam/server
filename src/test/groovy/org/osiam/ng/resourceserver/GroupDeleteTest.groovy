@@ -28,7 +28,7 @@ package org.osiam.ng.resourceserver
 import org.osiam.ng.resourceserver.dao.GroupDAO
 import org.osiam.ng.resourceserver.dao.SCIMGroupProvisioningBean
 import org.osiam.ng.resourceserver.entities.GroupEntity
-import org.osiam.ng.scim.exceptions.ResourceNotFoundException
+import org.osiam.resources.exceptions.ResourceNotFoundException
 import spock.lang.Specification
 
 import javax.persistence.EntityManager
@@ -43,7 +43,7 @@ class GroupDeleteTest extends Specification {
     def query = Mock(Query)
 
 
-    def "should throw an org.osiam.ng.scim.exceptions.ResourceNotFoundException when trying to delete unknown group"() {
+    def "should throw an org.osiam.resources.exceptions.ResourceNotFoundException when trying to delete unknown group"() {
         when:
         bean.delete(id)
         then:

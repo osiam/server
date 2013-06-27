@@ -26,7 +26,7 @@ package org.osiam.ng.resourceserver
 import org.osiam.ng.resourceserver.dao.SCIMUserProvisioningBean
 import org.osiam.ng.resourceserver.dao.UserDAO
 import org.osiam.ng.resourceserver.entities.UserEntity
-import org.osiam.ng.scim.exceptions.ResourceNotFoundException
+import org.osiam.resources.exceptions.ResourceNotFoundException
 import spock.lang.Specification
 
 import javax.persistence.EntityManager
@@ -41,7 +41,7 @@ class UserDeleteTest extends Specification {
     def query = Mock(Query)
 
 
-    def "should throw an org.osiam.ng.scim.exceptions.ResourceNotFoundException when trying to delete unknown user"() {
+    def "should throw an org.osiam.resources.exceptions.ResourceNotFoundException when trying to delete unknown user"() {
         when:
         bean.delete(id)
         then:

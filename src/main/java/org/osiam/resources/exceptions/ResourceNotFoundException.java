@@ -21,16 +21,16 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.ng.scim.exceptions;
+package org.osiam.resources.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value = HttpStatus.I_AM_A_TEAPOT)
-public class SchemaUnknownException extends IllegalArgumentException {
-    private static final long serialVersionUID = 8136231295498687655L;
+@ResponseStatus(value = HttpStatus.NOT_FOUND)
+public class ResourceNotFoundException extends IllegalArgumentException {
+    private static final long serialVersionUID = -690283630029161964L;
 
-    public SchemaUnknownException() {
-        super("Delivered schema is unknown.");
+    public ResourceNotFoundException(String s) {
+        super(s);
     }
 }

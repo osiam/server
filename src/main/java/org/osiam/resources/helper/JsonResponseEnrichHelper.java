@@ -1,4 +1,4 @@
-package org.osiam.ng.scim.mvc.user;
+package org.osiam.resources.helper;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -8,6 +8,7 @@ import org.codehaus.jackson.map.ser.impl.SimpleBeanPropertyFilter;
 import org.codehaus.jackson.map.ser.impl.SimpleFilterProvider;
 import org.codehaus.jackson.node.ObjectNode;
 import org.osiam.ng.resourceserver.dao.SCIMSearchResult;
+import org.osiam.resources.helper.PropertyFilterMixIn;
 
 import java.io.IOException;
 import java.util.Map;

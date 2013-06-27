@@ -25,7 +25,7 @@ package org.osiam.ng.resourceserver.dao;
 
 import org.osiam.ng.resourceserver.entities.GroupEntity;
 import org.osiam.ng.scim.dao.SCIMGroupProvisioning;
-import org.osiam.ng.scim.exceptions.ResourceExistsException;
+import org.osiam.resources.exceptions.ResourceExistsException;
 import org.osiam.ng.scim.schema.to.entity.GenericSCIMToEntityWrapper;
 import org.osiam.ng.scim.schema.to.entity.SCIMEntities;
 import org.springframework.dao.DataIntegrityViolationException;

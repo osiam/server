@@ -1,4 +1,4 @@
 /**
- *  org.osiam.resources - TODO need a description
+ *  org.osiam.resources.exception is a group of classes which either are exceptions or do handle exceptions,
  */
 package org.osiam.resources.exceptions;

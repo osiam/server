@@ -3,8 +3,8 @@ package org.osiam.ng.resourceserver
 import org.osiam.ng.resourceserver.dao.GroupDAO
 import org.osiam.ng.resourceserver.dao.SCIMGroupProvisioningBean
 import org.osiam.ng.resourceserver.entities.GroupEntity
-import org.osiam.ng.scim.exceptions.ResourceExistsException
-import org.osiam.ng.scim.exceptions.ResourceNotFoundException
+import org.osiam.resources.exceptions.ResourceExistsException
+import org.osiam.resources.exceptions.ResourceNotFoundException
 import org.springframework.dao.DataIntegrityViolationException
 import org.osiam.resources.scim.Group
 import org.osiam.resources.scim.MultiValuedAttribute

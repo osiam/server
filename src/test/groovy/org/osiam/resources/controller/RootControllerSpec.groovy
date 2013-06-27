@@ -1,5 +1,6 @@
-package org.osiam.ng.scim.mvc.user
+package org.osiam.resources.controller
 
+import org.osiam.resources.controller.RootController
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.ResponseBody

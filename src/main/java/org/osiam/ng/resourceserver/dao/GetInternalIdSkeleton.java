@@ -30,7 +30,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.osiam.ng.resourceserver.FilterParser;
 import org.osiam.ng.resourceserver.entities.InternalIdSkeleton;
-import org.osiam.ng.scim.exceptions.ResourceNotFoundException;
+import org.osiam.resources.exceptions.ResourceNotFoundException;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;

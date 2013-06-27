@@ -21,8 +21,11 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.ng.scim.exceptions
+package org.osiam.resources.exceptions
 
+import org.osiam.resources.exceptions.HandleException
+import org.osiam.resources.exceptions.ResourceNotFoundException
+import org.osiam.resources.exceptions.SchemaUnknownException
 import org.springframework.http.HttpStatus
 import org.springframework.web.context.request.WebRequest
 import spock.lang.Specification
@@ -48,7 +51,7 @@ class HandleExceptionTest extends Specification {
         (result.getBody() as HandleException.JsonErrorResult).description == "Dunno"
     }
 
-    def "should set status to ResourceNotFound when org.osiam.ng.scim.exceptions.ResourceNotFoundException occurs"() {
+    def "should set status to ResourceNotFound when org.osiam.resources.exceptions.ResourceNotFoundException occurs"() {
         when:
         def result = underTest.handleConflict(new ResourceNotFoundException("Dunno"), request)
         then:
@@ -57,7 +60,7 @@ class HandleExceptionTest extends Specification {
         (result.getBody() as HandleException.JsonErrorResult).description == "Dunno"
     }
 
-    def "should set status to I_AM_A_TEAPOT when org.osiam.ng.scim.exceptions.SchemaUnknownException occurs"() {
+    def "should set status to I_AM_A_TEAPOT when org.osiam.resources.exceptions.SchemaUnknownException occurs"() {
         when:
         def result = underTest.handleConflict(new SchemaUnknownException(), request)
         then:

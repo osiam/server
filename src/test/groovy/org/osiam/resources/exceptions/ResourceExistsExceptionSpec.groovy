@@ -1,5 +1,6 @@
-package org.osiam.ng.scim.exceptions
+package org.osiam.resources.exceptions
 
+import org.osiam.resources.exceptions.ResourceExistsException
 import spock.lang.Specification
 
 /**

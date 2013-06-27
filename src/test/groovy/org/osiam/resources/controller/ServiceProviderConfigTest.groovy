@@ -1,6 +1,6 @@
-package org.osiam.ng.scim
+package org.osiam.resources.controller
 
-import org.osiam.ng.scim.mvc.user.ServiceProviderConfigController
+import org.osiam.resources.controller.ServiceProviderConfigController
 import org.osiam.resources.scim.Constants
 import spock.lang.Specification
 

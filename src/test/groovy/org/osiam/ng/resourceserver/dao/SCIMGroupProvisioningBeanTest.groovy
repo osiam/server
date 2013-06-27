@@ -24,7 +24,7 @@
 package org.osiam.ng.resourceserver.dao
 
 import org.osiam.ng.resourceserver.entities.GroupEntity
-import org.osiam.ng.scim.exceptions.ResourceExistsException
+import org.osiam.resources.exceptions.ResourceExistsException
 import org.springframework.dao.DataIntegrityViolationException
 import org.osiam.resources.scim.Group
 import spock.lang.Specification
@@ -52,7 +52,7 @@ class SCIMGroupProvisioningBeanTest extends Specification {
         1 * groupDao.create(_)
     }
 
-    def "should wrap exceptions to org.osiam.ng.scim.exceptions.ResourceExistsException on create"(){
+    def "should wrap exceptions to org.osiam.resources.exceptions.ResourceExistsException on create"(){
         given:
         groupDao.create(_) >> {
             throw new DataIntegrityViolationException("moep")

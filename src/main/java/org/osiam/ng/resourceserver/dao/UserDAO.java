@@ -25,7 +25,7 @@ package org.osiam.ng.resourceserver.dao;
 
 import org.hibernate.Criteria;
 import org.osiam.ng.resourceserver.entities.*;
-import org.osiam.ng.scim.exceptions.ResourceNotFoundException;
+import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;

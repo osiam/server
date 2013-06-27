@@ -1,4 +1,4 @@
-package org.osiam.ng.scim.mvc.user;
+package org.osiam.resources.controller;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.joda.time.format.DateTimeFormatter;

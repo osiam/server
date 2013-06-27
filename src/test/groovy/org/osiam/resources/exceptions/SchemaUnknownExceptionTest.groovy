@@ -21,15 +21,24 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.ng.scim.exceptions
+package org.osiam.resources.exceptions
 
+import org.osiam.resources.exceptions.SchemaUnknownException
 import spock.lang.Specification
 
-class ResourceNotFoundExceptionTest extends Specification {
-    def "should contain given message"(){
+class SchemaUnknownExceptionTest extends Specification {
+    def "should contain a specific message on creation"(){
         when:
-          def rnfe = new ResourceNotFoundException("haha")
+           def e = new SchemaUnknownException()
         then:
-        rnfe.message == "haha"
+        e.message == "Delivered schema is unknown."
     }
+
+    def "should be instance of IllegalArgumentException"(){
+        when:
+        def e = new SchemaUnknownException()
+        then:
+        e instanceof IllegalArgumentException
+    }
+
 }

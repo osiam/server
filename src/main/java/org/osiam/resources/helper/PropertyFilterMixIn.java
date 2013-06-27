@@ -1,4 +1,4 @@
-package org.osiam.ng.scim.mvc.user;
+package org.osiam.resources.helper;
 
 import org.codehaus.jackson.map.annotate.JsonFilter;
 

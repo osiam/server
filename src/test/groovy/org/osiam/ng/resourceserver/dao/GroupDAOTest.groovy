@@ -32,7 +32,7 @@ import org.osiam.ng.resourceserver.FilterParser
 import org.osiam.ng.resourceserver.entities.GroupEntity
 import org.osiam.ng.resourceserver.entities.InternalIdSkeleton
 import org.osiam.ng.resourceserver.entities.UserEntity
-import org.osiam.ng.scim.exceptions.ResourceNotFoundException
+import org.osiam.resources.exceptions.ResourceNotFoundException
 import spock.lang.Specification
 
 import javax.persistence.EntityManager

@@ -423,7 +423,7 @@ class UserPatchTest extends Specification {
         then:
         1 * userDao.getById(id) >> entity
         1 * userDao.update(entity) >> entity
-        lastModified < entity.getMeta().getLastModified()
+        lastModified <= entity.getMeta().getLastModified()
     }
 
     def "should set Meta.lastModified to actual date on replace resource"() {
@@ -437,6 +437,6 @@ class UserPatchTest extends Specification {
         then:
         1 * userDao.getById(id) >> entity
         1 * userDao.update(entity) >> entity
-        lastModified < entity.getMeta().getLastModified()
+        lastModified <= entity.getMeta().getLastModified()
     }
 }

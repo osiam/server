@@ -1,7 +1,7 @@
 package org.osiam.ng.resourceserver.dao;
 
 import org.osiam.ng.resourceserver.entities.ClientEntity;
-import org.osiam.ng.scim.exceptions.ResourceNotFoundException;
+import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 

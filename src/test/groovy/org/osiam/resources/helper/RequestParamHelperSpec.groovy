@@ -1,5 +1,6 @@
-package org.osiam.ng.scim.mvc.user
+package org.osiam.resources.helper
 
+import org.osiam.resources.helper.RequestParamHelper
 import spock.lang.Specification
 
 import javax.servlet.http.HttpServletRequest

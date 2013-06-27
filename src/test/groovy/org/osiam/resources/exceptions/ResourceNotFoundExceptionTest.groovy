@@ -21,16 +21,16 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.ng.scim.exceptions;
+package org.osiam.resources.exceptions
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.osiam.resources.exceptions.ResourceNotFoundException
+import spock.lang.Specification
 
-@ResponseStatus(value = HttpStatus.NOT_FOUND)
-public class ResourceNotFoundException extends IllegalArgumentException {
-    private static final long serialVersionUID = -690283630029161964L;
-
-    public ResourceNotFoundException(String s) {
-        super(s);
+class ResourceNotFoundExceptionTest extends Specification {
+    def "should contain given message"(){
+        when:
+          def rnfe = new ResourceNotFoundException("haha")
+        then:
+        rnfe.message == "haha"
     }
 }

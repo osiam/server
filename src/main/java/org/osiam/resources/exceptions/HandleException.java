@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.ng.scim.exceptions;
+package org.osiam.resources.exceptions;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.springframework.http.HttpHeaders;
