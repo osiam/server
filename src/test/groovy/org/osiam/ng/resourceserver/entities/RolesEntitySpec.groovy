@@ -23,6 +23,7 @@
 
 package org.osiam.ng.resourceserver.entities
 
+import org.osiam.storage.entities.RolesEntity
 import org.springframework.security.core.GrantedAuthority
 import org.osiam.resources.scim.MultiValuedAttribute
 import spock.lang.Specification

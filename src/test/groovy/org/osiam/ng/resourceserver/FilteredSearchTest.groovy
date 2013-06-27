@@ -17,6 +17,8 @@
 
 package org.osiam.ng.resourceserver
 
+import org.osiam.resources.helper.FilterParser
+import org.osiam.resources.helper.SingularFilterChain
 import spock.lang.Specification
 
 class FilteredSearchTest extends Specification{

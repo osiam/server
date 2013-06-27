@@ -23,8 +23,11 @@
 
 package org.osiam.ng.scim.schema.to.entity
 
-import org.osiam.ng.resourceserver.entities.NameEntity
-import org.osiam.ng.resourceserver.entities.UserEntity
+import org.osiam.storage.entities.NameEntity
+import org.osiam.storage.entities.UserEntity
+import org.osiam.resources.helper.EntityFieldWrapper
+import org.osiam.resources.helper.GenericSCIMToEntityWrapper
+import org.osiam.resources.helper.GetFieldsOfInputAndTarget
 import org.osiam.resources.scim.Name
 import org.osiam.resources.scim.User
 import spock.lang.Specification

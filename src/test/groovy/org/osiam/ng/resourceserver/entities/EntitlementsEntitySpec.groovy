@@ -24,6 +24,7 @@
 package org.osiam.ng.resourceserver.entities
 
 import org.osiam.resources.scim.MultiValuedAttribute
+import org.osiam.storage.entities.EntitlementsEntity
 import spock.lang.Specification
 
 /**

@@ -1,5 +1,6 @@
 package org.osiam.ng.resourceserver.entities
 
+import org.osiam.storage.entities.ClientEntity
 import spock.lang.Specification
 
 class ClientEntityTest extends Specification {

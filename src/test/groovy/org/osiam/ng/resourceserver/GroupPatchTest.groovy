@@ -23,13 +23,14 @@
 
 package org.osiam.ng.resourceserver
 
-import org.osiam.ng.resourceserver.dao.GroupDAO
-import org.osiam.ng.resourceserver.dao.SCIMGroupProvisioningBean
-import org.osiam.ng.resourceserver.entities.*
+import org.osiam.storage.dao.GroupDAO
+import org.osiam.resources.provisioning.SCIMGroupProvisioningBean
 import org.osiam.resources.scim.Group
 import org.osiam.resources.scim.Meta
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.User
+import org.osiam.storage.entities.GroupEntity
+import org.osiam.storage.entities.UserEntity
 import spock.lang.Specification
 
 class GroupPatchTest extends Specification {

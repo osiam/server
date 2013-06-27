@@ -24,6 +24,7 @@
 package org.osiam.ng.resourceserver.entities
 
 import org.osiam.resources.scim.Name
+import org.osiam.storage.entities.NameEntity
 import spock.lang.Specification
 
 /**

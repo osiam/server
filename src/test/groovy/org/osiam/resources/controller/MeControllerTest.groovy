@@ -2,11 +2,10 @@ package org.osiam.resources.controller
 
 import org.joda.time.format.DateTimeFormatter
 import org.joda.time.format.ISODateTimeFormat
-import org.osiam.ng.resourceserver.entities.EmailEntity
-import org.osiam.ng.resourceserver.entities.MetaEntity
-import org.osiam.ng.resourceserver.entities.NameEntity
-import org.osiam.ng.resourceserver.entities.UserEntity
-import org.osiam.resources.controller.MeController
+import org.osiam.storage.entities.EmailEntity
+import org.osiam.storage.entities.MetaEntity
+import org.osiam.storage.entities.NameEntity
+import org.osiam.storage.entities.UserEntity
 import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.provider.OAuth2Authentication
 import org.springframework.security.oauth2.provider.token.InMemoryTokenStore

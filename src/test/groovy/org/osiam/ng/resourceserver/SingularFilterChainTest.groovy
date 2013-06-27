@@ -19,6 +19,7 @@
 
 package org.osiam.ng.resourceserver
 
+import org.osiam.resources.helper.SingularFilterChain
 import spock.lang.Specification
 
 class SingularFilterChainTest extends Specification{

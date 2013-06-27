@@ -23,6 +23,18 @@
 
 package org.osiam.ng.resourceserver.entities
 
+import org.osiam.storage.entities.AddressEntity
+import org.osiam.storage.entities.EmailEntity
+import org.osiam.storage.entities.EntitlementsEntity
+import org.osiam.storage.entities.GroupEntity
+import org.osiam.storage.entities.ImEntity
+import org.osiam.storage.entities.MetaEntity
+import org.osiam.storage.entities.NameEntity
+import org.osiam.storage.entities.PhoneNumberEntity
+import org.osiam.storage.entities.PhotoEntity
+import org.osiam.storage.entities.RolesEntity
+import org.osiam.storage.entities.UserEntity
+import org.osiam.storage.entities.X509CertificateEntity
 import org.springframework.security.core.userdetails.UserDetails
 import org.osiam.resources.scim.Address
 import org.osiam.resources.scim.MultiValuedAttribute

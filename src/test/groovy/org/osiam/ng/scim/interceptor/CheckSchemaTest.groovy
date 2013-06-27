@@ -27,6 +27,7 @@ import org.aspectj.lang.JoinPoint
 import org.aspectj.lang.annotation.Before
 import org.aspectj.lang.annotation.Pointcut
 import org.osiam.resources.exceptions.SchemaUnknownException
+import org.osiam.resources.helper.CheckSchema
 import org.osiam.resources.scim.Constants
 import org.osiam.resources.scim.User
 import spock.lang.Specification

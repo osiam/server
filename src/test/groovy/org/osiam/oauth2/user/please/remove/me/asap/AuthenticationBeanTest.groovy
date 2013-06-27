@@ -23,8 +23,8 @@
 
 package org.osiam.oauth2.user.please.remove.me.asap
 
-import org.osiam.ng.resourceserver.dao.UserDAO
-import org.osiam.ng.resourceserver.entities.UserEntity
+import org.osiam.storage.dao.UserDAO
+import org.osiam.storage.entities.UserEntity
 import org.osiam.ng.user.authorization.AuthenticationBean
 import spock.lang.Specification
 

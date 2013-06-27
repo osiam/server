@@ -23,9 +23,9 @@
 
 package org.osiam.resources.controller;
 
-import org.osiam.ng.JsonInputValidator;
-import org.osiam.ng.resourceserver.dao.SCIMSearchResult;
-import org.osiam.ng.scim.dao.SCIMGroupProvisioning;
+import org.osiam.resources.helper.JsonInputValidator;
+import org.osiam.storage.dao.SCIMSearchResult;
+import org.osiam.resources.provisioning.SCIMGroupProvisioning;
 import org.osiam.resources.helper.JsonResponseEnrichHelper;
 import org.osiam.resources.helper.RequestParamHelper;
 import org.springframework.http.HttpStatus;

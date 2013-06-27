@@ -23,12 +23,11 @@
 
 package org.osiam.resources.controller
 
-import org.osiam.ng.JsonInputValidator
-import org.osiam.ng.resourceserver.dao.SCIMSearchResult
-import org.osiam.ng.scim.dao.SCIMUserProvisioning
+import org.osiam.resources.helper.JsonInputValidator
+import org.osiam.storage.dao.SCIMSearchResult
+import org.osiam.resources.provisioning.SCIMUserProvisioning
 import org.osiam.resources.helper.JsonResponseEnrichHelper
 import org.osiam.resources.helper.RequestParamHelper
-import org.osiam.resources.controller.UserController
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod

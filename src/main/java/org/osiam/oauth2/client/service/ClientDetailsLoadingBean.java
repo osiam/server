@@ -23,14 +23,12 @@
 
 package org.osiam.oauth2.client.service;
 
-import org.osiam.ng.resourceserver.dao.ClientDao;
-import org.springframework.security.core.GrantedAuthority;
+import org.osiam.storage.dao.ClientDao;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
-import java.util.*;
 
 
 /**

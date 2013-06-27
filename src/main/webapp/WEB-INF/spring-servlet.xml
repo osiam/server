@@ -105,7 +105,7 @@
     <mvc:default-servlet-handler/>
 
     <aop:aspectj-autoproxy />
-    <bean id="logAspect" class="org.osiam.ng.scim.interceptor.CheckSchema" />
+    <bean id="logAspect" class="org.osiam.resources.helper.CheckSchema" />
 
     <context:component-scan base-package="org.osiam"/>
     <context:annotation-config/>

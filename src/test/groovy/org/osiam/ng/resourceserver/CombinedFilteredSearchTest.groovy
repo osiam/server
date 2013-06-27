@@ -1,6 +1,8 @@
 package org.osiam.ng.resourceserver
 
 import org.hibernate.criterion.Criterion
+import org.osiam.resources.helper.CombinedFilterChain
+import org.osiam.resources.helper.SingularFilterChain
 import spock.lang.Specification
 
 class CombinedFilteredSearchTest extends Specification {

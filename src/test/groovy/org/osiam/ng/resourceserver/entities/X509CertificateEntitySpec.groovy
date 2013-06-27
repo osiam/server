@@ -24,6 +24,8 @@
 package org.osiam.ng.resourceserver.entities
 
 import org.osiam.resources.scim.MultiValuedAttribute
+import org.osiam.storage.entities.UserEntity
+import org.osiam.storage.entities.X509CertificateEntity
 import spock.lang.Specification
 
 /**

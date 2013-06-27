@@ -25,9 +25,9 @@
 
 package org.osiam.ng.resourceserver
 
-import org.osiam.ng.resourceserver.dao.GroupDAO
-import org.osiam.ng.resourceserver.dao.SCIMGroupProvisioningBean
-import org.osiam.ng.resourceserver.entities.GroupEntity
+import org.osiam.storage.dao.GroupDAO
+import org.osiam.resources.provisioning.SCIMGroupProvisioningBean
+import org.osiam.storage.entities.GroupEntity
 import org.osiam.resources.exceptions.ResourceNotFoundException
 import spock.lang.Specification
 

@@ -23,7 +23,8 @@
 
 package org.osiam.ng.resourceserver.dao
 
-import org.osiam.ng.resourceserver.entities.GroupEntity
+import org.osiam.storage.entities.GroupEntity
+import org.osiam.resources.helper.GroupSCIMEntities
 import spock.lang.Specification
 
 class GroupSCIMEntitiesTest extends Specification {

@@ -24,6 +24,8 @@
 package org.osiam.ng.resourceserver.entities
 
 import org.osiam.resources.scim.Address
+import org.osiam.storage.entities.AddressEntity
+import org.osiam.storage.entities.UserEntity
 import spock.lang.Specification
 
 /**

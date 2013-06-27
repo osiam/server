@@ -19,8 +19,8 @@ package org.osiam.ng.resourceserver
 
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
-import org.osiam.ng.resourceserver.dao.SCIMSearchResult
-import org.osiam.ng.scim.dao.SCIMUserProvisioning
+import org.osiam.storage.dao.SCIMSearchResult
+import org.osiam.resources.provisioning.SCIMUserProvisioning
 import org.osiam.resources.helper.JsonResponseEnrichHelper
 import org.osiam.resources.helper.RequestParamHelper
 import org.osiam.resources.controller.UserController

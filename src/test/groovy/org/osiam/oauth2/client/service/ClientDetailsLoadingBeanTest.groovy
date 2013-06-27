@@ -23,7 +23,7 @@
 
 package org.osiam.oauth2.client.service
 
-import org.osiam.ng.resourceserver.dao.ClientDao
+import org.osiam.storage.dao.ClientDao
 import spock.lang.Specification
 
 class ClientDetailsLoadingBeanTest extends Specification {

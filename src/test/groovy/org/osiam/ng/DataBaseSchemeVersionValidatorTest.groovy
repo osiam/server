@@ -23,7 +23,8 @@
 
 package org.osiam.ng
 
-import org.osiam.ng.resourceserver.entities.DBVersion
+import org.osiam.storage.entities.DBVersion
+import org.osiam.storage.helper.DataBaseSchemeVersionValidator
 import spock.lang.Specification
 
 import javax.persistence.EntityManager

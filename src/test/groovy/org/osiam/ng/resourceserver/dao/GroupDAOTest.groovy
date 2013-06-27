@@ -27,12 +27,13 @@ import org.hibernate.Criteria
 import org.hibernate.Session
 import org.hibernate.criterion.Criterion
 
-import org.osiam.ng.resourceserver.FilterChain
-import org.osiam.ng.resourceserver.FilterParser
-import org.osiam.ng.resourceserver.entities.GroupEntity
-import org.osiam.ng.resourceserver.entities.InternalIdSkeleton
-import org.osiam.ng.resourceserver.entities.UserEntity
+import org.osiam.resources.helper.FilterChain
+import org.osiam.resources.helper.FilterParser
+import org.osiam.storage.entities.GroupEntity
+import org.osiam.storage.entities.InternalIdSkeleton
+import org.osiam.storage.entities.UserEntity
 import org.osiam.resources.exceptions.ResourceNotFoundException
+import org.osiam.storage.dao.GroupDAO
 import spock.lang.Specification
 
 import javax.persistence.EntityManager

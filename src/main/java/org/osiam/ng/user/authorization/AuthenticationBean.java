@@ -23,7 +23,7 @@
 
 package org.osiam.ng.user.authorization;
 
-import org.osiam.ng.resourceserver.dao.UserDAO;
+import org.osiam.storage.dao.UserDAO;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;

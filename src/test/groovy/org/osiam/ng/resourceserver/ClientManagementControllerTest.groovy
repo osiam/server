@@ -1,9 +1,7 @@
 package org.osiam.ng.resourceserver
 
-import org.codehaus.jackson.map.ObjectMapper
-import org.osiam.ng.resourceserver.dao.ClientDao
-import org.osiam.ng.resourceserver.entities.ClientEntity
-import org.osiam.ng.resourceserver.entities.UserEntity
+import org.osiam.storage.dao.ClientDao
+import org.osiam.resources.controller.ClientManagementController
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod

@@ -23,11 +23,22 @@
 
 package org.osiam.ng.scim.schema.to.entity
 
-import org.osiam.ng.resourceserver.entities.*
-
+import org.osiam.resources.helper.EntityListFieldWrapper
+import org.osiam.resources.helper.GenericSCIMToEntityWrapper
+import org.osiam.resources.helper.GetFieldsOfInputAndTarget
+import org.osiam.resources.helper.SCIMEntities
 import org.osiam.resources.scim.Address
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.User
+import org.osiam.storage.entities.AddressEntity
+import org.osiam.storage.entities.EmailEntity
+import org.osiam.storage.entities.EntitlementsEntity
+import org.osiam.storage.entities.ImEntity
+import org.osiam.storage.entities.PhoneNumberEntity
+import org.osiam.storage.entities.PhotoEntity
+import org.osiam.storage.entities.RolesEntity
+import org.osiam.storage.entities.UserEntity
+import org.osiam.storage.entities.X509CertificateEntity
 import spock.lang.Specification
 
 class EntityListFieldWrapperTest extends Specification {

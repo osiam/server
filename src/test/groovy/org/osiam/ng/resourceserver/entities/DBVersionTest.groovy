@@ -23,6 +23,7 @@
 
 package org.osiam.ng.resourceserver.entities
 
+import org.osiam.storage.entities.DBVersion
 import spock.lang.Specification
 
 class DBVersionTest extends Specification {

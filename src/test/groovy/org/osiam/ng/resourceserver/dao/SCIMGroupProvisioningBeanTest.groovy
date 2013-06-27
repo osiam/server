@@ -23,8 +23,11 @@
 
 package org.osiam.ng.resourceserver.dao
 
-import org.osiam.ng.resourceserver.entities.GroupEntity
+import org.osiam.storage.entities.GroupEntity
 import org.osiam.resources.exceptions.ResourceExistsException
+import org.osiam.resources.provisioning.SCIMGroupProvisioningBean
+import org.osiam.storage.dao.GroupDAO
+import org.osiam.storage.dao.SCIMSearchResult
 import org.springframework.dao.DataIntegrityViolationException
 import org.osiam.resources.scim.Group
 import spock.lang.Specification

@@ -23,6 +23,7 @@
 
 package org.osiam.ng.resourceserver.entities
 
+import org.osiam.storage.entities.ManagerEntity
 import spock.lang.Specification
 
 /**
