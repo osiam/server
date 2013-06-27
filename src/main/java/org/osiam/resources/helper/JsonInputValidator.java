@@ -29,8 +29,7 @@ public class JsonInputValidator {
         String jsonInput = getRequestBody(request);
 
         if(jsonInput.contains("userName")) {
-            User user = validateResource(jsonInput, User.class);
-            return validatePhotoValues(user);
+            return validateResource(jsonInput, User.class);
         }
         throw new IllegalArgumentException("The user name is mandatory and MUST NOT be null");
     }
@@ -75,15 +74,5 @@ public class JsonInputValidator {
             throw new IllegalArgumentException(matcher.group());
         }
         return resource;
-    }
-
-    private User validatePhotoValues(User user) {
-        for(MultiValuedAttribute photo : user.getPhotos()) {
-            String value = (String) photo.getValue();
-            if (value.contains(".JPEG") || value.contains(".GIF") || value.contains(".PNG")) {
-                return user;
-            }
-        }
-        throw new IllegalArgumentException("The photo value  MUST be a URL which points to an JPEG, GIF, PNG file.");
     }
 }

@@ -41,12 +41,13 @@ class PhotoEntitySpec extends Specification {
     def userEntity = Mock(UserEntity)
 
 
-    def "setter and getter for the value should be present"() {
+    def "should throw exception if the value has no valid file suffix"() {
         when:
         photoEntity.setValue("https://photos.example.com/profilephoto/72930000000Ccne/T")
 
         then:
-        photoEntity.getValue() == "https://photos.example.com/profilephoto/72930000000Ccne/T"
+        def e = thrown(IllegalArgumentException)
+        e.getMessage() == "The photo value  MUST be a URL which points to an JPEG, GIF, PNG file."
     }
 
     def "setter and getter for the type should be present"() {
@@ -86,5 +87,13 @@ class PhotoEntitySpec extends Specification {
 
         then:
         result != null
+    }
+
+    def "value should contain a valid file suffix"() {
+        when:
+        photoEntity.setValue("file.jpg")
+
+        then:
+        photoEntity.getValue() == "file.jpg"
     }
 }
