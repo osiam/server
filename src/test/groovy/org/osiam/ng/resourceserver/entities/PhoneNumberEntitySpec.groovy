@@ -75,7 +75,7 @@ class PhoneNumberEntitySpec extends Specification {
         given:
         MultiValuedAttribute phoneNumber = new MultiValuedAttribute.Builder().
                 setValue("blaaaa").
-                setType("type").
+                setType("home").
                 build()
 
         when:

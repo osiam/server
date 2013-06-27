@@ -48,10 +48,10 @@ class ImsEntitySpec extends Specification {
 
     def "setter and getter for the type should be present"() {
         when:
-        imsEntity.setType("gTalk")
+        imsEntity.setType("gtalk")
 
         then:
-        imsEntity.getType() == "gTalk"
+        imsEntity.getType() == "gtalk"
     }
 
     def "setter and getter for the user should be present"() {
@@ -75,7 +75,7 @@ class ImsEntitySpec extends Specification {
         given:
         MultiValuedAttribute multiValuedAttribute = new MultiValuedAttribute.Builder().
                 setValue("blaaaa").
-                setType("type").
+                setType("icq").
                 build()
 
         when:

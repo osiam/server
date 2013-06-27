@@ -27,9 +27,7 @@ package org.osiam.ng.resourceserver.entities;
 import org.osiam.ng.scim.entity.interfaces.ChildOfMultiValueAttributeWithTypeAndPrimary;
 import scim.schema.v2.MultiValuedAttribute;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 /**
  * Email Entity
@@ -39,7 +37,8 @@ public class EmailEntity extends MultiValueAttributeEntitySkeleton implements Ha
 
     
     @Column
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private CanonicalEmailTypes type;
 
     
     @Column(name = "postgresql_does_not_like_primary")
@@ -48,12 +47,17 @@ public class EmailEntity extends MultiValueAttributeEntitySkeleton implements Ha
 
     @Override
     public String getType() {
-        return type;
+        if(type != null) {
+            return type.toString();
+        }
+        return null;
     }
 
     @Override
     public void setType(String type) {
-        this.type = type;
+        if(type != null) {
+            this.type = CanonicalEmailTypes.valueOf(type);
+        }
     }
 
     @Override
@@ -86,7 +90,6 @@ public class EmailEntity extends MultiValueAttributeEntitySkeleton implements Ha
         return emailEntity;
     }
 
-
     @Override
     public UserEntity getUser() {
         return user;
@@ -95,5 +98,9 @@ public class EmailEntity extends MultiValueAttributeEntitySkeleton implements Ha
     @Override
     public void setUser(UserEntity user) {
         this.user = user;
+    }
+
+    private enum CanonicalEmailTypes {
+        work, home, other
     }
 }

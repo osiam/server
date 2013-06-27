@@ -76,7 +76,7 @@ class PhotoEntitySpec extends Specification {
         given:
         MultiValuedAttribute multiValuedAttribute = new MultiValuedAttribute.Builder().
                 setValue("blaaaa").
-                setType("type").
+                setType("photo").
                 build()
 
         when:

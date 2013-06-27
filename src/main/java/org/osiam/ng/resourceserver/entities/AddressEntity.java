@@ -39,7 +39,8 @@ public class AddressEntity {
 
     
     @Column
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private CanonicalAddressTypes type;
 
     
     @Column
@@ -90,11 +91,16 @@ public class AddressEntity {
     }
 
     public String getType() {
-        return type;
+        if (type != null) {
+            return type.toString();
+        }
+        return null;
     }
 
     public void setType(String type) {
-        this.type = type;
+        if (type != null) {
+            this.type = CanonicalAddressTypes.valueOf(type);
+        }
     }
 
     public String getFormatted() {
@@ -175,5 +181,9 @@ public class AddressEntity {
         addressEntity.setStreetAddress(address.getStreetAddress());
         addressEntity.setType(address.getType());
         return addressEntity;
+    }
+
+    private enum CanonicalAddressTypes {
+        work, home, other
     }
 }

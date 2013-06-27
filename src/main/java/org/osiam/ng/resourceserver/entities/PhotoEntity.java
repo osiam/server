@@ -26,9 +26,7 @@ package org.osiam.ng.resourceserver.entities;
 import org.osiam.ng.scim.entity.interfaces.ChildOfMultiValueAttributeWithType;
 import scim.schema.v2.MultiValuedAttribute;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 /**
  * Photos Entity
@@ -37,7 +35,8 @@ import javax.persistence.ManyToOne;
 public class PhotoEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithType, HasUser {
 
     @Column
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private CanonicalPhotoTypes type;
 
     @ManyToOne
     private UserEntity user;
@@ -52,11 +51,16 @@ public class PhotoEntity extends MultiValueAttributeEntitySkeleton implements Ch
     }
 
     public String getType() {
-        return type;
+        if(type != null) {
+            return type.toString();
+        }
+        return null;
     }
 
     public void setType(String type) {
-        this.type = type;
+        if(type != null) {
+            this.type = CanonicalPhotoTypes.valueOf(type);
+        }
     }
 
     public UserEntity getUser() {
@@ -79,5 +83,9 @@ public class PhotoEntity extends MultiValueAttributeEntitySkeleton implements Ch
         photoEntity.setType(multiValuedAttribute.getType());
         photoEntity.setValue(String.valueOf(multiValuedAttribute.getValue()));
         return photoEntity;
+    }
+
+    private enum CanonicalPhotoTypes {
+        photo, thumbnail
     }
 }

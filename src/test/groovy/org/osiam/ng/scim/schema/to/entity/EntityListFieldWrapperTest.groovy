@@ -159,7 +159,6 @@ class EntityListFieldWrapperTest extends Specification {
         def aha = new GetFieldsOfInputAndTarget().getFieldsAsNormalizedMap(UserEntity)
         def entity = GenericSCIMToEntityWrapperTest.createEntityWithInternalId()
         GenericSCIMToEntityWrapperTest.addListsToEntity(entity)
-//        entity.getEmails().add(new EmailEntity(value: "email", type: "work", primary: false))
         entity.getEmails().add(new EmailEntity(value: "email2", type: "work", primary: false))
         def underTest = new EntityListFieldWrapper(entity, GenericSCIMToEntityWrapper.Mode.PATCH)
         when:

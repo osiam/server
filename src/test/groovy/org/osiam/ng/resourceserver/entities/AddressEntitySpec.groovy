@@ -102,6 +102,14 @@ class AddressEntitySpec extends Specification {
         addressEntity.getType() == "home"
     }
 
+    def "getter for the type should not throw exception if type is null"() {
+        when:
+        addressEntity.setType(null)
+
+        then:
+        addressEntity.getType() == null
+    }
+
     def "setter and getter for primary should be present"() {
         when:
         addressEntity.setPrimary(true)

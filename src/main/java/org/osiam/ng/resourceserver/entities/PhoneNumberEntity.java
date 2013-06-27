@@ -26,9 +26,7 @@ package org.osiam.ng.resourceserver.entities;
 import org.osiam.ng.scim.entity.interfaces.ChildOfMultiValueAttributeWithType;
 import scim.schema.v2.MultiValuedAttribute;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 /**
  * Phone Numbers Entity
@@ -37,17 +35,23 @@ import javax.persistence.ManyToOne;
 public class PhoneNumberEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithType, HasUser {
 
     @Column
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private CanonicalPhoneNumberTypes type;
 
     @ManyToOne
     private UserEntity user;
 
     public String getType() {
-        return type;
+        if(type != null) {
+            return type.toString();
+        }
+        return null;
     }
 
     public void setType(String type) {
-        this.type = type;
+        if(type != null) {
+            this.type = CanonicalPhoneNumberTypes.valueOf(type);
+        }
     }
 
     public UserEntity getUser() {
@@ -70,5 +74,9 @@ public class PhoneNumberEntity extends MultiValueAttributeEntitySkeleton impleme
         phoneNumberEntity.setType(multiValuedAttribute.getType());
         phoneNumberEntity.setValue(String.valueOf(multiValuedAttribute.getValue()));
         return phoneNumberEntity;
+    }
+
+    private enum CanonicalPhoneNumberTypes {
+        work, home, mobile, fax, pager, other
     }
 }

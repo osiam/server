@@ -215,9 +215,9 @@ class GenericSCIMToEntityWrapperTest extends Specification {
         entity.getAddresses().add(new AddressEntity())
         entity.getEmails().add(new EmailEntity(value: "email", type: "work", primary: false))
         entity.getEntitlements().add(new EntitlementsEntity(value: "entitlement"))
-        entity.getIms().add(new ImEntity(value: "im", type: "work"))
+        entity.getIms().add(new ImEntity(value: "im", type: "icq"))
         entity.getPhoneNumbers().add(new PhoneNumberEntity(value: "phonenumber", type: "work"))
-        entity.getPhotos().add(new PhotoEntity(value: "photo", type: "work"))
+        entity.getPhotos().add(new PhotoEntity(value: "photo", type: "photo"))
         entity.getRoles().add(new RolesEntity(value: "role"))
     }
 

@@ -86,7 +86,7 @@ class EmailEntitySpec extends Specification {
         given:
         MultiValuedAttribute multiValuedAttribute = new MultiValuedAttribute.Builder().
                 setPrimary(true).
-                setType("type").
+                setType("work").
                 setValue("value").
                 build()
 
@@ -101,7 +101,7 @@ class EmailEntitySpec extends Specification {
         given:
         MultiValuedAttribute multiValuedAttribute = new MultiValuedAttribute.Builder().
                 setPrimary(null).
-                setType("type").
+                setType("work").
                 setValue("value").
                 build()
 

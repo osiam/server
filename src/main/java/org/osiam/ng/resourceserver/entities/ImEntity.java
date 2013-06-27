@@ -26,9 +26,7 @@ package org.osiam.ng.resourceserver.entities;
 import org.osiam.ng.scim.entity.interfaces.ChildOfMultiValueAttributeWithType;
 import scim.schema.v2.MultiValuedAttribute;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 /**
  * Instant messaging Entity
@@ -37,18 +35,24 @@ import javax.persistence.ManyToOne;
 public class ImEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithType, HasUser {
 
     @Column
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private CanonicalImTypes type;
 
     @ManyToOne
     private UserEntity user;
 
 
     public String getType() {
-        return type;
+        if(type != null) {
+            return type.toString();
+        }
+        return null;
     }
 
     public void setType(String type) {
-        this.type = type;
+        if(type != null) {
+            this.type = CanonicalImTypes.valueOf(type);
+        }
     }
 
     public UserEntity getUser() {
@@ -71,5 +75,9 @@ public class ImEntity extends MultiValueAttributeEntitySkeleton implements Child
         imEntity.setType(multiValuedAttribute.getType());
         imEntity.setValue(String.valueOf(multiValuedAttribute.getValue()));
         return imEntity;
+    }
+
+    private enum CanonicalImTypes {
+        aim, gtalk, icq, xmpp, msn, skype, qq, yahoo
     }
 }
