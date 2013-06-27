@@ -18,6 +18,8 @@ public class TypeErrorMessageTransformer implements ErrorMessageTransformer {
 
     @Override
     public String transform(String message) {
+        if (message == null)
+            return null;
         Matcher matcher = pattern.matcher(message);
         if (matcher.matches()) {
             return matcher.group(2) + " is not a valid " + matcher.group(1) + " type";

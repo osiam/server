@@ -18,4 +18,11 @@ class TypeErrorMessageTransformerTest extends Specification {
         then:
         result == "No enum constant org.osiam.storage.hahaha.CanonicalPhotoTypes.huch"
     }
+
+    def "should ignore null"(){
+        when:
+        def result = underTest.transform(null)
+        then:
+        !result
+    }
 }
