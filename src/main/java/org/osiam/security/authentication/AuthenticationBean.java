@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.ng.user.authorization;
+package org.osiam.security.authentication;
 
 import org.osiam.storage.dao.UserDAO;
 import org.springframework.security.core.userdetails.UserDetails;

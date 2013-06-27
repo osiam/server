@@ -1,4 +1,4 @@
-package org.osiam.spring;
+package org.osiam.security.helper;
 
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

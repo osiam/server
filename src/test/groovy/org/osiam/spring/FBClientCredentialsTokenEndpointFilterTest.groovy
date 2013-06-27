@@ -1,5 +1,6 @@
 package org.osiam.spring
 
+import org.osiam.security.helper.FBClientCredentialsTokenEndpointFilter
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.core.Authentication
 import spock.lang.Specification

@@ -1,4 +1,4 @@
-package org.osiam.spring;
+package org.osiam.security.controller;
 
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;

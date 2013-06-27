@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.oauth2.client.service;
+package org.osiam.security.authentication;
 
 import org.osiam.storage.dao.ClientDao;
 import org.springframework.security.oauth2.provider.ClientDetails;

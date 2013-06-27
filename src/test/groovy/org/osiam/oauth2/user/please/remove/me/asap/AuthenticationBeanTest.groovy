@@ -25,7 +25,7 @@ package org.osiam.oauth2.user.please.remove.me.asap
 
 import org.osiam.storage.dao.UserDAO
 import org.osiam.storage.entities.UserEntity
-import org.osiam.ng.user.authorization.AuthenticationBean
+import org.osiam.security.authentication.AuthenticationBean
 import spock.lang.Specification
 
 class AuthenticationBeanTest extends Specification {

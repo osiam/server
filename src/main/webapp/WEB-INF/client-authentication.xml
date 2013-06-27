@@ -68,7 +68,7 @@
         <access-denied-handler ref="oauthAccessDeniedHandler" />
     </http>
 
-    <bean id="fbClientCredentialsTokenEndpointFilter" class="org.osiam.spring.FBClientCredentialsTokenEndpointFilter">
+    <bean id="fbClientCredentialsTokenEndpointFilter" class="org.osiam.security.helper.FBClientCredentialsTokenEndpointFilter">
         <property name="authenticationManager" ref="clientAuthenticationManager" />
     </bean>
 

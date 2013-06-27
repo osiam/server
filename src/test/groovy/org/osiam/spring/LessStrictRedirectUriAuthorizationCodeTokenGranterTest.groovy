@@ -1,5 +1,6 @@
 package org.osiam.spring
 
+import org.osiam.security.helper.LessStrictRedirectUriAuthorizationCodeTokenGranter
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException
 import org.springframework.security.oauth2.common.exceptions.InvalidGrantException
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception

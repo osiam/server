@@ -1,4 +1,4 @@
-package org.osiam.ng.serializer;
+package org.osiam.resources.helper;
 
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.map.JsonSerializer;

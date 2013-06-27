@@ -2,6 +2,7 @@ package org.osiam.ng.serializer
 
 import org.codehaus.jackson.JsonGenerator
 import org.codehaus.jackson.map.SerializerProvider
+import org.osiam.resources.helper.JsonDateSerializer
 import spock.lang.Specification
 
 /**

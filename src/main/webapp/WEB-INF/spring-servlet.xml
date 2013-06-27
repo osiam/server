@@ -55,7 +55,7 @@
         <oauth:refresh-token/>
     </oauth:authorization-server>
 
-    <bean id="granter" class="org.osiam.spring.LessStrictRedirectUriAuthorizationCodeTokenGranter">
+    <bean id="granter" class="org.osiam.security.helper.LessStrictRedirectUriAuthorizationCodeTokenGranter">
         <constructor-arg ref="tokenServices"/>
         <constructor-arg ref="clientDetails"/>
     </bean>

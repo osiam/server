@@ -23,6 +23,7 @@
 
 package org.osiam.oauth2.client.service
 
+import org.osiam.security.authentication.ClientDetailsLoadingBean
 import org.osiam.storage.dao.ClientDao
 import spock.lang.Specification
 

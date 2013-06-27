@@ -24,7 +24,7 @@
 package org.osiam.resources.scim;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.osiam.ng.serializer.JsonDateSerializer;
+import org.osiam.resources.helper.JsonDateSerializer;
 
 import java.util.Date;
 import java.util.HashSet;

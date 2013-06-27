@@ -23,11 +23,10 @@
 
 package org.osiam.oauth2.mvc
 
-import org.osiam.oauth2.mvc.oauth2.AccessConfirmationController
+import org.osiam.security.controller.AccessConfirmationController
 import org.springframework.security.oauth2.provider.AuthorizationRequest
 import org.springframework.security.oauth2.provider.ClientDetails
 import org.springframework.security.oauth2.provider.ClientDetailsService
-import spock.lang.Ignore
 import spock.lang.Specification
 
 class AccessConfirmationControllerSpec extends Specification{
