@@ -78,7 +78,7 @@ class PhotoEntitySpec extends Specification {
     def "mapping from scim should be present"() {
         given:
         MultiValuedAttribute multiValuedAttribute = new MultiValuedAttribute.Builder().
-                setValue("blaaaa").
+                setValue("http://localhorst:8080/photo.png").
                 setType("photo").
                 build()
 
@@ -91,9 +91,9 @@ class PhotoEntitySpec extends Specification {
 
     def "value should contain a valid file suffix"() {
         when:
-        photoEntity.setValue("file.jpg")
+        photoEntity.setValue("file.JPG")
 
         then:
-        photoEntity.getValue() == "file.jpg"
+        photoEntity.getValue() == "file.JPG"
     }
 }

@@ -26,12 +26,15 @@ package org.osiam.storage.entities;
 import org.osiam.resources.scim.MultiValuedAttribute;
 
 import javax.persistence.*;
+import java.util.regex.Pattern;
 
 /**
  * Photos Entity
  */
 @Entity(name = "scim_photo")
 public class PhotoEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithType, HasUser {
+    //a valid photo url is everything which does not contain any control character and ends with jpg|jpeg|png|gif
+    private static final Pattern PHOTO_SUFFIX = Pattern.compile("(?i)\\S+\\.(jpg|jpeg|png|gif)");
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -55,7 +58,7 @@ public class PhotoEntity extends MultiValueAttributeEntitySkeleton implements Ch
     }
 
     private boolean isValueIncorrect(String value) {
-        return !value.endsWith("(?i)\\.[jpg|jpeg|png|gif]");
+        return !PHOTO_SUFFIX.matcher(value).matches();
     }
 
     public String getType() {
