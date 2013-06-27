@@ -24,10 +24,10 @@
 package org.osiam.ng.resourceserver.entities
 
 import org.springframework.security.core.userdetails.UserDetails
-import scim.schema.v2.Address
-import scim.schema.v2.MultiValuedAttribute
-import scim.schema.v2.Name
-import scim.schema.v2.User
+import org.osiam.resources.scim.Address
+import org.osiam.resources.scim.MultiValuedAttribute
+import org.osiam.resources.scim.Name
+import org.osiam.resources.scim.User
 import spock.lang.Specification
 
 /**

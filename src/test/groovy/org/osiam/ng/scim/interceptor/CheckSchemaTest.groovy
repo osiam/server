@@ -27,8 +27,8 @@ import org.aspectj.lang.JoinPoint
 import org.aspectj.lang.annotation.Before
 import org.aspectj.lang.annotation.Pointcut
 import org.osiam.ng.scim.exceptions.SchemaUnknownException
-import scim.schema.v2.Constants
-import scim.schema.v2.User
+import org.osiam.resources.scim.Constants
+import org.osiam.resources.scim.User
 import spock.lang.Specification
 
 import java.lang.reflect.Method
@@ -46,7 +46,7 @@ class CheckSchemaTest extends Specification {
 
     }
 
-    def "should do nothing when args doesn't contain scim.schema.v2.User"() {
+    def "should do nothing when args doesn't contain org.osiam.resources.scim.User"() {
         given:
         joint.args >> ["haha"]
         when:

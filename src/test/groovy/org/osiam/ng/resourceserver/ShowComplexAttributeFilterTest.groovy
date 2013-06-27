@@ -24,8 +24,8 @@ import org.osiam.ng.scim.dao.SCIMUserProvisioning
 import org.osiam.ng.scim.mvc.user.JsonResponseEnrichHelper
 import org.osiam.ng.scim.mvc.user.RequestParamHelper
 import org.osiam.ng.scim.mvc.user.UserController
-import scim.schema.v2.Meta
-import scim.schema.v2.User
+import org.osiam.resources.scim.Meta
+import org.osiam.resources.scim.User
 import spock.lang.Specification
 
 import javax.servlet.http.HttpServletRequest

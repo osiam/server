@@ -1,7 +1,7 @@
 package org.osiam.ng.scim
 
 import org.osiam.ng.scim.mvc.user.ServiceProviderConfigController
-import scim.schema.v2.Constants
+import org.osiam.resources.scim.Constants
 import spock.lang.Specification
 
 class ServiceProviderConfigTest extends Specification {

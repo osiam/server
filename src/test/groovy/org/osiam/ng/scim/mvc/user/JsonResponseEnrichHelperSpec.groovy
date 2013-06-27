@@ -1,12 +1,10 @@
 package org.osiam.ng.scim.mvc.user
 
 import org.joda.time.DateTime
-import org.joda.time.DateTimeZone
-import org.joda.time.format.DateTimeFormatter
 import org.joda.time.format.ISODateTimeFormat
 import org.osiam.ng.resourceserver.dao.SCIMSearchResult
-import scim.schema.v2.Meta
-import scim.schema.v2.User
+import org.osiam.resources.scim.Meta
+import org.osiam.resources.scim.User
 import spock.lang.Specification
 
 /**

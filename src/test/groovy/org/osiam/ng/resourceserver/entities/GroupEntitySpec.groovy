@@ -23,9 +23,8 @@
 
 package org.osiam.ng.resourceserver.entities
 
-import org.junit.Ignore
-import scim.schema.v2.Group
-import scim.schema.v2.MultiValuedAttribute
+import org.osiam.resources.scim.Group
+import org.osiam.resources.scim.MultiValuedAttribute
 import spock.lang.Specification
 
 /**

@@ -23,7 +23,6 @@
 
 package org.osiam.ng.resourceserver.entities
 
-import scim.schema.v2.Enterprise
 import spock.lang.Specification
 
 /**

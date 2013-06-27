@@ -26,7 +26,10 @@ package org.osiam.ng.resourceserver
 import org.osiam.ng.resourceserver.dao.GroupDAO
 import org.osiam.ng.resourceserver.dao.SCIMGroupProvisioningBean
 import org.osiam.ng.resourceserver.entities.*
-import scim.schema.v2.*
+import org.osiam.resources.scim.Group
+import org.osiam.resources.scim.Meta
+import org.osiam.resources.scim.MultiValuedAttribute
+import org.osiam.resources.scim.User
 import spock.lang.Specification
 
 class GroupPatchTest extends Specification {

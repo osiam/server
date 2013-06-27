@@ -23,10 +23,9 @@
 
 package org.osiam.ng.scim.schema.to.entity;
 
-import scim.schema.v2.Name;
+import org.osiam.resources.scim.Name;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
 
 public class EntityFieldWrapper {
     private final GenericSCIMToEntityWrapper.Mode mode;

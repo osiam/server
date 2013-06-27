@@ -25,7 +25,7 @@ package org.osiam.ng.resourceserver.entities;
 
 import org.hibernate.annotations.Type;
 import org.osiam.ng.scim.entity.interfaces.ChildOfMultiValueAttribute;
-import scim.schema.v2.MultiValuedAttribute;
+import org.osiam.resources.scim.MultiValuedAttribute;
 
 import javax.persistence.*;
 import java.util.GregorianCalendar;

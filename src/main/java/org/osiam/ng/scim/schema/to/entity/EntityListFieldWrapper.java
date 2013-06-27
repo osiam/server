@@ -26,7 +26,7 @@ package org.osiam.ng.scim.schema.to.entity;
 import org.osiam.ng.scim.entity.interfaces.ChildOfMultiValueAttribute;
 import org.osiam.ng.scim.entity.interfaces.ChildOfMultiValueAttributeWithType;
 import org.osiam.ng.scim.entity.interfaces.ChildOfMultiValueAttributeWithTypeAndPrimary;
-import scim.schema.v2.MultiValuedAttribute;
+import org.osiam.resources.scim.MultiValuedAttribute;
 
 import java.lang.reflect.Field;
 import java.util.Collection;

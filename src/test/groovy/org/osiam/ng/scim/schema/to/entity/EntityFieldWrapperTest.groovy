@@ -25,8 +25,8 @@ package org.osiam.ng.scim.schema.to.entity
 
 import org.osiam.ng.resourceserver.entities.NameEntity
 import org.osiam.ng.resourceserver.entities.UserEntity
-import scim.schema.v2.Name
-import scim.schema.v2.User
+import org.osiam.resources.scim.Name
+import org.osiam.resources.scim.User
 import spock.lang.Specification
 
 class EntityFieldWrapperTest extends Specification {

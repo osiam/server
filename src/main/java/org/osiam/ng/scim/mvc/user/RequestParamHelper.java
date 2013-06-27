@@ -1,6 +1,6 @@
 package org.osiam.ng.scim.mvc.user;
 
-import scim.schema.v2.Constants;
+import org.osiam.resources.scim.Constants;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;

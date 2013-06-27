@@ -28,8 +28,8 @@ import org.osiam.ng.resourceserver.dao.SCIMGroupProvisioningBean
 import org.osiam.ng.resourceserver.entities.GroupEntity
 import org.osiam.ng.resourceserver.entities.UserEntity
 import org.osiam.ng.scim.exceptions.ResourceNotFoundException
-import scim.schema.v2.Group
-import scim.schema.v2.MultiValuedAttribute
+import org.osiam.resources.scim.Group
+import org.osiam.resources.scim.MultiValuedAttribute
 import spock.lang.Specification
 
 import javax.persistence.EntityManager

@@ -30,7 +30,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriTemplate;
-import scim.schema.v2.User;
+import org.osiam.resources.scim.User;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;

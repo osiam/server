@@ -30,8 +30,7 @@ import org.osiam.ng.scim.schema.to.entity.GenericSCIMToEntityWrapper;
 import org.osiam.ng.scim.schema.to.entity.SCIMEntities;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import scim.schema.v2.Group;
-import scim.schema.v2.User;
+import org.osiam.resources.scim.Group;
 
 import javax.inject.Inject;
 import java.util.ArrayList;

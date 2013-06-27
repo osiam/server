@@ -31,9 +31,9 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.ResponseStatus
-import scim.schema.v2.Meta
-import scim.schema.v2.Name
-import scim.schema.v2.User
+import org.osiam.resources.scim.Meta
+import org.osiam.resources.scim.Name
+import org.osiam.resources.scim.User
 import spock.lang.Specification
 
 import javax.servlet.http.HttpServletRequest

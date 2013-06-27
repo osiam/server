@@ -23,7 +23,7 @@
 
 package org.osiam.ng.resourceserver.entities
 
-import scim.schema.v2.MultiValuedAttribute
+import org.osiam.resources.scim.MultiValuedAttribute
 import spock.lang.Specification
 
 /**

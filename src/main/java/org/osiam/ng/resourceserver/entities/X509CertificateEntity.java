@@ -24,7 +24,7 @@
 package org.osiam.ng.resourceserver.entities;
 
 import org.osiam.ng.scim.entity.interfaces.ChildOfMultiValueAttribute;
-import scim.schema.v2.MultiValuedAttribute;
+import org.osiam.resources.scim.MultiValuedAttribute;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;

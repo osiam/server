@@ -33,10 +33,10 @@ import org.osiam.ng.resourceserver.entities.PhotoEntity
 import org.osiam.ng.resourceserver.entities.RolesEntity
 import org.osiam.ng.resourceserver.entities.UserEntity
 import org.osiam.ng.resourceserver.entities.X509CertificateEntity
-import scim.schema.v2.Meta
-import scim.schema.v2.MultiValuedAttribute
-import scim.schema.v2.Name
-import scim.schema.v2.User
+import org.osiam.resources.scim.Meta
+import org.osiam.resources.scim.MultiValuedAttribute
+import org.osiam.resources.scim.Name
+import org.osiam.resources.scim.User
 import spock.lang.Specification
 
 class FakeSCIMEntities implements SCIMEntities {

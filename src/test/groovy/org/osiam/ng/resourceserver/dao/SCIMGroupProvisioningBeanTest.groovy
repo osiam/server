@@ -26,7 +26,7 @@ package org.osiam.ng.resourceserver.dao
 import org.osiam.ng.resourceserver.entities.GroupEntity
 import org.osiam.ng.scim.exceptions.ResourceExistsException
 import org.springframework.dao.DataIntegrityViolationException
-import scim.schema.v2.Group
+import org.osiam.resources.scim.Group
 import spock.lang.Specification
 
 class SCIMGroupProvisioningBeanTest extends Specification {

@@ -23,7 +23,7 @@
 
 package org.osiam.ng.resourceserver.entities;
 
-import scim.schema.v2.Meta;
+import org.osiam.resources.scim.Meta;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

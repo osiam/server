@@ -24,10 +24,7 @@
 package org.osiam.ng.scim.dao;
 
 import org.osiam.ng.resourceserver.dao.SCIMSearchResult;
-import scim.schema.v2.Resource;
-import scim.schema.v2.User;
-
-import java.util.List;
+import org.osiam.resources.scim.Resource;
 
 public interface SCIMProvisioning<T extends Resource> {
     /**

@@ -25,9 +25,9 @@ package org.osiam.ng.scim.schema.to.entity
 
 import org.osiam.ng.resourceserver.entities.*
 
-import scim.schema.v2.Address
-import scim.schema.v2.MultiValuedAttribute
-import scim.schema.v2.User
+import org.osiam.resources.scim.Address
+import org.osiam.resources.scim.MultiValuedAttribute
+import org.osiam.resources.scim.User
 import spock.lang.Specification
 
 class EntityListFieldWrapperTest extends Specification {

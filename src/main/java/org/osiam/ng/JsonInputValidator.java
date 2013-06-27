@@ -5,9 +5,9 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.exc.UnrecognizedPropertyException;
 import org.springframework.stereotype.Service;
-import scim.schema.v2.Group;
-import scim.schema.v2.MultiValuedAttribute;
-import scim.schema.v2.User;
+import org.osiam.resources.scim.Group;
+import org.osiam.resources.scim.MultiValuedAttribute;
+import org.osiam.resources.scim.User;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;

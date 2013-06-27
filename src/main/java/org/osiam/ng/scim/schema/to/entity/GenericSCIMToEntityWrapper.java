@@ -23,7 +23,7 @@
 
 package org.osiam.ng.scim.schema.to.entity;
 
-import scim.schema.v2.Resource;
+import org.osiam.resources.scim.Resource;
 
 import java.lang.reflect.Field;
 import java.util.*;

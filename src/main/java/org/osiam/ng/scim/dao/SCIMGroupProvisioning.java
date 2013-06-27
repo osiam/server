@@ -23,7 +23,7 @@
 
 package org.osiam.ng.scim.dao;
 
-import scim.schema.v2.Group;
+import org.osiam.resources.scim.Group;
 
 /**
  * This interface has the purpose to get SCIM group out of and into a database, which must be provided by the using

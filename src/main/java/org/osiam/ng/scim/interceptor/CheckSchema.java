@@ -28,8 +28,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.osiam.ng.scim.exceptions.SchemaUnknownException;
-import scim.schema.v2.Constants;
-import scim.schema.v2.Resource;
+import org.osiam.resources.scim.Constants;
+import org.osiam.resources.scim.Resource;
 
 @Aspect
 public class CheckSchema {

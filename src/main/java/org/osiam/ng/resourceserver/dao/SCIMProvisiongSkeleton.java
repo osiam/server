@@ -27,7 +27,7 @@ import org.osiam.ng.resourceserver.entities.InternalIdSkeleton;
 import org.osiam.ng.scim.dao.SCIMProvisioning;
 import org.osiam.ng.scim.schema.to.entity.GenericSCIMToEntityWrapper;
 import org.osiam.ng.scim.schema.to.entity.SCIMEntities;
-import scim.schema.v2.Resource;
+import org.osiam.resources.scim.Resource;
 
 import java.util.GregorianCalendar;
 

@@ -68,7 +68,7 @@
         <property name="clientDetailsService" ref="clientDetails"/>
     </bean>
 
-    <!-- the token store managing all access tokens -->
+    <!-- the token storage managing all access tokens -->
     <bean id="tokenStore" class="org.springframework.security.oauth2.provider.token.InMemoryTokenStore"/>
 
     <!-- Enabled @Secured annotation -->
