@@ -29,7 +29,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 /**
- * This class has the purpose to make it easier to write own provisiong classes with the purpose to map SCIM Classes to
+ * This class has the purpose to make it easier to write own provisioning classes with the purpose to map SCIM Classes to
  * Entity-Classes.
  * <p/>
  * How ever this class is in a very early state and not very stable -- therefor you have to follow some rules:

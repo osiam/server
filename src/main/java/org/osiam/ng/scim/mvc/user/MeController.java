@@ -52,7 +52,8 @@ public class MeController {
      *
      * @return an object to represent the json format.
      */
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value = "/**", method = {RequestMethod.GET, RequestMethod.POST})
+    //@RequestMapping(method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public FacebookInformationConstruct getInformation(HttpServletRequest request) {
         String access_token = getAccessToken(request);

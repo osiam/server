@@ -49,10 +49,17 @@
 
     <!-- configures the OAuth2 authorization server -->
     <oauth:authorization-server client-details-service-ref="clientDetails"
-                                token-services-ref="tokenServices">
+                                token-services-ref="tokenServices"
+                                token-granter-ref="granter">
         <oauth:authorization-code/>
         <oauth:refresh-token/>
     </oauth:authorization-server>
+
+    <bean id="granter" class="org.osiam.spring.LessStrictRedirectUriAuthorizationCodeTokenGranter">
+        <constructor-arg ref="tokenServices"/>
+        <constructor-arg ref="clientDetails"/>
+    </bean>
+
 
     <!-- access token services -->
     <bean id="tokenServices" class="org.springframework.security.oauth2.provider.token.DefaultTokenServices">
