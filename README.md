@@ -1,6 +1,6 @@
-# OSIAM NG Server
+# OSIAM Server
 
-This is the combined authorization and resource server of the OSIAM NG project.
+This is the combined authorization and resource server of the OSIAM project.
 
 Right now only PostgreSQL is supported as a database.
 
