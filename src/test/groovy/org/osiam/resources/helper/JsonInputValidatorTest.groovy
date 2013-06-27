@@ -1,4 +1,4 @@
-package org.osiam.ng
+package org.osiam.resources.helper
 
 import spock.lang.Specification
 

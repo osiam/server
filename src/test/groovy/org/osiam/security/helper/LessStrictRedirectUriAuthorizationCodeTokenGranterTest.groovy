@@ -1,4 +1,4 @@
-package org.osiam.spring
+package org.osiam.security.helper
 
 import org.osiam.security.helper.LessStrictRedirectUriAuthorizationCodeTokenGranter
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException

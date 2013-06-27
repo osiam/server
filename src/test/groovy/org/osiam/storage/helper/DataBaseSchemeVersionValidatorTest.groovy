@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.ng
+package org.osiam.storage.helper
 
 import org.osiam.storage.entities.DBVersion
 import org.osiam.storage.helper.DataBaseSchemeVersionValidator

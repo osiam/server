@@ -1,4 +1,4 @@
-package org.osiam.ng
+package org.osiam.security.helper
 
 import org.apache.log4j.Logger
 import org.osiam.security.helper.SSLRequestLoggingFilter

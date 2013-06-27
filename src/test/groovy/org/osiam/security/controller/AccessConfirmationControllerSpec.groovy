@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.oauth2.mvc
+package org.osiam.security.controller
 
 import org.osiam.security.controller.AccessConfirmationController
 import org.springframework.security.oauth2.provider.AuthorizationRequest

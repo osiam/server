@@ -1,4 +1,4 @@
-package org.osiam.spring
+package org.osiam.security.helper
 
 import org.osiam.security.helper.FBClientCredentialsTokenEndpointFilter
 import org.springframework.security.authentication.AuthenticationManager

@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.oauth2.user.please.remove.me.asap
+package org.osiam.security.authentication
 
 import org.osiam.storage.dao.UserDAO
 import org.osiam.storage.entities.UserEntity

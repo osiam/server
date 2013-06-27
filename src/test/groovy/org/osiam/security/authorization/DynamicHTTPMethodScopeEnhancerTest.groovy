@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.oauth2.ng.scopes
+package org.osiam.security.authorization
 
 import org.osiam.security.authorization.DynamicHTTPMethodScopeEnhancer
 import org.springframework.security.access.ConfigAttribute
