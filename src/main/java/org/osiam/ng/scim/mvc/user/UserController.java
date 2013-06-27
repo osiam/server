@@ -23,6 +23,7 @@
 
 package org.osiam.ng.scim.mvc.user;
 
+import org.osiam.ng.JsonInputValidator;
 import org.osiam.ng.resourceserver.dao.SCIMSearchResult;
 import org.osiam.ng.scim.dao.SCIMUserProvisioning;
 import org.springframework.http.HttpStatus;
@@ -56,6 +57,9 @@ public class UserController {
     @Inject
     private SCIMUserProvisioning scimUserProvisioning;
 
+    @Inject
+    private JsonInputValidator jsonInputValidator;
+
     private RequestParamHelper requestParamHelper = new RequestParamHelper();
     private JsonResponseEnrichHelper jsonResponseEnrichHelper = new JsonResponseEnrichHelper();
 
@@ -74,7 +78,8 @@ public class UserController {
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public User create(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public User create(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        User user = jsonInputValidator.validateJsonUser(request);
         User createdUser = scimUserProvisioning.create(user);
         String requestUrl = request.getRequestURL().toString();
         URI uri = new UriTemplate("{requestUrl}{internalId}").expand(requestUrl + "/", createdUser.getId());
@@ -86,23 +91,17 @@ public class UserController {
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public User replace(@PathVariable final String id, @RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
+    public User replace(@PathVariable final String id, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        User user = jsonInputValidator.validateJsonUser(request);
         User createdUser = scimUserProvisioning.replace(id, user);
         return setLocationUriAndCreateUserForOutput(request, response, createdUser);
-    }
-
-    private User setLocationUriAndCreateUserForOutput(HttpServletRequest request, HttpServletResponse response,
-                                                      User createdUser) {
-        String requestUrl = request.getRequestURL().toString();
-        response.setHeader("Location", requestUrl);
-        createdUser.getMeta().setLocation(requestUrl);
-        return User.Builder.generateForOuput(createdUser);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public User update(@PathVariable final String id, @RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
+    public User update(@PathVariable final String id, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        User user = jsonInputValidator.validateJsonUser(request);
         User createdUser = scimUserProvisioning.update(id, user);
         return setLocationUriAndCreateUserForOutput(request, response, createdUser);
     }
@@ -131,5 +130,13 @@ public class UserController {
                 (int)parameterMap.get("count"), (int)parameterMap.get("startIndex"));
 
         return jsonResponseEnrichHelper.getJsonFromSearchResult(scimSearchResult, parameterMap, scimSearchResult.getSchemas());
+    }
+
+    private User setLocationUriAndCreateUserForOutput(HttpServletRequest request, HttpServletResponse response,
+                                                      User createdUser) {
+        String requestUrl = request.getRequestURL().toString();
+        response.setHeader("Location", requestUrl);
+        createdUser.getMeta().setLocation(requestUrl);
+        return User.Builder.generateForOuput(createdUser);
     }
 }

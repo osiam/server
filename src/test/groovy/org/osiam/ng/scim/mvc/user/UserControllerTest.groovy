@@ -23,6 +23,7 @@
 
 package org.osiam.ng.scim.mvc.user
 
+import org.osiam.ng.JsonInputValidator
 import org.osiam.ng.resourceserver.dao.SCIMSearchResult
 import org.osiam.ng.scim.dao.SCIMUserProvisioning
 import org.springframework.http.HttpStatus
@@ -43,7 +44,9 @@ class UserControllerTest extends Specification {
 
     def requestParamHelper = Mock(RequestParamHelper)
     def jsonResponseEnrichHelper = Mock(JsonResponseEnrichHelper)
-    def underTest = new UserController(requestParamHelper: requestParamHelper, jsonResponseEnrichHelper: jsonResponseEnrichHelper)
+    def jsonInputValidator = Mock(JsonInputValidator)
+    def underTest = new UserController(requestParamHelper: requestParamHelper,
+            jsonResponseEnrichHelper: jsonResponseEnrichHelper, jsonInputValidator: jsonInputValidator)
     def provisioning = Mock(SCIMUserProvisioning)
     def httpServletRequest = Mock(HttpServletRequest)
     def httpServletResponse = Mock(HttpServletResponse)
@@ -92,7 +95,7 @@ class UserControllerTest extends Specification {
 
     def "should contain a method to POST a user"(){
         given:
-        Method method = UserController.class.getDeclaredMethod("create", User, HttpServletRequest, HttpServletResponse)
+        Method method = UserController.class.getDeclaredMethod("create", HttpServletRequest, HttpServletResponse)
         when:
         RequestMapping mapping = method.getAnnotation(RequestMapping)
         ResponseBody body = method.getAnnotation(ResponseBody)
@@ -125,7 +128,7 @@ class UserControllerTest extends Specification {
 
     def "should contain a method to PUT a user"(){
         given:
-        Method method = UserController.class.getDeclaredMethod("replace",String, User, HttpServletRequest, HttpServletResponse)
+        Method method = UserController.class.getDeclaredMethod("replace",String, HttpServletRequest, HttpServletResponse)
         when:
         RequestMapping mapping = method.getAnnotation(RequestMapping)
         ResponseBody body = method.getAnnotation(ResponseBody)
@@ -138,7 +141,7 @@ class UserControllerTest extends Specification {
 
     def "should contain a method to PATCH a user"(){
         given:
-        Method method = UserController.class.getDeclaredMethod("update", String, User, HttpServletRequest, HttpServletResponse)
+        Method method = UserController.class.getDeclaredMethod("update", String, HttpServletRequest, HttpServletResponse)
         when:
         RequestMapping mapping = method.getAnnotation(RequestMapping)
         ResponseBody body = method.getAnnotation(ResponseBody)
@@ -186,9 +189,10 @@ class UserControllerTest extends Specification {
         given:
         httpServletRequest.getRequestURL() >> new StringBuffer("http://host:port/deployment/User")
         def uri = new URI("http://host:port/deployment/User/id")
+        jsonInputValidator.validateJsonUser(httpServletRequest) >> user
 
         when:
-        def result = underTest.create(user, httpServletRequest, httpServletResponse)
+        def result = underTest.create(httpServletRequest, httpServletResponse)
 
         then:
         1 * provisioning.create(user) >> user
@@ -199,8 +203,11 @@ class UserControllerTest extends Specification {
     def "should replace an user and set location header"() {
         given:
         def id = UUID.randomUUID().toString()
+        jsonInputValidator.validateJsonUser(httpServletRequest) >> user
+
         when:
-        def result = underTest.replace(id, user, httpServletRequest, httpServletResponse)
+        def result = underTest.replace(id, httpServletRequest, httpServletResponse)
+
         then:
         1 * provisioning.replace(id, user) >> user
         1 * httpServletRequest.getRequestURL() >> new StringBuffer("http://localhorst/horst/"+id)
@@ -211,8 +218,11 @@ class UserControllerTest extends Specification {
     def "should update an user and set location header"() {
         given:
         def id = UUID.randomUUID().toString()
+        jsonInputValidator.validateJsonUser(httpServletRequest) >> user
+
         when:
-        def result = underTest.update(id, user, httpServletRequest, httpServletResponse)
+        def result = underTest.update(id, httpServletRequest, httpServletResponse)
+
         then:
         1 * provisioning.update(id, user) >> user
         1 * httpServletRequest.getRequestURL() >> new StringBuffer("http://localhorst/horst/yo")

@@ -23,6 +23,7 @@
 
 package org.osiam.ng.scim.mvc.user;
 
+import org.osiam.ng.JsonInputValidator;
 import org.osiam.ng.resourceserver.dao.SCIMSearchResult;
 import org.osiam.ng.scim.dao.SCIMGroupProvisioning;
 import org.springframework.http.HttpStatus;
@@ -46,13 +47,17 @@ public class GroupController {
     @Inject
     private SCIMGroupProvisioning scimGroupProvisioning;
 
+    @Inject
+    private JsonInputValidator jsonInputValidator;
+
     private RequestParamHelper requestParamHelper = new RequestParamHelper();
     private JsonResponseEnrichHelper jsonResponseEnrichHelper = new JsonResponseEnrichHelper();
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public Group create(@RequestBody Group group, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public Group create(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        Group group = jsonInputValidator.validateJsonGroup(request);
         Group createdGroup = scimGroupProvisioning.create(group);
         setLocationUriWithNewId(request, response, createdGroup.getId());
         return createdGroup;
@@ -84,19 +89,21 @@ public class GroupController {
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public Group replace(@PathVariable final String id, @RequestBody Group user, HttpServletRequest request, HttpServletResponse response) {
-        Group group = scimGroupProvisioning.replace(id, user);
+    public Group replace(@PathVariable final String id, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        Group group = jsonInputValidator.validateJsonGroup(request);
+        Group createdGroup = scimGroupProvisioning.replace(id, group);
         setLocation(request, response);
-        return group;
+        return createdGroup;
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public Group update(@PathVariable final String id, @RequestBody Group user, HttpServletRequest request, HttpServletResponse response) {
-        Group group = scimGroupProvisioning.update(id, user);
+    public Group update(@PathVariable final String id, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        Group group = jsonInputValidator.validateJsonGroup(request);
+        Group createdGroup = scimGroupProvisioning.update(id, group);
         setLocation(request, response);
-        return group;
+        return createdGroup;
     }
 
     @RequestMapping(method = RequestMethod.GET)

@@ -23,6 +23,7 @@
 
 package org.osiam.ng.scim.mvc.user
 
+import org.osiam.ng.JsonInputValidator
 import org.osiam.ng.resourceserver.dao.SCIMSearchResult
 import org.osiam.ng.scim.dao.SCIMGroupProvisioning
 import org.springframework.http.HttpStatus
@@ -43,14 +44,16 @@ class GroupControllerTest extends Specification {
     def provisioning = Mock(SCIMGroupProvisioning)
     def requestParamHelper = Mock(RequestParamHelper)
     def jsonResponseEnrichHelper = Mock(JsonResponseEnrichHelper)
-    def underTest = new GroupController(scimGroupProvisioning: provisioning, requestParamHelper: requestParamHelper, jsonResponseEnrichHelper: jsonResponseEnrichHelper)
+    def jsonInputValidator = Mock(JsonInputValidator)
+    def underTest = new GroupController(scimGroupProvisioning: provisioning, requestParamHelper: requestParamHelper,
+            jsonResponseEnrichHelper: jsonResponseEnrichHelper, jsonInputValidator: jsonInputValidator)
     def httpServletResponse = Mock(HttpServletResponse)
     Group group = new Group.Builder().setDisplayName("group1").setId(UUID.randomUUID().toString()).build()
 
 
     def "should contain a method to POST a group"() {
         given:
-        Method method = GroupController.class.getDeclaredMethod("create", Group, HttpServletRequest, HttpServletResponse)
+        Method method = GroupController.class.getDeclaredMethod("create", HttpServletRequest, HttpServletResponse)
         when:
         RequestMapping mapping = method.getAnnotation(RequestMapping)
         ResponseBody body = method.getAnnotation(ResponseBody)
@@ -65,9 +68,10 @@ class GroupControllerTest extends Specification {
         given:
         httpServletRequest.getRequestURL() >> new StringBuffer("http://host:port/deployment/Group")
         def uri = new URI("http://host:port/deployment/Group/" + group.id)
+        jsonInputValidator.validateJsonGroup(httpServletRequest) >> group
 
         when:
-        def result = underTest.create(group, httpServletRequest, httpServletResponse)
+        def result = underTest.create(httpServletRequest, httpServletResponse)
 
         then:
         1 * provisioning.create(group) >> group
@@ -116,7 +120,7 @@ class GroupControllerTest extends Specification {
 
     def "should contain a method to PUT a group"(){
         given:
-        Method method = GroupController.class.getDeclaredMethod("replace", String, Group, HttpServletRequest, HttpServletResponse)
+        Method method = GroupController.class.getDeclaredMethod("replace", String, HttpServletRequest, HttpServletResponse)
         when:
         RequestMapping mapping = method.getAnnotation(RequestMapping)
         ResponseBody body = method.getAnnotation(ResponseBody)
@@ -130,8 +134,10 @@ class GroupControllerTest extends Specification {
     def "should call provisioning on replace"(){
         given:
         def location = "http://host:port/deployment/Group/" + group.id
+        jsonInputValidator.validateJsonGroup(httpServletRequest) >> group
+
         when:
-        def result = underTest.replace(group.id, group, httpServletRequest, httpServletResponse)
+        def result = underTest.replace(group.id, httpServletRequest, httpServletResponse)
 
         then:
         1 * httpServletRequest.getRequestURL() >> new StringBuffer(location)
@@ -143,7 +149,7 @@ class GroupControllerTest extends Specification {
 
     def "should contain a method to PATCH a group"(){
         given:
-        Method method = GroupController.class.getDeclaredMethod("update", String, Group, HttpServletRequest, HttpServletResponse)
+        Method method = GroupController.class.getDeclaredMethod("update", String, HttpServletRequest, HttpServletResponse)
         when:
         RequestMapping mapping = method.getAnnotation(RequestMapping)
         ResponseBody body = method.getAnnotation(ResponseBody)
@@ -157,8 +163,10 @@ class GroupControllerTest extends Specification {
     def "should call provisioning on update"(){
         given:
         def location = "http://host:port/deployment/Group/" + group.id
+        jsonInputValidator.validateJsonGroup(httpServletRequest) >> group
+
         when:
-        def result = underTest.update(group.id, group, httpServletRequest, httpServletResponse)
+        def result = underTest.update(group.id, httpServletRequest, httpServletResponse)
 
         then:
         1 * httpServletRequest.getRequestURL() >> new StringBuffer(location)
