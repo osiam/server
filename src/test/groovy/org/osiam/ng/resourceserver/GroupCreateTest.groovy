@@ -45,7 +45,7 @@ class GroupCreateTest extends Specification {
         def internalId = UUID.randomUUID()
         def query = Mock(Query)
         members.add(new MultiValuedAttribute.Builder().setValue(internalId.toString()).build())
-        def group = new Group.Builder().setMembers(members).build()
+        def group = new Group.Builder().setDisplayName("displayName").setMembers(members).build()
         when:
         underTest.create(group)
         then:
@@ -53,7 +53,7 @@ class GroupCreateTest extends Specification {
         1 * query.setParameter("id", internalId);
         1 * query.getResultList() >> { throw new DataIntegrityViolationException("moep") }
         def e = thrown(ResourceExistsException)
-        e.message == "null already exists."
+        e.message == "displayName already exists."
     }
 
 
