@@ -1,5 +1,5 @@
 /**
- *  org.osiam.resources is a group of groups related the resoruce-server functionality.
+ *  org.osiam.resources is a group of groups related the resource-server functionality.
  *
  *  The resource-server of OSIAM is build on top of SCIM v2 (see http://tools.ietf.org/html/draft-ietf-scim-api-01, 
  *  http://tools.ietf.org/html/draft-ietf-scim-core-schema-01 for further details on the standard).

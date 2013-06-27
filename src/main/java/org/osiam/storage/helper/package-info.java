@@ -1,5 +1,6 @@
 /**
- *  org.osiam.storage.dao is a group of data access objects to manage the classes in org.osiam.storage.entities
+ *  org.osiam.storage.helper is a group of classes which do either enforce the correct data base behaviour or
+ *  help doing the storage.
  *
  *
  */

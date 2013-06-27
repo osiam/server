@@ -23,7 +23,7 @@
 
 package org.osiam.oauth2.ng.scopes
 
-import org.osiam.security.helper.DynamicHTTPMethodScopeEnhancer
+import org.osiam.security.authorization.DynamicHTTPMethodScopeEnhancer
 import org.springframework.security.access.ConfigAttribute
 import org.springframework.security.access.SecurityConfig
 import org.springframework.security.oauth2.provider.vote.ScopeVoter

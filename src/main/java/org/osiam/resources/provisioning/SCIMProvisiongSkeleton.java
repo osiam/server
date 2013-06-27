@@ -25,8 +25,6 @@ package org.osiam.resources.provisioning;
 
 import org.osiam.storage.dao.GenericDAO;
 import org.osiam.storage.entities.InternalIdSkeleton;
-import org.osiam.resources.helper.GenericSCIMToEntityWrapper;
-import org.osiam.resources.helper.SCIMEntities;
 import org.osiam.resources.scim.Resource;
 
 import java.util.GregorianCalendar;

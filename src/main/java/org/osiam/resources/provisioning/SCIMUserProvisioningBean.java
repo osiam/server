@@ -26,11 +26,8 @@ package org.osiam.resources.provisioning;
 import org.osiam.storage.dao.GenericDAO;
 import org.osiam.storage.dao.SCIMSearchResult;
 import org.osiam.storage.dao.UserDAO;
-import org.osiam.resources.helper.UserSCIMEntities;
 import org.osiam.storage.entities.UserEntity;
 import org.osiam.resources.exceptions.ResourceExistsException;
-import org.osiam.resources.helper.GenericSCIMToEntityWrapper;
-import org.osiam.resources.helper.SCIMEntities;
 import org.springframework.stereotype.Service;
 import org.osiam.resources.scim.User;
 
