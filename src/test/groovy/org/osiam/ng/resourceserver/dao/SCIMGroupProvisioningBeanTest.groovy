@@ -53,15 +53,29 @@ class SCIMGroupProvisioningBeanTest extends Specification {
     }
 
     def "should wrap exceptions to org.osiam.ng.scim.exceptions.ResourceExistsException on create"(){
-           given:
+        given:
         groupDao.create(_) >> {
             throw new DataIntegrityViolationException("moep")
         }
+        group.getDisplayName() >> "displayName"
         when:
         underTest.create(group)
         then:
         def e = thrown(ResourceExistsException)
-        e.message == "null already exists."
+        e.message == "displayName already exists."
+    }
+
+    def "should throw exception if mandatory display name is null"(){
+        given:
+        groupDao.create(_) >> {
+            throw new DataIntegrityViolationException("bäm")
+        }
+        group.getDisplayName() >> ""
+        when:
+        underTest.create(group)
+        then:
+        def e = thrown(ResourceExistsException)
+        e.message == "The display name is mandatory and MUST NOT be empty."
     }
 
     def "should call dao get on get"(){

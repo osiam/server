@@ -60,6 +60,9 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group> imp
             groupDAO.create(enrichedGroup);
         } catch (DataIntegrityViolationException e) {
             logger.log(Level.INFO, "An exception got thrown while creating a group.", e);
+            if(group.getDisplayName().isEmpty()) {
+                throw new ResourceExistsException("The display name is mandatory and MUST NOT be empty.");
+            }
             throw new ResourceExistsException(group.getDisplayName() + " already exists.");
         }
         return enrichedGroup.toScim();  //To change body of implemented methods use File | Settings | File Templates.

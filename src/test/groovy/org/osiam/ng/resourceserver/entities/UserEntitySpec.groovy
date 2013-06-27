@@ -41,6 +41,86 @@ class UserEntitySpec extends Specification {
 
     UserEntity userEntity = new UserEntity()
 
+    def name = new NameEntity()
+    def scimName
+
+    def addresses = new ArrayList()
+    def emails = new ArrayList()
+    def entitlements = new ArrayList()
+    def groups = new ArrayList()
+    def ims = new ArrayList()
+    def phoneNumbers = new ArrayList()
+    def photos = new ArrayList()
+    def roles = new ArrayList()
+    def certificates = new ArrayList()
+
+    def setup() {
+        name.setFamilyName("familyName")
+        name.setFormatted("formattedName")
+        name.setGivenName("givenName")
+        name.setHonorificPrefix("prefix")
+        name.setHonorificSuffix("suffix")
+        name.setId(1234)
+        name.setMiddleName("middleName")
+
+
+        scimName = new Name.Builder().
+                setFamilyName("familyName").
+                setFormatted("formattedName").
+                setGivenName("givenName").
+                setHonorificPrefix("prefix").
+                setHonorificSuffix("suffix").
+                setMiddleName("middleName").
+                build()
+
+        addresses.add(new Address.Builder().
+                setCountry("country").
+                setFormatted("formatted").
+                setLocality("locality").
+                setPostalCode("123456").
+                setRegion("region").
+                setStreetAddress("streetAddress").setPrimary(true).
+                build())
+
+        emails.add(new MultiValuedAttribute.Builder().
+                setPrimary(true).
+                setType("home").
+                setValue("value").
+                build())
+
+        entitlements.add(new MultiValuedAttribute.Builder().
+                setValue("value").
+                build())
+
+        groups.add(new MultiValuedAttribute.Builder().
+                setValue(UUID.randomUUID().toString()).
+                setDisplay("display").
+                build())
+
+        ims.add(new MultiValuedAttribute.Builder().
+                setValue("blaaaa").
+                setType("icq").
+                build())
+
+        phoneNumbers.add(new MultiValuedAttribute.Builder().
+                setValue("blaaaa").
+                setType("home").
+                build())
+
+        photos.add(new MultiValuedAttribute.Builder().
+                setValue("blaaaa").
+                setType("photo").
+                build())
+
+        roles.add(new MultiValuedAttribute.Builder().
+                setValue("blaaaa").
+                build())
+
+        certificates.add(new MultiValuedAttribute.Builder().
+                setValue("blaaaa").
+                build())
+    }
+
     def "should inherit UserDetails"(){
         given:
         def roles = [new RolesEntity()] as Set<RolesEntity>
@@ -303,76 +383,6 @@ class UserEntitySpec extends Specification {
         internalId == userEntity.getId()
     }
 
-    def name = new NameEntity()
-    def scimName
-
-    def setup() {
-        name.setFamilyName("familyName")
-        name.setFormatted("formattedName")
-        name.setGivenName("givenName")
-        name.setHonorificPrefix("prefix")
-        name.setHonorificSuffix("suffix")
-        name.setId(1234)
-        name.setMiddleName("middleName")
-
-
-        scimName = new Name.Builder().
-                setFamilyName("familyName").
-                setFormatted("formattedName").
-                setGivenName("givenName").
-                setHonorificPrefix("prefix").
-                setHonorificSuffix("suffix").
-                setMiddleName("middleName").
-                build()
-
-        addresses.add(new Address.Builder().
-                setCountry("country").
-                setFormatted("formatted").
-                setLocality("locality").
-                setPostalCode("123456").
-                setRegion("region").
-                setStreetAddress("streetAddress").setPrimary(true).
-                build())
-
-        emails.add(new MultiValuedAttribute.Builder().
-                setPrimary(true).
-                setType("type").
-                setValue("value").
-                build())
-
-        entitlements.add(new MultiValuedAttribute.Builder().
-                setValue("value").
-                build())
-
-        groups.add(new MultiValuedAttribute.Builder().
-                setValue(UUID.randomUUID().toString()).
-                setDisplay("display").
-                build())
-
-        ims.add(new MultiValuedAttribute.Builder().
-                setValue("blaaaa").
-                setType("type").
-                build())
-
-        phoneNumbers.add(new MultiValuedAttribute.Builder().
-                setValue("blaaaa").
-                setType("type").
-                build())
-
-        photos.add(new MultiValuedAttribute.Builder().
-                setValue("blaaaa").
-                setType("type").
-                build())
-
-        roles.add(new MultiValuedAttribute.Builder().
-                setValue("blaaaa").
-                build())
-
-        certificates.add(new MultiValuedAttribute.Builder().
-                setValue("blaaaa").
-                build())
-    }
-
     def "should be possible to map a user entity to a scim user class"() {
         given:
         def internalId = UUID.randomUUID()
@@ -493,16 +503,6 @@ class UserEntitySpec extends Specification {
         user.userType == "userType"
         user.x509Certificates != null
     }
-
-    def addresses = new ArrayList()
-    def emails = new ArrayList()
-    def entitlements = new ArrayList()
-    def groups = new ArrayList()
-    def ims = new ArrayList()
-    def phoneNumbers = new ArrayList()
-    def photos = new ArrayList()
-    def roles = new ArrayList()
-    def certificates = new ArrayList()
 
     def "should be possible to map a scim user class to a user entity"() {
         given:

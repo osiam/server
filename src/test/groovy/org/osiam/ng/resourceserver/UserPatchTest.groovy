@@ -87,9 +87,9 @@ class UserPatchTest extends Specification {
         entity.getAddresses().add(new AddressEntity())
         entity.getEmails().add(new EmailEntity(value: "email", type: "work", primary: false))
         entity.getEntitlements().add(new EntitlementsEntity(value: "entitlement"))
-        entity.getIms().add(new ImEntity(value: "im", type: "work"))
+        entity.getIms().add(new ImEntity(value: "im", type: "icq"))
         entity.getPhoneNumbers().add(new PhoneNumberEntity(value: "phonenumber", type: "work"))
-        entity.getPhotos().add(new PhotoEntity(value: "photo", type: "work"))
+        entity.getPhotos().add(new PhotoEntity(value: "photo", type: "photo"))
         entity.getRoles().add(new RolesEntity(value: "role"))
     }
 
@@ -125,13 +125,13 @@ class UserPatchTest extends Specification {
         entitlements.add(new MultiValuedAttribute.Builder().setValue("entitlement").setPrimary(true).setType("home").build())
 
         def ims = new ArrayList()
-        ims.add(new MultiValuedAttribute.Builder().setValue("im").setPrimary(true).setType("home").build())
+        ims.add(new MultiValuedAttribute.Builder().setValue("im").setPrimary(true).setType("icq").build())
 
         def numbers = new ArrayList()
         numbers.add(new MultiValuedAttribute.Builder().setValue("phonenumber").setPrimary(true).setType("home").build())
 
         def photos = new ArrayList()
-        photos.add(new MultiValuedAttribute.Builder().setValue("photo").setPrimary(true).setType("home").build())
+        photos.add(new MultiValuedAttribute.Builder().setValue("photo").setPrimary(true).setType("photo").build())
 
         def roles = new ArrayList()
         roles.add(new MultiValuedAttribute.Builder().setValue("role").setPrimary(true).setType("home").build())
@@ -170,11 +170,11 @@ class UserPatchTest extends Specification {
         }
         entity.getEntitlements().size() == 1
         entity.getIms().size() == 1
-        entity.getIms().first().type == "home"
+        entity.getIms().first().type == "icq"
         entity.getPhoneNumbers().size() == 1
         entity.getPhoneNumbers().first().type == "home"
         entity.getPhotos().size() == 1
-        entity.getPhotos().first().type == "home"
+        entity.getPhotos().first().type == "photo"
 
         entity.getRoles().size() == 1
     }
@@ -209,8 +209,8 @@ class UserPatchTest extends Specification {
                 .build()
 
 
-        entity.addresses.add(new AddressEntity(type: "dunno"))
-        entity.addresses.add(new AddressEntity(type: "blubb"))
+        entity.addresses.add(new AddressEntity(type: "work"))
+        entity.addresses.add(new AddressEntity(type: "home"))
         addListsToEntity(entity)
 
         when:
