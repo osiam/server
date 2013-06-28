@@ -23,10 +23,14 @@
 
 package org.osiam.resources.exceptions
 
+import org.codehaus.jackson.JsonParseException
+import org.codehaus.jackson.map.ObjectMapper
+import org.osiam.resources.scim.User
 import org.osiam.storage.entities.EmailEntity
 import org.osiam.storage.entities.ImEntity
 import org.osiam.storage.entities.PhoneNumberEntity
 import org.osiam.storage.entities.PhotoEntity
+import org.osiam.storage.entities.UserEntity
 import org.springframework.http.HttpStatus
 import org.springframework.web.context.request.WebRequest
 import spock.lang.Specification
@@ -93,12 +97,21 @@ class HandleExceptionTest extends Specification {
 
     def "should transform json property invalid error message to a more readable response"() {
         given:
-        def exception = new IllegalArgumentException('Unrecognized field \"external\" (Class org.osiam.resources.scim.User), ' +
-                'not marked as ignorable\\n at [Source: java.io.StringReader@4d8fde01; line: 1, column: 54]')
+        def e = generate_wrong_json_exception('{"extId":"blubb"}', User)
         when:
-        def result = underTest.handleConflict(exception, request)
+        def result = underTest.handleConflict(e, request)
         then:
-        (result.getBody() as HandleException.JsonErrorResult).description == 'Unrecognized field "external"'
+        (result.getBody() as HandleException.JsonErrorResult).description == 'Unrecognized field "extId"'
+    }
+
+    def generate_wrong_json_exception(String input, Class clazz) {
+
+        try {
+            new ObjectMapper().readValue(input, clazz);
+        } catch (Exception e) {
+            return  e;
+        }
+
     }
 
     def "should transform json mapping error message for simple types to a more readable response"() {

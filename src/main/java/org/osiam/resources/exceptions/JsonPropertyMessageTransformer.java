@@ -12,13 +12,17 @@ import java.util.regex.Pattern;
  */
 public class JsonPropertyMessageTransformer implements ErrorMessageTransformer {
 
-    //should only get Unrecognized field and name of the field
-    static Pattern pattern = Pattern.compile("(Unrecognized field \\\"\\w+\\\").*");
+    //should only get Unrecognized field and name of the field e.q.:
+    //Unrecognized field "extId" (Class org.osiam.resources.scim.User), not marked as ignorable
+    //at [Source: java.io.StringReader@1e41ac03; line: 1, column: 11] (through reference chain: org.osiam.resources.scim.User["extId"])
+    //will be transformed to
+    // Unrecognized field "extId"
+    private final static Pattern pattern = Pattern.compile("(Unrecognized field \"\\w+\").*",
+            Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
 
     @Override
     public String transform(String message) {
-        if (message == null)
-            return null;
+        if (message == null) { return null; }
         Matcher matcher = pattern.matcher(message);
         if (matcher.matches()) {
             return matcher.group(1);
