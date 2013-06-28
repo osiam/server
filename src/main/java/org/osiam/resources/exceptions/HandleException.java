@@ -41,8 +41,8 @@ import java.util.regex.Pattern;
 public class HandleException extends ResponseEntityExceptionHandler {
     private static final Logger LOGGER = Logger.getLogger(HandleException.class.getName());
     //Contains all known ErrorMessageTransformer to validate and manipulate error messages
-    private static final ErrorMessageTransformer[] knownErrorMsgTransformer = {new TypeErrorMessageTransformer(),
-            new JsonMappingSimpleMessageTransformer(), new JsonPropertyMessageTransformer()};
+    private static final ErrorMessageTransformer[] knownErrorMsgTransformer =
+            {new TypeErrorMessageTransformer(), new JsonPropertyMessageTransformer()};
 
     @ExceptionHandler(value = {Exception.class})
     protected ResponseEntity<Object> handleConflict(Exception ex, WebRequest request) {

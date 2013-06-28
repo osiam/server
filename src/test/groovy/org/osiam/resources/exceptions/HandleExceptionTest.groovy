@@ -113,22 +113,4 @@ class HandleExceptionTest extends Specification {
         }
 
     }
-
-    def "should transform json mapping error message for simple types to a more readable response"() {
-        given:
-        def exception = new IllegalArgumentException('Can not construct instance of java.util.Date from String value "123"')
-        when:
-        def result = underTest.handleConflict(exception, request)
-        then:
-        (result.getBody() as HandleException.JsonErrorResult).description == 'Can not construct instance of java.util.Date from String value "123"'
-    }
-
-    def "should transform json mapping error message for Set types to a more readable response"() {
-        given:
-        def exception = new IllegalArgumentException("Can not deserialize instance of java.util.HashSet out of VALUE_STRING token")
-        when:
-        def result = underTest.handleConflict(exception, request)
-        then:
-        (result.getBody() as HandleException.JsonErrorResult).description == "Can not deserialize instance of java.util.HashSet out of VALUE_STRING token"
-    }
 }
