@@ -23,14 +23,12 @@
 
 package org.osiam.resources.exceptions
 
-import org.codehaus.jackson.JsonParseException
 import org.codehaus.jackson.map.ObjectMapper
 import org.osiam.resources.scim.User
 import org.osiam.storage.entities.EmailEntity
 import org.osiam.storage.entities.ImEntity
 import org.osiam.storage.entities.PhoneNumberEntity
 import org.osiam.storage.entities.PhotoEntity
-import org.osiam.storage.entities.UserEntity
 import org.springframework.http.HttpStatus
 import org.springframework.web.context.request.WebRequest
 import spock.lang.Specification
@@ -81,13 +79,13 @@ class HandleExceptionTest extends Specification {
         (result.getBody() as HandleException.JsonErrorResult).description == "huch is not a valid " + name + " type"
         where:
         name << ["PhoneNumber", "Im", "Email", "Photo"]
-        e << [get_exeception { new PhoneNumberEntity().setType("huch") },
-                get_exeception { new ImEntity().setType("huch") },
-                get_exeception { new EmailEntity().setType("huch") },
-                get_exeception { new PhotoEntity().setType("huch") }]
+        e << [get_exception { new PhoneNumberEntity().setType("huch") },
+                get_exception { new ImEntity().setType("huch") },
+                get_exception { new EmailEntity().setType("huch") },
+                get_exception { new PhotoEntity().setType("huch") }]
     }
 
-    def get_exeception(Closure c) {
+    def get_exception(Closure c) {
         try {
             c.call()
         } catch (IllegalArgumentException a) {
