@@ -74,26 +74,17 @@ class GenericSCIMToEntityWrapperTest extends Specification {
         def any = new HashSet()
         any.add("ha")
         def scimUser = new User.Builder("test").setActive(true)
-
                 .setAny(any)
                 .setDisplayName("display")
-
-
-
-
                 .setLocale("locale")
                 .setName(new Name.Builder().build())
                 .setNickName("nickname")
                 .setPassword("password")
-
-
                 .setPreferredLanguage("prefereedLanguage")
                 .setProfileUrl("profileUrl")
-
                 .setTimezone("time")
                 .setTitle("title")
                 .setUserType("userType")
-
                 .setExternalId("externalid")
                 .setId("id")
                 .setMeta(new Meta.Builder().build())
@@ -186,7 +177,7 @@ class GenericSCIMToEntityWrapperTest extends Specification {
 
         user.phoneNumbers.add(new MultiValuedAttribute.Builder().setValue("phonenumber").setOperation("delete").build())
 
-        user.photos.add(new MultiValuedAttribute.Builder().setValue("photo").setOperation("delete").build())
+        user.photos.add(new MultiValuedAttribute.Builder().setValue("photo.png").setOperation("delete").build())
 
         user.roles.add(new MultiValuedAttribute.Builder().setValue("role").setOperation("delete").build())
         user.x509Certificates.add(new MultiValuedAttribute.Builder().setValue("x509").setOperation("delete").build())

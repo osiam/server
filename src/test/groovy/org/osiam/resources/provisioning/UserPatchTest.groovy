@@ -48,7 +48,7 @@ class UserPatchTest extends Specification {
         numbers.add(new MultiValuedAttribute.Builder().setValue("phonenumber").setOperation("delete").build())
 
         def photos = new ArrayList()
-        photos.add(new MultiValuedAttribute.Builder().setValue("photo").setOperation("delete").build())
+        photos.add(new MultiValuedAttribute.Builder().setValue("photo.jpg").setOperation("delete").build())
 
         def roles = new ArrayList()
         roles.add(new MultiValuedAttribute.Builder().setValue("role").setOperation("delete").build())
@@ -89,7 +89,7 @@ class UserPatchTest extends Specification {
         entity.getEntitlements().add(new EntitlementsEntity(value: "entitlement"))
         entity.getIms().add(new ImEntity(value: "im", type: "icq"))
         entity.getPhoneNumbers().add(new PhoneNumberEntity(value: "phonenumber", type: "work"))
-        entity.getPhotos().add(new PhotoEntity(value: "photo", type: "photo"))
+        entity.getPhotos().add(new PhotoEntity(value: "photo.jpeg", type: "photo"))
         entity.getRoles().add(new RolesEntity(value: "role"))
     }
 
@@ -131,7 +131,7 @@ class UserPatchTest extends Specification {
         numbers.add(new MultiValuedAttribute.Builder().setValue("phonenumber").setPrimary(true).setType("home").build())
 
         def photos = new ArrayList()
-        photos.add(new MultiValuedAttribute.Builder().setValue("photo").setPrimary(true).setType("photo").build())
+        photos.add(new MultiValuedAttribute.Builder().setValue("photo.png").setPrimary(true).setType("photo").build())
 
         def roles = new ArrayList()
         roles.add(new MultiValuedAttribute.Builder().setValue("role").setPrimary(true).setType("home").build())

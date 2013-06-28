@@ -120,7 +120,7 @@ class UserEntitySpec extends Specification {
                 build())
 
         photos.add(new MultiValuedAttribute.Builder().
-                setValue("blaaaa").
+                setValue("picture.gif").
                 setType("photo").
                 build())
 
