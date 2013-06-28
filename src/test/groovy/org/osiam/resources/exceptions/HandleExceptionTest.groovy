@@ -23,13 +23,6 @@
 
 package org.osiam.resources.exceptions
 
-import org.osiam.resources.exceptions.HandleException
-import org.osiam.resources.exceptions.ResourceNotFoundException
-import org.osiam.resources.exceptions.SchemaUnknownException
-import org.osiam.storage.entities.EmailEntity
-import org.osiam.storage.entities.ImEntity
-import org.osiam.storage.entities.PhoneNumberEntity
-import org.osiam.storage.entities.PhotoEntity
 import org.springframework.http.HttpStatus
 import org.springframework.web.context.request.WebRequest
 import spock.lang.Specification
@@ -73,26 +66,40 @@ class HandleExceptionTest extends Specification {
         (result.getBody() as HandleException.JsonErrorResult).description == "Delivered schema is unknown."
     }
 
-    def "should transform *Entity No enum constant error message to a more readable error response"() {
+    def "should transform PhotoEntity No enum constant error message to a more readable error response"(){
+        given:
+        def exception = new IllegalArgumentException(
+                "No enum constant org.osiam.storage.entities.PhotoEntity.CanonicalPhotoTypes.huch")
         when:
-        def result = underTest.handleConflict(e, request)
+           def result = underTest.handleConflict(exception, request)
         then:
-        (result.getBody() as HandleException.JsonErrorResult).description == "huch is not a valid " + name + " type"
-        where:
-        name << ["PhoneNumber", "Im", "Email", "Photo"]
-        e << [get_exeception { new PhoneNumberEntity().setType("huch") },
-                get_exeception { new ImEntity().setType("huch") },
-                get_exeception { new EmailEntity().setType("huch") },
-                get_exeception { new PhotoEntity().setType("huch") }]
+        (result.getBody() as HandleException.JsonErrorResult).description == "huch is not a valid Photo type"
     }
 
-    def get_exeception(Closure c) {
-        try {
-            c.call()
-        } catch (IllegalArgumentException a) {
-            return a
-        }
+    def "should transform json property invalid error message to a more readable response"() {
+        given:
+        def exception = new IllegalArgumentException("Unrecognized field 'word'")
+        when:
+        def result = underTest.handleConflict(exception, request)
+        then:
+        (result.getBody() as HandleException.JsonErrorResult).description == "Unrecognized field 'word'"
     }
 
+    def "should transform json mapping error message for simple types to a more readable response"() {
+        given:
+        def exception = new IllegalArgumentException('Can not construct instance of java.util.Date from String value "123"')
+        when:
+        def result = underTest.handleConflict(exception, request)
+        then:
+        (result.getBody() as HandleException.JsonErrorResult).description == 'Can not construct instance of java.util.Date from String value "123"'
+    }
 
+    def "should transform json mapping error message for Set types to a more readable response"() {
+        given:
+        def exception = new IllegalArgumentException("Can not deserialize instance of java.util.HashSet out of VALUE_STRING token")
+        when:
+        def result = underTest.handleConflict(exception, request)
+        then:
+        (result.getBody() as HandleException.JsonErrorResult).description == "Can not deserialize instance of java.util.HashSet out of VALUE_STRING token"
+    }
 }
