@@ -23,6 +23,10 @@
 
 package org.osiam.resources.exceptions
 
+import org.osiam.storage.entities.EmailEntity
+import org.osiam.storage.entities.ImEntity
+import org.osiam.storage.entities.PhoneNumberEntity
+import org.osiam.storage.entities.PhotoEntity
 import org.springframework.http.HttpStatus
 import org.springframework.web.context.request.WebRequest
 import spock.lang.Specification
@@ -66,14 +70,25 @@ class HandleExceptionTest extends Specification {
         (result.getBody() as HandleException.JsonErrorResult).description == "Delivered schema is unknown."
     }
 
-    def "should transform PhotoEntity No enum constant error message to a more readable error response"(){
-        given:
-        def exception = new IllegalArgumentException(
-                "No enum constant org.osiam.storage.entities.PhotoEntity.CanonicalPhotoTypes.huch")
+    def "should transform *Entity No enum constant error message to a more readable error response"() {
         when:
-           def result = underTest.handleConflict(exception, request)
+        def result = underTest.handleConflict(e, request)
         then:
-        (result.getBody() as HandleException.JsonErrorResult).description == "huch is not a valid Photo type"
+        (result.getBody() as HandleException.JsonErrorResult).description == "huch is not a valid " + name + " type"
+        where:
+        name << ["PhoneNumber", "Im", "Email", "Photo"]
+        e << [get_exeception { new PhoneNumberEntity().setType("huch") },
+                get_exeception { new ImEntity().setType("huch") },
+                get_exeception { new EmailEntity().setType("huch") },
+                get_exeception { new PhotoEntity().setType("huch") }]
+    }
+
+    def get_exeception(Closure c) {
+        try {
+            c.call()
+        } catch (IllegalArgumentException a) {
+            return a
+        }
     }
 
     def "should transform json property invalid error message to a more readable response"() {
