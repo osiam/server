@@ -113,4 +113,13 @@ class EmailEntitySpec extends Specification {
         then:
         !result.primary
     }
+
+    def "should throw an exception if the type is unknown"() {
+        when:
+        emailEntity.setType("huch")
+
+        then:
+        def e = thrown(IllegalArgumentException)
+        e.message == "No enum constant org.osiam.storage.entities.EmailEntity.CanonicalEmailTypes.huch"
+    }
 }

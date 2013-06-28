@@ -86,4 +86,13 @@ class ImsEntitySpec extends Specification {
         then:
         result != null
     }
+
+    def "should throw an exception if the type is unknown"() {
+        when:
+        imsEntity.setType("huch")
+
+        then:
+        def e = thrown(IllegalArgumentException)
+        e.message == "No enum constant org.osiam.storage.entities.ImEntity.CanonicalImTypes.huch"
+    }
 }
