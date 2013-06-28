@@ -73,54 +73,26 @@ class HandleExceptionTest extends Specification {
         (result.getBody() as HandleException.JsonErrorResult).description == "Delivered schema is unknown."
     }
 
-    def "should transform PhotoEntity No enum constant error message to a more readable error response"(){
-        given:
-
-        def e = get_exeception {new PhotoEntity().setType("huch")}
-        when:
-           def result = underTest.handleConflict(e, request)
-        then:
-        (result.getBody() as HandleException.JsonErrorResult).description == "huch is not a valid Photo type"
-    }
-
-    def "should transform EmailEntity No enum constant error message to a more readable error response"(){
-        given:
-
-        def e = get_exeception {new EmailEntity().setType("huch")}
+    def "should transform *Entity No enum constant error message to a more readable error response"() {
         when:
         def result = underTest.handleConflict(e, request)
         then:
-        (result.getBody() as HandleException.JsonErrorResult).description == "huch is not a valid Photo type"
+        (result.getBody() as HandleException.JsonErrorResult).description == "huch is not a valid " + name + " type"
+        where:
+        name << ["PhoneNumber", "Im", "Email", "Photo"]
+        e << [get_exeception { new PhoneNumberEntity().setType("huch") },
+                get_exeception { new ImEntity().setType("huch") },
+                get_exeception { new EmailEntity().setType("huch") },
+                get_exeception { new PhotoEntity().setType("huch") }]
     }
 
-    def "should transform ImEntity No enum constant error message to a more readable error response"(){
-        given:
-
-        def e = get_exeception {new ImEntity().setType("huch")}
-        when:
-        def result = underTest.handleConflict(e, request)
-        then:
-        (result.getBody() as HandleException.JsonErrorResult).description == "huch is not a valid Photo type"
-    }
-
-    def "should transform PhoneNumberEntity No enum constant error message to a more readable error response"(){
-        given:
-
-        def e = get_exeception {new PhoneNumberEntity().setType("huch")}
-        when:
-        def result = underTest.handleConflict(e, request)
-        then:
-        (result.getBody() as HandleException.JsonErrorResult).description == "huch is not a valid Photo type"
-    }
-
-    def get_exeception(Closure c){
-        try{
+    def get_exeception(Closure c) {
+        try {
             c.call()
-        }catch (IllegalArgumentException a){
+        } catch (IllegalArgumentException a) {
             return a
         }
     }
-
 
 
 }
