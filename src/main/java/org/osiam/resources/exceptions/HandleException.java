@@ -42,11 +42,10 @@ public class HandleException extends ResponseEntityExceptionHandler {
     private static final Logger LOGGER = Logger.getLogger(HandleException.class.getName());
     //Contains all known ErrorMessageTransformer to validate and manipulate error messages
     private static final ErrorMessageTransformer[] knownErrorMsgTransformer = {new TypeErrorMessageTransformer(),
-            new JsonMappingListMessageTransformer(), new JsonMappingSimpleMessageTransformer(),
-            new JsonPropertyMessageTransformer()};
+            new JsonMappingSimpleMessageTransformer(), new JsonPropertyMessageTransformer()};
 
-    @ExceptionHandler(value = {RuntimeException.class})
-    protected ResponseEntity<Object> handleConflict(RuntimeException ex, WebRequest request) {
+    @ExceptionHandler(value = {Exception.class})
+    protected ResponseEntity<Object> handleConflict(Exception ex, WebRequest request) {
         LOGGER.log(Level.WARNING, "An exception occurred", ex);
         HttpStatus status = setStatus(ex);
         JsonErrorResult error = new JsonErrorResult(status.name(), constructMessage(ex.getMessage()));
@@ -68,7 +67,7 @@ public class HandleException extends ResponseEntityExceptionHandler {
         return result;
     }
 
-    private HttpStatus setStatus(RuntimeException ex) {
+    private HttpStatus setStatus(Exception ex) {
         if (ex instanceof ResourceNotFoundException) {
             return HttpStatus.NOT_FOUND;
         }

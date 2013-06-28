@@ -20,7 +20,7 @@ public class JsonMappingSimpleMessageTransformer implements ErrorMessageTransfor
             return null;
         Matcher matcher = pattern.matcher(message);
         if (matcher.matches()) {
-            return matcher.group();
+            return matcher.group(1);
         }
         return message;
     }

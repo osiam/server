@@ -93,11 +93,12 @@ class HandleExceptionTest extends Specification {
 
     def "should transform json property invalid error message to a more readable response"() {
         given:
-        def exception = new IllegalArgumentException("Unrecognized field 'word'")
+        def exception = new IllegalArgumentException('Unrecognized field \"external\" (Class org.osiam.resources.scim.User), ' +
+                'not marked as ignorable\\n at [Source: java.io.StringReader@4d8fde01; line: 1, column: 54]')
         when:
         def result = underTest.handleConflict(exception, request)
         then:
-        (result.getBody() as HandleException.JsonErrorResult).description == "Unrecognized field 'word'"
+        (result.getBody() as HandleException.JsonErrorResult).description == 'Unrecognized field "external"'
     }
 
     def "should transform json mapping error message for simple types to a more readable response"() {

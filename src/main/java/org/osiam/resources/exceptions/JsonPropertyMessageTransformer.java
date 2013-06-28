@@ -12,7 +12,8 @@ import java.util.regex.Pattern;
  */
 public class JsonPropertyMessageTransformer implements ErrorMessageTransformer {
 
-    private static Pattern pattern = Pattern.compile("^([^\"]*\"[^\"]*\")");
+    //should only get Unrecognized field and name of the field
+    static Pattern pattern = Pattern.compile("(Unrecognized field \\\"\\w+\\\").*");
 
     @Override
     public String transform(String message) {
@@ -20,7 +21,7 @@ public class JsonPropertyMessageTransformer implements ErrorMessageTransformer {
             return null;
         Matcher matcher = pattern.matcher(message);
         if (matcher.matches()) {
-            return matcher.group();
+            return matcher.group(1);
         }
         return message;
     }
