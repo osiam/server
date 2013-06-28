@@ -113,4 +113,13 @@ class HandleExceptionTest extends Specification {
         }
 
     }
+
+    def "should transform json mapping error for List to a more readable response"() {
+        given:
+        def e = generate_wrong_json_exception('{"ims":"blaa"}', User)
+        when:
+        def result = underTest.handleConflict(e, request)
+        then:
+        (result.getBody() as HandleException.JsonErrorResult).description == 'Can not deserialize instance of java.util.ArrayList out of VALUE_STRING'
+    }
 }
