@@ -1,19 +1,14 @@
 package org.osiam.resources.helper;
 
 import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.exc.UnrecognizedPropertyException;
-import org.springframework.stereotype.Service;
 import org.osiam.resources.scim.Group;
-import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.resources.scim.User;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created with IntelliJ IDEA.
@@ -62,16 +57,6 @@ public class JsonInputValidator {
             resource = mapper.readValue(jsonInput, clazz);
         } catch (JsonParseException e) {
             throw new IllegalArgumentException("The JSON structure is incorrect");
-        } catch (UnrecognizedPropertyException e) {
-            Pattern pattern = Pattern.compile("^([^\"]*\"[^\"]*\")");
-            Matcher matcher = pattern.matcher(e.getMessage());
-            matcher.find();
-            throw new IllegalArgumentException(matcher.group());
-        } catch (JsonMappingException e) {
-            Pattern pattern = Pattern.compile("^([^']*'[^']*')");
-            Matcher matcher = pattern.matcher(e.getMessage());
-            matcher.find();
-            throw new IllegalArgumentException(matcher.group());
         }
         return resource;
     }

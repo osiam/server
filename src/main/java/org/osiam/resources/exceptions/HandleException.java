@@ -41,7 +41,9 @@ import java.util.regex.Pattern;
 public class HandleException extends ResponseEntityExceptionHandler {
     private static final Logger LOGGER = Logger.getLogger(HandleException.class.getName());
     //Contains all known ErrorMessageTransformer to validate and manipulate error messages
-    private static final ErrorMessageTransformer[] knownErrorMsgTransformer = {new TypeErrorMessageTransformer()};
+    private static final ErrorMessageTransformer[] knownErrorMsgTransformer = {new TypeErrorMessageTransformer(),
+            new JsonMappingListMessageTransformer(), new JsonMappingSimpleMessageTransformer(),
+            new JsonPropertyMessageTransformer()};
 
     @ExceptionHandler(value = {RuntimeException.class})
     protected ResponseEntity<Object> handleConflict(RuntimeException ex, WebRequest request) {

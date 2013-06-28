@@ -23,9 +23,6 @@
 
 package org.osiam.resources.exceptions
 
-import org.osiam.resources.exceptions.HandleException
-import org.osiam.resources.exceptions.ResourceNotFoundException
-import org.osiam.resources.exceptions.SchemaUnknownException
 import org.osiam.storage.entities.EmailEntity
 import org.osiam.storage.entities.ImEntity
 import org.osiam.storage.entities.PhoneNumberEntity
@@ -94,5 +91,30 @@ class HandleExceptionTest extends Specification {
         }
     }
 
+    def "should transform json property invalid error message to a more readable response"() {
+        given:
+        def exception = new IllegalArgumentException("Unrecognized field 'word'")
+        when:
+        def result = underTest.handleConflict(exception, request)
+        then:
+        (result.getBody() as HandleException.JsonErrorResult).description == "Unrecognized field 'word'"
+    }
 
+    def "should transform json mapping error message for simple types to a more readable response"() {
+        given:
+        def exception = new IllegalArgumentException('Can not construct instance of java.util.Date from String value "123"')
+        when:
+        def result = underTest.handleConflict(exception, request)
+        then:
+        (result.getBody() as HandleException.JsonErrorResult).description == 'Can not construct instance of java.util.Date from String value "123"'
+    }
+
+    def "should transform json mapping error message for Set types to a more readable response"() {
+        given:
+        def exception = new IllegalArgumentException("Can not deserialize instance of java.util.HashSet out of VALUE_STRING token")
+        when:
+        def result = underTest.handleConflict(exception, request)
+        then:
+        (result.getBody() as HandleException.JsonErrorResult).description == "Can not deserialize instance of java.util.HashSet out of VALUE_STRING token"
+    }
 }
