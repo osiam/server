@@ -26,6 +26,10 @@ package org.osiam.resources.exceptions
 import org.osiam.resources.exceptions.HandleException
 import org.osiam.resources.exceptions.ResourceNotFoundException
 import org.osiam.resources.exceptions.SchemaUnknownException
+import org.osiam.storage.entities.EmailEntity
+import org.osiam.storage.entities.ImEntity
+import org.osiam.storage.entities.PhoneNumberEntity
+import org.osiam.storage.entities.PhotoEntity
 import org.springframework.http.HttpStatus
 import org.springframework.web.context.request.WebRequest
 import spock.lang.Specification
@@ -71,13 +75,52 @@ class HandleExceptionTest extends Specification {
 
     def "should transform PhotoEntity No enum constant error message to a more readable error response"(){
         given:
-        def exception = new IllegalArgumentException(
-                "No enum constant org.osiam.storage.entities.PhotoEntity.CanonicalPhotoTypes.huch")
+
+        def e = get_exeception {new PhotoEntity().setType("huch")}
         when:
-           def result = underTest.handleConflict(exception, request)
+           def result = underTest.handleConflict(e, request)
         then:
         (result.getBody() as HandleException.JsonErrorResult).description == "huch is not a valid Photo type"
     }
+
+    def "should transform EmailEntity No enum constant error message to a more readable error response"(){
+        given:
+
+        def e = get_exeception {new EmailEntity().setType("huch")}
+        when:
+        def result = underTest.handleConflict(e, request)
+        then:
+        (result.getBody() as HandleException.JsonErrorResult).description == "huch is not a valid Photo type"
+    }
+
+    def "should transform ImEntity No enum constant error message to a more readable error response"(){
+        given:
+
+        def e = get_exeception {new ImEntity().setType("huch")}
+        when:
+        def result = underTest.handleConflict(e, request)
+        then:
+        (result.getBody() as HandleException.JsonErrorResult).description == "huch is not a valid Photo type"
+    }
+
+    def "should transform PhoneNumberEntity No enum constant error message to a more readable error response"(){
+        given:
+
+        def e = get_exeception {new PhoneNumberEntity().setType("huch")}
+        when:
+        def result = underTest.handleConflict(e, request)
+        then:
+        (result.getBody() as HandleException.JsonErrorResult).description == "huch is not a valid Photo type"
+    }
+
+    def get_exeception(Closure c){
+        try{
+            c.call()
+        }catch (IllegalArgumentException a){
+            return a
+        }
+    }
+
 
 
 }
