@@ -60,7 +60,9 @@ public class HandleException extends ResponseEntityExceptionHandler {
      */
     private String constructMessage(String message) {
         String result = message;
-        for (ErrorMessageTransformer et : knownErrorMsgTransformer) { result = et.transform(message); }
+        for (ErrorMessageTransformer et : knownErrorMsgTransformer) {
+            result = et.transform(result);
+        }
         return result;
     }
 
