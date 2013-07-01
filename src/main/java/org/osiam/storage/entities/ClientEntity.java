@@ -76,7 +76,7 @@ public class ClientEntity implements ClientDetails {
 
     @Override
     public String getClientId() {
-        return id.toString();
+        return id;
     }
 
     @Override
