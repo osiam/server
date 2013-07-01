@@ -75,7 +75,9 @@ public abstract class GetInternalIdSkeleton {
                                              String sortOrder) {
         Session session = (Session) em.getDelegate();
         Criteria criteria = session.createCriteria(clazz);
-        session.setCacheMode(CacheMode.IGNORE);
+        criteria.setReadOnly(true);
+        criteria.setCacheMode(CacheMode.GET);
+        criteria.setCacheable(true);
         if (filter != null && !filter.isEmpty()) {
             criteria = criteria.add(filterParser.parse(filter).buildCriterion());
         }
@@ -85,8 +87,7 @@ public abstract class GetInternalIdSkeleton {
         setSortOrder(sortBy, sortOrder, criteria);
         criteria.setFirstResult(startIndex);
         Criteria criteria1 =
-                criteria.setProjection(null).setResultTransformer(Criteria.ROOT_ENTITY).setCacheMode(CacheMode.IGNORE)
-                        .setCacheable(false);
+                criteria.setProjection(null).setResultTransformer(Criteria.ROOT_ENTITY);
         List list = criteria1.list();
         return new SCIMSearchResult(list, totalResult);
     }
