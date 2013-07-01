@@ -4,15 +4,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * This class was written to transform enum error messages from:
- * <p/>
- * No enum constant org.osiam.storage.entities.(\w+)Entity.[\w]+.(\w+)
- * <p/>
- * to
- * <p/>
- * \1 is not a valid \2 type
+ * This class is used to transform
+ * No enum constant org.osiam.storage.entities.*Entity.*.huch
+ * Messages to a more readable way.
  */
 public class TypeErrorMessageTransformer implements ErrorMessageTransformer {
+    // Will load:
+    // group 1 = full qualified name of the entity class
+    // group 2 = the name of of the entity (without Entity, e.q. PhotoEntity -> Photo)
+    // group 3 = the name of the inner enum so that we can combine it to group1+$+group3 (to find the class of the enum)
+    // group 4 = the wrong value send by the client
     private static Pattern pattern =
             Pattern.compile("No enum constant (org\\.osiam\\.storage\\.entities\\.(\\w+)Entity)\\.(\\w+).(\\w+)");
 
@@ -21,9 +22,8 @@ public class TypeErrorMessageTransformer implements ErrorMessageTransformer {
         if (message == null) { return null; }
         Matcher matcher = pattern.matcher(message);
         if (matcher.matches()) {
-            String test = loadEnumConstAsStringByClassName(matcher.group(1) + "$" + matcher.group(3));
-            return matcher.group(4) + " is not a valid " + matcher.group(2) + " type only " + test.toString() +
-                    " are allowed.";
+            String values = loadEnumConstAsStringByClassName(matcher.group(1) + "$" + matcher.group(3));
+            return matcher.group(4) + " is not a valid " + matcher.group(2) + " type only " + values + " are allowed.";
         }
         return message;
     }
