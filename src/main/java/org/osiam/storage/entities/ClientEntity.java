@@ -21,9 +21,8 @@ public class ClientEntity implements ClientDetails {
     private long internal_id;
 
     @JsonProperty
-    @Type(type = "pg-uuid")
-    @Column(unique = true, nullable = false)
-    private UUID id = UUID.randomUUID();
+    @Column(unique = true, nullable = false, length = 32)
+    private String id;
     @JsonProperty
     private int accessTokenValiditySeconds;
     @JsonProperty
@@ -138,11 +137,11 @@ public class ClientEntity implements ClientDetails {
     }
 
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
