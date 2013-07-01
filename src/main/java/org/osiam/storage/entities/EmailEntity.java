@@ -99,7 +99,7 @@ public class EmailEntity extends MultiValueAttributeEntitySkeleton implements Ha
         this.user = user;
     }
 
-    private enum CanonicalEmailTypes {
+    public enum CanonicalEmailTypes {
         work, home, other
     }
 }

@@ -98,7 +98,7 @@ public class PhotoEntity extends MultiValueAttributeEntitySkeleton implements Ch
         return photoEntity;
     }
 
-    private enum CanonicalPhotoTypes {
+    public enum CanonicalPhotoTypes {
         photo, thumbnail
     }
 }

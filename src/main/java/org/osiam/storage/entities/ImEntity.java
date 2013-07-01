@@ -76,7 +76,7 @@ public class ImEntity extends MultiValueAttributeEntitySkeleton implements Child
         return imEntity;
     }
 
-    private enum CanonicalImTypes {
+    public enum CanonicalImTypes {
         aim, gtalk, icq, xmpp, msn, skype, qq, yahoo
     }
 }

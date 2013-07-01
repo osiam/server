@@ -76,9 +76,14 @@ class HandleExceptionTest extends Specification {
         when:
         def result = underTest.handleConflict(e, request)
         then:
-        (result.getBody() as HandleException.JsonErrorResult).description == "huch is not a valid " + name + " type"
+        (result.getBody() as HandleException.JsonErrorResult).description ==
+                "huch is not a valid " + name + " are allowed."
         where:
-        name << ["PhoneNumber", "Im", "Email", "Photo"]
+        name << ["PhoneNumber type only work, home, mobile, fax, pager, other",
+                "Im type only aim, gtalk, icq, xmpp, msn, skype, qq, yahoo",
+                "Email type only work, home, other",
+                "Photo type only photo, thumbnail"]
+
         e << [get_exception { new PhoneNumberEntity().setType("huch") },
                 get_exception { new ImEntity().setType("huch") },
                 get_exception { new EmailEntity().setType("huch") },
@@ -107,7 +112,7 @@ class HandleExceptionTest extends Specification {
         try {
             new ObjectMapper().readValue(input, clazz);
         } catch (Exception e) {
-            return  e;
+            return e;
         }
 
     }
