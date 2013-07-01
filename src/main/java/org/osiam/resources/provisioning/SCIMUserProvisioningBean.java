@@ -66,9 +66,6 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
                 throw new ResourceExistsException("The user with the externalId " +
                         user.getExternalId() + " already exists.");
             }
-            if (user.getUserName().isEmpty()) {
-                throw new ResourceExistsException("The user name is mandatory and MUST NOT be empty");
-            }
             throw new ResourceExistsException("The user with name " +
                     user.getUserName() + " already exists.");
         }

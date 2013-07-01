@@ -41,7 +41,7 @@ class JsonInputValidatorTest extends Specification {
 
         then:
         def e = thrown(IllegalArgumentException)
-        e.getMessage() == "The user name is mandatory and MUST NOT be null"
+        e.getMessage() == "The attribute userName is mandatory and MUST NOT be null"
     }
 
     def "invalid json structure for user should throw exception"(){
@@ -110,7 +110,7 @@ class JsonInputValidatorTest extends Specification {
 
         then:
         def e = thrown(IllegalArgumentException)
-        e.getMessage() == 'The display name is mandatory and MUST NOT be null.'
+        e.getMessage() == 'The attribute displayName is mandatory and MUST NOT be null.'
     }
 
     def "invalid json structure for group should throw exception"(){

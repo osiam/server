@@ -26,7 +26,7 @@ public class JsonInputValidator {
         if(jsonInput.contains("userName")) {
             return validateResource(jsonInput, User.class);
         }
-        throw new IllegalArgumentException("The user name is mandatory and MUST NOT be null");
+        throw new IllegalArgumentException("The attribute userName is mandatory and MUST NOT be null");
     }
 
     public Group validateJsonGroup(HttpServletRequest request) throws IOException {
@@ -35,7 +35,7 @@ public class JsonInputValidator {
         if(jsonInput.contains("displayName")) {
             return validateResource(jsonInput, Group.class);
         }
-        throw new IllegalArgumentException("The display name is mandatory and MUST NOT be null.");
+        throw new IllegalArgumentException("The attribute displayName is mandatory and MUST NOT be null.");
     }
 
     private String getRequestBody(HttpServletRequest request) throws IOException {

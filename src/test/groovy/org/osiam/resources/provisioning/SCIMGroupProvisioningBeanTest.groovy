@@ -68,19 +68,6 @@ class SCIMGroupProvisioningBeanTest extends Specification {
         e.message == "displayName already exists."
     }
 
-    def "should throw exception if mandatory display name is null"(){
-        given:
-        groupDao.create(_) >> {
-            throw new DataIntegrityViolationException("bäm")
-        }
-        group.getDisplayName() >> ""
-        when:
-        underTest.create(group)
-        then:
-        def e = thrown(ResourceExistsException)
-        e.message == "The display name is mandatory and MUST NOT be empty."
-    }
-
     def "should call dao get on get"(){
         when:
         def result = underTest.getById("id")
