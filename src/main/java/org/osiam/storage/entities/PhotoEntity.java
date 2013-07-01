@@ -51,8 +51,8 @@ public class PhotoEntity extends MultiValueAttributeEntitySkeleton implements Ch
     @Override
     public void setValue(String value) {
         if(isValueIncorrect(value)) {
-            throw new IllegalArgumentException("The photo value  MUST be a URL which points to an " +
-                    "JPEG, GIF, PNG file.");
+            throw new IllegalArgumentException("The photo MUST have an attribute 'value' that ends with " +
+                    "JPEG, JPG, GIF, PNG.");
         }
         this.value = value;
     }

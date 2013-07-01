@@ -40,7 +40,7 @@ class PhotoEntitySpec extends Specification {
 
         then:
         def e = thrown(IllegalArgumentException)
-        e.getMessage() == "The photo value  MUST be a URL which points to an JPEG, GIF, PNG file."
+        e.getMessage() == "The photo MUST have an attribute 'value' that ends with JPEG, JPG, GIF, PNG."
     }
 
     def "setter and getter for the type should be present"() {

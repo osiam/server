@@ -79,21 +79,6 @@ class ScimUserProvisioningBeanSpec extends Specification {
         e.getMessage() == "The user with the externalId Boom already exists."
     }
 
-    def "should throw exception if mandatory user name is null"() {
-        given:
-        def exception = Mock(Exception)
-        userDao.create(_) >> { throw exception }
-        exception.getMessage() >> ""
-        scimUser.getUserName() >> ""
-
-        when:
-        scimUserProvisioningBean.create(scimUser)
-
-        then:
-        def e = thrown(ResourceExistsException)
-        e.getMessage() == "The user name is mandatory and MUST NOT be empty"
-    }
-
     def "should get an user before update, set the expected fields, merge the result"() {
         given:
         def internalId = UUID.randomUUID()
