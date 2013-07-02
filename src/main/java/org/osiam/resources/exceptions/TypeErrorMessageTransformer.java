@@ -53,10 +53,11 @@ public class TypeErrorMessageTransformer implements ErrorMessageTransformer {
      * @return combined string list of enums separated by comma
      */
     private String combineEnumConstantsToString(Enum[] enumConstants) {
-        String result = "";
+        StringBuffer buf = new StringBuffer();
         for (Enum e : enumConstants) {
-            result += ", " + e.toString();
+            buf.append(", ");
+            buf.append(e.toString());
         }
-        return result;
+        return buf.toString();
     }
 }
