@@ -83,7 +83,7 @@ public class MetaEntity {
     }
 
     public void setCreated(Date created) {
-        this.created = created;
+        this.created = created != null ? new Date(created.getTime()) : null;
     }
 
     public Date getLastModified() {
@@ -91,7 +91,7 @@ public class MetaEntity {
     }
 
     public void setLastModified(Date lastModified) {
-        this.lastModified = lastModified;
+        this.lastModified = lastModified != null ? new Date(lastModified.getTime()) : null;
     }
 
     public String getLocation() {
