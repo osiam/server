@@ -89,8 +89,9 @@ public class UserDAO extends GetInternalIdSkeleton implements GenericDAO<UserEnt
             } else {
 
                 Object o = clazz.cast(originValue);
-                if (o instanceof HasUser)
+                if (o instanceof HasUser) {
                     ((HasUser) o).setUser(user);
+                }
                 result.add(o);
             }
         }

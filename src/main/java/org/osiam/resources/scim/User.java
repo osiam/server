@@ -313,8 +313,9 @@ public class User extends CoreResource {
          * @return
          */
         public static User generateForOuput(User user) {
-            if (user == null)
+            if (user == null) {
                 return null;
+            }
             Builder builder = new Builder(user.userName);
             builder.id = user.id;
             builder.meta = user.meta;

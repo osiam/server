@@ -58,8 +58,9 @@ public class PhotoEntity extends MultiValueAttributeEntitySkeleton implements Ch
     }
 
     private boolean isValueIncorrect(String value) {
-        if (value == null || value.isEmpty())
+        if (value == null || value.isEmpty()) {
             return false;
+        }
         return !PHOTO_SUFFIX.matcher(value).matches();
     }
 
