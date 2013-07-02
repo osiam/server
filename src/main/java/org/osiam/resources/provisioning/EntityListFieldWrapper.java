@@ -73,7 +73,6 @@ public class EntityListFieldWrapper {
             throws IllegalAccessException, InstantiationException {
         Object o = getFieldObject(field);
         Class<?> clazz = attributes.getClazz();
-//        ContainsListOfMultiValue listOfMultiValue = ;
         updateList((Collection<Object>) o, clazz, (Collection) userValue);
     }
 

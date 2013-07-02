@@ -45,8 +45,6 @@ public class Group extends CoreResource{
         super(builder);
         this.displayName = builder.displayName;
         this.members = builder.members;
-//        this.id = builder.id;
-
     }
 
     public static class Builder extends CoreResource.Builder{
