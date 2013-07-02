@@ -34,12 +34,10 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @ControllerAdvice
-public class HandleException extends ResponseEntityExceptionHandler {
-    private static final Logger LOGGER = Logger.getLogger(HandleException.class.getName());
+public class OsiamExceptionHandler extends ResponseEntityExceptionHandler {
+    private static final Logger LOGGER = Logger.getLogger(OsiamExceptionHandler.class.getName());
     //Contains all known ErrorMessageTransformer to validate and manipulate error messages
     private static final ErrorMessageTransformer[] knownErrorMsgTransformer =
             {new TypeErrorMessageTransformer(), new JsonPropertyMessageTransformer(), new JsonMappingMessageTransformer()};

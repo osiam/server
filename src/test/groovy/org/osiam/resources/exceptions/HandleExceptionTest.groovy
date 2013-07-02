@@ -34,12 +34,12 @@ import org.springframework.web.context.request.WebRequest
 import spock.lang.Specification
 
 class HandleExceptionTest extends Specification {
-    def underTest = new HandleException()
+    def underTest = new OsiamExceptionHandler()
     WebRequest request = Mock(WebRequest)
 
     def "exception result should contain a code and a description"() {
         when:
-        def errorResult = new HandleException.JsonErrorResult("hacja", "unso")
+        def errorResult = new OsiamExceptionHandler.JsonErrorResult("hacja", "unso")
         then:
         errorResult.error_code == "hacja"
         errorResult.description == "unso"
@@ -50,8 +50,8 @@ class HandleExceptionTest extends Specification {
         def result = underTest.handleConflict(new NullPointerException("Dunno"), request)
         then:
         result.getStatusCode() == HttpStatus.CONFLICT
-        (result.getBody() as HandleException.JsonErrorResult).error_code == HttpStatus.CONFLICT.name()
-        (result.getBody() as HandleException.JsonErrorResult).description == "Dunno"
+        (result.getBody() as OsiamExceptionHandler.JsonErrorResult).error_code == HttpStatus.CONFLICT.name()
+        (result.getBody() as OsiamExceptionHandler.JsonErrorResult).description == "Dunno"
     }
 
     def "should set status to ResourceNotFound when org.osiam.resources.exceptions.ResourceNotFoundException occurs"() {
@@ -59,8 +59,8 @@ class HandleExceptionTest extends Specification {
         def result = underTest.handleConflict(new ResourceNotFoundException("Dunno"), request)
         then:
         result.getStatusCode() == HttpStatus.NOT_FOUND
-        (result.getBody() as HandleException.JsonErrorResult).error_code == HttpStatus.NOT_FOUND.name()
-        (result.getBody() as HandleException.JsonErrorResult).description == "Dunno"
+        (result.getBody() as OsiamExceptionHandler.JsonErrorResult).error_code == HttpStatus.NOT_FOUND.name()
+        (result.getBody() as OsiamExceptionHandler.JsonErrorResult).description == "Dunno"
     }
 
     def "should set status to I_AM_A_TEAPOT when org.osiam.resources.exceptions.SchemaUnknownException occurs"() {
@@ -68,15 +68,15 @@ class HandleExceptionTest extends Specification {
         def result = underTest.handleConflict(new SchemaUnknownException(), request)
         then:
         result.getStatusCode() == HttpStatus.I_AM_A_TEAPOT
-        (result.getBody() as HandleException.JsonErrorResult).error_code == HttpStatus.I_AM_A_TEAPOT.name()
-        (result.getBody() as HandleException.JsonErrorResult).description == "Delivered schema is unknown."
+        (result.getBody() as OsiamExceptionHandler.JsonErrorResult).error_code == HttpStatus.I_AM_A_TEAPOT.name()
+        (result.getBody() as OsiamExceptionHandler.JsonErrorResult).description == "Delivered schema is unknown."
     }
 
     def "should transform *Entity No enum constant error message to a more readable error response"() {
         when:
         def result = underTest.handleConflict(e, request)
         then:
-        (result.getBody() as HandleException.JsonErrorResult).description ==
+        (result.getBody() as OsiamExceptionHandler.JsonErrorResult).description ==
                 "huch is not a valid " + name + " are allowed."
         where:
         name << ["PhoneNumber type only work, home, mobile, fax, pager, other",
@@ -104,7 +104,7 @@ class HandleExceptionTest extends Specification {
         when:
         def result = underTest.handleConflict(e, request)
         then:
-        (result.getBody() as HandleException.JsonErrorResult).description == 'Unrecognized field "extId"'
+        (result.getBody() as OsiamExceptionHandler.JsonErrorResult).description == 'Unrecognized field "extId"'
     }
 
     def generate_wrong_json_exception(String input, Class clazz) {
@@ -123,6 +123,6 @@ class HandleExceptionTest extends Specification {
         when:
         def result = underTest.handleConflict(e, request)
         then:
-        (result.getBody() as HandleException.JsonErrorResult).description == 'Can not deserialize instance of java.util.ArrayList out of VALUE_STRING'
+        (result.getBody() as OsiamExceptionHandler.JsonErrorResult).description == 'Can not deserialize instance of java.util.ArrayList out of VALUE_STRING'
     }
 }
