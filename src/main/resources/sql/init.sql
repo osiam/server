@@ -120,7 +120,7 @@ CREATE TABLE scim_group (
 
 CREATE TABLE osiam_client (
   internal_id bigint PRIMARY KEY,
-  id varchar(32) NOT NULL UNIQUE ,
+  id varchar(34) NOT NULL UNIQUE ,
   redirect_uri text not null unique ,
   client_secret text not null unique,
   accessTokenValiditySeconds int,
