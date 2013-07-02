@@ -55,8 +55,8 @@ public class MeController {
     @RequestMapping(value = "/**", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public FacebookInformationConstruct getInformation(HttpServletRequest request) {
-        String access_token = getAccessToken(request);
-        Authentication userAuthentication = inMemoryTokenStore.readAuthentication(access_token).getUserAuthentication();
+        String accessToken = getAccessToken(request);
+        Authentication userAuthentication = inMemoryTokenStore.readAuthentication(accessToken).getUserAuthentication();
         Object o = userAuthentication.getPrincipal();
         if (o instanceof UserEntity) {
             UserEntity userEntity = (UserEntity) o;
@@ -69,8 +69,8 @@ public class MeController {
     }
 
     private String getAccessToken(HttpServletRequest request) {
-        String access_token = request.getParameter("access_token");
-        return access_token != null ? access_token : getBearerToken(request);
+        String accessToken = request.getParameter("access_token");
+        return accessToken != null ? accessToken : getBearerToken(request);
     }
 
     private String getBearerToken(HttpServletRequest request) {
