@@ -61,7 +61,7 @@ public class FBClientCredentialsTokenEndpointFilter extends AbstractAuthenticati
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-            throws AuthenticationException, IOException, ServletException {
+            throws IOException, ServletException {
         String clientId = request.getParameter("client_id");
         String clientSecret = request.getParameter("client_secret");
         if (clientId == null) {

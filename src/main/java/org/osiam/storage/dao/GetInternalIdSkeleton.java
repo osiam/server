@@ -41,7 +41,7 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 public abstract class GetInternalIdSkeleton {
-    protected final static Logger LOGGER = Logger.getLogger(GetInternalIdSkeleton.class.getName());
+    protected static final Logger LOGGER = Logger.getLogger(GetInternalIdSkeleton.class.getName());
     @PersistenceContext
     protected EntityManager em;
     @Inject
