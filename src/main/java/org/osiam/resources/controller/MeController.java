@@ -83,20 +83,20 @@ public class MeController {
 
         @JsonIgnore
         private final DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTime();
-        String id;
-        String name;
-        String first_name;
-        String last_name;
-        String link;
-        String userName;
+        private String id;
+        private String name;
+        private String first_name;
+        private String last_name;
+        private String link;
+        private String userName;
         //fallback is female...
-        String gender = "female";
-        String email;
+        private String gender = "female";
+        private String email;
         // our timezone is string, theirs is int ... dunno how to format.
-        int timezone = 2;
-        String locale;
-        boolean verified = true;
-        String updated_time;
+        private int timezone = 2;
+        private String locale;
+        private boolean verified = true;
+        private String updated_time;
 
         public FacebookInformationConstruct(UserEntity userEntity) {
             this.id = userEntity.getId().toString();
