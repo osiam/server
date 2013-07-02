@@ -27,6 +27,7 @@ import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.MultiValuedAttribute;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -37,7 +38,9 @@ import java.util.UUID;
 @Entity(name = "scim_group")
 
 //@NamedQueries({@NamedQuery(name = "removeMemberWithId", query = "DELETE FROM scim_group.members i WHERE i.id= :id")})
-public class GroupEntity extends InternalIdSkeleton {
+public class GroupEntity extends InternalIdSkeleton implements Serializable {
+
+    private static final long serialVersionUID = -6535056565639057158L;
 
     @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.REMOVE)
     private Set<InternalIdSkeleton> members = new HashSet<>();

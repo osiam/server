@@ -29,12 +29,15 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.io.Serializable;
 
 /**
  * Name Entity
  */
 @Entity(name = "scim_name")
-public class NameEntity {
+public class NameEntity implements Serializable {
+
+    private static final long serialVersionUID = -6535056565659057058L;
 
     @Id
     @GeneratedValue

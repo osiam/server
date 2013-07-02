@@ -26,12 +26,15 @@ package org.osiam.storage.entities;
 import org.osiam.resources.scim.MultiValuedAttribute;
 
 import javax.persistence.Entity;
+import java.io.Serializable;
 
 /**
  * Entitlements Entity
  */
 @Entity(name = "scim_entitlements")
-public class EntitlementsEntity extends MultiValueAttributeEntitySkeleton {
+public class EntitlementsEntity extends MultiValueAttributeEntitySkeleton implements Serializable {
+
+    private static final long serialVersionUID = -6534056565639057058L;
 
     public MultiValuedAttribute toScim() {
         return new MultiValuedAttribute.Builder().

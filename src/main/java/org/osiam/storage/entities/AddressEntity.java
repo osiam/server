@@ -26,12 +26,15 @@ package org.osiam.storage.entities;
 import org.osiam.resources.scim.Address;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Address Entity
  */
 @Entity(name = "scim_address")
-public class AddressEntity {
+public class AddressEntity implements Serializable {
+
+    private static final long serialVersionUID = -6535056565939057058L;
 
     @Id
     @GeneratedValue

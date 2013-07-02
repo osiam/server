@@ -26,12 +26,15 @@ package org.osiam.storage.entities;
 import org.osiam.resources.scim.MultiValuedAttribute;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Phone Numbers Entity
  */
 @Entity(name = "scim_phoneNumber")
-public class PhoneNumberEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithType, HasUser {
+public class PhoneNumberEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithType, HasUser, Serializable {
+
+    private static final long serialVersionUID = -6535056565639157058L;
 
     @Column
     @Enumerated(EnumType.STRING)
