@@ -28,6 +28,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Constants {
+
+    private Constants() {}
+
     public static final Set<String> CORE_SCHEMAS = new HashSet<>(Arrays.asList("urn:scim:schemas:core:1.0"));
     public static final int MAX_RESULT = 100;
 }
