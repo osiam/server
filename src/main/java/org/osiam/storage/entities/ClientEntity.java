@@ -15,6 +15,8 @@ import java.util.*;
 @NamedQueries({@NamedQuery(name = "getClientById", query = "SELECT i FROM osiam_client i WHERE i.id= :id")})
 public class ClientEntity implements ClientDetails {
 
+    private static final long serialVersionUID = 7389428857079701157L;
+
     @Id
     @GeneratedValue
     @JsonIgnore
