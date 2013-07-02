@@ -28,7 +28,7 @@ import org.osiam.storage.entities.GroupEntity;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GroupSCIMEntities implements SCIMEntities {
+public final class GroupSCIMEntities implements SCIMEntities {
     public static final GroupSCIMEntities ENTITIES = new GroupSCIMEntities();
     private Map<String, Entity> fromString = new HashMap<>();
 

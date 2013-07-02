@@ -28,7 +28,7 @@ import org.osiam.storage.entities.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class UserSCIMEntities implements SCIMEntities {
+public final class UserSCIMEntities implements SCIMEntities {
     public static final UserSCIMEntities ENTITIES = new UserSCIMEntities();
     private Map<String, Entity> fromString = new HashMap<>();
 

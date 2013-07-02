@@ -26,7 +26,7 @@ package org.osiam.resources.scim;
 /**
  * Java class for extension enterprise.
  */
-public class Enterprise {
+public final class Enterprise {
 
     private final String employeeNumber;
     private final String costCenter;
