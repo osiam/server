@@ -15,12 +15,12 @@ public class ServiceProviderConfigController {
     @RequestMapping
     @ResponseBody
     public ServiceProviderConfig getConfig() {
-        return ServiceProviderConfig.instance;
+        return ServiceProviderConfig.INSTANCE;
     }
 
     @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
     public static class ServiceProviderConfig {
-        public static final ServiceProviderConfig instance = new ServiceProviderConfig();
+        public static final ServiceProviderConfig INSTANCE = new ServiceProviderConfig();
         public  Set<String> schemas = Constants.CORE_SCHEMAS;
         public final Supported patch = new Supported(true);
         public final Supported bulk = new BulkSupported(false);

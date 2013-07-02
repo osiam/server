@@ -17,13 +17,13 @@ public class JsonPropertyMessageTransformer implements ErrorMessageTransformer {
     //at [Source: java.io.StringReader@1e41ac03; line: 1, column: 11] (through reference chain: org.osiam.resources.scim.User["extId"])
     //will be transformed to
     // Unrecognized field "extId"
-    private final static Pattern pattern = Pattern.compile("(Unrecognized field \"\\w+\").*",
+    private final static Pattern PATTERN = Pattern.compile("(Unrecognized field \"\\w+\").*",
             Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
 
     @Override
     public String transform(String message) {
         if (message == null) { return null; }
-        Matcher matcher = pattern.matcher(message);
+        Matcher matcher = PATTERN.matcher(message);
         if (matcher.matches()) {
             return matcher.group(1);
         }

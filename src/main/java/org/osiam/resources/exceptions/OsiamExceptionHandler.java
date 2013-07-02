@@ -39,7 +39,7 @@ import java.util.logging.Logger;
 public class OsiamExceptionHandler extends ResponseEntityExceptionHandler {
     private static final Logger LOGGER = Logger.getLogger(OsiamExceptionHandler.class.getName());
     //Contains all known ErrorMessageTransformer to validate and manipulate error messages
-    private static final ErrorMessageTransformer[] knownErrorMsgTransformer =
+    private static final ErrorMessageTransformer[] KNOWN_ERROR_MSG_TRANSFORMER =
             {new TypeErrorMessageTransformer(), new JsonPropertyMessageTransformer(), new JsonMappingMessageTransformer()};
 
     @ExceptionHandler(value = {Exception.class})
@@ -59,7 +59,7 @@ public class OsiamExceptionHandler extends ResponseEntityExceptionHandler {
      */
     private String constructMessage(String message) {
         String result = message;
-        for (ErrorMessageTransformer et : knownErrorMsgTransformer) {
+        for (ErrorMessageTransformer et : KNOWN_ERROR_MSG_TRANSFORMER) {
             result = et.transform(result);
         }
         return result;
