@@ -104,7 +104,7 @@ public class UserDAO extends GetInternalIdSkeleton implements GenericDAO<UserEnt
             return getInternalIdSkeleton(id);
         } catch (ClassCastException c) {
             LOGGER.log(Level.WARNING, c.getMessage(), c);
-            throw new ResourceNotFoundException("Resource " + id + " is not an User.");
+            throw new ResourceNotFoundException("Resource " + id + " is not an User.", c);
         }
     }
 

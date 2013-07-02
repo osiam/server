@@ -56,7 +56,7 @@ public class JsonInputValidator {
         try {
             resource = mapper.readValue(jsonInput, clazz);
         } catch (JsonParseException e) {
-            throw new IllegalArgumentException("The JSON structure is incorrect");
+            throw new IllegalArgumentException("The JSON structure is incorrect", e);
         }
         return resource;
     }

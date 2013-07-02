@@ -32,6 +32,9 @@ public class ResourceExistsException extends IllegalArgumentException {
 
     public ResourceExistsException(String s) {
         super(s);
+    }
 
+    public ResourceExistsException(String s, Throwable cause) {
+        super(s, cause);
     }
 }

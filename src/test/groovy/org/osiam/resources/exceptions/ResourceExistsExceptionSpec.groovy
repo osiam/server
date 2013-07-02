@@ -12,10 +12,23 @@ import spock.lang.Specification
  */
 class ResourceExistsExceptionSpec extends Specification {
 
-    def "should contain given message"(){
+    def "should contain given message"() {
         when:
         def result = new ResourceExistsException("danger")
+
         then:
         result.message == "danger"
+    }
+
+    def "should contain constructor with message and cause"() {
+        given:
+        def cause = Mock(Throwable)
+
+        when:
+        def result = new ResourceExistsException("danger", cause)
+
+        then:
+        result.message == "danger"
+        result.getCause() == cause
     }
 }

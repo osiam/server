@@ -63,10 +63,10 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
         } catch (Exception e) {
             if(e.getMessage().contains("scim_id_externalid_key")) {
                 throw new ResourceExistsException("The user with the externalId " +
-                        user.getExternalId() + " already exists.");
+                        user.getExternalId() + " already exists.", e);
             }
             throw new ResourceExistsException("The user with name " +
-                    user.getUserName() + " already exists.");
+                    user.getUserName() + " already exists.", e);
         }
         return userEntity.toScim();
     }

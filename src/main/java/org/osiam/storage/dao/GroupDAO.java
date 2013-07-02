@@ -62,7 +62,7 @@ public class GroupDAO extends GetInternalIdSkeleton implements GenericDAO<GroupE
             return getInternalIdSkeleton(id);
         } catch (ClassCastException c) {
             LOGGER.log(Level.WARNING, c.getMessage(), c);
-            throw new ResourceNotFoundException("Resource " + id + " is not a Group.");
+            throw new ResourceNotFoundException("Resource " + id + " is not a Group.", c);
         }
     }
 

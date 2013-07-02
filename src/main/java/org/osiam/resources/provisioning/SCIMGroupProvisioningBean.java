@@ -60,7 +60,7 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group> imp
         } catch (DataIntegrityViolationException e) {
             logger.log(Level.INFO, "An exception got thrown while creating a group.", e);
 
-            throw new ResourceExistsException(group.getDisplayName() + " already exists.");
+            throw new ResourceExistsException(group.getDisplayName() + " already exists.", e);
         }
         return enrichedGroup.toScim();  //To change body of implemented methods use File | Settings | File Templates.
     }

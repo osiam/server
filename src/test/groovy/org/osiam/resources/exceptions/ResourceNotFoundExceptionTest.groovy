@@ -27,10 +27,23 @@ import org.osiam.resources.exceptions.ResourceNotFoundException
 import spock.lang.Specification
 
 class ResourceNotFoundExceptionTest extends Specification {
+
     def "should contain given message"(){
         when:
           def rnfe = new ResourceNotFoundException("haha")
         then:
         rnfe.message == "haha"
+    }
+
+    def "should contain constructor with message and cause"() {
+        given:
+        def cause = Mock(Throwable)
+
+        when:
+        def rnfe = new ResourceNotFoundException("haha", cause)
+
+        then:
+        rnfe.message == "haha"
+        rnfe.getCause() == cause
     }
 }
