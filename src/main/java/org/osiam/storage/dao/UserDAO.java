@@ -113,7 +113,6 @@ public class UserDAO extends GetInternalIdSkeleton implements GenericDAO<UserEnt
         return getSingleInternalIdSkeleton(query, userName);
     }
 
-
     @Override
     public UserEntity update(UserEntity entity) {
         //not hashed ...
@@ -138,13 +137,18 @@ public class UserDAO extends GetInternalIdSkeleton implements GenericDAO<UserEnt
         return search(UserEntity.class, filter, count, startIndex, sortBy, sortOrder);
     }
 
-
-
     @Override
     protected void createAliasesForCriteria(Criteria criteria) {
         criteria.createAlias("meta", "meta");
         criteria.createAlias("name", "name");
         criteria.createAlias("emails", "emails");
+        criteria.createAlias("phoneNumbers", "phoneNumbers");
+        criteria.createAlias("ims", "ims");
+        criteria.createAlias("photos", "photos");
+        criteria.createAlias("addresses", "addresses");
+        criteria.createAlias("groups", "groups");
+        criteria.createAlias("entitlements", "entitlements");
+        criteria.createAlias("roles", "roles");
+        criteria.createAlias("x509Certificates", "x509Certificates");
     }
-
 }
