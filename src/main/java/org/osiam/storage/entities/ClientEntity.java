@@ -3,7 +3,6 @@ package org.osiam.storage.entities;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.hibernate.annotations.Type;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
@@ -20,7 +19,8 @@ public class ClientEntity implements ClientDetails {
     @Id
     @GeneratedValue
     @JsonIgnore
-    private long internal_id;
+    @Column(name="internal_id")
+    private long internalId;
 
     @JsonProperty
     @Column(unique = true, nullable = false, length = 32)
@@ -30,8 +30,8 @@ public class ClientEntity implements ClientDetails {
     @JsonProperty
     private int refreshTokenValiditySeconds;
     @JsonProperty
-    @Column(unique = true, nullable = false)
-    private String redirect_uri;
+    @Column(name="redirect_uri", unique = true, nullable = false)
+    private String redirectUri;
     @JsonProperty
     @Transient
     private Set<String> grants = generateGrants();
@@ -60,7 +60,7 @@ public class ClientEntity implements ClientDetails {
 
         accessTokenValiditySeconds = entity.getAccessTokenValiditySeconds();
         refreshTokenValiditySeconds = entity.getRefreshTokenValiditySeconds();
-        redirect_uri = entity.getRedirect_uri();
+        redirectUri = entity.getRedirectUri();
         scope = entity.getScope();
     }
 
@@ -114,7 +114,7 @@ public class ClientEntity implements ClientDetails {
     @Override
     public Set<String> getRegisteredRedirectUri() {
         Set<String> result = new HashSet<>();
-        result.add(redirect_uri);
+        result.add(redirectUri);
         return result;
     }
 
@@ -148,8 +148,8 @@ public class ClientEntity implements ClientDetails {
     }
 
 
-    public void setRedirect_uri(String redirect_uri) {
-        this.redirect_uri = redirect_uri;
+    public void setRedirectUri(String redirectUri) {
+        this.redirectUri = redirectUri;
     }
 
     public void setClientSecret(String clientSecret) {
@@ -160,16 +160,16 @@ public class ClientEntity implements ClientDetails {
         this.scope = scope;
     }
 
-    public long getInternal_id() {
-        return internal_id;
+    public long getInternalId() {
+        return internalId;
     }
 
-    public void setInternal_id(long internal_id) {
-        this.internal_id = internal_id;
+    public void setInternalId(long internalId) {
+        this.internalId = internalId;
     }
 
-    public String getRedirect_uri() {
-        return redirect_uri;
+    public String getRedirectUri() {
+        return redirectUri;
     }
 
     public void setAccessTokenValiditySeconds(int accessTokenValiditySeconds) {

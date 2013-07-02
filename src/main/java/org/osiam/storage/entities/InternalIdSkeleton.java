@@ -41,7 +41,8 @@ public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute{
 
     @Id
     @GeneratedValue
-    protected long internal_id;
+    @Column(name = "internal_id")
+    protected long internalId;
 
     @Column(unique = true)
     protected String externalId;
@@ -59,12 +60,12 @@ public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute{
         this.id = id;
     }
 
-    public long getInternal_id() {
-        return internal_id;
+    public long getInternalId() {
+        return internalId;
     }
 
-    public void setInternal_id(long internal_id) {
-        this.internal_id = internal_id;
+    public void setInternalId(long internalId) {
+        this.internalId = internalId;
     }
 
     /**

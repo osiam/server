@@ -42,7 +42,7 @@ class ClientManagementControllerTest extends Specification {
     def "should contain a method to POST a client"(){
         given:
         Method method = ClientManagementController.class.getDeclaredMethod("create", String)
-        def json = "{\"accessTokenValiditySeconds\":1337,\"refreshTokenValiditySeconds\":1337,\"redirect_uri\":\"test\",\"scope\":[\"get\",\"post\",\"put\"]}"
+        def json = "{\"accessTokenValiditySeconds\":1337,\"refreshTokenValiditySeconds\":1337,\"redirectUri\":\"test\",\"scope\":[\"get\",\"post\",\"put\"]}"
 
         when:
         RequestMapping mapping = method.getAnnotation(RequestMapping)

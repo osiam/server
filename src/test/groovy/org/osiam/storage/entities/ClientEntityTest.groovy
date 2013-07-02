@@ -1,6 +1,5 @@
 package org.osiam.storage.entities
 
-import org.osiam.storage.entities.ClientEntity
 import spock.lang.Specification
 
 class ClientEntityTest extends Specification {
@@ -68,11 +67,11 @@ class ClientEntityTest extends Specification {
 
     def "getRegisteredRedirectUri should return a set which contains redirect_uri"() {
         given:
-        under_test.setRedirect_uri("should_i_stay_or_should_i_go_now")
+        under_test.setRedirectUri("should_i_stay_or_should_i_go_now")
         when:
         def result = under_test.getRegisteredRedirectUri()
         then:
-        result == [under_test.getRedirect_uri()] as Set
+        result == [under_test.getRedirectUri()] as Set
     }
 
     def "getAuthorities should be empty"() {
@@ -110,9 +109,9 @@ class ClientEntityTest extends Specification {
 
     def "should be possible to set internal_id"() {
         when:
-        under_test.setInternal_id(23)
+        under_test.setInternalId(23)
         then:
-        under_test.getInternal_id() == 23
+        under_test.getInternalId() == 23
     }
 
 
