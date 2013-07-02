@@ -32,7 +32,7 @@ import javax.persistence.ManyToOne;
  * X509 Certificates Entity
  */
 @Entity(name = "scim_certificate")
-public class X509CertificateEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttribute {
+public class X509CertificateEntity extends MultiValueAttributeEntitySkeleton {
 
     @ManyToOne
     private UserEntity user;
