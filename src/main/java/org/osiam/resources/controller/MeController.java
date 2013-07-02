@@ -88,7 +88,7 @@ public class MeController {
         String first_name;
         String last_name;
         String link;
-        String username;
+        String userName;
         //fallback is female...
         String gender = "female";
         String email;
@@ -105,7 +105,7 @@ public class MeController {
             this.email = lookForEmail(userEntity.getEmails());
             this.locale = userEntity.getLocale();
             this.updated_time = dateTimeFormatter.print(userEntity.getMeta().getLastModified().getTime());
-            this.username = userEntity.getUsername();
+            this.userName = userEntity.getUsername();
         }
 
         private String lookForEmail(Set<EmailEntity> emails) {
@@ -149,8 +149,8 @@ public class MeController {
             return link;
         }
 
-        public String getUsername() {
-            return username;
+        public String getUserName() {
+            return userName;
         }
 
         public String getGender() {

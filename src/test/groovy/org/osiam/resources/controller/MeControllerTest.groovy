@@ -47,7 +47,7 @@ class MeControllerTest extends Specification {
         result.name == user.getName().getFormatted()
         result.timezone == 2
         result.updated_time == dateTimeFormatter.print(user.getMeta().getLastModified().time)
-        result.username == "fpref"
+        result.userName == "fpref"
         result.id == user.getId().toString()
         result.isVerified()
     }
