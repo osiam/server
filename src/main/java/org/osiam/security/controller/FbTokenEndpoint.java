@@ -48,8 +48,7 @@ public class FbTokenEndpoint {
     private ClientDetailsService clientDetailsService;
     @Inject
     private AuthorizationRequestManager authorizationRequestManager;
-    @Inject
-    private AuthorizationRequestManager defaultAuthorizationRequestManager;
+
     private TokenEndpoint tokenEndpoint = new TokenEndpoint();
 
     @RequestMapping(value = "/fb/oauth/access_token")
@@ -68,6 +67,4 @@ public class FbTokenEndpoint {
         return "access_token=" + accessToken.getBody().getValue() + "&expires=" + accessToken.getBody().getExpiresIn();
 
     }
-
-
 }
