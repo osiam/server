@@ -35,7 +35,7 @@ import java.util.*;
 public class Group extends CoreResource{
 
     private String displayName;
-    protected Set<MultiValuedAttribute> members;
+    private Set<MultiValuedAttribute> members;
 
     //JSON Serializing
     public Group(){}
