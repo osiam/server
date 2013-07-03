@@ -42,7 +42,8 @@ import java.util.logging.Logger;
 @Service
 public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group> implements SCIMGroupProvisioning {
 
-    Logger logger = Logger.getLogger(SCIMGroupProvisioningBean.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(SCIMGroupProvisioningBean.class.getName());
+
     @Inject
     private GroupDAO groupDAO;
 
@@ -58,7 +59,7 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group> imp
         try {
             groupDAO.create(enrichedGroup);
         } catch (DataIntegrityViolationException e) {
-            logger.log(Level.INFO, "An exception got thrown while creating a group.", e);
+            LOGGER.log(Level.INFO, "An exception got thrown while creating a group.", e);
 
             throw new ResourceExistsException(group.getDisplayName() + " already exists.", e);
         }

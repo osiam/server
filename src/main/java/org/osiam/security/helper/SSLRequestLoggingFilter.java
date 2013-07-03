@@ -15,7 +15,7 @@ import java.io.IOException;
  */
 public class SSLRequestLoggingFilter implements Filter {
 
-    Logger logger = Logger.getLogger(SSLRequestLoggingFilter.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(SSLRequestLoggingFilter.class.getName());
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -24,7 +24,7 @@ public class SSLRequestLoggingFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         if (request.getScheme().equals("http")) {
-            logger.warn("SSL/TLS should be used");
+            LOGGER.warn("SSL/TLS should be used");
         }
         chain.doFilter(request, response);
     }
