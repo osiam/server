@@ -131,7 +131,7 @@ public class UserEntity extends InternalIdSkeleton implements UserDetails {
     private Set<String> any;
 
     public UserEntity() {
-        this.meta.setResourceType("User");
+        getMeta().setResourceType("User");
     }
 
     public static UserEntity fromScim(User user) {

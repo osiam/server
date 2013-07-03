@@ -40,18 +40,18 @@ public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute, 
 
     @Type(type = "pg-uuid")
     @Column(unique = true, nullable = false)
-    protected UUID id;
+    private UUID id;
 
     @Id
     @GeneratedValue
     @Column(name = "internal_id")
-    protected long internalId;
+    private long internalId;
 
     @Column(unique = true)
-    protected String externalId;
+    private String externalId;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    protected MetaEntity meta = new MetaEntity(GregorianCalendar.getInstance());
+    private MetaEntity meta = new MetaEntity(GregorianCalendar.getInstance());
 
 
     public UUID getId() {

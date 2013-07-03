@@ -52,7 +52,7 @@ public class GroupEntity extends InternalIdSkeleton implements Serializable {
     private String displayName;
 
     public GroupEntity() {
-        meta.setResourceType("Group");
+        getMeta().setResourceType("Group");
     }
 
     public static GroupEntity fromScim(Group group) {
