@@ -640,67 +640,67 @@ public class UserEntity extends InternalIdSkeleton implements UserDetails {
     }
 
     private List<MultiValuedAttribute> entityX509CertificatesToScim(Set<X509CertificateEntity> x509CertificateEntities) {
-        List<MultiValuedAttribute> x509Certificates = new ArrayList<>();
+        List<MultiValuedAttribute> x509CertificatesForMapping = new ArrayList<>();
         for (X509CertificateEntity x509CertificateEntity : x509CertificateEntities) {
-            x509Certificates.add(x509CertificateEntity.toScim());
+            x509CertificatesForMapping.add(x509CertificateEntity.toScim());
         }
-        return x509Certificates;
+        return x509CertificatesForMapping;
     }
 
     private List<MultiValuedAttribute> entityRolesToScim(Set<RolesEntity> rolesEntities) {
-        List<MultiValuedAttribute> roles = new ArrayList<>();
+        List<MultiValuedAttribute> rolesForMapping = new ArrayList<>();
         for (RolesEntity rolesEntity : rolesEntities) {
-            roles.add(rolesEntity.toScim());
+            rolesForMapping.add(rolesEntity.toScim());
         }
-        return roles;
+        return rolesForMapping;
     }
 
     private List<MultiValuedAttribute> entityPhotosToScim(Set<PhotoEntity> photoEntities) {
-        List<MultiValuedAttribute> photos = new ArrayList<>();
+        List<MultiValuedAttribute> photosForMapping = new ArrayList<>();
         for (PhotoEntity photoEntity : photoEntities) {
-            photos.add(photoEntity.toScim());
+            photosForMapping.add(photoEntity.toScim());
         }
-        return photos;
+        return photosForMapping;
     }
 
     private List<MultiValuedAttribute> entityPhonenumbersToScim(Set<PhoneNumberEntity> phoneNumberEntities) {
-        List<MultiValuedAttribute> phoneNumbers = new ArrayList<>();
+        List<MultiValuedAttribute> phoneNumbersForMapping = new ArrayList<>();
         for (PhoneNumberEntity phoneNumberEntity : phoneNumberEntities) {
-            phoneNumbers.add(phoneNumberEntity.toScim());
+            phoneNumbersForMapping.add(phoneNumberEntity.toScim());
         }
-        return phoneNumbers;
+        return phoneNumbersForMapping;
     }
 
     private List<MultiValuedAttribute> entityImsToScim(Set<ImEntity> imEntities) {
-        List<MultiValuedAttribute> ims = new ArrayList<>();
+        List<MultiValuedAttribute> imsForMapping = new ArrayList<>();
         for (ImEntity imEntity : imEntities) {
-            ims.add(imEntity.toScim());
+            imsForMapping.add(imEntity.toScim());
         }
-        return ims;
+        return imsForMapping;
     }
 
     private List<MultiValuedAttribute> entityGroupsToScim(Set<GroupEntity> groupEntities) {
-        List<MultiValuedAttribute> groups = new ArrayList<>();
+        List<MultiValuedAttribute> groupsForMapping = new ArrayList<>();
         for (GroupEntity groupEntity : groupEntities) {
-            groups.add(groupEntity.toMultiValueScim());
+            groupsForMapping.add(groupEntity.toMultiValueScim());
         }
-        return groups;
+        return groupsForMapping;
     }
 
     private List<MultiValuedAttribute> entityEntitlementsToScim(Set<EntitlementsEntity> entitlementsEntities) {
-        List<MultiValuedAttribute> entitlements = new ArrayList<>();
+        List<MultiValuedAttribute> entitlementsForMapping = new ArrayList<>();
         for (EntitlementsEntity entitlementsEntity : entitlementsEntities) {
-            entitlements.add(entitlementsEntity.toScim());
+            entitlementsForMapping.add(entitlementsEntity.toScim());
         }
-        return entitlements;
+        return entitlementsForMapping;
     }
 
     private List<MultiValuedAttribute> entityEmailToScim(Set<EmailEntity> emailEntities) {
-        List<MultiValuedAttribute> emails = new ArrayList<>();
+        List<MultiValuedAttribute> emailsForMapping = new ArrayList<>();
         for (EmailEntity emailEntity : emailEntities) {
-            emails.add(emailEntity.toScim());
+            emailsForMapping.add(emailEntity.toScim());
         }
-        return emails;
+        return emailsForMapping;
     }
 
     private Set<Object> anyStringSetToObjectSet(Set<String> anySet) {
@@ -708,18 +708,18 @@ public class UserEntity extends InternalIdSkeleton implements UserDetails {
             return null;
         }
         Set<Object> objectSet = new HashSet<>();
-        for (String any : anySet) {
-            objectSet.add(any);
+        for (String anyForMapping : anySet) {
+            objectSet.add(anyForMapping);
         }
         return objectSet;
     }
 
     private List<Address> entityAddressToScim(Set<AddressEntity> addressEntities) {
-        List<Address> addresses = new ArrayList<>();
+        List<Address> addressesForMapping = new ArrayList<>();
         for (AddressEntity addressEntity : addressEntities) {
-            addresses.add(addressEntity.toScim());
+            addressesForMapping.add(addressEntity.toScim());
         }
-        return addresses;
+        return addressesForMapping;
     }
 
 
