@@ -85,8 +85,8 @@ public class MeController {
         private final DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTime();
         private String id;
         private String name;
-        private String first_name;
-        private String last_name;
+        private String first_name; // NOSONAR - needed pattern due to json serializing
+        private String last_name; // NOSONAR - needed pattern due to json serializing
         private String link;
         private String userName;
         //fallback is female...
@@ -96,7 +96,7 @@ public class MeController {
         private int timezone = 2;
         private String locale;
         private boolean verified = true;
-        private String updated_time;
+        private String updated_time; // NOSONAR - needed pattern due to json serializing
 
         public FacebookInformationConstruct(UserEntity userEntity) {
             this.id = userEntity.getId().toString();
@@ -137,11 +137,11 @@ public class MeController {
             this.last_name = nameEntity.getFamilyName();
         }
 
-        public String getFirst_name() {
+        public String getFirst_name() { // NOSONAR - needed pattern due to json serializing
             return first_name;
         }
 
-        public String getLast_name() {
+        public String getLast_name() { // NOSONAR - needed pattern due to json serializing
             return last_name;
         }
 
@@ -173,7 +173,7 @@ public class MeController {
             return verified;
         }
 
-        public String getUpdated_time() {
+        public String getUpdated_time() { // NOSONAR - needed pattern due to json serializing
             return updated_time;
         }
     }

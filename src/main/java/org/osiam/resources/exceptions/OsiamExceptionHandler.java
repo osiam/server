@@ -79,7 +79,7 @@ public class OsiamExceptionHandler extends ResponseEntityExceptionHandler {
 
     @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
     static class JsonErrorResult {
-        private String error_code;
+        private String error_code; // NOSONAR - needed pattern due to json serializing
         private String description;
 
         public JsonErrorResult(String name, String message) {
@@ -87,7 +87,7 @@ public class OsiamExceptionHandler extends ResponseEntityExceptionHandler {
             this.description = message;
         }
 
-        public String getError_code() {
+        public String getError_code() { // NOSONAR - needed pattern due to json serializing
             return error_code;
         }
 

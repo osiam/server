@@ -64,7 +64,7 @@ public class GenericSCIMToEntityWrapper {
         for (Map.Entry<String, Field> e : fields.getInputFields().entrySet()) {
             Field field = fields.getInputFields().get(e.getKey());
             field.setAccessible(true);
-            if (!target.READ_ONLY_FIELD_SET.contains(e.getKey()) && !doNotUpdateThem.contains(e.getKey())) {
+            if (!target.readOnlyFieldSet.contains(e.getKey()) && !doNotUpdateThem.contains(e.getKey())) {
                 Object userValue = field.get(user);
                 SCIMEntities.Entity attributes = scimEntities.fromString(e.getKey());
                 if (attributes == null) {
@@ -83,7 +83,7 @@ public class GenericSCIMToEntityWrapper {
         if (mode == Mode.PATCH && user.getMeta() != null) {
             for (String s : user.getMeta().getAttributes()) {
                 String key = s.toLowerCase();
-                if (!target.NOT_DELETABLE.contains(key) && !target.READ_ONLY_FIELD_SET.contains(key)) {
+                if (!target.notDeletable.contains(key) && !target.readOnlyFieldSet.contains(key)) {
                     deleteAttribute(entityFields, entityFieldWrapper, doNotUpdateThem, key);
                 }
             }
@@ -131,7 +131,7 @@ public class GenericSCIMToEntityWrapper {
         Object object = entity;
         GetComplexEntityFields lastEntityFields = null;
         for (int i = 0; i < lastElement; i++) {
-            if (target.READ_ONLY_FIELD_SET.contains(complexMethod[i])) {
+            if (target.readOnlyFieldSet.contains(complexMethod[i])) {
                 return;
             }
             lastEntityFields = new GetComplexEntityFields(entityFields, complexMethod[i], object).invoke();
@@ -145,17 +145,18 @@ public class GenericSCIMToEntityWrapper {
         PATCH, PUT
     }
 
+    // creates a group or user target with corresponding read only and not deletable fields
     public enum For{
         USER(new String[]{"id", "meta", "groups"}, new String[]{"username"}),
 
         GROUP(new String[]{"id", "meta"}, new String[]{"displayname"});
 
-        final Set<String> READ_ONLY_FIELD_SET;
-        final Set<String> NOT_DELETABLE;
+        final Set<String> readOnlyFieldSet;
+        final Set<String> notDeletable;
 
         For(String[] readOnly, String[] notDeleteable) {
-            READ_ONLY_FIELD_SET = new HashSet<>(Arrays.asList(readOnly));
-            NOT_DELETABLE = new HashSet<>(Arrays.asList(notDeleteable));
+            readOnlyFieldSet = new HashSet<>(Arrays.asList(readOnly));
+            notDeletable = new HashSet<>(Arrays.asList(notDeleteable));
         }
     }
 
