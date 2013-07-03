@@ -26,6 +26,8 @@ package org.osiam.resources.provisioning;
 import org.osiam.resources.scim.Resource;
 
 import java.lang.reflect.Field;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.*;
 
 /**
@@ -62,8 +64,15 @@ public class GenericSCIMToEntityWrapper {
         Set<String> doNotUpdateThem = deleteAttributes(fields.getTargetFields(), entityFieldWrapper);
 
         for (Map.Entry<String, Field> e : fields.getInputFields().entrySet()) {
-            Field field = fields.getInputFields().get(e.getKey());
-            field.setAccessible(true);
+            final Field field = fields.getInputFields().get(e.getKey());
+            AccessController.doPrivileged(new PrivilegedAction() {
+                public Object run() {
+                    // privileged code goes here
+                    field.setAccessible(true);
+                    return null; // nothing to return
+                }
+            });
+
             if (!target.readOnlyFieldSet.contains(e.getKey()) && !doNotUpdateThem.contains(e.getKey())) {
                 Object userValue = field.get(user);
                 SCIMEntities.Entity attributes = scimEntities.fromString(e.getKey());
@@ -176,8 +185,15 @@ public class GenericSCIMToEntityWrapper {
         }
 
         public GetComplexEntityFields invoke() throws IllegalAccessException {
-            Field field = entityFields.get(key);
-            field.setAccessible(true);
+            final Field field = entityFields.get(key);
+            AccessController.doPrivileged(new PrivilegedAction() {
+                public Object run() {
+                    // privileged code goes here
+                    field.setAccessible(true);
+                    return null; // nothing to return
+                }
+            });
+
             lastObjectOfField = field.get(lastObjectOfField);
             Class<?> declaringClass = field.getType();
             entityFields = (new GetFieldsOfInputAndTarget()).getFieldsAsNormalizedMap(declaringClass);
@@ -185,13 +201,19 @@ public class GenericSCIMToEntityWrapper {
         }
 
         public void nullValue(String s) throws IllegalAccessException {
-            Field field = entityFields.get(s);
+            final Field field = entityFields.get(s);
             if (field == null) {
                 throw generateIllegalArgumentException(s);
             } else if (lastObjectOfField == null) {
                 throw generateIllegalArgumentException(key);
             }
-            field.setAccessible(true);
+            AccessController.doPrivileged(new PrivilegedAction() {
+                public Object run() {
+                    // privileged code goes here
+                    field.setAccessible(true);
+                    return null; // nothing to return
+                }
+            });
             field.set(lastObjectOfField, null);
         }
     }

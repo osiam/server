@@ -26,6 +26,8 @@ package org.osiam.resources.provisioning;
 import org.osiam.resources.scim.Name;
 
 import java.lang.reflect.Field;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 public class EntityFieldWrapper {
     private final GenericSCIMToEntityWrapper.Mode mode;
@@ -51,11 +53,15 @@ public class EntityFieldWrapper {
         }
     }
 
-
-
-    void updateSimpleField(Field entityField, Object userValue) throws IllegalAccessException {
+    void updateSimpleField(final Field entityField, Object userValue) throws IllegalAccessException {
         if (entityField != null) {
-            entityField.setAccessible(true);
+            AccessController.doPrivileged(new PrivilegedAction() {
+                public Object run() {
+                    // privileged code goes here
+                    entityField.setAccessible(true);
+                    return null; // nothing to return
+                }
+            });
             entityField.set(entity, userValue);
         }
     }
