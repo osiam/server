@@ -69,7 +69,7 @@ public class UserController {
         this.scimUserProvisioning = scimUserProvisioning;
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET) // NOSONAR - duplicate literals unnecessary
     @ResponseBody
     public User getUser(@PathVariable final String id) {
         User user = scimUserProvisioning.getById(id);
@@ -90,7 +90,7 @@ public class UserController {
         return User.Builder.generateForOuput(createdUser);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT) // NOSONAR - duplicate literals unnecessary
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public User replace(@PathVariable final String id, HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -99,7 +99,7 @@ public class UserController {
         return setLocationUriAndCreateUserForOutput(request, response, createdUser);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
+    @RequestMapping(value = "/{id}", method = RequestMethod.PATCH) // NOSONAR - duplicate literals unnecessary
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public User update(@PathVariable final String id, HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -108,7 +108,7 @@ public class UserController {
         return setLocationUriAndCreateUserForOutput(request, response, createdUser);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE) // NOSONAR - duplicate literals unnecessary
     @ResponseStatus(HttpStatus.OK)
     public void delete(@PathVariable final String id) {
         scimUserProvisioning.delete(id);

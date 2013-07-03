@@ -75,19 +75,19 @@ public class GroupController {
         response.setHeader("Location", requestUrl);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET) // NOSONAR - duplicate literals unnecessary
     @ResponseBody
     public Group get(@PathVariable final String id) {
         return scimGroupProvisioning.getById(id);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE) // NOSONAR - duplicate literals unnecessary
     @ResponseStatus(HttpStatus.OK)
     public void delete(@PathVariable final String id) {
         scimGroupProvisioning.delete(id);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT) // NOSONAR - duplicate literals unnecessary
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public Group replace(@PathVariable final String id, HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -97,7 +97,7 @@ public class GroupController {
         return createdGroup;
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
+    @RequestMapping(value = "/{id}", method = RequestMethod.PATCH) // NOSONAR - duplicate literals unnecessary
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public Group update(@PathVariable final String id, HttpServletRequest request, HttpServletResponse response) throws IOException {
