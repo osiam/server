@@ -21,7 +21,7 @@ public class RequestParamHelper {
 
         parameterMap.put("filter", request.getParameter("filter"));
         parameterMap
-                .put("sortBy", request.getParameter("sortBy") != null ? request.getParameter("sortBy") : "internal_id");
+                .put("sortBy", request.getParameter("sortBy") != null ? request.getParameter("sortBy") : "id");
         parameterMap.put("sortOrder",
                 request.getParameter("sortOrder") != null ? request.getParameter("sortOrder") : "ascending");
         parameterMap.put("startIndex",
