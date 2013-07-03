@@ -51,7 +51,9 @@ public class FBClientCredentialsTokenEndpointFilter extends AbstractAuthenticati
                 authenticationEntryPoint.commence(request, response, exception);
             }
         });
-        setAuthenticationSuccessHandler(new AuthenticationSuccessHandler() {
+        // findbugs: Performance - Could be refactored into a named static inner class
+        // static would also be possible, but to be consistent with the upper case and because is not often used
+        setAuthenticationSuccessHandler(new AuthenticationSuccessHandler() { // NOSONAR
             public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                                 Authentication authentication) throws IOException, ServletException {
                 // no-op - just allow filter chain to continue to token endpoint
