@@ -30,7 +30,7 @@ class RequestParamHelperSpec extends Specification {
         Map result = requestParamHelper.getRequestParameterValues(servletRequestMock)
 
         then:
-        result.get("sortBy") == "internal_id"
+        result.get("sortBy") == "id"
     }
 
     def "should not use default value for sortBy if not null"() {
