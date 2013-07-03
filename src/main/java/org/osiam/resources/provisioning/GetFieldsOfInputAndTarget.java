@@ -43,7 +43,7 @@ public class GetFieldsOfInputAndTarget {
 
     }
 
-    public Map<String, Field> getFieldsAsNormalizedMap(Class<?> clazz) {
+    public final Map<String, Field> getFieldsAsNormalizedMap(Class<?> clazz) {
         Map<String, Field> fields = new HashMap<>();
         if (clazz != null) {
             for (Field f : clazz.getDeclaredFields()) {
