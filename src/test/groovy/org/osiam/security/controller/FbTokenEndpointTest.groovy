@@ -19,7 +19,7 @@ class FbTokenEndpointTest extends Specification {
     def "should manipulate the result of tokenendpoint to be facebook like"(){
 
         when:
-        def result = underTest.access_token(null, "authorization-code", null)
+        def result = underTest.accessToken(null, "authorization-code", null)
         then:
         1 * tokenEndpoint.getAccessToken(null, "authorization-code", null) >> tokenEndpointResult
         1 * body.getValue() >> access_token
