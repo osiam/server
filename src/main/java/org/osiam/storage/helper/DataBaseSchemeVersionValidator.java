@@ -41,7 +41,7 @@ public class DataBaseSchemeVersionValidator {
     @PostConstruct
     public void checkVersion() throws InterruptedException {
         DBVersion version = em.find(DBVersion.class, DBVersion.DB_VERSION);
-        if (version == null || !Double.valueOf(version.version).equals(DBVersion.DB_VERSION)) {
+        if (version == null || !Double.valueOf(version.getVersion()).equals(DBVersion.DB_VERSION)) {
             throw new IllegalStateException("Database Scheme " +
                     DBVersion.DB_VERSION +
                     " not found. " +
