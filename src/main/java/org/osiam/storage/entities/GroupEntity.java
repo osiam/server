@@ -72,19 +72,28 @@ public class GroupEntity extends InternalIdSkeleton {
 
     private static void transferMultiValueAttributeToInternalIdSkeleton(Group group, Set<InternalIdSkeleton> result) {
         for (final MultiValuedAttribute m : group.getMembers()) {
-            InternalIdSkeleton skeleton = new InternalIdSkeleton() {
-                @Override
-                public String getDisplayName() {
-                    return m.getDisplay();
-                }
-
-                @Override
-                public <T> T toScim() {
-                    return null;
-                }
-            };
-            skeleton.setId(UUID.fromString(String.valueOf(m.getValue())));
+            InternalIdSkeleton skeleton = new InternalIdSkeletonToMultivalueAttribute(m.getDisplay(), UUID.fromString(String.valueOf(m.getValue())));
             result.add(skeleton);
+        }
+    }
+
+    private static class InternalIdSkeletonToMultivalueAttribute extends InternalIdSkeleton {
+
+        private static final long serialVersionUID = 2192883719672334983L;
+        private final String displayName;
+
+        public InternalIdSkeletonToMultivalueAttribute(String displayName, UUID uuid) {
+            this.displayName = displayName;
+            setId(uuid);
+        }
+        @Override
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        @Override
+        public <T> T toScim() {
+            return null;
         }
     }
 
