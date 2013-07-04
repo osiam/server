@@ -30,6 +30,7 @@ import org.osiam.resources.scim.MultiValuedAttribute;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Map;
 
 public class EntityListFieldWrapper {
@@ -110,7 +111,7 @@ public class EntityListFieldWrapper {
 
     private boolean deleteSingleAttribute(MultiValuedAttribute m, Collection<Object> targetList, Object o) {
         ChildOfMultiValueAttribute valueAttribute = (ChildOfMultiValueAttribute) o;
-        String value = valueAttribute.getValue().toUpperCase();
+        String value = valueAttribute.getValue().toUpperCase(Locale.ENGLISH);
         Object mValue = String.valueOf(m.getValue()).toUpperCase();
         return mValue.equals(value) && targetList.remove(o);
     }

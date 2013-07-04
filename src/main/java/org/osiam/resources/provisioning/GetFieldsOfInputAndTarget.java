@@ -25,6 +25,7 @@ package org.osiam.resources.provisioning;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class GetFieldsOfInputAndTarget {
@@ -47,7 +48,7 @@ public class GetFieldsOfInputAndTarget {
         Map<String, Field> fields = new HashMap<>();
         if (clazz != null) {
             for (Field f : clazz.getDeclaredFields()) {
-                fields.put(f.getName().toLowerCase(), f);
+                fields.put(f.getName().toLowerCase(Locale.ENGLISH), f);
             }
             fields.putAll(getFieldsAsNormalizedMap(clazz.getSuperclass()));
         }

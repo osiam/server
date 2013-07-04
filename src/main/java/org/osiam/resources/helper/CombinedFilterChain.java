@@ -21,6 +21,7 @@ package org.osiam.resources.helper;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,7 +43,7 @@ public class CombinedFilterChain implements FilterChain {
             throw new IllegalArgumentException(chain + " is not a CombinedFilterChain.");
         }
         this.term1 = filterParser.parse(matcher.group(1)); // NOSONAR - no need to make constant for number
-        this.combinedWith = Combiner.valueOf(matcher.group(2).toUpperCase()); // NOSONAR - no need to make constant for number
+        this.combinedWith = Combiner.valueOf(matcher.group(2).toUpperCase(Locale.ENGLISH)); // NOSONAR - no need to make constant for number
         this.term2 = filterParser.parse(matcher.group(3)); // NOSONAR - no need to make constant for number
     }
 
