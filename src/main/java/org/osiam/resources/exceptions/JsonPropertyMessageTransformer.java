@@ -17,7 +17,7 @@ public class JsonPropertyMessageTransformer implements ErrorMessageTransformer {
     //at [Source: java.io.StringReader@1e41ac03; line: 1, column: 11] (through reference chain: org.osiam.resources.scim.User["extId"])
     //will be transformed to
     // Unrecognized field "extId"
-    private final static Pattern PATTERN = Pattern.compile("(Unrecognized field \"\\w+\").*",
+    private static final Pattern PATTERN = Pattern.compile("(Unrecognized field \"\\w+\").*",
             Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
 
     @Override

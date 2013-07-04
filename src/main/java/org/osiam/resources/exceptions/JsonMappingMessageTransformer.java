@@ -16,7 +16,7 @@ public class JsonMappingMessageTransformer implements ErrorMessageTransformer {
     //at [Source: java.io.StringReader@5c96bfda; line: 1, column: 2] (through reference chain: org.osiam.resources.scim.User["ims"])
     //will be transformed to
     // Can not deserialize instance of java.util.ArrayList out of VALUE_STRING
-    private final static Pattern PATTERN = Pattern.compile("(Can not deserialize instance of [\\w\\.]+ out of \\w+) token.*",
+    private static final Pattern PATTERN = Pattern.compile("(Can not deserialize instance of [\\w\\.]+ out of \\w+) token.*",
             Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
 
     @Override
