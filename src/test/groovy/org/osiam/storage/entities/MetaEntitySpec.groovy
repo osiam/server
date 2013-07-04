@@ -54,12 +54,29 @@ class MetaEntitySpec extends Specification {
         metaEntity.getCreated() == date
     }
 
+    def "should not throw NullpointerException if created is null"() {
+        when:
+        metaEntity.setCreated(null)
+
+        then:
+        metaEntity.getCreated() == null
+
+    }
+
     def "setter and getter for the modified field should be present"() {
         when:
         metaEntity.setLastModified(date)
 
         then:
         metaEntity.getLastModified() == date
+    }
+
+    def "should not throw NullpointerException if last modified is null"() {
+        when:
+        metaEntity.setLastModified(null)
+
+        then:
+        metaEntity.getLastModified() == null
     }
 
     def "setter and getter for the location should be present"() {
