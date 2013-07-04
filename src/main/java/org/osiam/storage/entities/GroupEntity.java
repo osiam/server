@@ -36,9 +36,7 @@ import java.util.UUID;
  * Group Entity
  */
 @Entity(name = "scim_group")
-
-//@NamedQueries({@NamedQuery(name = "removeMemberWithId", query = "DELETE FROM scim_group.members i WHERE i.id= :id")})
-public class GroupEntity extends InternalIdSkeleton implements Serializable {
+public class GroupEntity extends InternalIdSkeleton {
 
     private static final long serialVersionUID = -6535056565639057158L;
 
@@ -81,7 +79,7 @@ public class GroupEntity extends InternalIdSkeleton implements Serializable {
 
                 @Override
                 public <T> T toScim() {
-                    return null;  //To change body of implemented methods use File | Settings | File Templates.
+                    return null;
                 }
             };
             skeleton.setId(UUID.fromString(String.valueOf(m.getValue())));

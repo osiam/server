@@ -149,7 +149,7 @@ public class MeController {
             return link;
         }
 
-        public String getUserName() {
+        public String getUserName() { // NOSONAR - (confusing names) UserEntity.getUsername() is overwritten from super class
             return userName;
         }
 

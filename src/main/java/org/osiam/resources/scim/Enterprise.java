@@ -26,10 +26,7 @@ package org.osiam.resources.scim;
 /**
  * Java class for extension enterprise.
  */
-// pmd:Missing Static Method In Non Instantiatable Class
-// this class is instantiable with the builder
-// NOSONAR
-public final class Enterprise {
+public final class Enterprise { // NOSONAR - this class is instantiable with the builder
 
     private final String employeeNumber;
     private final String costCenter;
