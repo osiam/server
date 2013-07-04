@@ -45,20 +45,20 @@ public class FBClientCredentialsTokenEndpointFilter extends AbstractAuthenticati
                                                 AuthenticationException exception)
                     throws IOException, ServletException {
                 if (exception instanceof BadCredentialsException) {
-                    exception =
+                    exception = // NOSONAR
                             new BadCredentialsException(exception.getMessage(), new BadClientCredentialsException());
                 }
                 authenticationEntryPoint.commence(request, response, exception);
             }
         });
-        // findbugs: Performance - Could be refactored into a named static inner class
-        // static would also be possible, but to be consistent with the upper case and because is not often used
-        setAuthenticationSuccessHandler(new AuthenticationSuccessHandler() { // NOSONAR
-            public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                                Authentication authentication) throws IOException, ServletException {
-                // no-op - just allow filter chain to continue to token endpoint
-            }
-        });
+        setAuthenticationSuccessHandler(new MyAuthenticationSuccessHandler());
+    }
+
+    private static class MyAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+        public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+                                            Authentication authentication) throws IOException, ServletException {
+            // no-op - just allow filter chain to continue to token endpoint
+        }
     }
 
     @Override
