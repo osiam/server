@@ -114,5 +114,47 @@ class ClientEntityTest extends Specification {
         under_test.getInternalId() == 23
     }
 
+    def "parametrized constructor should be present for json serializing"() {
+        given:
+        def client = new ClientEntity()
+        client.setId("id")
+        client.setClientSecret("secret")
+        client.setAccessTokenValiditySeconds(200)
+        client.setRefreshTokenValiditySeconds(200)
+        client.setRedirectUri("uri")
+        client.setScope(["scope1","scope2"] as Set)
 
+        when:
+        def clientEntity = new ClientEntity(client)
+
+        then:
+        clientEntity.getId() == "id"
+        clientEntity.getClientSecret() == "secret"
+        clientEntity.getAccessTokenValiditySeconds() == 200
+        clientEntity.getRefreshTokenValiditySeconds() == 200
+        clientEntity.getRedirectUri() == "uri"
+        clientEntity.getScope() == ["scope1","scope2"] as Set
+    }
+
+    def "parametrized constructor should work with null id and secret"() {
+        given:
+        def client = new ClientEntity()
+        client.setId(null)
+        client.setClientSecret(null)
+        client.setAccessTokenValiditySeconds(200)
+        client.setRefreshTokenValiditySeconds(200)
+        client.setRedirectUri("uri")
+        client.setScope(["scope1","scope2"] as Set)
+
+        when:
+        def clientEntity = new ClientEntity(client)
+
+        then:
+        clientEntity.getId() == null
+        clientEntity.getClientSecret() != null
+        clientEntity.getAccessTokenValiditySeconds() == 200
+        clientEntity.getRefreshTokenValiditySeconds() == 200
+        clientEntity.getRedirectUri() == "uri"
+        clientEntity.getScope() == ["scope1","scope2"] as Set
+    }
 }
