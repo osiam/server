@@ -30,9 +30,9 @@ import java.util.Set;
  */
 public abstract class Resource {
 
-    protected String id;
-    protected Meta meta;
-    protected Set<String> schemas;
+    private String id;
+    private Meta meta;
+    private Set<String> schemas;
 
     protected Resource(){}
 
@@ -43,10 +43,9 @@ public abstract class Resource {
     }
 
     public abstract static class Builder {
-        protected String id;
-        protected Meta meta
-                ;
-        protected Set<String> schemas = Constants.CORE_SCHEMAS;
+        protected String id; // NOSONAR - fields are needed in child classes
+        protected Meta meta; // NOSONAR - fields are needed in child classes
+        protected Set<String> schemas = Constants.CORE_SCHEMAS; // NOSONAR - fields are needed in child classes
 
         public Builder setSchemas(Set<String> schemas) {
             this.schemas = schemas;

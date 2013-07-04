@@ -28,9 +28,7 @@ package org.osiam.resources.scim;
  */
 public abstract class CoreResource  extends Resource{
 
-
-
-    protected  String externalId;
+    private String externalId;
 
     public CoreResource() {}
 
@@ -41,14 +39,13 @@ public abstract class CoreResource  extends Resource{
     }
 
     public abstract static class Builder extends Resource.Builder {
-        protected String externalId;
+        protected String externalId; // NOSONAR - fields are needed in child classes
 
         public Builder setExternalId(String externalId) {
             this.externalId = externalId;
             return this;
         }
     }
-
 
     /**
      * Gets the value of the externalId property.

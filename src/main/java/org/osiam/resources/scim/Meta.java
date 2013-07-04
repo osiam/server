@@ -65,7 +65,7 @@ public class Meta {
         private String location;
         private String version;
         private Set<String> attributes = new HashSet<>();
-        public String resourceType;
+        private String resourceType;
 
         /**
          * Will set created, as well as lastModified to System.currentTime

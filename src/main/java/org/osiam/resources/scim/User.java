@@ -317,9 +317,9 @@ public class User extends CoreResource {
                 return null;
             }
             Builder builder = new Builder(user.userName);
-            builder.id = user.id;
-            builder.meta = user.meta;
-            builder.externalId = user.externalId;
+            builder.id = user.getId();
+            builder.meta = user.getMeta();
+            builder.externalId = user.getExternalId();
             builder.name = user.name;
             builder.displayName = user.displayName;
             builder.nickName = user.nickName;
@@ -341,7 +341,7 @@ public class User extends CoreResource {
             builder.roles = user.roles;
             builder.x509Certificates = user.x509Certificates;
             builder.any = user.any;
-            builder.schemas = user.schemas;
+            builder.schemas = user.getSchemas();
             return builder.build();
         }
 

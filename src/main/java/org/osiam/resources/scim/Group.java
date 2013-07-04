@@ -51,16 +51,16 @@ public class Group extends CoreResource{
 
     public static class Builder extends CoreResource.Builder{
 
-        protected String displayName;
-        protected Set<MultiValuedAttribute> members = new HashSet<>();
-        protected Object any;
+        private String displayName;
+        private Set<MultiValuedAttribute> members = new HashSet<>();
+        private Object any;
 
         public Builder(){}
 
         public Builder(Group group) {
-            id = group.id;
-            meta = group.meta;
-            externalId = group.externalId;
+            id = group.getId();
+            meta = group.getMeta();
+            externalId = group.getExternalId();
             displayName = group.displayName;
             members = group.members;
             any = group.any;

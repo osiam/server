@@ -15,7 +15,7 @@ import java.util.List;
 public class ClientDao {
 
     @PersistenceContext
-    protected EntityManager em;
+    private EntityManager em;
 
     public ClientEntity getClient(String id) {
         return getClientById(id);
