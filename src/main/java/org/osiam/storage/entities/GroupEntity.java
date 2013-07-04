@@ -59,6 +59,7 @@ public class GroupEntity extends InternalIdSkeleton {
         groupEntity.setId(group.getId() != null ? UUID.fromString(group.getId()) : UUID.randomUUID());
         groupEntity.setExternalId(group.getExternalId());
         groupEntity.setMembers(createMembers(group));
+        groupEntity.setAny(group.getAny().toString());
         return groupEntity;
     }
 
@@ -113,7 +114,7 @@ public class GroupEntity extends InternalIdSkeleton {
 
     @Override
     public Group toScim() {
-        return new Group.Builder().setDisplayName(getDisplayName()).setMembers(membersToScim())
+        return new Group.Builder().setDisplayName(getDisplayName()).setMembers(membersToScim()).setAny(getAny())
                 .setExternalId(getExternalId()).setId(getId().toString()).setMeta(getMeta().toScim()).build();
     }
 

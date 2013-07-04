@@ -36,6 +36,7 @@ public class Group extends CoreResource{
 
     private String displayName;
     private Set<MultiValuedAttribute> members;
+    private Object any;
 
     //JSON Serializing
     public Group(){}
@@ -45,6 +46,7 @@ public class Group extends CoreResource{
         super(builder);
         this.displayName = builder.displayName;
         this.members = builder.members;
+        this.any = builder.any;
     }
 
     public static class Builder extends CoreResource.Builder{
@@ -61,8 +63,7 @@ public class Group extends CoreResource{
             externalId = group.externalId;
             displayName = group.displayName;
             members = group.members;
-
-
+            any = group.any;
         }
 
         public Builder setDisplayName(String displayName) {
@@ -86,7 +87,9 @@ public class Group extends CoreResource{
 
     }
 
-
+    public Object getAny() {
+        return any;
+    }
 
     /**
      * Gets the value of the displayName property.
