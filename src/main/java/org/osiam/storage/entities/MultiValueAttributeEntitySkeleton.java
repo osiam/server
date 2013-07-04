@@ -23,8 +23,6 @@
 
 package org.osiam.storage.entities;
 
-import org.osiam.storage.entities.ChildOfMultiValueAttribute;
-
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
@@ -34,8 +32,9 @@ import javax.persistence.InheritanceType;
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttribute {
+
     @Id
-    protected String value;
+    private String value;
 
 
     @Override

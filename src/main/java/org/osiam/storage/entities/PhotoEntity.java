@@ -47,18 +47,13 @@ public class PhotoEntity extends MultiValueAttributeEntitySkeleton implements Ch
     @ManyToOne
     private UserEntity user;
 
-
-    public String getValue() {
-        return value;
-    }
-
     @Override
     public void setValue(String value) {
         if(isValueIncorrect(value)) {
             throw new IllegalArgumentException("The photo MUST have an attribute 'value' that ends with " +
                     "JPEG, JPG, GIF, PNG.");
         }
-        this.value = value;
+        super.setValue(value);
     }
 
     private boolean isValueIncorrect(String value) {

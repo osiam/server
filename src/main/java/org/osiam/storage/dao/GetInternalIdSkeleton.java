@@ -41,11 +41,14 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 public abstract class GetInternalIdSkeleton {
-    protected static final Logger LOGGER = Logger.getLogger(GetInternalIdSkeleton.class.getName());
+
+    protected static final Logger LOGGER = Logger.getLogger(GetInternalIdSkeleton.class.getName()); // NOSONAR used in child classes
+
     @PersistenceContext
-    protected EntityManager em;
+    protected EntityManager em; // NOSONAR used in child classes
+
     @Inject
-    protected FilterParser filterParser;
+    private FilterParser filterParser;
 
     public void setEm(EntityManager em) {
         this.em = em;

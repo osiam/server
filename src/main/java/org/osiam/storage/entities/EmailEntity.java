@@ -45,6 +45,8 @@ public class EmailEntity extends MultiValueAttributeEntitySkeleton implements Ha
     @Column(name = "postgresql_does_not_like_primary")
     private boolean primary;
 
+    @ManyToOne(optional = false)
+    private UserEntity user;
 
     @Override
     public String getType() {
@@ -70,10 +72,6 @@ public class EmailEntity extends MultiValueAttributeEntitySkeleton implements Ha
     public void setPrimary(boolean primary) {
         this.primary = primary;
     }
-
-    @ManyToOne(optional = false)
-    protected UserEntity user;
-
 
     public MultiValuedAttribute toScim() {
         return new MultiValuedAttribute.Builder().

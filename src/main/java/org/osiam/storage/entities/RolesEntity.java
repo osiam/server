@@ -39,7 +39,7 @@ public class RolesEntity extends MultiValueAttributeEntitySkeleton implements Gr
 
     @Override
     public String getAuthority() {
-        return "ROLE_" + value;
+        return "ROLE_" + getValue();
     }
 
     public MultiValuedAttribute toScim() {

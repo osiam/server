@@ -59,7 +59,7 @@ public class MetaEntity {
     private String version;
 
     @Column
-    protected String resourceType;
+    private String resourceType;
 
     public MetaEntity(Calendar instance) {
         created = instance.getTime();
