@@ -41,9 +41,9 @@ public class SingularFilterChain implements FilterChain {
             throw new IllegalArgumentException(chain + " is not a SingularFilterChain.");
         }
         this.key = matcher.group(1).trim();
-        this.constraint = Constraints.fromString.get(matcher.group(2));
+        this.constraint = Constraints.fromString.get(matcher.group(2)); // NOSONAR - no need to make constant for number
 
-        this.value = castToOriginValue(matcher.group(3).trim());
+        this.value = castToOriginValue(matcher.group(3).trim()); // NOSONAR - no need to make constant for number
 
     }
 

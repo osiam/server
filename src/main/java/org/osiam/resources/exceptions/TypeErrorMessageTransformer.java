@@ -22,8 +22,8 @@ public class TypeErrorMessageTransformer implements ErrorMessageTransformer {
         if (message == null) { return null; }
         Matcher matcher = pattern.matcher(message);
         if (matcher.matches()) {
-            String values = loadEnumConstAsStringByClassName(matcher.group(1) + "$" + matcher.group(3));
-            return matcher.group(4) + " is not a valid " + matcher.group(2) + " type only " + values + " are allowed.";
+            String values = loadEnumConstAsStringByClassName(matcher.group(1) + "$" + matcher.group(3)); // NOSONAR - no need to make a constant for numbers
+            return matcher.group(4) + " is not a valid " + matcher.group(2) + " type only " + values + " are allowed."; // NOSONAR - no need to make a constant for numbers
         }
         return message;
     }

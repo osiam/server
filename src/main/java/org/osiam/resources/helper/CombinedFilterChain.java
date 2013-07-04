@@ -41,9 +41,9 @@ public class CombinedFilterChain implements FilterChain {
         if (!matcher.matches()) {
             throw new IllegalArgumentException(chain + " is not a CombinedFilterChain.");
         }
-        this.term1 = filterParser.parse(matcher.group(1));
-        this.combinedWith = Combiner.valueOf(matcher.group(2).toUpperCase());
-        this.term2 = filterParser.parse(matcher.group(3));
+        this.term1 = filterParser.parse(matcher.group(1)); // NOSONAR - no need to make constant for number
+        this.combinedWith = Combiner.valueOf(matcher.group(2).toUpperCase()); // NOSONAR - no need to make constant for number
+        this.term2 = filterParser.parse(matcher.group(3)); // NOSONAR - no need to make constant for number
     }
 
     @Override

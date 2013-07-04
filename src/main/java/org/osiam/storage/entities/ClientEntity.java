@@ -15,6 +15,7 @@ import java.util.*;
 public class ClientEntity implements ClientDetails {
 
     private static final long serialVersionUID = 7389428857079701157L;
+    private static final int LENGTH = 32;
 
     @Id
     @GeneratedValue
@@ -23,7 +24,7 @@ public class ClientEntity implements ClientDetails {
     private long internalId;
 
     @JsonProperty
-    @Column(unique = true, nullable = false, length = 32)
+    @Column(unique = true, nullable = false, length = LENGTH)
     private String id;
     @JsonProperty
     private int accessTokenValiditySeconds;

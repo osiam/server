@@ -41,6 +41,8 @@ import java.util.logging.Level;
 @Transactional
 public class UserDAO extends GetInternalIdSkeleton implements GenericDAO<UserEntity> {
 
+    private static final int PW_LENGHT = 128;
+
     @Inject
     private PasswordEncoder passwordEncoder;
 
@@ -118,7 +120,7 @@ public class UserDAO extends GetInternalIdSkeleton implements GenericDAO<UserEnt
     public UserEntity update(UserEntity entity) {
         //not hashed ...
         String password = entity.getPassword();
-        if (password.length() != 128) {
+        if (password.length() != PW_LENGHT) {
             entity.setPassword(passwordEncoder.encodePassword(password, entity.getId()));
         }
         findExistingMultiValueAttributes(entity);
@@ -140,16 +142,16 @@ public class UserDAO extends GetInternalIdSkeleton implements GenericDAO<UserEnt
 
     @Override
     protected void createAliasesForCriteria(Criteria criteria) {
-        criteria.createAlias("meta", "meta");
-        criteria.createAlias("name", "name");
-        criteria.createAlias("emails", "emails");
-        criteria.createAlias("phoneNumbers", "phoneNumbers");
-        criteria.createAlias("ims", "ims");
-        criteria.createAlias("photos", "photos");
-        criteria.createAlias("addresses", "addresses");
-        criteria.createAlias("groups", "groups");
-        criteria.createAlias("entitlements", "entitlements");
-        criteria.createAlias("roles", "roles");
-        criteria.createAlias("x509Certificates", "x509Certificates");
+        criteria.createAlias("meta", "meta"); // NOSONAR - no code duplication, need to set alias for types
+        criteria.createAlias("name", "name"); // NOSONAR - no code duplication, need to set alias for types
+        criteria.createAlias("emails", "emails"); // NOSONAR - no code duplication, need to set alias for types
+        criteria.createAlias("phoneNumbers", "phoneNumbers"); // NOSONAR - no code duplication, need to set alias for types
+        criteria.createAlias("ims", "ims"); // NOSONAR - no code duplication, need to set alias for types
+        criteria.createAlias("photos", "photos"); // NOSONAR - no code duplication, need to set alias for types
+        criteria.createAlias("addresses", "addresses"); // NOSONAR - no code duplication, need to set alias for types
+        criteria.createAlias("groups", "groups"); // NOSONAR - no code duplication, need to set alias for types
+        criteria.createAlias("entitlements", "entitlements"); // NOSONAR - no code duplication, need to set alias for types
+        criteria.createAlias("roles", "roles"); // NOSONAR - no code duplication, need to set alias for types
+        criteria.createAlias("x509Certificates", "x509Certificates"); // NOSONAR - no code duplication, need to set alias for types
     }
 }
