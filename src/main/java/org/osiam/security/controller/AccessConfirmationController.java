@@ -25,7 +25,7 @@ public class AccessConfirmationController {
     @RequestMapping("/oauth/confirm_access")
     public ModelAndView getAccessConfirmation(Map<String, Object> model) {
         AuthorizationRequest clientAuth = (AuthorizationRequest) model.remove("authorizationRequest");
-        ClientDetails client = clientDetailsService.loadClientByClientId(clientAuth.getClientId());
+        ClientDetails client = clientDetailsService.loadClientByClientId(clientAuth.getClientId()); // NOSONAR - clientDetailsService is initialized via setter injection
         model.put("auth_request", clientAuth);
         model.put("client", client);
         //TODO save access_confirmation
