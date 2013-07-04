@@ -29,10 +29,10 @@ public class ServiceProviderConfigController {
         public final Supported sort = new Supported(true); // NOSONAR - Needed public due to json serializing
         public final Supported etag = new Supported(false); // NOSONAR - Needed public due to json serializing
         public final Supported xmlDataFormat = new Supported(false); // NOSONAR - Needed public due to json serializing
-        public final AuthenticationSchemes authenticationSchemes = new AuthenticationSchemes(
+        public final AuthenticationSchemes authenticationSchemes = new AuthenticationSchemes( // NOSONAR - Needed public due to json serializing
                 new AuthenticationSchemes.AuthenticationScheme("Oauth2 Bearer",
                         "OAuth2 Bearer access token is used for authorization.", "http://tools.ietf.org/html/rfc6749",
-                        "http://oauth.net/2/")); // NOSONAR - Needed public due to json serializing
+                        "http://oauth.net/2/"));
 
         @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
         public static class Supported {

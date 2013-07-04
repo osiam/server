@@ -15,7 +15,7 @@ import java.io.IOException;
  */
 public class SSLRequestLoggingFilter implements Filter {
 
-    protected Logger logger = Logger.getLogger(SSLRequestLoggingFilter.class.getName());
+    protected Logger logger = Logger.getLogger(SSLRequestLoggingFilter.class.getName()); // NOSONAR - need it in tests
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
