@@ -26,7 +26,7 @@ package org.osiam.resources.provisioning;
 public interface SCIMEntities {
     Entity fromString(String key);
 
-    public static class Entity{
+    class Entity{
 
         private final Class<?> clazz;
         private final boolean isMultiValue;
