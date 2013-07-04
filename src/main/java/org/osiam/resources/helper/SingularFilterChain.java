@@ -118,7 +118,7 @@ public class SingularFilterChain implements FilterChain {
             }
         }
 
-        private final String constraint;
+        private final String constraint; // NOSONAR - is not singular because it is used in the static block
 
 
         Constraints(String constraint) {

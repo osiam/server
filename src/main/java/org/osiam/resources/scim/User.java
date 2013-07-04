@@ -38,18 +38,18 @@ import java.util.Set;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
 public class User extends CoreResource {
 
-    private String userName; // NOSONAR - no duplicates, builder defines his own fields
-    private Name name; // NOSONAR - no duplicates, builder defines his own fields
-    private String displayName; // NOSONAR - no duplicates, builder defines his own fields
-    private String nickName; // NOSONAR - no duplicates, builder defines his own fields
-    private String profileUrl; // NOSONAR - no duplicates, builder defines his own fields
-    private String title; // NOSONAR - no duplicates, builder defines his own fields
-    private String userType; // NOSONAR - no duplicates, builder defines his own fields
-    private String preferredLanguage; // NOSONAR - no duplicates, builder defines his own fields
-    private String locale; // NOSONAR - no duplicates, builder defines his own fields
-    private String timezone; // NOSONAR - no duplicates, builder defines his own fields
-    private Boolean active; // NOSONAR - no duplicates, builder defines his own fields
-    private String password; // NOSONAR - no duplicates, builder defines his own fields
+    private String userName;
+    private Name name;
+    private String displayName;
+    private String nickName;
+    private String profileUrl;
+    private String title;
+    private String userType;
+    private String preferredLanguage;
+    private String locale;
+    private String timezone;
+    private Boolean active;
+    private String password;
     private List<MultiValuedAttribute> emails;
     private List<MultiValuedAttribute> phoneNumbers;
     private List<MultiValuedAttribute> ims;
@@ -273,17 +273,17 @@ public class User extends CoreResource {
 
     public static class Builder extends CoreResource.Builder {
         private final String userName;
-        private Name name; // NOSONAR - no duplicates, builder defines his own fields
-        private String displayName; // NOSONAR - no duplicates, builder defines his own fields
-        private String nickName; // NOSONAR - no duplicates, builder defines his own fields
-        private String profileUrl; // NOSONAR - no duplicates, builder defines his own fields
-        private String title; // NOSONAR - no duplicates, builder defines his own fields
-        private String userType; // NOSONAR - no duplicates, builder defines his own fields
-        private String preferredLanguage; // NOSONAR - no duplicates, builder defines his own fields
-        private String locale; // NOSONAR - no duplicates, builder defines his own fields
-        private String timezone; // NOSONAR - no duplicates, builder defines his own fields
-        private Boolean active; // NOSONAR - no duplicates, builder defines his own fields
-        private String password; // NOSONAR - no duplicates, builder defines his own fields
+        private String password;
+        private Boolean active;
+        private String timezone;
+        private String locale;
+        private String preferredLanguage;
+        private String userType;
+        private String title;
+        private String profileUrl;
+        private String nickName;
+        private String displayName;
+        private Name name;
         private List<MultiValuedAttribute> emails = new ArrayList<>();
         private List<MultiValuedAttribute> phoneNumbers = new ArrayList<>();
         private List<MultiValuedAttribute> ims = new ArrayList<>();

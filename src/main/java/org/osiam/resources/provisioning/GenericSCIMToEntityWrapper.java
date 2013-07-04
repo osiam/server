@@ -160,8 +160,8 @@ public class GenericSCIMToEntityWrapper {
 
         GROUP(new String[]{"id", "meta"}, new String[]{"displayname"});
 
-        private final Set<String> readOnlyFieldSet;
-        private final Set<String> notDeletable;
+        private final Set<String> readOnlyFieldSet; // NOSONAR - fields are read in the class
+        private final Set<String> notDeletable; // NOSONAR - fields are read in the class
 
         For(String[] readOnly, String[] notDeleteable) {
             readOnlyFieldSet = new HashSet<>(Arrays.asList(readOnly));

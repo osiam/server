@@ -27,7 +27,6 @@ import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.MultiValuedAttribute;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
