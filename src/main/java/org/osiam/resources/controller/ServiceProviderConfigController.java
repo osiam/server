@@ -30,7 +30,7 @@ public class ServiceProviderConfigController {
         public final Supported etag = new Supported(false); // NOSONAR - Needed public due to json serializing
         public final Supported xmlDataFormat = new Supported(false); // NOSONAR - Needed public due to json serializing
         public final AuthenticationSchemes authenticationSchemes = new AuthenticationSchemes( // NOSONAR - Needed public due to json serializing
-                new AuthenticationSchemes.AuthenticationScheme("Oauth2 Bearer",
+                new AuthenticationSchemes.AuthenticationScheme("Oauth2 Bearer", // NOSONAR - Field is readable after serializing
                         "OAuth2 Bearer access token is used for authorization.", "http://tools.ietf.org/html/rfc6749",
                         "http://oauth.net/2/"));
 
@@ -39,7 +39,7 @@ public class ServiceProviderConfigController {
             public final boolean supported; // NOSONAR - Needed public due to json serializing
 
             public Supported(boolean b) {
-                supported = b;
+                supported = b; // NOSONAR - Field is readable after serializing
             }
         }
 
@@ -49,7 +49,7 @@ public class ServiceProviderConfigController {
 
             public FilterSupported(boolean b, Integer maxresults) {
                 super(b);
-                this.maxResults = maxresults;
+                this.maxResults = maxresults; // NOSONAR - Field is readable after serializing
             }
         }
 
@@ -61,8 +61,8 @@ public class ServiceProviderConfigController {
 
             public BulkSupported(boolean b) {
                 super(b);
-                this.maxOperations = null;
-                this.maxPayloadSize = null;
+                this.maxOperations = null; // NOSONAR - Field is readable after serializing
+                this.maxPayloadSize = null; // NOSONAR - Field is readable after serializing
             }
 
         }
@@ -72,7 +72,7 @@ public class ServiceProviderConfigController {
             public AuthenticationScheme[] authenticationSchemes; // NOSONAR - Needed public due to json serializing
 
             public AuthenticationSchemes(AuthenticationScheme... authenticationScheme) {
-                this.authenticationSchemes = authenticationScheme;
+                this.authenticationSchemes = authenticationScheme; // NOSONAR - Field is readable after serializing
 
             }
 
@@ -84,10 +84,10 @@ public class ServiceProviderConfigController {
                 public final String documentationUrl; // NOSONAR - Needed public due to json serializing
 
                 AuthenticationScheme(String name, String description, String specUrl, String documentationUrl) {
-                    this.name = name;
-                    this.description = description;
-                    this.specUrl = specUrl;
-                    this.documentationUrl = documentationUrl;
+                    this.name = name; // NOSONAR - Field is readable after serializing
+                    this.description = description; // NOSONAR - Field is readable after serializing
+                    this.specUrl = specUrl; // NOSONAR - Field is readable after serializing
+                    this.documentationUrl = documentationUrl; // NOSONAR - Field is readable after serializing
                 }
             }
         }
