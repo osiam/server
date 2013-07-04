@@ -59,7 +59,7 @@ public class GroupEntity extends InternalIdSkeleton {
         groupEntity.setId(group.getId() != null ? UUID.fromString(group.getId()) : UUID.randomUUID());
         groupEntity.setExternalId(group.getExternalId());
         groupEntity.setMembers(createMembers(group));
-        groupEntity.setAny(group.getAny().toString());
+        groupEntity.setAny(group.getAny() != null ? group.getAny().toString() : null);
         return groupEntity;
     }
 
