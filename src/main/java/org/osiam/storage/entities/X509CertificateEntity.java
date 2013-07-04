@@ -33,11 +33,11 @@ import java.io.Serializable;
  * X509 Certificates Entity
  */
 @Entity(name = "scim_certificate")
-public class X509CertificateEntity extends MultiValueAttributeEntitySkeleton implements Serializable {
+public class X509CertificateEntity extends MultiValueAttributeEntitySkeleton implements HasUser, Serializable {
 
     private static final long serialVersionUID = -6535057565639057058L;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     private UserEntity user;
 
 
