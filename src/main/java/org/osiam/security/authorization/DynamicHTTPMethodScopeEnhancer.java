@@ -31,6 +31,7 @@ import org.springframework.security.web.FilterInvocation;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -76,7 +77,7 @@ public class DynamicHTTPMethodScopeEnhancer implements AccessDecisionVoter<Objec
 
     private void addMethodScope(final Object object, final Set<ConfigAttribute> dynamicConfigs) {
         final FilterInvocation f = (FilterInvocation) object;
-        dynamicConfigs.add(new SecurityConfig("SCOPE_" + f.getRequest().getMethod().toUpperCase()));
+        dynamicConfigs.add(new SecurityConfig("SCOPE_" + f.getRequest().getMethod().toUpperCase(Locale.ENGLISH)));
     }
 }
 

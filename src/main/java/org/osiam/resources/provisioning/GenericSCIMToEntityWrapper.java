@@ -91,7 +91,7 @@ public class GenericSCIMToEntityWrapper {
         Set<String> doNotUpdateThem = new HashSet<>();
         if (mode == Mode.PATCH && user.getMeta() != null) {
             for (String s : user.getMeta().getAttributes()) {
-                String key = s.toLowerCase();
+                String key = s.toLowerCase(Locale.ENGLISH);
                 if (!target.notDeletable.contains(key) && !target.readOnlyFieldSet.contains(key)) {
                     deleteAttribute(entityFields, entityFieldWrapper, doNotUpdateThem, key);
                 }
