@@ -72,7 +72,9 @@ public class OsiamExceptionHandler extends ResponseEntityExceptionHandler {
         if (ex instanceof SchemaUnknownException) {
             return HttpStatus.I_AM_A_TEAPOT;
         }
-        if (ex instanceof UnsupportedOperationException) { return HttpStatus.NOT_IMPLEMENTED; }
+        if (ex instanceof UnsupportedOperationException) {
+            return HttpStatus.NOT_IMPLEMENTED;
+        }
 
         return HttpStatus.CONFLICT;
     }

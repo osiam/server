@@ -33,7 +33,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.context.request.WebRequest
 import spock.lang.Specification
 
-class HandleExceptionTest extends Specification {
+class OsiamExceptionHandlerTest extends Specification {
     def underTest = new OsiamExceptionHandler()
     WebRequest request = Mock(WebRequest)
 
@@ -60,6 +60,15 @@ class HandleExceptionTest extends Specification {
         then:
         result.getStatusCode() == HttpStatus.NOT_FOUND
         (result.getBody() as OsiamExceptionHandler.JsonErrorResult).error_code == HttpStatus.NOT_FOUND.name()
+        (result.getBody() as OsiamExceptionHandler.JsonErrorResult).description == "Dunno"
+    }
+
+    def "should set status to NOT_IMPLEMENTED when java.lang.UnsupportedOperationException occurs"() {
+        when:
+        def result = underTest.handleConflict(new UnsupportedOperationException("Dunno"), request)
+        then:
+        result.getStatusCode() == HttpStatus.NOT_IMPLEMENTED
+        (result.getBody() as OsiamExceptionHandler.JsonErrorResult).error_code == HttpStatus.NOT_IMPLEMENTED.name()
         (result.getBody() as OsiamExceptionHandler.JsonErrorResult).description == "Dunno"
     }
 
