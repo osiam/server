@@ -35,6 +35,17 @@ class SSLRequestLoggingFilterTest extends Specification {
         1 * logger.warn("SSL/TLS should be used")
     }
 
+    def "should not log message if TLS is enabled"() {
+        given:
+        servletRequestMock.getScheme() >> "https"
+
+        when:
+        sslRequestLoggingFilter.doFilter(servletRequestMock, servletResponseMock, filterChainMock)
+
+        then:
+        0 * logger.warn("SSL/TLS should be used")
+    }
+
     def "init method should be present"() {
         when:
         sslRequestLoggingFilter.init(filterConfigMock)
