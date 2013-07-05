@@ -22,7 +22,9 @@ public class JsonPropertyMessageTransformer implements ErrorMessageTransformer {
 
     @Override
     public String transform(String message) {
-        if (message == null) { return null; }
+        if (message == null) {
+            return null;
+        }
         Matcher matcher = PATTERN.matcher(message);
         if (matcher.matches()) {
             return matcher.group(1);
