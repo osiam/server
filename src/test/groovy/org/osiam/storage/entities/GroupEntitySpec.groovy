@@ -88,6 +88,16 @@ class GroupEntitySpec extends Specification {
         multivalue.displayName == groupEntity.displayName
     }
 
+    def "any should be nullable and no exception is thrown"() {
+        given:
+        def group = new Group.Builder().setDisplayName("displayname").setAny(null).build()
+        when:
+        def result = GroupEntity.fromScim(group)
+        then:
+        result != null
+        result.getAny() == null
+    }
+
     def "mapping from scim should be present"() {
         def members = new HashSet()
         members.add(new MultiValuedAttribute.Builder().
@@ -95,11 +105,14 @@ class GroupEntitySpec extends Specification {
                 setDisplay("display").
                 build())
         given:
-        Group group = new Group.Builder().setDisplayName("displayname").setMembers(members).setId(UUID.randomUUID().toString()).build()
+        def group = new Group.Builder().setDisplayName("displayname").setAny("blaaaa").setMembers(members).
+                setId(UUID.randomUUID().toString()).build()
         when:
         def result = GroupEntity.fromScim(group)
         then:
         result != null
+        result.getDisplayName() == "displayname"
+        result.getAny() == "blaaaa"
     }
 
     def "members from scim should return null when toscim"() {
@@ -109,7 +122,7 @@ class GroupEntitySpec extends Specification {
                 setDisplay("display").
                 build())
         given:
-        Group group = new Group.Builder().setDisplayName("displayname").setMembers(members).setId(UUID.randomUUID().toString()).build()
+        def group = new Group.Builder().setDisplayName("displayname").setMembers(members).setId(UUID.randomUUID().toString()).build()
         when:
         def result = GroupEntity.fromScim(group)
         then:
