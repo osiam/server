@@ -2,7 +2,6 @@ package org.osiam.resources.helper
 
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
-import org.osiam.storage.dao.SCIMSearchResult
 import org.osiam.resources.scim.Meta
 import org.osiam.resources.scim.User
 import spock.lang.Specification

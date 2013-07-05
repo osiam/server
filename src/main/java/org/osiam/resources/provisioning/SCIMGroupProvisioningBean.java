@@ -25,7 +25,7 @@ package org.osiam.resources.provisioning;
 
 import org.osiam.storage.dao.GenericDAO;
 import org.osiam.storage.dao.GroupDAO;
-import org.osiam.storage.dao.SCIMSearchResult;
+import org.osiam.resources.helper.SCIMSearchResult;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.resources.exceptions.ResourceExistsException;
 import org.springframework.dao.DataIntegrityViolationException;

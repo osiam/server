@@ -1,7 +1,6 @@
 package org.osiam.resources.helper
 
 import org.osiam.resources.scim.Resource
-import org.osiam.storage.dao.SCIMSearchResult
 import spock.lang.Specification
 
 /**

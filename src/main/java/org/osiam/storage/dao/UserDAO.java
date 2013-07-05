@@ -25,6 +25,7 @@ package org.osiam.storage.dao;
 
 import org.hibernate.Criteria;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
+import org.osiam.resources.helper.SCIMSearchResult;
 import org.osiam.storage.entities.*;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Repository;

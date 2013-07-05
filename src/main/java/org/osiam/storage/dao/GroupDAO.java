@@ -24,6 +24,7 @@
 package org.osiam.storage.dao;
 
 import org.hibernate.Criteria;
+import org.osiam.resources.helper.SCIMSearchResult;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.InternalIdSkeleton;
 import org.osiam.resources.exceptions.ResourceNotFoundException;

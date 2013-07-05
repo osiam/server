@@ -1,4 +1,4 @@
-package org.osiam.storage.dao;
+package org.osiam.resources.helper;
 
 import org.osiam.resources.scim.Resource;
 
