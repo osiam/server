@@ -2,6 +2,7 @@ package org.osiam.resources.controller
 
 import org.joda.time.format.DateTimeFormatter
 import org.joda.time.format.ISODateTimeFormat
+import org.osiam.resources.scim.User
 import org.osiam.storage.entities.EmailEntity
 import org.osiam.storage.entities.MetaEntity
 import org.osiam.storage.entities.NameEntity
@@ -50,6 +51,22 @@ class MeControllerTest extends Specification {
         result.userName == "fpref"
         result.id == user.getId().toString()
         result.isVerified()
+    }
+
+    def "should throw exception if no primary email exists"() {
+        given:
+        def user = new UserEntity(active: true, name: name, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
+                emails: [new EmailEntity(primary: false, value: "test@test.de")], locale: "de_DE", username: "fpref")
+        request.getParameter("access_token") >> "access_token"
+        tokenStore.readAuthentication("access_token") >> authentication
+        userAuthentication.getPrincipal() >> user
+
+        when:
+        underTest.getInformation(request)
+
+        then:
+        def e = thrown(IllegalArgumentException)
+        e.getMessage() == "Unable to generate facebook credentials, no primary email submitted."
     }
 
     def "should throw exception when no access_token got submitted"() {

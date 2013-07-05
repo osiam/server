@@ -111,10 +111,11 @@ public class MeController {
         private String lookForEmail(Set<EmailEntity> emails) {
             IllegalArgumentException noPrimaryEmail = new IllegalArgumentException(
                     "Unable to generate facebook credentials, no primary email submitted.");
-            if (emails == null) {
-                throw noPrimaryEmail;
+            for (EmailEntity e : emails) {
+                if (e.isPrimary()) {
+                    return e.getValue();
+                }
             }
-            for (EmailEntity e : emails) { if (e.isPrimary()) { return e.getValue(); } }
             throw noPrimaryEmail;
 
         }
