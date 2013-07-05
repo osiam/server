@@ -58,6 +58,25 @@ class MetaTest extends Specification {
         meta.lastModified.time >= oldSysTime
     }
 
+    def "should be able to set created to null without exception"() {
+        given:
+        def oldSysTime = System.currentTimeMillis()
+        when:
+        def meta = new Meta.Builder(null).build();
+        then:
+        meta.created != meta.lastModified
+        meta.created == null
+        meta.lastModified.time >= oldSysTime
+    }
+
+    def "should be able to set created and last modified to null without exception"() {
+        when:
+        def meta = new Meta.Builder(null, null).build();
+        then:
+        meta.created == null
+        meta.lastModified == null
+    }
+
     def "should be able to create with explicit created and last modified"() {
         given:
         def lastModified = System.currentTimeMillis() + 2342
