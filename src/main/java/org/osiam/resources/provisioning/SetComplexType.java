@@ -26,6 +26,14 @@ package org.osiam.resources.provisioning;
 import java.lang.reflect.Field;
 import java.util.Map;
 
+/**
+ *  This class has the purpose to set complex types. A complex type is a class which is not String, Boolean or any
+ *  standard language classes.
+ *
+ *  It will scan the fields of the complex class and if it contains an other complex type it will also scan their fields.
+ *
+ *
+ */
 public class SetComplexType {
 
     private final GenericSCIMToEntityWrapper.Mode mode;

@@ -12,6 +12,9 @@ import java.io.IOException;
 
 @Controller
 @RequestMapping(value = "/Client")
+/**
+ * Is the http api for clients. You can get, create and delete a client.
+ */
 public class ClientManagementController {
 
     @Inject
