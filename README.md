@@ -25,7 +25,7 @@ To deploy the osiam-server into a running Tomcat copy the "osiam-server.war" int
 
 The osiam-server is based on:
 
-* Srping-Core 3.2
+* Spring-Core 3.2
 * Spring Security OAuth2 1.0.0.RC3 
 * Hibernate
 
