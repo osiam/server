@@ -24,7 +24,7 @@
 package org.osiam.resources.provisioning;
 
 import org.osiam.storage.dao.GenericDAO;
-import org.osiam.storage.dao.SCIMSearchResult;
+import org.osiam.resources.helper.SCIMSearchResult;
 import org.osiam.storage.dao.UserDAO;
 import org.osiam.storage.entities.UserEntity;
 import org.osiam.resources.exceptions.ResourceExistsException;

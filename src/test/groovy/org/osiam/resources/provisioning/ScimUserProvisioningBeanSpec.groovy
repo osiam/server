@@ -2,10 +2,8 @@ package org.osiam.resources.provisioning
 
 import org.osiam.storage.entities.UserEntity
 import org.osiam.resources.exceptions.ResourceExistsException
-import org.osiam.resources.provisioning.GenericSCIMToEntityWrapper
-import org.osiam.resources.provisioning.SCIMUserProvisioningBean
 import org.osiam.resources.scim.User
-import org.osiam.storage.dao.SCIMSearchResult
+import org.osiam.resources.helper.SCIMSearchResult
 import org.osiam.storage.dao.UserDAO
 import spock.lang.Specification
 

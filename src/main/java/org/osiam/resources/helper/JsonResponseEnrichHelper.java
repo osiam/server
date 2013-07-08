@@ -7,7 +7,6 @@ import org.codehaus.jackson.map.ser.FilterProvider;
 import org.codehaus.jackson.map.ser.impl.SimpleBeanPropertyFilter;
 import org.codehaus.jackson.map.ser.impl.SimpleFilterProvider;
 import org.codehaus.jackson.node.ObjectNode;
-import org.osiam.storage.dao.SCIMSearchResult;
 
 import java.io.IOException;
 import java.util.Map;

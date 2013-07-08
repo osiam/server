@@ -23,6 +23,7 @@
 
 package org.osiam.storage.dao;
 
+import org.osiam.resources.helper.SCIMSearchResult;
 import org.osiam.storage.entities.InternalIdSkeleton;
 
 public interface GenericDAO<T extends InternalIdSkeleton> {

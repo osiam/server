@@ -23,7 +23,7 @@
 
 package org.osiam.resources.provisioning;
 
-import org.osiam.storage.dao.SCIMSearchResult;
+import org.osiam.resources.helper.SCIMSearchResult;
 import org.osiam.resources.scim.Resource;
 
 public interface SCIMProvisioning<T extends Resource> {

@@ -24,7 +24,7 @@
 package org.osiam.resources.controller;
 
 import org.osiam.resources.helper.JsonInputValidator;
-import org.osiam.storage.dao.SCIMSearchResult;
+import org.osiam.resources.helper.SCIMSearchResult;
 import org.osiam.resources.provisioning.SCIMUserProvisioning;
 import org.osiam.resources.helper.JsonResponseEnrichHelper;
 import org.osiam.resources.helper.RequestParamHelper;

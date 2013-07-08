@@ -29,6 +29,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.osiam.resources.helper.FilterParser;
+import org.osiam.resources.helper.SCIMSearchResult;
 import org.osiam.storage.entities.InternalIdSkeleton;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 

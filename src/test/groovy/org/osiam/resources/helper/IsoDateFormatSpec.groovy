@@ -2,10 +2,7 @@ package org.osiam.resources.helper
 
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
-import org.osiam.storage.dao.SCIMSearchResult
 import org.osiam.resources.provisioning.SCIMUserProvisioning
-import org.osiam.resources.helper.JsonResponseEnrichHelper
-import org.osiam.resources.helper.RequestParamHelper
 import org.osiam.resources.controller.UserController
 import org.osiam.resources.scim.Meta
 import org.osiam.resources.scim.User

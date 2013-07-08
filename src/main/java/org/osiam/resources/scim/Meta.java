@@ -153,11 +153,17 @@ public class Meta {
     }
 
     public Date getCreated() {
-        return new Date(created.getTime());
+        if (created != null) {
+            return new Date(created.getTime());
+        }
+        return null;
     }
 
     public Date getLastModified() {
-        return new Date(lastModified.getTime());
+        if (lastModified != null) {
+            return new Date(lastModified.getTime());
+        }
+        return null;
     }
 
     public String getResourceType() {
