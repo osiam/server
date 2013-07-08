@@ -32,30 +32,49 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.osiam.resources.exceptions.SchemaUnknownException;
 import org.osiam.resources.scim.Constants;
 import org.osiam.resources.scim.Resource;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.logging.Logger;
 
 @Aspect
 /**
- * This interceptor has the purpose to print out the duration time of all called methods.
+ * This interceptor has the purpose to print out the duration time of all called methods in the package org.osiam.
  *
  */
 public class MeasureDurationTimeOfMethods {
-    private static final Logger LOGGER = Logger.getLogger(MeasureDurationTimeOfMethods.class.getName());
+    private static Logger LOGGER = Logger.getLogger(MeasureDurationTimeOfMethods.class.getName()); //NOSONAR excluded because of testing
+    @Value("${osiam.profiling}")
+    private boolean enabled;
 
-    @Around("profile()")
-    public void checkUser(ProceedingJoinPoint joinPoint) throws Throwable {
-        final long start, end;
-        start = System.nanoTime();
-        joinPoint.proceed();
-        end = System.nanoTime();
-        String msg = joinPoint.getSignature().getName() + " took " + (end - start);
-        LOGGER.info(msg);
+    @Around("excludeDynamicHTTPMethodScopeEnhancer() && includeOrgOsiam()")
+    public Object measureTime(ProceedingJoinPoint joinPoint) throws Throwable {
+        long start = 0, end;
+        if (enabled) { start = System.currentTimeMillis(); }
+        Object result = joinPoint.proceed();
+        if (enabled) {
+            end = System.currentTimeMillis();
+            String msg = joinPoint.toShortString() + " took " + (end - start) + "ms";
+            LOGGER.info(msg);
+        }
+        return result;
 
     }
 
-    @Pointcut("execution(* *.*(..))")
-    protected void profile() {}
+    @Pointcut("within(org.osiam..*)")
+    public void includeOrgOsiam() {
+    }
+
+    /**
+     * must exclude due to:
+     * <p/>
+     * nested exception is org.springframework.aop.framework.AopConfigException: Could not generate CGLIB subclass of
+     * class [class org.osiam.security.authorization.DynamicHTTPMethodScopeEnhancer]
+     * <p/>
+     * error
+     */
+    @Pointcut("!execution(* org.osiam.security.authorization.DynamicHTTPMethodScopeEnhancer.*(..))")
+    public void excludeDynamicHTTPMethodScopeEnhancer() {
+    }
 
 
 }
