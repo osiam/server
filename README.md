@@ -91,6 +91,11 @@ db.username=$your_username
 db.password=$your_password
 ```
 
+it also contains a parameter for profiling:
+```
+osiam.profiling=true
+```
+
 this config file must lie within the classpath.
 
 For tomcat you have to edit the
