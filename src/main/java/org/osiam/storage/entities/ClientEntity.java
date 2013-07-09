@@ -47,6 +47,18 @@ public class ClientEntity implements ClientDetails {
     @Column
     private Set<String> scope;
 
+    @JsonProperty
+    @Column(name="implicit_approval")
+    private boolean implicit;
+
+    @JsonProperty
+    @Column
+    private long validityInSeconds;
+
+    @JsonProperty
+    @Column
+    private Date expiry;
+
     public ClientEntity(){}
 
     /* Used to Map Json to ClientEntity, because some Fields are generated. */
@@ -179,5 +191,29 @@ public class ClientEntity implements ClientDetails {
 
     public void setRefreshTokenValiditySeconds(int refreshTokenValiditySeconds) {
         this.refreshTokenValiditySeconds = refreshTokenValiditySeconds;
+    }
+
+    public boolean isImplicit() {
+        return implicit;
+    }
+
+    public void setImplicit(boolean implicit) {
+        this.implicit = implicit;
+    }
+
+    public long getValidityInSeconds() {
+        return validityInSeconds;
+    }
+
+    public void setValidityInSeconds(long validity) {
+        this.validityInSeconds = validity;
+    }
+
+    public Date getExpiry() {
+        return expiry;
+    }
+
+    public void setExpiry(Date expiry) {
+        this.expiry = expiry;
     }
 }

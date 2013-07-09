@@ -30,6 +30,10 @@ public class ClientDao {
         em.remove(getClientById(id));
     }
 
+    public ClientEntity update(ClientEntity client) {
+        return em.merge(client);
+    }
+
     private ClientEntity getClientById(String id) {
         Query query = em.createNamedQuery("getClientById");
         query.setParameter("id", id);

@@ -50,7 +50,8 @@
     <!-- configures the OAuth2 authorization server -->
     <oauth:authorization-server client-details-service-ref="clientDetails"
                                 token-services-ref="tokenServices"
-                                token-granter-ref="granter">
+                                token-granter-ref="granter"
+                                user-approval-handler-ref="userApprovalHandler">
         <oauth:authorization-code/>
         <oauth:refresh-token/>
     </oauth:authorization-server>

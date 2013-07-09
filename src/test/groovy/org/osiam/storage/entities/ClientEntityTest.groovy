@@ -32,8 +32,33 @@ class ClientEntityTest extends Specification {
         under_test.setRefreshTokenValiditySeconds(2342)
         then:
         under_test.getRefreshTokenValiditySeconds() == 2342
+    }
 
+    def "should be able to set implicit client authorization"() {
+        when:
+        under_test.setImplicit(true)
 
+        then:
+        under_test.isImplicit()
+    }
+
+    def "should be able to set the validity in seconds for client approval"() {
+        when:
+        under_test.setValidityInSeconds(100)
+
+        then:
+        under_test.getValidityInSeconds() == 100
+    }
+
+    def "should be able to set the day on which approval was granted"() {
+        given:
+        def date = new Date(1000)
+
+        when:
+        under_test.setExpiry(date)
+
+        then:
+        under_test.getExpiry() == date
     }
 
     def "should generate a secret"() {

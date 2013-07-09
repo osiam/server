@@ -28,7 +28,6 @@ public class AccessConfirmationController {
         ClientDetails client = clientDetailsService.loadClientByClientId(clientAuth.getClientId()); // NOSONAR - clientDetailsService is initialized via setter injection
         model.put("auth_request", clientAuth);
         model.put("client", client);
-        //TODO save access_confirmation
         return new ModelAndView("access_confirmation", model);
     }
 

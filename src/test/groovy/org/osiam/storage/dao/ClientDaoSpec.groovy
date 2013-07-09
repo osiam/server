@@ -68,4 +68,16 @@ class ClientDaoSpec extends Specification {
         then:
         1 * em.remove(resultList.first())
     }
+
+    def "should be able to update a client"() {
+        given:
+        def clientMock = Mock(ClientEntity)
+        em.merge(clientMock) >> clientMock
+
+        when:
+        def result = clientDao.update(clientMock)
+
+        then:
+        result == clientMock
+    }
 }
