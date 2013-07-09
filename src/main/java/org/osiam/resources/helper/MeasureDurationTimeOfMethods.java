@@ -42,7 +42,7 @@ public class MeasureDurationTimeOfMethods {
     private boolean enabled;
 
     @Around("excludeDynamicHTTPMethodScopeEnhancer() && includeOrgOsiam()")
-    public Object measureTime(ProceedingJoinPoint joinPoint) throws Exception {
+    public Object measureTime(ProceedingJoinPoint joinPoint) throws Throwable { //NOSONAR the join point throws it and can't be omitted
         long start = 0, end;
         if (enabled) { start = System.currentTimeMillis(); }
         Object result = wrapExceptionForSonar(joinPoint);
@@ -55,13 +55,10 @@ public class MeasureDurationTimeOfMethods {
 
     }
 
-    private Object wrapExceptionForSonar(ProceedingJoinPoint joinPoint) throws Exception {
+    private Object wrapExceptionForSonar(ProceedingJoinPoint joinPoint) throws Throwable { //NOSONAR the join point throws it and can't be omitted
         Object result;
-        try {
-            result = joinPoint.proceed();
-        } catch (Throwable throwable) {
-            throw new Exception(throwable);
-        }
+        result = joinPoint.proceed();
+
         return result;
     }
 
