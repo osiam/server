@@ -30,8 +30,22 @@ public class ClientDao {
         em.remove(getClientById(id));
     }
 
-    public ClientEntity update(ClientEntity client) {
-        return em.merge(client);
+    public ClientEntity update(ClientEntity client, String id) {
+        return em.merge(mergeClient(client, id));
+    }
+
+    private ClientEntity mergeClient(ClientEntity client, String id) {
+        ClientEntity clientEntity = getClientById(id);
+
+        clientEntity.setRefreshTokenValiditySeconds(client.getRefreshTokenValiditySeconds());
+        clientEntity.setAccessTokenValiditySeconds(client.getAccessTokenValiditySeconds());
+        clientEntity.setRedirectUri(client.getRedirectUri());
+        clientEntity.setScope(client.getScope());
+        clientEntity.setExpiry(client.getExpiry());
+        clientEntity.setImplicit(client.isImplicit());
+        clientEntity.setValidityInSeconds(client.getValidityInSeconds());
+
+        return clientEntity;
     }
 
     private ClientEntity getClientById(String id) {

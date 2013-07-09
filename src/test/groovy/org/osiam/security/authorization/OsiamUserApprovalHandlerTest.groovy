@@ -35,7 +35,7 @@ class OsiamUserApprovalHandlerTest extends Specification {
 
         then:
         clientMock.getExpiry() <= new Date(System.currentTimeMillis() + (1337 * 1000))
-        1 * clienDaoMock.update(clientMock)
+        1 * clienDaoMock.update(clientMock, 'example-client')
     }
 
     def "should not add approval date if approval param map is empty and not containing key user_oauth_approval"() {
@@ -47,7 +47,7 @@ class OsiamUserApprovalHandlerTest extends Specification {
         osiamUserApprovalHandler.updateBeforeApproval(authorizationRequestMock, authenticationMock)
 
         then:
-        0 * clienDaoMock.update(_)
+        0 * clienDaoMock.update(_, _)
     }
 
     def "should not add approval date if user denies approval"() {
@@ -59,7 +59,7 @@ class OsiamUserApprovalHandlerTest extends Specification {
         osiamUserApprovalHandler.updateBeforeApproval(authorizationRequestMock, authenticationMock)
 
         then:
-        0 * clienDaoMock.update(_)
+        0 * clienDaoMock.update(_, _)
     }
 
     def "should return true if implicit is configured as true to not ask user for approval"() {

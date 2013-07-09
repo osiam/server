@@ -71,13 +71,24 @@ class ClientDaoSpec extends Specification {
 
     def "should be able to update a client"() {
         given:
-        def clientMock = Mock(ClientEntity)
-        em.merge(clientMock) >> clientMock
+        def newClient = new ClientEntity()
+        newClient.setRefreshTokenValiditySeconds(123)
+        newClient.setAccessTokenValiditySeconds(123)
+        newClient.setRedirectUri("uri")
+        newClient.setScope(["bla", "blub"] as Set)
+        newClient.setExpiry(new Date(System.currentTimeMillis()))
+        newClient.setValidityInSeconds(123)
+        newClient.setImplicit(true)
+
+        def queryMock = Mock(Query)
+        em.createNamedQuery("getClientById") >> queryMock
+        queryMock.getResultList() >> [new ClientEntity()]
+        em.merge(_) >> newClient
 
         when:
-        def result = clientDao.update(clientMock)
+        def result = clientDao.update(newClient, "id")
 
         then:
-        result == clientMock
+        result.isImplicit()
     }
 }

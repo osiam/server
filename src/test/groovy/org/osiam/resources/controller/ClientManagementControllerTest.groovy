@@ -72,4 +72,23 @@ class ClientManagementControllerTest extends Specification {
         defaultStatus.value() == HttpStatus.OK
         1 * clientDao.delete("f47ac10b-58cc-4372-a567-0e02b2c3d479")
     }
+
+    def "should contain a method to update a client"(){
+        given:
+        Method method = ClientManagementController.class.getDeclaredMethod("update", String, String)
+        def json = "{\"accessTokenValiditySeconds\":1337,\"refreshTokenValiditySeconds\":1337,\"redirectUri\":\"test\",\"scope\":[\"get\",\"post\",\"put\"]}"
+
+        when:
+        RequestMapping mapping = method.getAnnotation(RequestMapping)
+        ResponseStatus defaultStatus = method.getAnnotation(ResponseStatus)
+        ResponseBody body = method.getAnnotation(ResponseBody)
+        clientManagementController.update('id', json)
+
+        then:
+        mapping.value() == ["/{id}"]
+        mapping.method() == [RequestMethod.PUT]
+        defaultStatus.value() == HttpStatus.OK
+        body
+        1 * clientDao.update(_,_)
+    }
 }

@@ -48,11 +48,11 @@ public class ClientEntity implements ClientDetails {
     private Set<String> scope;
 
     @JsonProperty
-    @Column(name="implicit_approval")
+    @Column(name="implicit_approval", nullable = false)
     private boolean implicit;
 
     @JsonProperty
-    @Column
+    @Column(nullable = false)
     private long validityInSeconds;
 
     @JsonProperty
@@ -75,6 +75,8 @@ public class ClientEntity implements ClientDetails {
         refreshTokenValiditySeconds = entity.getRefreshTokenValiditySeconds();
         redirectUri = entity.getRedirectUri();
         scope = entity.getScope();
+        implicit = entity.isImplicit();
+        validityInSeconds = entity.getValidityInSeconds();
     }
 
     private Set<String> generateGrants() {

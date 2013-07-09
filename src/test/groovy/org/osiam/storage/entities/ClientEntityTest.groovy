@@ -148,6 +148,8 @@ class ClientEntityTest extends Specification {
         client.setRefreshTokenValiditySeconds(200)
         client.setRedirectUri("uri")
         client.setScope(["scope1","scope2"] as Set)
+        client.setImplicit(true)
+        client.setValidityInSeconds(123)
 
         when:
         def clientEntity = new ClientEntity(client)
@@ -159,6 +161,8 @@ class ClientEntityTest extends Specification {
         clientEntity.getRefreshTokenValiditySeconds() == 200
         clientEntity.getRedirectUri() == "uri"
         clientEntity.getScope() == ["scope1","scope2"] as Set
+        clientEntity.isImplicit()
+        clientEntity.getValidityInSeconds() == 123
     }
 
     def "parametrized constructor should work with null id and secret"() {
@@ -170,6 +174,8 @@ class ClientEntityTest extends Specification {
         client.setRefreshTokenValiditySeconds(200)
         client.setRedirectUri("uri")
         client.setScope(["scope1","scope2"] as Set)
+        client.setImplicit(true)
+        client.setValidityInSeconds(123)
 
         when:
         def clientEntity = new ClientEntity(client)
@@ -181,5 +187,7 @@ class ClientEntityTest extends Specification {
         clientEntity.getRefreshTokenValiditySeconds() == 200
         clientEntity.getRedirectUri() == "uri"
         clientEntity.getScope() == ["scope1","scope2"] as Set
+        clientEntity.isImplicit()
+        clientEntity.getValidityInSeconds() == 123
     }
 }

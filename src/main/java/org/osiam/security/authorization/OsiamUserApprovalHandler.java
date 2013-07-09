@@ -40,7 +40,7 @@ public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
             ClientEntity client = getClientDetails(authorizationRequest);
             Date date = new Date(System.currentTimeMillis() + (client.getValidityInSeconds() * 1000));
             client.setExpiry(date);
-            clientDao.update(client);
+            clientDao.update(client, authorizationRequest.getClientId());
         }
         return super.updateBeforeApproval(authorizationRequest, userAuthentication);
     }

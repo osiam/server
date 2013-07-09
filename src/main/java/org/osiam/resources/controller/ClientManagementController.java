@@ -42,6 +42,13 @@ public class ClientManagementController {
         clientDao.delete(id);
     }
 
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public ClientEntity update(@PathVariable final String id, @RequestBody String client) throws IOException {
+        return clientDao.update(getClientEntity(client), id);
+    }
+
     private ClientEntity getClientEntity(String client) throws IOException {
         return new ClientEntity(mapper.readValue(client, ClientEntity.class));
     }
