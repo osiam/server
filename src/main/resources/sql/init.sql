@@ -125,8 +125,8 @@ CREATE TABLE osiam_client (
   client_secret text not null unique,
   accessTokenValiditySeconds int,
   refreshTokenValiditySeconds int,
-  validityInSeconds bigint,
-  implicit_approval boolean,
+  validityInSeconds bigint NOT NULL,
+  implicit_approval boolean NOT NULL,
   expiry timestamp without time zone
 );
 
