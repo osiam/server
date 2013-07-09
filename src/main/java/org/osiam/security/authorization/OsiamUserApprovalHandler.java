@@ -22,6 +22,8 @@ public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
     @Inject
     private ClientDao clientDao;
 
+    private static final int MILLISECONDS = 1000;
+
     /**
      * Is called if OsiamUserApprovalHandler.isApproved() returns false and AccessConfirmation is done by the user.
      * Than it will save the approve date to be able to check it as long as user accepts approval.
@@ -38,7 +40,7 @@ public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
         if (authorizationRequest.getApprovalParameters().size() != 0 && authorizationRequest.getApprovalParameters().containsKey("user_oauth_approval")
                 && authorizationRequest.getApprovalParameters().get("user_oauth_approval").equals("true")) {
             ClientEntity client = getClientDetails(authorizationRequest);
-            Date date = new Date(System.currentTimeMillis() + (client.getValidityInSeconds() * 1000));
+            Date date = new Date(System.currentTimeMillis() + (client.getValidityInSeconds() * MILLISECONDS));
             client.setExpiry(date);
             clientDao.update(client, authorizationRequest.getClientId());
         }
