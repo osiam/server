@@ -216,6 +216,6 @@ public class ClientEntity implements ClientDetails {
     }
 
     public void setExpiry(Date expiry) {
-        this.expiry = expiry;
+        this.expiry = (Date) expiry.clone();
     }
 }
