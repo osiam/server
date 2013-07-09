@@ -43,6 +43,9 @@ import java.util.Map;
 
 @Controller
 @RequestMapping(value = "/Group")
+/**
+ * HTTP Api for groups. You can create, delete, replace, update and search groups.
+ */
 public class GroupController {
 
     @Inject

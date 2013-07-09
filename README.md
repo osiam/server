@@ -25,7 +25,7 @@ To deploy the osiam-server into a running Tomcat copy the "osiam-server.war" int
 
 The osiam-server is based on:
 
-* Srping-Core 3.2
+* Spring-Core 3.2
 * Spring Security OAuth2 1.0.0.RC3 
 * Hibernate
 
@@ -89,6 +89,11 @@ db.driver=org.postgresql.Driver
 db.url=jdbc:postgresql://$your_url:$port/$your_database
 db.username=$your_username
 db.password=$your_password
+```
+
+it also contains a parameter for profiling:
+```
+osiam.profiling=true
 ```
 
 this config file must lie within the classpath.

@@ -28,6 +28,16 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * This class will load all fields of the input and target class so that
+ *
+ * org.osiam.resources.provisioning.EntityListFieldWrapper,
+ * org.osiam.resources.provisioning.GenericSCIMToEntityWrapper,
+ * org.osiam.resources.provisioning.SetComplexType
+ *
+ * can set the information of the fields in the input object to the new created target object.
+ *
+ */
 public class GetFieldsOfInputAndTarget {
     private final Map<String, Field> inputFields;
     private final Map<String, Field> targetFields;
