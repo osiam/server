@@ -23,15 +23,10 @@
 
 package org.osiam.resources.helper;
 
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
-import org.osiam.resources.exceptions.SchemaUnknownException;
-import org.osiam.resources.scim.Constants;
-import org.osiam.resources.scim.Resource;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.logging.Logger;
@@ -47,10 +42,10 @@ public class MeasureDurationTimeOfMethods {
     private boolean enabled;
 
     @Around("excludeDynamicHTTPMethodScopeEnhancer() && includeOrgOsiam()")
-    public Object measureTime(ProceedingJoinPoint joinPoint) throws Throwable {
+    public Object measureTime(ProceedingJoinPoint joinPoint) throws Exception {
         long start = 0, end;
         if (enabled) { start = System.currentTimeMillis(); }
-        Object result = joinPoint.proceed();
+        Object result = wrapExceptionForSonar(joinPoint);
         if (enabled) {
             end = System.currentTimeMillis();
             String msg = joinPoint.toShortString() + " took " + (end - start) + "ms";
@@ -58,6 +53,16 @@ public class MeasureDurationTimeOfMethods {
         }
         return result;
 
+    }
+
+    private Object wrapExceptionForSonar(ProceedingJoinPoint joinPoint) throws Exception {
+        Object result;
+        try {
+            result = joinPoint.proceed();
+        } catch (Throwable throwable) {
+            throw new Exception(throwable);
+        }
+        return result;
     }
 
     @Pointcut("within(org.osiam..*)")
