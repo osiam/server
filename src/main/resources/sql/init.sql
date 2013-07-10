@@ -22,6 +22,7 @@ DROP TABLE IF EXISTS scim_address CASCADE;
 DROP SEQUENCE IF EXISTS hibernate_sequence CASCADE;
 DROP TABLE IF EXISTS database_scheme_version CASCADE;
 DROP TABLE IF EXISTS osiam_client_scopes CASCADE;
+DROP TABLE IF EXISTS osiam_client_grants CASCADE;
 DROP TABLE IF EXISTS osiam_client CASCADE;
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
