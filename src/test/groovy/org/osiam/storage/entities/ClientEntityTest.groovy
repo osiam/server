@@ -17,7 +17,7 @@ class ClientEntityTest extends Specification {
         def b = new ClientEntity()
         then:
         b.getAuthorizedGrantTypes() == under_test.getAuthorizedGrantTypes()
-        b.getAuthorizedGrantTypes() == ["authorization_code", "implicit", "refresh-token"] as Set
+        b.getAuthorizedGrantTypes() == ["authorization_code", "refresh-token"] as Set
     }
 
     def "should be able to set access_token length"() {
@@ -150,6 +150,7 @@ class ClientEntityTest extends Specification {
         client.setScope(["scope1","scope2"] as Set)
         client.setImplicit(true)
         client.setValidityInSeconds(123)
+        client.setGrants(["client_credentials", "password"] as Set)
 
         when:
         def clientEntity = new ClientEntity(client)
@@ -163,6 +164,7 @@ class ClientEntityTest extends Specification {
         clientEntity.getScope() == ["scope1","scope2"] as Set
         clientEntity.isImplicit()
         clientEntity.getValidityInSeconds() == 123
+        clientEntity.getAuthorizedGrantTypes() == ["client_credentials", "password"] as Set
     }
 
     def "parametrized constructor should work with null id and secret"() {
@@ -176,6 +178,7 @@ class ClientEntityTest extends Specification {
         client.setScope(["scope1","scope2"] as Set)
         client.setImplicit(true)
         client.setValidityInSeconds(123)
+        client.setGrants(["client_credentials", "password"] as Set)
 
         when:
         def clientEntity = new ClientEntity(client)
@@ -189,5 +192,34 @@ class ClientEntityTest extends Specification {
         clientEntity.getScope() == ["scope1","scope2"] as Set
         clientEntity.isImplicit()
         clientEntity.getValidityInSeconds() == 123
+        clientEntity.getAuthorizedGrantTypes() == ["client_credentials", "password"] as Set
+    }
+
+    def "parametrized constructor should work with empty list of grants and generate the default"() {
+        given:
+        def client = new ClientEntity()
+        client.setId("id")
+        client.setClientSecret("secret")
+        client.setAccessTokenValiditySeconds(200)
+        client.setRefreshTokenValiditySeconds(200)
+        client.setRedirectUri("uri")
+        client.setScope(["scope1","scope2"] as Set)
+        client.setImplicit(true)
+        client.setValidityInSeconds(123)
+        client.setGrants([] as Set)
+
+        when:
+        def clientEntity = new ClientEntity(client)
+
+        then:
+        clientEntity.getId() == "id"
+        clientEntity.getClientSecret() == "secret"
+        clientEntity.getAccessTokenValiditySeconds() == 200
+        clientEntity.getRefreshTokenValiditySeconds() == 200
+        clientEntity.getRedirectUri() == "uri"
+        clientEntity.getScope() == ["scope1","scope2"] as Set
+        clientEntity.isImplicit()
+        clientEntity.getValidityInSeconds() == 123
+        clientEntity.getAuthorizedGrantTypes() == ["authorization_code", "refresh-token"] as Set
     }
 }

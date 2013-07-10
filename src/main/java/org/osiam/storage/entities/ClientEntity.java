@@ -33,9 +33,6 @@ public class ClientEntity implements ClientDetails {
     @JsonProperty
     @Column(name="redirect_uri", unique = true, nullable = false)
     private String redirectUri;
-    @JsonProperty
-    @Transient
-    private Set<String> grants = generateGrants();
 
     @JsonProperty("client_secret")
     @Column(name = "client_secret", unique = true, nullable = false)
@@ -46,6 +43,12 @@ public class ClientEntity implements ClientDetails {
     @CollectionTable(name = "osiam_client_scopes", joinColumns = @JoinColumn(name = "id"))
     @Column
     private Set<String> scope;
+
+    @JsonProperty
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "osiam_client_grants", joinColumns = @JoinColumn(name = "id"))
+    @Column
+    private Set<String> grants = generateGrants();
 
     @JsonProperty
     @Column(name="implicit_approval", nullable = false)
@@ -77,11 +80,12 @@ public class ClientEntity implements ClientDetails {
         scope = entity.getScope();
         implicit = entity.isImplicit();
         validityInSeconds = entity.getValidityInSeconds();
+        grants = !entity.getAuthorizedGrantTypes().isEmpty() ? entity.getAuthorizedGrantTypes() : generateGrants();
     }
 
     private Set<String> generateGrants() {
         Set<String> result = new HashSet<>();
-        Collections.addAll(result, "authorization_code", "implicit", "refresh-token");
+        Collections.addAll(result, "authorization_code", "refresh-token");
         return result;
     }
 
@@ -90,6 +94,9 @@ public class ClientEntity implements ClientDetails {
         return UUID.randomUUID().toString();
     }
 
+    public void setGrants(Set<String> grants) {
+        this.grants = grants;
+    }
 
     @Override
     public String getClientId() {
