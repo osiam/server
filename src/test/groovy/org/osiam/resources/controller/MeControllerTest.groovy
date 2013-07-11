@@ -14,7 +14,7 @@ import spock.lang.Specification
 
 import javax.servlet.http.HttpServletRequest
 
-class MeControllerTest extends Specification {
+class   MeControllerTest extends Specification {
     InMemoryTokenStore tokenStore = Mock(InMemoryTokenStore)
     def underTest = new MeController(inMemoryTokenStore: tokenStore)
     OAuth2Authentication authentication = Mock(OAuth2Authentication)

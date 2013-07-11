@@ -9,7 +9,7 @@
 
     <!-- Load database properties reference -->
     <bean id="dbProperties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="location" value="classpath:db-config.properties"/>
+        <property name="location" value="classpath:osiam.properties"/>
     </bean>
 
     <bean id="myEmf"
