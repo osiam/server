@@ -44,6 +44,8 @@ public class ClientDao {
         clientEntity.setExpiry(client.getExpiry());
         clientEntity.setImplicit(client.isImplicit());
         clientEntity.setValidityInSeconds(client.getValidityInSeconds());
+        clientEntity.setId(client.getId());
+        clientEntity.setGrants(client.getAuthorizedGrantTypes());
 
         return clientEntity;
     }
