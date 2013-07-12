@@ -10,8 +10,8 @@ import org.osiam.resources.scim.Constants;
 import java.util.Set;
 
 @Controller
-@RequestMapping(value = "/ServiceProviderConfig")
-public class ServiceProviderConfigController {
+@RequestMapping(value = "/ServiceProviderConfigs")
+public class ServiceProviderConfigsController {
     @RequestMapping
     @ResponseBody
     public ServiceProviderConfig getConfig() {
