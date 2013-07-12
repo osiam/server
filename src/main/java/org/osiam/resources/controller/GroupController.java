@@ -42,7 +42,7 @@ import java.net.URI;
 import java.util.Map;
 
 @Controller
-@RequestMapping(value = "/Group")
+@RequestMapping(value = "/Groups")
 /**
  * HTTP Api for groups. You can create, delete, replace, update and search groups.
  */

@@ -53,7 +53,7 @@ import java.util.Map;
  *
  */
 @Controller
-@RequestMapping(value = "/User")
+@RequestMapping(value = "/Users")
 public class UserController {
 
     @Inject
