@@ -74,7 +74,7 @@ public class UserController {
     public User getUser(@PathVariable final String id) {
         User user = scimUserProvisioning.getById(id);
         //clone without password
-        return User.Builder.generateForOuput(user);
+        return User.Builder.generateForOutput(user);
     }
 
     @RequestMapping(method = RequestMethod.POST)
@@ -87,7 +87,7 @@ public class UserController {
         URI uri = new UriTemplate("{requestUrl}{internalId}").expand(requestUrl + "/", createdUser.getId());
         response.setHeader("Location", uri.toASCIIString());
         createdUser.getMeta().setLocation(uri.toASCIIString());
-        return User.Builder.generateForOuput(createdUser);
+        return User.Builder.generateForOutput(createdUser);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT) // NOSONAR - duplicate literals unnecessary
@@ -139,6 +139,6 @@ public class UserController {
         String requestUrl = request.getRequestURL().toString();
         response.setHeader("Location", requestUrl);
         createdUser.getMeta().setLocation(requestUrl);
-        return User.Builder.generateForOuput(createdUser);
+        return User.Builder.generateForOutput(createdUser);
     }
 }

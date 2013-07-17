@@ -75,7 +75,7 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
     public SCIMSearchResult<User> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
         List<User> users = new ArrayList<>();
         SCIMSearchResult<UserEntity> result = getDao().search(filter, sortBy, sortOrder, count, startIndex);
-        for (Object g : result.getResult()) { users.add(User.Builder.generateForOuput(((UserEntity) g).toScim())); }
+        for (Object g : result.getResult()) { users.add(User.Builder.generateForOutput(((UserEntity) g).toScim())); }
         return new SCIMSearchResult(users, result.getTotalResult());
     }
 
