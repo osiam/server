@@ -34,11 +34,11 @@ import java.util.UUID;
 @Entity(name = "scim_id")
 @Inheritance(strategy = InheritanceType.JOINED)
 @NamedQueries({@NamedQuery(name = "getById", query = "SELECT i FROM scim_id i WHERE i.id= :id")})
-public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute, Serializable{
+public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute, Serializable {
 
     private static final long serialVersionUID = -5890750191971717942L;
 
-    @Type(type = "pg-uuid")
+    @Type(type = "org.osiam.storage.helper.UUIDCustomType")
     @Column(unique = true, nullable = false)
     private UUID id;
 
