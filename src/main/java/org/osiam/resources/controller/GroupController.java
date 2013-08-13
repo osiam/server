@@ -29,6 +29,7 @@ import org.osiam.resources.provisioning.SCIMGroupProvisioning;
 import org.osiam.resources.helper.JsonResponseEnrichHelper;
 import org.osiam.resources.helper.RequestParamHelper;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriTemplate;
@@ -37,6 +38,7 @@ import org.osiam.resources.scim.Group;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
@@ -110,7 +112,7 @@ public class GroupController {
         return createdGroup;
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public String searchWithGet(HttpServletRequest request) {
         Map<String,Object> parameterMap = requestParamHelper.getRequestParameterValues(request);
@@ -120,7 +122,7 @@ public class GroupController {
         return jsonResponseEnrichHelper.getJsonFromSearchResult(scimSearchResult, parameterMap, scimSearchResult.getSchemas());
     }
 
-    @RequestMapping(value = "/.search", method = RequestMethod.POST)
+    @RequestMapping(value = "/.search", method = RequestMethod.POST, produces=MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public String searchWithPost(HttpServletRequest request) {
         Map<String,Object> parameterMap = requestParamHelper.getRequestParameterValues(request);
