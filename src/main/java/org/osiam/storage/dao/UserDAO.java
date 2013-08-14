@@ -24,6 +24,7 @@
 package org.osiam.storage.dao;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.sql.JoinType;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.resources.helper.SCIMSearchResult;
@@ -144,7 +145,7 @@ public class UserDAO extends GetInternalIdSkeleton implements GenericDAO<UserEnt
     }
 
     @Override
-    protected void createAliasesForCriteria(Criteria criteria) {
+    protected void createAliasesForCriteria(DetachedCriteria criteria) {
         criteria.createAlias("meta", "meta", JoinType.INNER_JOIN); // NOSONAR - no code duplication, need to set alias for types
         criteria.createAlias("name", "name", JoinType.INNER_JOIN); // NOSONAR - no code duplication, need to set alias for types
         criteria.createAlias("emails", "emails", JoinType.LEFT_OUTER_JOIN); // NOSONAR - no code duplication, need to set alias for types
@@ -157,4 +158,5 @@ public class UserDAO extends GetInternalIdSkeleton implements GenericDAO<UserEnt
 //        criteria.createAlias("roles", "roles"); // NOSONAR - no code duplication, need to set alias for types
 //        criteria.createAlias("x509Certificates", "x509Certificates"); // NOSONAR - no code duplication, need to set alias for types
     }
+
 }
