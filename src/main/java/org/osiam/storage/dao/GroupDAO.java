@@ -24,6 +24,7 @@
 package org.osiam.storage.dao;
 
 import org.hibernate.Criteria;
+import org.hibernate.sql.JoinType;
 import org.osiam.resources.helper.SCIMSearchResult;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.InternalIdSkeleton;
@@ -84,7 +85,7 @@ public class GroupDAO extends GetInternalIdSkeleton implements GenericDAO<GroupE
 
     @Override
     protected void createAliasesForCriteria(Criteria criteria) {
-        criteria.createAlias("meta", "meta");
+        criteria.createAlias("meta", "meta", JoinType.INNER_JOIN);
     }
 
 }

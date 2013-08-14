@@ -24,6 +24,7 @@
 package org.osiam.storage.dao;
 
 import org.hibernate.Criteria;
+import org.hibernate.sql.JoinType;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.resources.helper.SCIMSearchResult;
 import org.osiam.storage.entities.*;
@@ -33,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import javax.persistence.*;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -143,9 +145,9 @@ public class UserDAO extends GetInternalIdSkeleton implements GenericDAO<UserEnt
 
     @Override
     protected void createAliasesForCriteria(Criteria criteria) {
-        criteria.createAlias("meta", "meta"); // NOSONAR - no code duplication, need to set alias for types
-        criteria.createAlias("name", "name"); // NOSONAR - no code duplication, need to set alias for types
-        criteria.createAlias("emails", "emails"); // NOSONAR - no code duplication, need to set alias for types
+        criteria.createAlias("meta", "meta", JoinType.INNER_JOIN); // NOSONAR - no code duplication, need to set alias for types
+        criteria.createAlias("name", "name", JoinType.INNER_JOIN); // NOSONAR - no code duplication, need to set alias for types
+        criteria.createAlias("emails", "emails", JoinType.LEFT_OUTER_JOIN); // NOSONAR - no code duplication, need to set alias for types
 //        criteria.createAlias("phoneNumbers", "phoneNumbers"); // NOSONAR - no code duplication, need to set alias for types
 //        criteria.createAlias("ims", "ims"); // NOSONAR - no code duplication, need to set alias for types
 //        criteria.createAlias("photos", "photos"); // NOSONAR - no code duplication, need to set alias for types
