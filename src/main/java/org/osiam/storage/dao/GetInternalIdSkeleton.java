@@ -23,23 +23,26 @@
 
 package org.osiam.storage.dao;
 
-import org.hibernate.CacheMode;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.osiam.resources.helper.FilterParser;
-import org.osiam.resources.helper.SCIMSearchResult;
-import org.osiam.storage.entities.InternalIdSkeleton;
-import org.osiam.resources.exceptions.ResourceNotFoundException;
+import java.util.List;
+import java.util.UUID;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import java.util.List;
-import java.util.UUID;
-import java.util.logging.Logger;
+
+import org.hibernate.CacheMode;
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Subqueries;
+import org.osiam.resources.exceptions.ResourceNotFoundException;
+import org.osiam.resources.helper.FilterParser;
+import org.osiam.resources.helper.SCIMSearchResult;
+import org.osiam.storage.entities.InternalIdSkeleton;
 
 public abstract class GetInternalIdSkeleton {
 
@@ -77,39 +80,58 @@ public abstract class GetInternalIdSkeleton {
 
     protected <T> SCIMSearchResult<T> search(Class<T> clazz, String filter, int count, int startIndex, String sortBy,
                                              String sortOrder) {
-        Session session = (Session) em.getDelegate();
-        Criteria criteria = session.createCriteria(clazz);
-        criteria.setReadOnly(true);
-        criteria.setCacheMode(CacheMode.GET);
-        criteria.setCacheable(true);
-        if (filter != null && !filter.isEmpty()) {
-            criteria = criteria.add(filterParser.parse(filter).buildCriterion());
-        }
-        createAliasesForCriteria(criteria);
-        criteria.setMaxResults(count);
-        long totalResult = getTotalResults(criteria);
-        setSortOrder(sortBy, sortOrder, criteria);
-        criteria.setFirstResult(startIndex);
-        Criteria criteria1 =
-                criteria.setProjection(null).setResultTransformer(Criteria.ROOT_ENTITY);
-        List list = criteria1.list();
+	// create subquery criteria for all possible (internal) ids that match the filter (used by result and total count queries)
+	DetachedCriteria idsOnlyCriteria = DetachedCriteria.forClass(clazz);
+	createAliasesForCriteria(idsOnlyCriteria);
+	if (filter != null && !filter.isEmpty()) {
+	    idsOnlyCriteria.add(filterParser.parse(filter).buildCriterion());
+	}
+	idsOnlyCriteria.setProjection(Projections.distinct(Projections.id()));
+	
+        List list = getResults(idsOnlyCriteria, clazz, count, startIndex, sortBy, sortOrder);
+        long totalResult = getTotalResults(idsOnlyCriteria, clazz);
+        
         return new SCIMSearchResult(list, totalResult);
     }
 
+    
+    private <T> List getResults(DetachedCriteria idsOnlyCriteria, Class<T> clazz, int count, int startIndex, String sortBy,
+            String sortOrder) {
+	Criteria criteria = ((Session) em.getDelegate()).createCriteria(clazz);
+
+        criteria.setReadOnly(true);
+        criteria.setCacheMode(CacheMode.GET);
+        criteria.setCacheable(true);
+        
+        criteria.add(Subqueries.propertyIn("internalId", idsOnlyCriteria));
+        setSortOrder(sortBy, sortOrder, criteria);
+        criteria.setMaxResults(count);
+        criteria.setFirstResult(startIndex);
+        
+        return criteria.list();
+    }
+    
     private void setSortOrder(String sortBy, String sortOrder, Criteria criteria) {
-        if (sortOrder.equalsIgnoreCase("descending")) {
-            criteria.addOrder(Order.desc(sortBy));
-        } else {
-            criteria.addOrder(Order.asc(sortBy));
-        }
+	if (sortOrder.equalsIgnoreCase("descending")) {
+	    criteria.addOrder(Order.desc(sortBy));
+	} else {
+	    criteria.addOrder(Order.asc(sortBy));
+	}
     }
 
-    private long getTotalResults(Criteria criteria) {
-        Object result = criteria.setProjection(Projections.rowCount()).uniqueResult();
-        return result != null ? (long) result : 0;
+    private <T> long getTotalResults(DetachedCriteria idsOnlyCriteria, Class<T> clazz) {
+	Criteria countCriteria = ((Session) em.getDelegate()).createCriteria(clazz);
+        
+	countCriteria.setReadOnly(true);
+        countCriteria.setCacheMode(CacheMode.GET);
+        countCriteria.setCacheable(true);
+        
+        countCriteria.add(Subqueries.propertyIn("internalId", idsOnlyCriteria));
+        countCriteria.setProjection(Projections.rowCount());
+        Object totalResultAsObject = countCriteria.uniqueResult();
+        
+        return totalResultAsObject != null ? (long) totalResultAsObject : 0;
     }
 
-    protected abstract void createAliasesForCriteria(Criteria criteria);
-
-
+    protected abstract void createAliasesForCriteria(DetachedCriteria criteria);
 }
