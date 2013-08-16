@@ -107,6 +107,8 @@ public abstract class GetInternalIdSkeleton {
         setSortOrder(sortBy, sortOrder, criteria);
         criteria.setMaxResults(count);
         criteria.setFirstResult(startIndex);
+        // FIXME: The next line should not be necessary, but it is ...
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         
         return criteria.list();
     }
