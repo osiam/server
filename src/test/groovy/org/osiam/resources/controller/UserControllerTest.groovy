@@ -29,6 +29,9 @@ import org.osiam.resources.provisioning.SCIMUserProvisioning
 import org.osiam.resources.helper.JsonResponseEnrichHelper
 import org.osiam.resources.helper.RequestParamHelper
 import org.springframework.http.HttpStatus
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.token.InMemoryTokenStore;
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.ResponseBody
@@ -36,10 +39,16 @@ import org.springframework.web.bind.annotation.ResponseStatus
 import org.osiam.resources.scim.Meta
 import org.osiam.resources.scim.Name
 import org.osiam.resources.scim.User
+import org.osiam.storage.entities.EmailEntity
+import org.osiam.storage.entities.MetaEntity
+import org.osiam.storage.entities.NameEntity
+import org.osiam.storage.entities.UserEntity
+
 import spock.lang.Specification
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+
 import java.lang.reflect.Method
 
 class UserControllerTest extends Specification {
@@ -47,11 +56,14 @@ class UserControllerTest extends Specification {
     def requestParamHelper = Mock(RequestParamHelper)
     def jsonResponseEnrichHelper = Mock(JsonResponseEnrichHelper)
     def jsonInputValidator = Mock(JsonInputValidator)
+    def tokenStore = Mock(InMemoryTokenStore)
     def underTest = new UserController(requestParamHelper: requestParamHelper,
-            jsonResponseEnrichHelper: jsonResponseEnrichHelper, jsonInputValidator: jsonInputValidator)
+            jsonResponseEnrichHelper: jsonResponseEnrichHelper, jsonInputValidator: jsonInputValidator, inMemoryTokenStore: tokenStore)
     def provisioning = Mock(SCIMUserProvisioning)
     def httpServletRequest = Mock(HttpServletRequest)
     def httpServletResponse = Mock(HttpServletResponse)
+    def authentication = Mock(OAuth2Authentication)
+    def userAuthentication = Mock(Authentication)
     User user = new User.Builder("test").setActive(true)
             .setAny(["ha"] as Set)
             .setDisplayName("display")
@@ -68,10 +80,15 @@ class UserControllerTest extends Specification {
             .setId("id")
             .setMeta(new Meta.Builder().build())
             .build()
-
+    
+    NameEntity nameEntity = new NameEntity(familyName: "Prefect", givenName: "Fnord", formatted: "Fnord Prefect")
+    UserEntity userEntity = new UserEntity(active: true, emails: [new EmailEntity(primary: true, value: "test@test.de")],
+	    name: nameEntity, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
+	    locale: "de_DE", username: "fpref")
 
     def setup() {
         underTest.setScimUserProvisioning(provisioning)
+	authentication.getUserAuthentication() >> userAuthentication
     }
 
     def "should return a cloned user based on a user found by provisioning on getUser"() {
@@ -291,5 +308,76 @@ class UserControllerTest extends Specification {
         body
         1 * jsonResponseEnrichHelper.getJsonFromSearchResult(scimSearchResultMock, map, set)
 
+    }
+    
+    def "should throw exception when no access_token got submitted"() {
+	given:
+	httpServletRequest.getParameter("access_token") >> null
+	when:
+	underTest.getInformation(httpServletRequest)
+	then:
+	def e = thrown(IllegalArgumentException)
+	e.message == "No access_token submitted!"
+    }
+
+    def "should throw exception if principal is not an UserEntity"() {
+	when:
+	underTest.getInformation(httpServletRequest)
+	then:
+	1 * httpServletRequest.getParameter("access_token") >> null
+	1 * httpServletRequest.getHeader("Authorization") >> "Bearer access_token"
+	1 * tokenStore.readAuthentication("access_token") >> authentication
+	1 * userAuthentication.getPrincipal() >> new Object()
+	def e = thrown(IllegalArgumentException)
+	e.message == "User was not authenticated with OSIAM."
+    }
+
+    def "should get access_token in bearer format"() {
+	when:
+	def result = underTest.getInformation(httpServletRequest)
+	then:
+	1 * httpServletRequest.getParameter("access_token") >> null
+	1 * httpServletRequest.getHeader("Authorization") >> "Bearer access_token"
+	1 * tokenStore.readAuthentication("access_token") >> authentication
+	1 * userAuthentication.getPrincipal() >> userEntity
+	result
+    }
+
+    def "should return correct scim representation"() {
+	when:
+
+	User result = underTest.getInformation(httpServletRequest)
+	then:
+	1 * httpServletRequest.getParameter("access_token") >> "access_token"
+	1 * tokenStore.readAuthentication("access_token") >> authentication
+	1 * userAuthentication.getPrincipal() >> userEntity
+
+	result.id == userEntity.id.toString()
+	result.userName == userEntity.getUsername()
+
+	result.name.familyName == userEntity.name.familyName
+	result.name.givenName == userEntity.name.givenName
+	result.name.middleName == userEntity.name.middleName
+	result.name.honorificPrefix == userEntity.name.honorificPrefix
+	result.name.honorificSuffix == userEntity.name.honorificSuffix
+	result.name.formatted == userEntity.name.formatted
+
+	result.displayName == userEntity.displayName
+	result.nickName == userEntity.nickName
+	result.profileUrl == userEntity.profileUrl
+	result.title == userEntity.title
+	result.userType == userEntity.userType
+	result.preferredLanguage == userEntity.preferredLanguage
+	result.locale == userEntity.locale
+	result.timezone == userEntity.timezone
+	result.active == userEntity.active
+	result.password == null
+
+	result.emails.get(0).value == userEntity.emails.iterator().next().value
+	result.emails.get(0).primary == userEntity.emails.iterator().next().primary
+
+	result.emails.get(0).type == userEntity.emails.iterator().next().type ||
+		result.emails.get(0).type == userEntity.emails.iterator().next().type.toString()
+		
     }
 }
