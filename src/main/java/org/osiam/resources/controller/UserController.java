@@ -37,8 +37,11 @@ import org.osiam.resources.helper.RequestParamHelper;
 import org.osiam.resources.helper.SCIMSearchResult;
 import org.osiam.resources.provisioning.SCIMUserProvisioning;
 import org.osiam.resources.scim.User;
+import org.osiam.storage.entities.UserEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.provider.token.InMemoryTokenStore;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -62,6 +65,9 @@ import org.springframework.web.util.UriTemplate;
 @RequestMapping(value = "/Users")
 public class UserController {
 
+    @Inject
+    private InMemoryTokenStore inMemoryTokenStore;
+    
     @Inject
     private SCIMUserProvisioning scimUserProvisioning;
 
@@ -138,6 +144,39 @@ public class UserController {
                 (int)parameterMap.get("count"), (int)parameterMap.get("startIndex"));
 
         return jsonResponseEnrichHelper.getJsonFromSearchResult(scimSearchResult, parameterMap, scimSearchResult.getSchemas());
+    }
+    
+    /**
+     * This method is used to get information about the user who initialized the authorization process.
+     * @return The the Scim User object as JSON  
+     */
+    @RequestMapping(value = "/me", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public User getInformation(HttpServletRequest request) {
+        String accessToken = getAccessToken(request);
+        Authentication userAuthentication = inMemoryTokenStore.readAuthentication(accessToken).getUserAuthentication();
+        Object userObject = userAuthentication.getPrincipal();
+        
+        if (userObject instanceof UserEntity) {
+            UserEntity userEntity = (UserEntity) userObject;
+            
+            return User.Builder.generateForOutput(userEntity.toScim());
+        } else {
+            throw new IllegalArgumentException("User was not authenticated with OSIAM.");
+        }
+
+
+    }
+
+    private String getAccessToken(HttpServletRequest request) {
+        String accessToken = request.getParameter("access_token");
+        return accessToken != null ? accessToken : getBearerToken(request);
+    }
+
+    private String getBearerToken(HttpServletRequest request) {
+        String authorization = request.getHeader("Authorization");
+        if (authorization == null) { throw new IllegalArgumentException("No access_token submitted!"); }
+        return authorization.substring("Bearer ".length(), authorization.length());
     }
 
     private User setLocationUriAndCreateUserForOutput(HttpServletRequest request, HttpServletResponse response,
