@@ -1,9 +1,9 @@
 package org.osiam.resources.provisioning
 
+import org.osiam.resources.scim.SCIMSearchResult
 import org.osiam.storage.entities.UserEntity
 import org.osiam.resources.exceptions.ResourceExistsException
 import org.osiam.resources.scim.User
-import org.osiam.resources.helper.SCIMSearchResult
 import org.osiam.storage.dao.UserDAO
 import spock.lang.Specification
 
@@ -121,7 +121,7 @@ class ScimUserProvisioningBeanSpec extends Specification {
         def userEntityMock = Mock(UserEntity)
         def user = Mock(User)
         def userList = [userEntityMock] as List
-        scimSearchResultMock.getResult() >> userList
+        scimSearchResultMock.getResources() >> userList
         scimSearchResultMock.getTotalResult() >> 1000.toLong()
 
         when:

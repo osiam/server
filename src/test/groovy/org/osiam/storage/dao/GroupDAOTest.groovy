@@ -148,7 +148,7 @@ class GroupDAOTest extends Specification {
         then:
         result != null
         result.getTotalResult() == 1000
-        result.getResult() == groupList
+        result.getResources() == groupList
 
     }
 

@@ -120,7 +120,6 @@
         </property>
     </bean>
 
-
     <!-- general access denied handler -->
     <bean id="oauthAccessDeniedHandler"
           class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler"/>
@@ -131,8 +130,7 @@
 
     <aop:aspectj-autoproxy />
     <bean id="logAspect" class="org.osiam.resources.helper.CheckSchema" />
-    <bean id="profiling" class="org.osiam.resources.helper.MeasureDurationTimeOfMethods
-    " />
+    <bean id="profiling" class="org.osiam.resources.helper.MeasureDurationTimeOfMethods" />
 
     <context:component-scan base-package="org.osiam"/>
     <context:annotation-config/>

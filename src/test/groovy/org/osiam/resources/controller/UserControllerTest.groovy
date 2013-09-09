@@ -24,10 +24,9 @@
 package org.osiam.resources.controller
 
 import org.osiam.resources.helper.JsonInputValidator
-import org.osiam.resources.helper.SCIMSearchResult
 import org.osiam.resources.provisioning.SCIMUserProvisioning
-import org.osiam.resources.helper.JsonResponseEnrichHelper
 import org.osiam.resources.helper.RequestParamHelper
+import org.osiam.resources.scim.SCIMSearchResult
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -54,11 +53,10 @@ import java.lang.reflect.Method
 class UserControllerTest extends Specification {
 
     def requestParamHelper = Mock(RequestParamHelper)
-    def jsonResponseEnrichHelper = Mock(JsonResponseEnrichHelper)
     def jsonInputValidator = Mock(JsonInputValidator)
     def tokenStore = Mock(InMemoryTokenStore)
     def underTest = new UserController(requestParamHelper: requestParamHelper,
-            jsonResponseEnrichHelper: jsonResponseEnrichHelper, jsonInputValidator: jsonInputValidator, inMemoryTokenStore: tokenStore)
+            jsonInputValidator: jsonInputValidator, inMemoryTokenStore: tokenStore)
     def provisioning = Mock(SCIMUserProvisioning)
     def httpServletRequest = Mock(HttpServletRequest)
     def httpServletResponse = Mock(HttpServletResponse)
@@ -276,7 +274,6 @@ class UserControllerTest extends Specification {
         mapping.value() == []
         mapping.method() == [RequestMethod.GET]
         body
-        1 * jsonResponseEnrichHelper.getJsonFromSearchResult(scimSearchResultMock, map, set)
     }
 
     def "should be able to search a user on /User/.search URI with POST method" () {
@@ -306,8 +303,6 @@ class UserControllerTest extends Specification {
         mapping.value() == ["/.search"]
         mapping.method() == [RequestMethod.POST]
         body
-        1 * jsonResponseEnrichHelper.getJsonFromSearchResult(scimSearchResultMock, map, set)
-
     }
     
     def "should throw exception when no access_token got submitted"() {
@@ -377,7 +372,7 @@ class UserControllerTest extends Specification {
 	result.emails.get(0).primary == userEntity.emails.iterator().next().primary
 
 	result.emails.get(0).type == userEntity.emails.iterator().next().type ||
-		result.emails.get(0).type == userEntity.emails.iterator().next().type.toString()
+    result.emails.get(0).type == userEntity.emails.iterator().next().type.toString()
 		
     }
 }

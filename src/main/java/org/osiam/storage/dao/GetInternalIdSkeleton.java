@@ -41,7 +41,8 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Subqueries;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.resources.helper.FilterParser;
-import org.osiam.resources.helper.SCIMSearchResult;
+import org.osiam.resources.scim.Constants;
+import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.storage.entities.InternalIdSkeleton;
 
 public abstract class GetInternalIdSkeleton {
@@ -88,10 +89,10 @@ public abstract class GetInternalIdSkeleton {
 	}
 	idsOnlyCriteria.setProjection(Projections.distinct(Projections.id()));
 	
-        List list = getResults(idsOnlyCriteria, clazz, count, startIndex, sortBy, sortOrder);
+        List results = getResults(idsOnlyCriteria, clazz, count, startIndex, sortBy, sortOrder);
         long totalResult = getTotalResults(idsOnlyCriteria, clazz);
         
-        return new SCIMSearchResult(list, totalResult);
+        return new SCIMSearchResult(results, totalResult, count, startIndex, Constants.CORE_SCHEMAS);
     }
 
     

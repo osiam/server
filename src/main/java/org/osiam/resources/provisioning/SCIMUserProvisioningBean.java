@@ -23,8 +23,8 @@
 
 package org.osiam.resources.provisioning;
 
+import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.storage.dao.GenericDAO;
-import org.osiam.resources.helper.SCIMSearchResult;
 import org.osiam.storage.dao.UserDAO;
 import org.osiam.storage.entities.UserEntity;
 import org.osiam.resources.exceptions.ResourceExistsException;
@@ -32,9 +32,7 @@ import org.springframework.stereotype.Service;
 import org.osiam.resources.scim.User;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -75,8 +73,10 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
     public SCIMSearchResult<User> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
         List<User> users = new ArrayList<>();
         SCIMSearchResult<UserEntity> result = getDao().search(filter, sortBy, sortOrder, count, startIndex);
-        for (Object g : result.getResult()) { users.add(User.Builder.generateForOutput(((UserEntity) g).toScim())); }
-        return new SCIMSearchResult(users, result.getTotalResult());
+        for (Object g : result.getResources()) {
+            users.add(User.Builder.generateForOutput(((UserEntity) g).toScim()));
+        }
+        return new SCIMSearchResult(users, result.getTotalResult(), count, startIndex, result.getSchemas());
     }
 
     @Override

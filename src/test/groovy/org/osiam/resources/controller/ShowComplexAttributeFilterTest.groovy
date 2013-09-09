@@ -19,11 +19,10 @@ package org.osiam.resources.controller
 
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
-import org.osiam.resources.helper.SCIMSearchResult
 import org.osiam.resources.provisioning.SCIMUserProvisioning
-import org.osiam.resources.helper.JsonResponseEnrichHelper
 import org.osiam.resources.helper.RequestParamHelper
 import org.osiam.resources.scim.Meta
+import org.osiam.resources.scim.SCIMSearchResult
 import org.osiam.resources.scim.User
 import spock.lang.Specification
 
@@ -31,8 +30,7 @@ import javax.servlet.http.HttpServletRequest
 
 class ShowComplexAttributeFilterTest extends Specification {
     def provisioning = Mock(SCIMUserProvisioning)
-    def underTest = new UserController(scimUserProvisioning: provisioning, requestParamHelper: new RequestParamHelper(),
-            jsonResponseEnrichHelper: new JsonResponseEnrichHelper())
+    def underTest = new UserController(scimUserProvisioning: provisioning, requestParamHelper: new RequestParamHelper())
     def servletRequestMock = Mock(HttpServletRequest)
 
 
@@ -44,7 +42,7 @@ class ShowComplexAttributeFilterTest extends Specification {
         def created = dateTimeFormatter.print(date)
 
         def user = new User.Builder("username").setMeta(new Meta.Builder(actualDate, null).build()).build()
-        def scimSearchResult = new SCIMSearchResult([user], 23)
+        def scimSearchResult = new SCIMSearchResult([user] as List, 23, 100, 0, ["urn:scim:schemas:core:1.0"] as Set)
         when:
         def result = underTest.searchWithPost(servletRequestMock)
 
@@ -52,6 +50,10 @@ class ShowComplexAttributeFilterTest extends Specification {
         2 * servletRequestMock.getParameter("attributes") >> "meta.created"
         1 * provisioning.search(_, _, _, _, _) >> scimSearchResult
 
-        result == '{"totalResults":23,"itemsPerPage":100,"startIndex":0,"schemas":"urn:scim:schemas:core:1.0","Resources":[{"meta":{"created":"' + created + '"}}]}'
+        result.getResources() == [user] as List
+        result.getItemsPerPage() == 100
+        result.getStartIndex() == 0
+        result.getTotalResult() == 23
+        result.getSchemas() == ["urn:scim:schemas:core:1.0"] as Set
     }
 }

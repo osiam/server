@@ -23,10 +23,10 @@
 
 package org.osiam.resources.provisioning
 
+import org.osiam.resources.scim.SCIMSearchResult
 import org.osiam.storage.entities.GroupEntity
 import org.osiam.resources.exceptions.ResourceExistsException
 import org.osiam.storage.dao.GroupDAO
-import org.osiam.resources.helper.SCIMSearchResult
 import org.springframework.dao.DataIntegrityViolationException
 import org.osiam.resources.scim.Group
 import spock.lang.Specification
@@ -92,7 +92,7 @@ class SCIMGroupProvisioningBeanTest extends Specification {
 
         def groupEntityMock = Mock(GroupEntity)
         def userList = [groupEntityMock] as List
-        scimSearchResultMock.getResult() >> userList
+        scimSearchResultMock.getResources() >> userList
         scimSearchResultMock.getTotalResult() >> 1000.toLong()
 
         when:

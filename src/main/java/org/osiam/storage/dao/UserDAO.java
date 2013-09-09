@@ -34,7 +34,7 @@ import javax.persistence.Query;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.sql.JoinType;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
-import org.osiam.resources.helper.SCIMSearchResult;
+import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.storage.entities.EmailEntity;
 import org.osiam.storage.entities.EntitlementsEntity;
 import org.osiam.storage.entities.HasUser;
