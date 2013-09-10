@@ -49,6 +49,7 @@ class GroupDAOTest extends Specification {
     def filterParser = Mock(FilterParser)
     def underTest = new GroupDAO()
     String id = UUID.randomUUID().toString()
+    def aClass = GroupEntity.class
 
     def setup(){
         em.createNamedQuery("getById") >> query
@@ -132,7 +133,7 @@ class GroupDAOTest extends Specification {
 
         em.getDelegate() >> hibernateSessionMock
         hibernateSessionMock.createCriteria(GroupEntity.class) >> criteriaMock
-        filterParser.parse("anyFilter") >> filterChainMock
+        filterParser.parse("anyFilter", aClass) >> filterChainMock
         filterChainMock.buildCriterion() >> criterionMock
         criteriaMock.add(criterionMock) >> criteriaMock
         criteriaMock.setProjection(_) >> criteriaMock

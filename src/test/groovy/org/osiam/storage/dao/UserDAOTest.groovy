@@ -49,6 +49,8 @@ class UserDAOTest extends Specification {
     def underTest = new UserDAO()
     def userEntity = Mock(UserEntity)
 
+    def aClass = UserEntity.class
+
     def setup() {
         underTest.setEm(em)
         underTest.setFilterParser(filterParserMock)
@@ -223,7 +225,7 @@ class UserDAOTest extends Specification {
 
         em.getDelegate() >> hibernateSessionMock
         hibernateSessionMock.createCriteria(UserEntity.class) >> criteriaMock
-        filterParserMock.parse("anyFilter") >> filterChainMock
+        filterParserMock.parse("anyFilter", aClass) >> filterChainMock
         filterChainMock.buildCriterion() >> criterionMock
         criteriaMock.add(criterionMock) >> criteriaMock
         criteriaMock.setProjection(_) >> criteriaMock
@@ -253,7 +255,7 @@ class UserDAOTest extends Specification {
 
         em.getDelegate() >> hibernateSessionMock
         hibernateSessionMock.createCriteria(UserEntity.class) >> criteriaMock
-        filterParserMock.parse("anyFilter") >> filterChainMock
+        filterParserMock.parse("anyFilter", aClass) >> filterChainMock
         filterChainMock.buildCriterion() >> criterionMock
         criteriaMock.add(criterionMock) >> criteriaMock
         criteriaMock.setProjection(_) >> criteriaMock

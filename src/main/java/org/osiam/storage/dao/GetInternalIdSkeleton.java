@@ -23,15 +23,6 @@
 
 package org.osiam.storage.dao;
 
-import java.util.List;
-import java.util.UUID;
-import java.util.logging.Logger;
-
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
 import org.hibernate.CacheMode;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -44,6 +35,14 @@ import org.osiam.resources.helper.FilterParser;
 import org.osiam.resources.scim.Constants;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.storage.entities.InternalIdSkeleton;
+
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import java.util.List;
+import java.util.UUID;
+import java.util.logging.Logger;
 
 public abstract class GetInternalIdSkeleton {
 
@@ -85,7 +84,7 @@ public abstract class GetInternalIdSkeleton {
 	DetachedCriteria idsOnlyCriteria = DetachedCriteria.forClass(clazz);
 	createAliasesForCriteria(idsOnlyCriteria);
 	if (filter != null && !filter.isEmpty()) {
-	    idsOnlyCriteria.add(filterParser.parse(filter).buildCriterion());
+        idsOnlyCriteria.add(filterParser.parse(filter, clazz).buildCriterion());
 	}
 	idsOnlyCriteria.setProjection(Projections.distinct(Projections.id()));
 	

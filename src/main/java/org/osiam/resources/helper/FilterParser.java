@@ -23,11 +23,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class FilterParser {
 
-    public FilterChain parse(String p) {
+    public FilterChain parse(String p, Class clazz) {
         if (CombinedFilterChain.COMBINED_FILTER_CHAIN.matcher(p).matches()) {
-            return new CombinedFilterChain(p);
+            return new CombinedFilterChain(p, clazz);
         }
-        return new SingularFilterChain(p);
+        return new SingularFilterChain(p, clazz);
 
     }
 }

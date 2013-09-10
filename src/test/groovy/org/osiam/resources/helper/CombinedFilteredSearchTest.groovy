@@ -3,14 +3,18 @@ package org.osiam.resources.helper
 import org.hibernate.criterion.Criterion
 import org.osiam.resources.helper.CombinedFilterChain
 import org.osiam.resources.helper.SingularFilterChain
+import org.osiam.storage.entities.UserEntity
 import spock.lang.Specification
 
 class CombinedFilteredSearchTest extends Specification {
+
+    def aClass = UserEntity.class
+
     def "should be able to parse title pr and userType eq Employee"() {
         given:
         def filter = 'title pr and userType eq "Employee"'
         when:
-        def cf = new CombinedFilterChain(filter)
+        def cf = new CombinedFilterChain(filter, aClass)
 
         then:
         cf.term1 instanceof SingularFilterChain
@@ -22,7 +26,7 @@ class CombinedFilteredSearchTest extends Specification {
         given:
         def filter = 'title pr or userType eq "Intern"'
         when:
-        def cf = new CombinedFilterChain(filter)
+        def cf = new CombinedFilterChain(filter, aClass)
 
         then:
         cf.term1 instanceof SingularFilterChain
@@ -39,9 +43,9 @@ class CombinedFilteredSearchTest extends Specification {
 
     def "should be able to parse userType eq Employee and (emails co example.com or emails co example.org)"() {
         given:
-        def filter = 'userType eq "Employee" and (emails co "example.com" or emails co "example.org")'
+        def filter = 'userType eq "Employee" and (emails.value co "example.com" or emails.value co "example.org")'
         when:
-        def cf = new CombinedFilterChain(filter)
+        def cf = new CombinedFilterChain(filter, aClass)
         then:
         cf.term1 instanceof SingularFilterChain
         cf.term1.key == 'userType'
@@ -51,20 +55,20 @@ class CombinedFilteredSearchTest extends Specification {
         cf.term2 instanceof CombinedFilterChain
         cf.term2.combinedWith == CombinedFilterChain.Combiner.OR
         cf.term2.term1 instanceof SingularFilterChain
-        cf.term2.term1.key == 'emails'
+        cf.term2.term1.key == 'emails.value'
         cf.term2.term1.constraint == SingularFilterChain.Constraints.CONTAINS
         cf.term2.term1.value == 'example.com'
         cf.term2.term2 instanceof SingularFilterChain
-        cf.term2.term2.key == 'emails'
+        cf.term2.term2.key == 'emails.value'
         cf.term2.term2.constraint == SingularFilterChain.Constraints.CONTAINS
         cf.term2.term2.value == 'example.org'
     }
 
     def "should be able to parse userType eq Employee aNd (emails co example.com Or emails co example.org)"() {
         given:
-        def filter = 'userType eq "Employee" aNd (emails co "example.com" Or emails co "example.org")'
+        def filter = 'userType eq "Employee" aNd (emails.value co "example.com" Or emails.value co "example.org")'
         when:
-        def cf = new CombinedFilterChain(filter)
+        def cf = new CombinedFilterChain(filter, aClass)
         then:
         cf.term1 instanceof SingularFilterChain
         cf.term1.key == 'userType'
@@ -74,18 +78,18 @@ class CombinedFilteredSearchTest extends Specification {
         cf.term2 instanceof CombinedFilterChain
         cf.term2.combinedWith == CombinedFilterChain.Combiner.OR
         cf.term2.term1 instanceof SingularFilterChain
-        cf.term2.term1.key == 'emails'
+        cf.term2.term1.key == 'emails.value'
         cf.term2.term1.constraint == SingularFilterChain.Constraints.CONTAINS
         cf.term2.term1.value == 'example.com'
         cf.term2.term2 instanceof SingularFilterChain
-        cf.term2.term2.key == 'emails'
+        cf.term2.term2.key == 'emails.value'
         cf.term2.term2.constraint == SingularFilterChain.Constraints.CONTAINS
         cf.term2.term2.value == 'example.org'
     }
 
     def "should throw an exception when filter does not match"(){
         when:
-        new CombinedFilterChain("xxx NOR xxx")
+        new CombinedFilterChain("xxx NOR xxx", aClass)
         then:
         def e = thrown(IllegalArgumentException)
         e.message == "xxx NOR xxx is not a CombinedFilterChain."
@@ -94,12 +98,11 @@ class CombinedFilteredSearchTest extends Specification {
 
     def "should build an criterion"() {
         given:
-        def filter = 'userType eq "Employee" AND (emails co "example.com" OR emails co "example.org")'
-        def chain = new CombinedFilterChain(filter)
+        def filter = 'userType eq "Employee" AND (emails.value co "example.com" OR emails.value co "example.org")'
+        def chain = new CombinedFilterChain(filter, aClass)
         when:
         def cf = chain.buildCriterion()
         then:
         cf instanceof Criterion
-
     }
 }

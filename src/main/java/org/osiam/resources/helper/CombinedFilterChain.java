@@ -37,14 +37,14 @@ public class CombinedFilterChain implements FilterChain {
     private final FilterChain term2;
     private FilterParser filterParser = new FilterParser();
 
-    public CombinedFilterChain(String chain) {
+    public CombinedFilterChain(String chain, Class clazz) {
         Matcher matcher = COMBINED_FILTER_CHAIN.matcher(chain);
         if (!matcher.matches()) {
             throw new IllegalArgumentException(chain + " is not a CombinedFilterChain.");
         }
-        this.term1 = filterParser.parse(matcher.group(1)); // NOSONAR - no need to make constant for number
+        this.term1 = filterParser.parse(matcher.group(1), clazz); // NOSONAR - no need to make constant for number
         this.combinedWith = Combiner.valueOf(matcher.group(2).toUpperCase(Locale.ENGLISH)); // NOSONAR - no need to make constant for number
-        this.term2 = filterParser.parse(matcher.group(3)); // NOSONAR - no need to make constant for number
+        this.term2 = filterParser.parse(matcher.group(3), clazz); // NOSONAR - no need to make constant for number
     }
 
     @Override
