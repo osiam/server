@@ -90,8 +90,10 @@ public abstract class GetInternalIdSkeleton {
 	
         List results = getResults(idsOnlyCriteria, clazz, count, startIndex, sortBy, sortOrder);
         long totalResult = getTotalResults(idsOnlyCriteria, clazz);
+
+        int newStartIndex = startIndex <1 ? 1 :startIndex;
         
-        return new SCIMSearchResult(results, totalResult, count, startIndex, Constants.CORE_SCHEMAS);
+        return new SCIMSearchResult(results, totalResult, count, newStartIndex, Constants.CORE_SCHEMAS);
     }
 
     
@@ -106,7 +108,7 @@ public abstract class GetInternalIdSkeleton {
         criteria.add(Subqueries.propertyIn("internalId", idsOnlyCriteria));
         setSortOrder(sortBy, sortOrder, criteria);
         criteria.setMaxResults(count);
-        criteria.setFirstResult(startIndex);
+        criteria.setFirstResult(startIndex-1);//-1 due to scim spec and default of 1 instead of 0
 
         return criteria.list();
     }
