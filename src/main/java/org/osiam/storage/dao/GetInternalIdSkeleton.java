@@ -80,13 +80,13 @@ public abstract class GetInternalIdSkeleton {
 
     protected <T> SCIMSearchResult<T> search(Class<T> clazz, String filter, int count, int startIndex, String sortBy,
                                              String sortOrder) {
-	// create subquery criteria for all possible (internal) ids that match the filter (used by result and total count queries)
-	DetachedCriteria idsOnlyCriteria = DetachedCriteria.forClass(clazz);
-	createAliasesForCriteria(idsOnlyCriteria);
-	if (filter != null && !filter.isEmpty()) {
-        idsOnlyCriteria.add(filterParser.parse(filter, clazz).buildCriterion());
-	}
-	idsOnlyCriteria.setProjection(Projections.distinct(Projections.id()));
+        // create subquery criteria for all possible (internal) ids that match the filter (used by result and total count queries)
+        DetachedCriteria idsOnlyCriteria = DetachedCriteria.forClass(clazz);
+        createAliasesForCriteria(idsOnlyCriteria);
+        if (filter != null && !filter.isEmpty()) {
+            idsOnlyCriteria.add(filterParser.parse(filter, clazz).buildCriterion());
+        }
+        idsOnlyCriteria.setProjection(Projections.distinct(Projections.id()));
 	
         List results = getResults(idsOnlyCriteria, clazz, count, startIndex, sortBy, sortOrder);
         long totalResult = getTotalResults(idsOnlyCriteria, clazz);
@@ -97,7 +97,7 @@ public abstract class GetInternalIdSkeleton {
     
     private <T> List getResults(DetachedCriteria idsOnlyCriteria, Class<T> clazz, int count, int startIndex, String sortBy,
             String sortOrder) {
-	Criteria criteria = ((Session) em.getDelegate()).createCriteria(clazz);
+	    Criteria criteria = ((Session) em.getDelegate()).createCriteria(clazz);
 
         criteria.setReadOnly(true);
         criteria.setCacheMode(CacheMode.GET);
@@ -107,24 +107,22 @@ public abstract class GetInternalIdSkeleton {
         setSortOrder(sortBy, sortOrder, criteria);
         criteria.setMaxResults(count);
         criteria.setFirstResult(startIndex);
-        // FIXME: The next line should not be necessary, but it is ...
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        
+
         return criteria.list();
     }
     
     private void setSortOrder(String sortBy, String sortOrder, Criteria criteria) {
-	if (sortOrder.equalsIgnoreCase("descending")) {
-	    criteria.addOrder(Order.desc(sortBy));
-	} else {
-	    criteria.addOrder(Order.asc(sortBy));
-	}
+        if (sortOrder.equalsIgnoreCase("descending")) {
+            criteria.addOrder(Order.desc(sortBy));
+        } else {
+            criteria.addOrder(Order.asc(sortBy));
+        }
     }
 
     private <T> long getTotalResults(DetachedCriteria idsOnlyCriteria, Class<T> clazz) {
-	Criteria countCriteria = ((Session) em.getDelegate()).createCriteria(clazz);
-        
-	countCriteria.setReadOnly(true);
+        Criteria countCriteria = ((Session) em.getDelegate()).createCriteria(clazz);
+
+        countCriteria.setReadOnly(true);
         countCriteria.setCacheMode(CacheMode.GET);
         countCriteria.setCacheable(true);
         
