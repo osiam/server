@@ -35,6 +35,7 @@ class JsonInputValidatorTest extends Specification {
         def userJson = ""
         httpServletRequestMock.getReader() >> readerMock
         readerMock.readLine() >>> [userJson, null]
+        httpServletRequestMock.getMethod() >> "POST"
 
         when:
         jsonInputValidator.validateJsonUser(httpServletRequestMock)
@@ -42,6 +43,20 @@ class JsonInputValidatorTest extends Specification {
         then:
         def e = thrown(IllegalArgumentException)
         e.getMessage() == "The attribute userName is mandatory and MUST NOT be null"
+    }
+
+    def "should ignore the mandatory userName if method is PATCH"(){
+        given:
+        def userJson = '{"password":"123"}'
+        httpServletRequestMock.getReader() >> readerMock
+        readerMock.readLine() >>> [userJson, null]
+        httpServletRequestMock.getMethod() >> "PATCH"
+
+        when:
+        def result = jsonInputValidator.validateJsonUser(httpServletRequestMock)
+
+        then:
+        result
     }
 
     def "invalid json structure for user should throw exception"(){
@@ -57,34 +72,6 @@ class JsonInputValidatorTest extends Specification {
         def e = thrown(IllegalArgumentException)
         e.getMessage() == "The JSON structure is incorrect"
     }
-
-/*    def "invalid attributes in json for user should throw exception"(){
-        given:
-        def userJson = '{"schemas":["urn:scim:schemas:core:1.0"],"userName":"Chaos666","word":"123"}'
-        httpServletRequestMock.getReader() >> readerMock
-        readerMock.readLine() >>> [userJson, null]
-
-        when:
-        jsonInputValidator.validateJsonUser(httpServletRequestMock)
-
-        then:
-        def e = thrown(IllegalArgumentException)
-        e.getMessage() == 'Unrecognized field "word"'
-    }
-
-    def "invalid value for attribute in json for user should throw exception"(){
-        given:
-        def userJson = '{"schemas":["urn:scim:schemas:core:1.0"],"userName":"Chaos666","password":"123","active":"123"}'
-        httpServletRequestMock.getReader() >> readerMock
-        readerMock.readLine() >>> [userJson, null]
-
-        when:
-        jsonInputValidator.validateJsonUser(httpServletRequestMock)
-
-        then:
-        def e = thrown(IllegalArgumentException)
-        e.getMessage() == 'Can not construct instance of java.lang.Boolean from String value \'123\''
-    }*/
 
     def "should validate group without errors if json is valid"(){
         given:
@@ -104,6 +91,7 @@ class JsonInputValidatorTest extends Specification {
         def groupJson = ''
         httpServletRequestMock.getReader() >> readerMock
         readerMock.readLine() >>> [groupJson, null]
+        httpServletRequestMock.getMethod() >> "POST"
 
         when:
         jsonInputValidator.validateJsonGroup(httpServletRequestMock)
@@ -111,6 +99,20 @@ class JsonInputValidatorTest extends Specification {
         then:
         def e = thrown(IllegalArgumentException)
         e.getMessage() == 'The attribute displayName is mandatory and MUST NOT be null.'
+    }
+
+    def "should ignore the mandatory displayName if method is PATCH"(){
+        given:
+        def groupJson = '{"members": []}'
+        httpServletRequestMock.getReader() >> readerMock
+        readerMock.readLine() >>> [groupJson, null]
+        httpServletRequestMock.getMethod() >> "PATCH"
+
+        when:
+        def result = jsonInputValidator.validateJsonGroup(httpServletRequestMock)
+
+        then:
+        result
     }
 
     def "invalid json structure for group should throw exception"(){
@@ -127,31 +129,4 @@ class JsonInputValidatorTest extends Specification {
         e.getMessage() == "The JSON structure is incorrect"
     }
 
-/*    def "invalid attributes in json for group should throw exception"(){
-        given:
-        def groupJson = '{"displayName":"Chaos999","word":"123"}'
-        httpServletRequestMock.getReader() >> readerMock
-        readerMock.readLine() >>> [groupJson, null]
-
-        when:
-        jsonInputValidator.validateJsonGroup(httpServletRequestMock)
-
-        then:
-        def e = thrown(IllegalArgumentException)
-        e.getMessage() == 'Unrecognized field "word"'
-    }
-
-    def "invalid value for attribute in json for group should throw exception"(){
-        given:
-        def groupJson = '{"displayName":"Chaos999","members":"not a set"}'
-        httpServletRequestMock.getReader() >> readerMock
-        readerMock.readLine() >>> [groupJson, null]
-
-        when:
-        jsonInputValidator.validateJsonGroup(httpServletRequestMock)
-
-        then:
-        def e = thrown(IllegalArgumentException)
-        e.getMessage() == 'Can not construct instance of java.util.HashSet from String value \'not a set\''
-    }*/
 }
