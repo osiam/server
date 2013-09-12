@@ -71,10 +71,7 @@ class GenericSCIMToEntityWrapperTest extends Specification {
 
     def "should set an entity to given user attributes"() {
         given:
-        def any = new HashSet()
-        any.add("ha")
         def scimUser = new User.Builder("test").setActive(true)
-                .setAny(any)
                 .setDisplayName("display")
                 .setLocale("locale")
                 .setName(new Name.Builder().build())
@@ -99,7 +96,6 @@ class GenericSCIMToEntityWrapperTest extends Specification {
 
         then:
         scimUser.active == entity.active
-        scimUser.any == entity.any
         scimUser.displayName == entity.displayName
         scimUser.locale == entity.locale
         scimUser.name.familyName == entity.name.familyName

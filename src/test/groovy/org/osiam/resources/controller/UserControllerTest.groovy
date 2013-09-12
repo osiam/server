@@ -63,7 +63,6 @@ class UserControllerTest extends Specification {
     def authentication = Mock(OAuth2Authentication)
     def userAuthentication = Mock(Authentication)
     User user = new User.Builder("test").setActive(true)
-            .setAny(["ha"] as Set)
             .setDisplayName("display")
             .setLocale("locale")
             .setName(new Name.Builder().build())
@@ -86,7 +85,7 @@ class UserControllerTest extends Specification {
 
     def setup() {
         underTest.setScimUserProvisioning(provisioning)
-	authentication.getUserAuthentication() >> userAuthentication
+	    authentication.getUserAuthentication() >> userAuthentication
     }
 
     def "should return a cloned user based on a user found by provisioning on getUser"() {
@@ -177,7 +176,6 @@ class UserControllerTest extends Specification {
         assert result.password == null
         assert result.active == user.active
         assert result.addresses.empty
-        assert result.any == user.any
         assert result.displayName == user.displayName
         assert result.emails.empty
         assert result.entitlements.empty

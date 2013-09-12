@@ -361,17 +361,6 @@ class UserEntitySpec extends Specification {
         userEntity.getX509Certificates() == certs
     }
 
-    def "setter and getter for the any field should be present"() {
-        given:
-        def any = ["any"] as Set<String>
-
-        when:
-        userEntity.setAny(any)
-
-        then:
-        userEntity.getAny() == any
-    }
-
     def "setter and getter for internalID should be present and it must be a UUID"() {
         given:
         def internalId = UUID.randomUUID()
@@ -390,7 +379,6 @@ class UserEntitySpec extends Specification {
         userEntity.setId(internalId)
         userEntity.setActive(true)
         userEntity.setAddresses([Mock(AddressEntity)] as Set<AddressEntity>)
-        userEntity.setAny(["stuff", "bro"] as Set<String>)
         userEntity.setDisplayName("displayName")
         userEntity.setEmails([Mock(EmailEntity)] as Set<EmailEntity>)
         userEntity.setEntitlements([Mock(EntitlementsEntity)] as Set<EntitlementsEntity>)
@@ -421,7 +409,6 @@ class UserEntitySpec extends Specification {
         user.id == internalId.toString()
         user.isActive()
         user.addresses != null
-        user.any.size() == 2
         user.displayName == "displayName"
         user.emails != null
         user.entitlements != null
@@ -450,7 +437,6 @@ class UserEntitySpec extends Specification {
 
         userEntity.setActive(true)
         userEntity.setAddresses([Mock(AddressEntity)] as Set<AddressEntity>)
-        userEntity.setAny(["stuff", "bro"] as Set<String>)
         userEntity.setDisplayName("displayName")
         userEntity.setEmails([Mock(EmailEntity)] as Set<EmailEntity>)
         userEntity.setEntitlements([Mock(EntitlementsEntity)] as Set<EntitlementsEntity>)
@@ -481,7 +467,6 @@ class UserEntitySpec extends Specification {
         user.id == internalId.toString()
         user.isActive()
         user.addresses != null
-        user.any.size() == 2
         user.displayName == "displayName"
         user.emails != null
         user.entitlements != null
@@ -511,7 +496,6 @@ class UserEntitySpec extends Specification {
         User user = new User.Builder("username").
                 setActive(true).
                 setAddresses(addresses).
-                setAny(["test","this", "stuff"] as Set).
                 setDisplayName("displayname").
                 setEmails(emails).
                 setEntitlements(entitlements).
@@ -539,7 +523,6 @@ class UserEntitySpec extends Specification {
 
         then:
         userEntity.getUsername() == "username"
-        userEntity.getAny() == ["test","this", "stuff"] as Set
         userEntity.getDisplayName() == "displayname"
         userEntity.getLocale() == "locale"
         userEntity.getNickName() == "nickname"
