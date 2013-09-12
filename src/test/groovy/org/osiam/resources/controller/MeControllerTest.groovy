@@ -2,7 +2,6 @@ package org.osiam.resources.controller
 
 import org.joda.time.format.DateTimeFormatter
 import org.joda.time.format.ISODateTimeFormat
-import org.osiam.resources.scim.User
 import org.osiam.storage.entities.EmailEntity
 import org.osiam.storage.entities.MetaEntity
 import org.osiam.storage.entities.NameEntity
@@ -31,10 +30,9 @@ class   MeControllerTest extends Specification {
     }
 
     def "should return correct facebook representation"() {
-
         when:
-
         def result = underTest.getInformation(request)
+
         then:
         1 * request.getParameter("access_token") >> "access_token"
         1 * tokenStore.readAuthentication("access_token") >> authentication
@@ -42,7 +40,7 @@ class   MeControllerTest extends Specification {
         result.email == "test@test.de"
         result.first_name == user.getName().getGivenName()
         result.last_name == user.getName().getFamilyName()
-        result.gender == "female"
+        result.gender == "not supported."
         result.link == "not supported."
         result.locale == "de_DE"
         result.name == user.getName().getFormatted()
@@ -53,7 +51,7 @@ class   MeControllerTest extends Specification {
         result.isVerified()
     }
 
-    def "should throw exception if no primary email exists"() {
+    def "should not provide an email address if no primary email exists"() {
         given:
         def user = new UserEntity(active: true, name: name, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
                 emails: [new EmailEntity(primary: false, value: "test@test.de")], locale: "de_DE", username: "fpref")
@@ -62,14 +60,13 @@ class   MeControllerTest extends Specification {
         userAuthentication.getPrincipal() >> user
 
         when:
-        underTest.getInformation(request)
+        def result = underTest.getInformation(request)
 
         then:
-        def e = thrown(IllegalArgumentException)
-        e.getMessage() == "Unable to generate facebook credentials, no primary email submitted."
+        result.getEmail() == null
     }
 
-    def "should throw exception when no access_token got submitted"() {
+    def "should throw exception when no access_token was submitted"() {
         given:
         request.getParameter("access_token") >> null
         when:
@@ -105,37 +102,36 @@ class   MeControllerTest extends Specification {
         e.message == "User was not authenticated with OSIAM."
     }
 
-    def "should throw exception if no primary email got submitted"() {
+    def "should not provide an email address if no emails was submitted"() {
         given:
         def user = new UserEntity(active: true, emails: null,
                 name: name, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
                 locale: "de_DE", username: "fpref")
         when:
-        underTest.getInformation(request)
+        def result = underTest.getInformation(request)
         then:
         1 * request.getParameter("access_token") >> null
         1 * request.getHeader("Authorization") >> "Bearer access_token"
         1 * tokenStore.readAuthentication("access_token") >> authentication
         1 * userAuthentication.getPrincipal() >> user
-        def e = thrown(IllegalArgumentException)
-        e.message == "Unable to generate facebook credentials, no primary email submitted."
+        result.getEmail() == null
     }
 
-    def "should throw exception if no name got submitted"() {
+    def "should not provide name, first name, last name if no name was submitted"() {
         given:
         def user = new UserEntity(active: true, emails: [new EmailEntity(primary: true, value: "test@test.de")],
                 name: null, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
                 locale: "de_DE", username: "fpref")
 
         when:
-        underTest.getInformation(request)
+        def result = underTest.getInformation(request)
         then:
         1 * request.getParameter("access_token") >> null
         1 * request.getHeader("Authorization") >> "Bearer access_token"
         1 * tokenStore.readAuthentication("access_token") >> authentication
         1 * userAuthentication.getPrincipal() >> user
-        def e = thrown(IllegalArgumentException)
-        e.message == "Unable to generate facebook credentials, no name submitted."
+        result.getName() == null
+        result.getFirst_name() == null
+        result.getLast_name() == null
     }
-
 }
