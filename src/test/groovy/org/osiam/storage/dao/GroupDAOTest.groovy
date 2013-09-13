@@ -33,7 +33,6 @@ import org.osiam.storage.entities.GroupEntity
 import org.osiam.storage.entities.InternalIdSkeleton
 import org.osiam.storage.entities.UserEntity
 import org.osiam.resources.exceptions.ResourceNotFoundException
-import org.osiam.storage.dao.GroupDAO
 import spock.lang.Specification
 
 import javax.persistence.EntityManager
@@ -148,7 +147,7 @@ class GroupDAOTest extends Specification {
 
         then:
         result != null
-        result.getTotalResult() == 1000
+        result.getTotalResults() == 1000
         result.getResources() == groupList
 
     }

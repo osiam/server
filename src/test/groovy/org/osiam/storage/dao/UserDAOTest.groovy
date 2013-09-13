@@ -34,7 +34,6 @@ import org.osiam.storage.entities.InternalIdSkeleton
 import org.osiam.storage.entities.RolesEntity
 import org.osiam.storage.entities.UserEntity
 import org.osiam.resources.exceptions.ResourceNotFoundException
-import org.osiam.storage.dao.UserDAO
 import org.springframework.security.authentication.encoding.PasswordEncoder
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder
 import spock.lang.Specification
@@ -240,7 +239,7 @@ class UserDAOTest extends Specification {
 
         then:
         result != null
-        result.getTotalResult() == 1000
+        result.getTotalResults() == 1000
         result.getResources() == userList
 
     }
@@ -270,7 +269,7 @@ class UserDAOTest extends Specification {
 
         then:
         result != null
-        result.getTotalResult() == 1000
+        result.getTotalResults() == 1000
         result.getResources() == userList
 
     }

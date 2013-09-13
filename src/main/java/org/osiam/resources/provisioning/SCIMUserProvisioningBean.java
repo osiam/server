@@ -76,7 +76,7 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
         for (Object g : result.getResources()) {
             users.add(User.Builder.generateForOutput(((UserEntity) g).toScim()));
         }
-        return new SCIMSearchResult(users, result.getTotalResult(), count, result.getStartIndex(), result.getSchemas());
+        return new SCIMSearchResult(users, result.getTotalResults(), count, result.getStartIndex(), result.getSchemas());
     }
 
     @Override

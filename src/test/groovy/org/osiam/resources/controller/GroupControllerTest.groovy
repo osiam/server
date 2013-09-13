@@ -23,6 +23,7 @@
 
 package org.osiam.resources.controller
 
+import org.osiam.resources.helper.AttributesRemovalHelper
 import org.osiam.resources.helper.JsonInputValidator
 import org.osiam.resources.provisioning.SCIMGroupProvisioning
 import org.osiam.resources.helper.RequestParamHelper
@@ -45,8 +46,9 @@ class GroupControllerTest extends Specification {
     def provisioning = Mock(SCIMGroupProvisioning)
     def requestParamHelper = Mock(RequestParamHelper)
     def jsonInputValidator = Mock(JsonInputValidator)
+    def attributesRemovalHelper = Mock(AttributesRemovalHelper)
     def underTest = new GroupController(scimGroupProvisioning: provisioning, requestParamHelper: requestParamHelper,
-            jsonInputValidator: jsonInputValidator)
+            jsonInputValidator: jsonInputValidator, attributesRemovalHelper: attributesRemovalHelper)
     def httpServletResponse = Mock(HttpServletResponse)
     Group group = new Group.Builder().setDisplayName("group1").setId(UUID.randomUUID().toString()).build()
 
@@ -203,6 +205,7 @@ class GroupControllerTest extends Specification {
         mapping.method() == [RequestMethod.GET]
         mapping.value() == []
         body
+        1 * attributesRemovalHelper.removeSpecifiedAttributes(scimSearchResultMock, map)
     }
 
     def "should be able to search a group on /Group/.search URI with POST method" () {
@@ -232,5 +235,7 @@ class GroupControllerTest extends Specification {
         mapping.value() == ["/.search"]
         mapping.method() == [RequestMethod.POST]
         body
+        1 * attributesRemovalHelper.removeSpecifiedAttributes(scimSearchResultMock, map)
+
     }
 }

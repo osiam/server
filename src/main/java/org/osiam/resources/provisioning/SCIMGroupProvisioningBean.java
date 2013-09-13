@@ -73,7 +73,7 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group> imp
         for (Object g : result.getResources()) {
             groups.add(((GroupEntity) g).toScim());
         }
-        return new SCIMSearchResult(groups, result.getTotalResult(), count, result.getStartIndex(), result.getSchemas());
+        return new SCIMSearchResult(groups, result.getTotalResults(), count, result.getStartIndex(), result.getSchemas());
     }
 
     @Override

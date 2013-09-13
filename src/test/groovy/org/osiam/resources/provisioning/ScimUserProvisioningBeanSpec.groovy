@@ -122,13 +122,13 @@ class ScimUserProvisioningBeanSpec extends Specification {
         def user = Mock(User)
         def userList = [userEntityMock] as List
         scimSearchResultMock.getResources() >> userList
-        scimSearchResultMock.getTotalResult() >> 1000.toLong()
+        scimSearchResultMock.getTotalResults() >> 1000.toLong()
 
         when:
         def result = scimUserProvisioningBean.search("anyFilter", "userName", "ascending", 100, 1)
 
         then:
         result != null
-        result.getTotalResult() == 1000.toLong()
+        result.getTotalResults() == 1000.toLong()
     }
 }

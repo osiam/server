@@ -50,10 +50,10 @@ class ShowComplexAttributeFilterTest extends Specification {
         2 * servletRequestMock.getParameter("attributes") >> "meta.created"
         1 * provisioning.search(_, _, _, _, _) >> scimSearchResult
 
-        result.getResources() == [user] as List
+        result.getResources() == [[meta:[created:created]]] as List
         result.getItemsPerPage() == 100
         result.getStartIndex() == 0
-        result.getTotalResult() == 23
+        result.getTotalResults() == 23
         result.getSchemas() == ["urn:scim:schemas:core:1.0"] as Set
     }
 }

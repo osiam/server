@@ -23,6 +23,7 @@
 
 package org.osiam.resources.controller;
 
+import org.osiam.resources.helper.AttributesRemovalHelper;
 import org.osiam.resources.helper.JsonInputValidator;
 import org.osiam.resources.helper.RequestParamHelper;
 import org.osiam.resources.provisioning.SCIMUserProvisioning;
@@ -68,6 +69,8 @@ public class UserController {
     private JsonInputValidator jsonInputValidator;
 
     private RequestParamHelper requestParamHelper = new RequestParamHelper();
+
+    private AttributesRemovalHelper attributesRemovalHelper = new AttributesRemovalHelper();
 
 
     public void setScimUserProvisioning(SCIMUserProvisioning scimUserProvisioning) {
@@ -125,7 +128,8 @@ public class UserController {
         Map<String,Object> parameterMap = requestParamHelper.getRequestParameterValues(request);
         SCIMSearchResult scimSearchResult = scimUserProvisioning.search((String)parameterMap.get("filter"), (String)parameterMap.get("sortBy"), (String)parameterMap.get("sortOrder"),
                 (int)parameterMap.get("count"), (int)parameterMap.get("startIndex"));
-        return scimSearchResult;
+
+        return attributesRemovalHelper.removeSpecifiedAttributes(scimSearchResult, parameterMap);
     }
 
     @RequestMapping(value = "/.search", method = RequestMethod.POST)
@@ -135,7 +139,7 @@ public class UserController {
         SCIMSearchResult scimSearchResult = scimUserProvisioning.search((String) parameterMap.get("filter"), (String) parameterMap.get("sortBy"), (String) parameterMap.get("sortOrder"),
                 (int) parameterMap.get("count"), (int) parameterMap.get("startIndex"));
 
-        return scimSearchResult;
+        return attributesRemovalHelper.removeSpecifiedAttributes(scimSearchResult, parameterMap);
     }
     
     /**

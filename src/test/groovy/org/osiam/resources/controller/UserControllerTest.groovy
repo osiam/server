@@ -23,6 +23,7 @@
 
 package org.osiam.resources.controller
 
+import org.osiam.resources.helper.AttributesRemovalHelper
 import org.osiam.resources.helper.JsonInputValidator
 import org.osiam.resources.provisioning.SCIMUserProvisioning
 import org.osiam.resources.helper.RequestParamHelper
@@ -54,9 +55,10 @@ class UserControllerTest extends Specification {
 
     def requestParamHelper = Mock(RequestParamHelper)
     def jsonInputValidator = Mock(JsonInputValidator)
+    def attributesRemovalHelper = Mock(AttributesRemovalHelper)
     def tokenStore = Mock(InMemoryTokenStore)
     def underTest = new UserController(requestParamHelper: requestParamHelper,
-            jsonInputValidator: jsonInputValidator, inMemoryTokenStore: tokenStore)
+            jsonInputValidator: jsonInputValidator, inMemoryTokenStore: tokenStore, attributesRemovalHelper: attributesRemovalHelper)
     def provisioning = Mock(SCIMUserProvisioning)
     def httpServletRequest = Mock(HttpServletRequest)
     def httpServletResponse = Mock(HttpServletResponse)
@@ -272,6 +274,7 @@ class UserControllerTest extends Specification {
         mapping.value() == []
         mapping.method() == [RequestMethod.GET]
         body
+        1 * attributesRemovalHelper.removeSpecifiedAttributes(scimSearchResultMock, map)
     }
 
     def "should be able to search a user on /User/.search URI with POST method" () {
@@ -301,6 +304,8 @@ class UserControllerTest extends Specification {
         mapping.value() == ["/.search"]
         mapping.method() == [RequestMethod.POST]
         body
+        1 * attributesRemovalHelper.removeSpecifiedAttributes(scimSearchResultMock, map)
+
     }
     
     def "should throw exception when no access_token got submitted"() {

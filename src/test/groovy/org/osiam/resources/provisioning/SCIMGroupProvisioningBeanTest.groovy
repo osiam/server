@@ -93,13 +93,13 @@ class SCIMGroupProvisioningBeanTest extends Specification {
         def groupEntityMock = Mock(GroupEntity)
         def userList = [groupEntityMock] as List
         scimSearchResultMock.getResources() >> userList
-        scimSearchResultMock.getTotalResult() >> 1000.toLong()
+        scimSearchResultMock.getTotalResults() >> 1000.toLong()
 
         when:
         def result = underTest.search("anyFilter", "userName", "ascending", 100, 1)
 
         then:
         result != null
-        result.getTotalResult() == 1000.toLong()
+        result.getTotalResults() == 1000.toLong()
     }
 }
