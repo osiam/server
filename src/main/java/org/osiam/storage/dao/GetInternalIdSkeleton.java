@@ -87,7 +87,7 @@ public abstract class GetInternalIdSkeleton {
             idsOnlyCriteria.add(filterParser.parse(filter, clazz).buildCriterion());
         }
         idsOnlyCriteria.setProjection(Projections.distinct(Projections.id()));
-	
+
         List results = getResults(idsOnlyCriteria, clazz, count, startIndex, sortBy, sortOrder);
         long totalResult = getTotalResults(idsOnlyCriteria, clazz);
 
@@ -109,6 +109,9 @@ public abstract class GetInternalIdSkeleton {
         setSortOrder(sortBy, sortOrder, criteria);
         criteria.setMaxResults(count);
         criteria.setFirstResult(startIndex-1);//-1 due to scim spec and default of 1 instead of 0
+
+        // FIXME: The next line should not be necessary, but it is ...
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
         return criteria.list();
     }
