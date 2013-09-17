@@ -44,6 +44,12 @@ public class SingularFilterChain implements FilterChain {
     private final Constraints constraint;
     private final Object value;
 
+    /* List of key splitted in all subkeys. */
+    private final List<String> splitKeys;
+
+    /* Class name of value */
+    private final String className;
+
     public SingularFilterChain(String chain, Class clazz) {
         Matcher matcher = SINGULAR_CHAIN_PATTERN.matcher(chain);
         if (!matcher.matches()) {
@@ -52,7 +58,14 @@ public class SingularFilterChain implements FilterChain {
         this.key = matcher.group(1).trim();
         this.constraint = Constraints.fromString.get(matcher.group(2)); // NOSONAR - no need to make constant for number
 
+        // Split keys for handling complex types and get Class name of value type.
+        this.splitKeys = splitKey();
+        List<Field> fields = getAllFieldsIncludingSuperclass(clazz, new ArrayList<Field>());
+        Field field = getSingleField(splitKeys, fields);
+        this.className = getClassName(field);
+
         this.value = castToOriginValue(matcher.group(3).trim(), clazz); // NOSONAR - no need to make constant for number
+
 
     }
 
@@ -65,45 +78,41 @@ public class SingularFilterChain implements FilterChain {
     }
 
     private Object getBooleanOrMultivalue(String group, Class clazz) {
-        List<String> split = splitKey();
-        List<Field> fields = getAllFieldsIncludingSuperclass(clazz, new ArrayList<Field>());
-        Field field = getSingleField(split, fields);
-        String className = getClassName(field);
 
         switch (className) {
             case "Boolean":
-                if(group.equalsIgnoreCase("true") || group.equalsIgnoreCase("false")) {
+                if (group.equalsIgnoreCase("true") || group.equalsIgnoreCase("false")) {
                     return Boolean.valueOf(group);
                 }
                 throw new IllegalArgumentException("Value of Field " + key + " mismatch!");
             case "EmailEntity":
-                if(split.get(1).equals("type")) {
+                if (splitKeys.get(1).equals("type")) {
                     return EmailEntity.CanonicalEmailTypes.valueOf(group);
-                } else if (split.get(1).equals("primary")) {
-                    if(group.equalsIgnoreCase("true") || group.equalsIgnoreCase("false")) {
+                } else if (splitKeys.get(1).equals("primary")) {
+                    if (group.equalsIgnoreCase("true") || group.equalsIgnoreCase("false")) {
                         return Boolean.valueOf(group);
                     }
                     throw new IllegalArgumentException("Value of Field " + key + " mismatch!");
                 }
                 break;
             case "PhotoEntity":
-                if(split.get(1).equals("type")) {
+                if (splitKeys.get(1).equals("type")) {
                     return PhotoEntity.CanonicalPhotoTypes.valueOf(group);
                 }
                 break;
             case "ImEntity":
-                if(split.get(1).equals("type")) {
+                if (splitKeys.get(1).equals("type")) {
                     return ImEntity.CanonicalImTypes.valueOf(group);
                 }
                 break;
             case "PhoneNumberEntity":
-                if(split.get(1).equals("type")) {
+                if (splitKeys.get(1).equals("type")) {
                     return PhoneNumberEntity.CanonicalPhoneNumberTypes.valueOf(group);
                 }
                 break;
             case "AddressEntity":
-                if(split.get(1).equals("primary")) {
-                    if(group.equalsIgnoreCase("true") || group.equalsIgnoreCase("false")) {
+                if (splitKeys.get(1).equals("primary")) {
+                    if (group.equalsIgnoreCase("true") || group.equalsIgnoreCase("false")) {
                         return Boolean.valueOf(group);
                     }
                     throw new IllegalArgumentException("Value of Field " + key + " mismatch!");
@@ -139,7 +148,7 @@ public class SingularFilterChain implements FilterChain {
 
     private List<String> splitKey() {
         List<String> split;
-        if(key.contains(".")) {
+        if (key.contains(".")) {
             split = Arrays.asList(key.split("\\."));
         } else {
             split = new ArrayList<>();
@@ -149,7 +158,7 @@ public class SingularFilterChain implements FilterChain {
     }
 
     private List<Field> getAllFieldsIncludingSuperclass(Class clazz, List<Field> fields) {
-            fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
+        fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
         if (clazz.getSimpleName().equals("InternalIdSkeleton")) {
             return fields;
         }
@@ -174,8 +183,70 @@ public class SingularFilterChain implements FilterChain {
         return group.matches("[0-9]+");
     }
 
+    /**
+     * Check if constraint is only applicable on {@String} types.
+     *
+     * @return true if only applicable on {@String}s, false if applicable on every complex type
+     */
+    private boolean isOnlyStringConstraint() {
+        switch (constraint) {
+            case CONTAINS:
+                return true;
+            case STARTS_WITH:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Check if key is concurrently a subkey and {@String}.
+     *
+     * @return true if key is a subkey and {@String}, false if not
+     */
+    private boolean isSubvalueAndString() {
+        // Check if there is a subkey.
+        if (splitKeys.size() >= 2) {
+            /*
+            Get value of subkey and return false if it is NO {@String}.
+            Expand this list of incompatible Non{@String} values if necessary.
+             */
+            String subvalue = splitKeys.get(1);
+            if (subvalue.equals("primary")) {
+                return false;
+            } else if (subvalue.equals("type")) {
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Check if value has type {@String}.
+     *
+     * @return true if value is a {@String}, false if not
+     */
+    private boolean isValueStringType() {
+        if (className.equals("String")) {
+            // First level value and String
+            return true;
+        } else if (isSubvalueAndString()) {
+            // Second level value and String
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public Criterion buildCriterion() {
+        if (isOnlyStringConstraint()) {
+            if (!isValueStringType()) {
+                throw new IllegalArgumentException("String filter operators 'co' and 'sw' are not applicable on " + className + " type.");
+            }
+        }
         switch (constraint) {
             case CONTAINS:
                 return Restrictions.like(key, "%" + value + "%");

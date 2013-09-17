@@ -21,6 +21,7 @@ package org.osiam.resources.helper
 
 import org.osiam.storage.entities.EmailEntity
 import org.osiam.storage.entities.ImEntity
+import org.osiam.storage.entities.MetaEntity
 import org.osiam.storage.entities.PhoneNumberEntity
 import org.osiam.storage.entities.PhotoEntity
 import org.osiam.storage.entities.UserEntity
@@ -28,6 +29,7 @@ import spock.lang.Specification
 
 class SingularFilterChainTest extends Specification{
 
+    UserEntity userEntity = new UserEntity()
     def aClass = UserEntity.class
 
     def "should parse equals (eq)"(){
@@ -259,5 +261,37 @@ class SingularFilterChainTest extends Specification{
         then:
         def result = thrown(IllegalArgumentException.class)
         result.getMessage() == "Value of Field addresses.primary mismatch!"
+    }
+
+    def "should throw exception if EmailEntity Enum values are used with filter operator co"() {
+        when:
+        new SingularFilterChain("emails.type co work", aClass).buildCriterion()
+        then:
+        def result = thrown(IllegalArgumentException.class)
+        result.getMessage() == "String filter operators 'co' and 'sw' are not applicable on EmailEntity type."
+    }
+
+    def "should throw exception if EmailEntity Enum values are used with filter operator sw"() {
+        when:
+        new SingularFilterChain("emails.type sw work", aClass).buildCriterion()
+        then:
+        def result = thrown(IllegalArgumentException.class)
+        result.getMessage() == "String filter operators 'co' and 'sw' are not applicable on EmailEntity type."
+    }
+
+    def "should throw exception if Boolean values are used with filter operator co"() {
+        when:
+        new SingularFilterChain("active co true", aClass).buildCriterion()
+        then:
+        def result = thrown(IllegalArgumentException.class)
+        result.getMessage() == "String filter operators 'co' and 'sw' are not applicable on Boolean type."
+    }
+
+    def "should throw exception if Boolean values are used with filter operator sw"() {
+        when:
+        new SingularFilterChain("active sw true", aClass).buildCriterion()
+        then:
+        def result = thrown(IllegalArgumentException.class)
+        result.getMessage() == "String filter operators 'co' and 'sw' are not applicable on Boolean type."
     }
 }
