@@ -316,7 +316,7 @@
             <dependency>
                 <groupId>org.osiam</groupId>
                 <artifactId>scim-schema</artifactId>
-                <version>0.22-SNAPSHOT</version>
+                <version>0.22</version>
             </dependency>
 
             <dependency>
