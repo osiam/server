@@ -95,7 +95,6 @@ class CombinedFilteredSearchTest extends Specification {
         e.message == "xxx NOR xxx is not a CombinedFilterChain."
     }
 
-
     def "should build an criterion"() {
         given:
         def filter = 'userType eq "Employee" AND (emails.value co "example.com" OR emails.value co "example.org")'
