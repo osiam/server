@@ -23,11 +23,11 @@
 
 package org.osiam.resources.controller
 
+import org.osiam.resources.helper.AttributesRemovalHelper
 import org.osiam.resources.helper.JsonInputValidator
-import org.osiam.resources.helper.SCIMSearchResult
 import org.osiam.resources.provisioning.SCIMGroupProvisioning
-import org.osiam.resources.helper.JsonResponseEnrichHelper
 import org.osiam.resources.helper.RequestParamHelper
+import org.osiam.resources.scim.SCIMSearchResult
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
@@ -45,10 +45,10 @@ class GroupControllerTest extends Specification {
     def httpServletRequest = Mock(HttpServletRequest)
     def provisioning = Mock(SCIMGroupProvisioning)
     def requestParamHelper = Mock(RequestParamHelper)
-    def jsonResponseEnrichHelper = Mock(JsonResponseEnrichHelper)
     def jsonInputValidator = Mock(JsonInputValidator)
+    def attributesRemovalHelper = Mock(AttributesRemovalHelper)
     def underTest = new GroupController(scimGroupProvisioning: provisioning, requestParamHelper: requestParamHelper,
-            jsonResponseEnrichHelper: jsonResponseEnrichHelper, jsonInputValidator: jsonInputValidator)
+            jsonInputValidator: jsonInputValidator, attributesRemovalHelper: attributesRemovalHelper)
     def httpServletResponse = Mock(HttpServletResponse)
     Group group = new Group.Builder().setDisplayName("group1").setId(UUID.randomUUID().toString()).build()
 
@@ -205,7 +205,7 @@ class GroupControllerTest extends Specification {
         mapping.method() == [RequestMethod.GET]
         mapping.value() == []
         body
-        1 * jsonResponseEnrichHelper.getJsonFromSearchResult(scimSearchResultMock, map, set)
+        1 * attributesRemovalHelper.removeSpecifiedAttributes(scimSearchResultMock, map)
     }
 
     def "should be able to search a group on /Group/.search URI with POST method" () {
@@ -235,7 +235,7 @@ class GroupControllerTest extends Specification {
         mapping.value() == ["/.search"]
         mapping.method() == [RequestMethod.POST]
         body
-        1 * jsonResponseEnrichHelper.getJsonFromSearchResult(scimSearchResultMock, map, set)
+        1 * attributesRemovalHelper.removeSpecifiedAttributes(scimSearchResultMock, map)
 
     }
 }

@@ -22,7 +22,16 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
+import org.osiam.storage.entities.EmailEntity;
+import org.osiam.storage.entities.ImEntity;
+import org.osiam.storage.entities.PhoneNumberEntity;
+import org.osiam.storage.entities.PhotoEntity;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
@@ -35,7 +44,7 @@ public class SingularFilterChain implements FilterChain {
     private final Constraints constraint;
     private final Object value;
 
-    public SingularFilterChain(String chain) {
+    public SingularFilterChain(String chain, Class clazz) {
         Matcher matcher = SINGULAR_CHAIN_PATTERN.matcher(chain);
         if (!matcher.matches()) {
             throw new IllegalArgumentException(chain + " is not a SingularFilterChain.");
@@ -43,16 +52,108 @@ public class SingularFilterChain implements FilterChain {
         this.key = matcher.group(1).trim();
         this.constraint = Constraints.fromString.get(matcher.group(2)); // NOSONAR - no need to make constant for number
 
-        this.value = castToOriginValue(matcher.group(3).trim()); // NOSONAR - no need to make constant for number
+        this.value = castToOriginValue(matcher.group(3).trim(), clazz); // NOSONAR - no need to make constant for number
 
     }
 
-    private Object castToOriginValue(String group) {
+    private Object castToOriginValue(String group, Class clazz) {
 
         if (isNumber(group)) {
             return Long.valueOf(group);
         }
+        return getBooleanOrMultivalue(group, clazz);
+    }
+
+    private Object getBooleanOrMultivalue(String group, Class clazz) {
+        List<String> split = splitKey();
+        List<Field> fields = getAllFieldsIncludingSuperclass(clazz, new ArrayList<Field>());
+        Field field = getSingleField(split, fields);
+        String className = getClassName(field);
+
+        switch (className) {
+            case "Boolean":
+                if(group.equalsIgnoreCase("true") || group.equalsIgnoreCase("false")) {
+                    return Boolean.valueOf(group);
+                }
+                throw new IllegalArgumentException("Value of Field " + key + " mismatch!");
+            case "EmailEntity":
+                if(split.get(1).equals("type")) {
+                    return EmailEntity.CanonicalEmailTypes.valueOf(group);
+                } else if (split.get(1).equals("primary")) {
+                    if(group.equalsIgnoreCase("true") || group.equalsIgnoreCase("false")) {
+                        return Boolean.valueOf(group);
+                    }
+                    throw new IllegalArgumentException("Value of Field " + key + " mismatch!");
+                }
+                break;
+            case "PhotoEntity":
+                if(split.get(1).equals("type")) {
+                    return PhotoEntity.CanonicalPhotoTypes.valueOf(group);
+                }
+                break;
+            case "ImEntity":
+                if(split.get(1).equals("type")) {
+                    return ImEntity.CanonicalImTypes.valueOf(group);
+                }
+                break;
+            case "PhoneNumberEntity":
+                if(split.get(1).equals("type")) {
+                    return PhoneNumberEntity.CanonicalPhoneNumberTypes.valueOf(group);
+                }
+                break;
+            case "AddressEntity":
+                if(split.get(1).equals("primary")) {
+                    if(group.equalsIgnoreCase("true") || group.equalsIgnoreCase("false")) {
+                        return Boolean.valueOf(group);
+                    }
+                    throw new IllegalArgumentException("Value of Field " + key + " mismatch!");
+                }
+                break;
+        }
         return getStringOrDate(group);
+    }
+
+    /* Method to get the simple class name even if the field is a Set.
+     * In case it is a Set, the generic simple class name is returned.
+     */
+    private String getClassName(Field field) {
+        if (field.getType().getSimpleName().equals("Set")) {
+            ParameterizedType fieldGenericType = (ParameterizedType) field.getGenericType();
+            Class<?> fieldGenericClass = (Class<?>) fieldGenericType.getActualTypeArguments()[0];
+            return fieldGenericClass.getSimpleName();
+        } else {
+            return field.getType().getSimpleName();
+        }
+    }
+
+    private Field getSingleField(List<String> split, List<Field> fields) {
+        Field field = null;
+        for (Field f : fields) {
+            if (f.getName().equals(split.get(0))) {
+                field = f;
+                break;
+            }
+        }
+        return field;
+    }
+
+    private List<String> splitKey() {
+        List<String> split;
+        if(key.contains(".")) {
+            split = Arrays.asList(key.split("\\."));
+        } else {
+            split = new ArrayList<>();
+            split.add(key);
+        }
+        return split;
+    }
+
+    private List<Field> getAllFieldsIncludingSuperclass(Class clazz, List<Field> fields) {
+            fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
+        if (clazz.getSimpleName().equals("InternalIdSkeleton")) {
+            return fields;
+        }
+        return getAllFieldsIncludingSuperclass(clazz.getSuperclass(), fields);
     }
 
     private Object getStringOrDate(String group) {
@@ -70,10 +171,7 @@ public class SingularFilterChain implements FilterChain {
     }
 
     private boolean isNumber(String group) {
-        if (group.matches("[0-9]+")) {
-            return true;
-        }
-        return false;
+        return group.matches("[0-9]+");
     }
 
     @Override

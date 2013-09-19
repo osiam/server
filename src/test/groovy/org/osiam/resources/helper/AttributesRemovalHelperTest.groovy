@@ -3,6 +3,7 @@ package org.osiam.resources.helper
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
 import org.osiam.resources.scim.Meta
+import org.osiam.resources.scim.SCIMSearchResult
 import org.osiam.resources.scim.User
 import spock.lang.Specification
 
@@ -13,9 +14,9 @@ import spock.lang.Specification
  * Time: 17:31
  * To change this template use File | Settings | File Templates.
  */
-class JsonResponseEnrichHelperSpec extends Specification {
+class AttributesRemovalHelperTest extends Specification {
 
-    def jsonResponseEnrichHelper = new JsonResponseEnrichHelper()
+    def attributesRemovalHelperTest = new AttributesRemovalHelper()
 
     def "should not throw exception if result list is empty"() {
         given:
@@ -23,21 +24,21 @@ class JsonResponseEnrichHelperSpec extends Specification {
         def parameterMapMock = Mock(Map)
         def attributes = ["userName"] as String[]
 
-        parameterMapMock.get("count") >> 10
-        parameterMapMock.get("startIndex") >> 0
         parameterMapMock.get("attributes") >> attributes
 
         def scimSearchResult = Mock(SCIMSearchResult)
-        def set = [] as Set
 
-        scimSearchResult.getResult() >> userList
-        scimSearchResult.getTotalResult() >> 1337
+        scimSearchResult.getResources() >> userList
+        scimSearchResult.getTotalResults() >> 1337
 
         when:
-        def jsonResult = jsonResponseEnrichHelper.getJsonFromSearchResult(scimSearchResult, parameterMapMock, set)
+        def result = attributesRemovalHelperTest.removeSpecifiedAttributes(scimSearchResult, parameterMapMock)
 
         then:
-        jsonResult.contains("\"totalResults\":1337,\"itemsPerPage\":10,\"startIndex\":0,\"schemas\":\"\",\"Resources\":[]")
+        result.startIndex == 0
+        result.itemsPerPage == 0
+        result.totalResults == 1337
+        result.getResources() == userList
     }
 
     def "should return Json string with additional values for searches on users, groups and filtering for userName"() {
@@ -47,21 +48,21 @@ class JsonResponseEnrichHelperSpec extends Specification {
         def parameterMapMock = Mock(Map)
         def attributes = ["userName"] as String[]
 
-        parameterMapMock.get("count") >> 10
-        parameterMapMock.get("startIndex") >> 0
         parameterMapMock.get("attributes") >> attributes
 
         def scimSearchResult = Mock(SCIMSearchResult)
-        def set = ["schemas:urn:scim:schemas:core:1.0"] as Set
 
-        scimSearchResult.getResult() >> userList
-        scimSearchResult.getTotalResult() >> 1337
+        scimSearchResult.getResources() >> userList
+        scimSearchResult.getTotalResults() >> 1337
 
         when:
-        def jsonResult = jsonResponseEnrichHelper.getJsonFromSearchResult(scimSearchResult, parameterMapMock, set)
+        def result = attributesRemovalHelperTest.removeSpecifiedAttributes(scimSearchResult, parameterMapMock)
 
         then:
-        jsonResult.contains("\"totalResults\":1337,\"itemsPerPage\":10,\"startIndex\":0,\"schemas\":\"schemas:urn:scim:schemas:core:1.0\",\"Resources\":[{\"userName\":\"username\"}]")
+        result.startIndex == 0
+        result.itemsPerPage == 0
+        result.totalResults == 1337
+        result.getResources() == [[userName:'username']]
     }
 
     def "should not filter the search result if attributes are empty"() {
@@ -71,21 +72,21 @@ class JsonResponseEnrichHelperSpec extends Specification {
         def parameterMapMock = Mock(Map)
         def attributes = [] as String[]
 
-        parameterMapMock.get("count") >> 10
-        parameterMapMock.get("startIndex") >> 0
         parameterMapMock.get("attributes") >> attributes
 
         def scimSearchResult = Mock(SCIMSearchResult)
-        def set = ["schemas:urn:scim:schemas:core:1.0"] as Set
 
-        scimSearchResult.getResult() >> userList
-        scimSearchResult.getTotalResult() >> 1337
+        scimSearchResult.getResources() >> userList
+        scimSearchResult.getTotalResults() >> 1337
 
         when:
-        def jsonResult = jsonResponseEnrichHelper.getJsonFromSearchResult(scimSearchResult, parameterMapMock, set)
+        def result = attributesRemovalHelperTest.removeSpecifiedAttributes(scimSearchResult, parameterMapMock)
 
         then:
-        jsonResult.contains("\"totalResults\":1337,\"itemsPerPage\":10,\"startIndex\":0,\"schemas\":\"schemas:urn:scim:schemas:core:1.0\",\"Resources\":[{\"schemas\":[\"schemas:urn:scim:schemas:core:1.0\"],\"userName\":\"username\"}]")
+        result.startIndex == 0
+        result.itemsPerPage == 0
+        result.totalResults == 1337
+        result.getResources() == [["schemas":["schemas:urn:scim:schemas:core:1.0"], "userName":"username"]] as List
 
     }
 
@@ -101,12 +102,17 @@ class JsonResponseEnrichHelperSpec extends Specification {
         def created = dateTimeFormatter.print(date)
 
         def user = new User.Builder("username").setMeta(new Meta.Builder(actualDate, null).build()).build()
-        def scimSearchResult = new SCIMSearchResult([user], 23)
+        def scimSearchResult = new SCIMSearchResult([user], 1, 23, 1, set)
+
         when:
-        def result = jsonResponseEnrichHelper.getJsonFromSearchResult(scimSearchResult, param, set)
+        def result = attributesRemovalHelperTest.removeSpecifiedAttributes(scimSearchResult, param)
+
         then:
-        result == '{"totalResults":23,"itemsPerPage":23,"startIndex":23,"schemas":"schemas:urn:scim:schemas:core:1.0","Resources":[{"meta":{"created":"' + created + '"}}]}'
+        result.startIndex == 1
+        result.itemsPerPage == 23
+        result.totalResults == 1
+        result.getResources() == [[meta:[created:created]]] as List
+        result.getSchemas() == ['schemas:urn:scim:schemas:core:1.0'] as Set
 
     }
-
 }

@@ -2,7 +2,6 @@ DROP TABLE IF EXISTS scim_user_scim_roles CASCADE;
 DROP TABLE IF EXISTS scim_user_scim_group CASCADE;
 DROP TABLE IF EXISTS scim_user_scim_entitlements CASCADE;
 DROP TABLE IF EXISTS scim_user_scim_address CASCADE;
-DROP TABLE IF EXISTS scim_user_additional CASCADE;
 DROP TABLE IF EXISTS scim_user CASCADE;
 DROP TABLE IF EXISTS scim_roles CASCADE;
 DROP TABLE IF EXISTS scim_photo CASCADE;
@@ -113,7 +112,6 @@ CREATE TABLE scim_entitlements (
 --
 
 CREATE TABLE scim_group (
-    additional text,
     displayname text NOT NULL UNIQUE,
     internal_id bigint NOT NULL
 );
@@ -258,16 +256,6 @@ CREATE TABLE scim_user (
 
 
 --
--- Name: scim_user_additional; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE scim_user_additional (
-    id bigint NOT NULL,
-    additional text
-);
-
-
---
 -- Name: scim_user_scim_address; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -311,20 +299,14 @@ CREATE TABLE scim_user_scim_roles (
 -- Data for Name: database_scheme_version; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO database_scheme_version VALUES (0.0200000000000000004);
+INSERT INTO database_scheme_version VALUES (0.03);
 
 
 SELECT pg_catalog.setval('hibernate_sequence', 5, false);
 
 
 
-INSERT INTO scim_group VALUES (NULL, 'testGroup2', 2);
-
-
---
--- Data for Name: scim_group_scim_id; Type: TABLE DATA; Schema: public; Owner: -
---
-
+INSERT INTO scim_group VALUES ('testGroup2', 2);
 
 
 --
@@ -514,14 +496,6 @@ ALTER TABLE ONLY scim_user_scim_group
 
 ALTER TABLE ONLY scim_user_scim_roles
     ADD CONSTRAINT scim_user_scim_roles_pkey PRIMARY KEY (scim_user_internal_id, roles_value);
-
-
---
--- Name: fk20575a504c8bba87; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY scim_user_additional
-    ADD CONSTRAINT fk20575a504c8bba87 FOREIGN KEY (id) REFERENCES scim_user(internal_id);
 
 
 --

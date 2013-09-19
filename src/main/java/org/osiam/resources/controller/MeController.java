@@ -75,7 +75,9 @@ public class MeController {
 
     private String getBearerToken(HttpServletRequest request) {
         String authorization = request.getHeader("Authorization");
-        if (authorization == null) { throw new IllegalArgumentException("No access_token submitted!"); }
+        if (authorization == null) {
+            throw new IllegalArgumentException("No access_token submitted!");
+        }
         return authorization.substring("Bearer ".length(), authorization.length());
     }
 
@@ -87,13 +89,11 @@ public class MeController {
         private String name;
         private String first_name; // NOSONAR - needed pattern due to json serializing
         private String last_name; // NOSONAR - needed pattern due to json serializing
-        private String link;
+        private String link = "not supported.";
         private String userName;
-        //fallback is female...
-        private String gender = "female";
+        private String gender = "not supported.";
         private String email;
-        // our timezone is string, theirs is int ... dunno how to format.
-        private int timezone = 2;
+        private int timezone = 2; //The user's timezone offset from UTC
         private String locale;
         private boolean verified = true;
         private String updated_time; // NOSONAR - needed pattern due to json serializing
@@ -101,7 +101,6 @@ public class MeController {
         public FacebookInformationConstruct(UserEntity userEntity) {
             this.id = userEntity.getId().toString();
             setName(userEntity);
-            this.link = "not supported.";
             this.email = lookForEmail(userEntity.getEmails());
             this.locale = userEntity.getLocale();
             this.updated_time = dateTimeFormatter.print(userEntity.getMeta().getLastModified().getTime());
@@ -109,15 +108,12 @@ public class MeController {
         }
 
         private String lookForEmail(Set<EmailEntity> emails) {
-            IllegalArgumentException noPrimaryEmail = new IllegalArgumentException(
-                    "Unable to generate facebook credentials, no primary email submitted.");
             for (EmailEntity e : emails) {
                 if (e.isPrimary()) {
                     return e.getValue();
                 }
             }
-            throw noPrimaryEmail;
-
+            return null;
         }
 
         public String getId() {
@@ -130,12 +126,11 @@ public class MeController {
 
         private void setName(UserEntity userEntity) {
             NameEntity nameEntity = userEntity.getName();
-            if (nameEntity == null) {
-                throw new IllegalArgumentException("Unable to generate facebook credentials, no name submitted.");
+            if (nameEntity != null) {
+                this.name = nameEntity.getFormatted();
+                this.first_name = nameEntity.getGivenName();
+                this.last_name = nameEntity.getFamilyName();
             }
-            this.name = nameEntity.getFormatted();
-            this.first_name = nameEntity.getGivenName();
-            this.last_name = nameEntity.getFamilyName();
         }
 
         public String getFirst_name() { // NOSONAR - needed pattern due to json serializing
@@ -178,6 +173,4 @@ public class MeController {
             return updated_time;
         }
     }
-
-
 }

@@ -23,22 +23,20 @@
 
 package org.osiam.resources.controller;
 
+import org.osiam.resources.helper.AttributesRemovalHelper;
 import org.osiam.resources.helper.JsonInputValidator;
-import org.osiam.resources.helper.SCIMSearchResult;
-import org.osiam.resources.provisioning.SCIMGroupProvisioning;
-import org.osiam.resources.helper.JsonResponseEnrichHelper;
 import org.osiam.resources.helper.RequestParamHelper;
+import org.osiam.resources.provisioning.SCIMGroupProvisioning;
+import org.osiam.resources.scim.Group;
+import org.osiam.resources.scim.SCIMSearchResult;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriTemplate;
-import org.osiam.resources.scim.Group;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
@@ -57,7 +55,9 @@ public class GroupController {
     private JsonInputValidator jsonInputValidator;
 
     private RequestParamHelper requestParamHelper = new RequestParamHelper();
-    private JsonResponseEnrichHelper jsonResponseEnrichHelper = new JsonResponseEnrichHelper();
+
+    private AttributesRemovalHelper attributesRemovalHelper = new AttributesRemovalHelper();
+
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
@@ -112,23 +112,23 @@ public class GroupController {
         return createdGroup;
     }
 
-    @RequestMapping(method = RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
-    public String searchWithGet(HttpServletRequest request) {
+    public SCIMSearchResult searchWithGet(HttpServletRequest request) {
         Map<String,Object> parameterMap = requestParamHelper.getRequestParameterValues(request);
         SCIMSearchResult scimSearchResult = scimGroupProvisioning.search((String)parameterMap.get("filter"), (String)parameterMap.get("sortBy"), (String)parameterMap.get("sortOrder"),
                 (int)parameterMap.get("count"), (int)parameterMap.get("startIndex"));
 
-        return jsonResponseEnrichHelper.getJsonFromSearchResult(scimSearchResult, parameterMap, scimSearchResult.getSchemas());
+        return attributesRemovalHelper.removeSpecifiedAttributes(scimSearchResult, parameterMap);
     }
 
-    @RequestMapping(value = "/.search", method = RequestMethod.POST, produces=MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/.search", method = RequestMethod.POST)
     @ResponseBody
-    public String searchWithPost(HttpServletRequest request) {
+    public SCIMSearchResult searchWithPost(HttpServletRequest request) {
         Map<String,Object> parameterMap = requestParamHelper.getRequestParameterValues(request);
         SCIMSearchResult scimSearchResult = scimGroupProvisioning.search((String)parameterMap.get("filter"), (String)parameterMap.get("sortBy"), (String)parameterMap.get("sortOrder"),
                 (int)parameterMap.get("count"), (int)parameterMap.get("startIndex"));
 
-        return jsonResponseEnrichHelper.getJsonFromSearchResult(scimSearchResult, parameterMap, scimSearchResult.getSchemas());
+        return attributesRemovalHelper.removeSpecifiedAttributes(scimSearchResult, parameterMap);
     }
 }

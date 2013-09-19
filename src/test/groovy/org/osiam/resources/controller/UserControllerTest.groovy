@@ -23,11 +23,11 @@
 
 package org.osiam.resources.controller
 
+import org.osiam.resources.helper.AttributesRemovalHelper
 import org.osiam.resources.helper.JsonInputValidator
-import org.osiam.resources.helper.SCIMSearchResult
 import org.osiam.resources.provisioning.SCIMUserProvisioning
-import org.osiam.resources.helper.JsonResponseEnrichHelper
 import org.osiam.resources.helper.RequestParamHelper
+import org.osiam.resources.scim.SCIMSearchResult
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -54,18 +54,17 @@ import java.lang.reflect.Method
 class UserControllerTest extends Specification {
 
     def requestParamHelper = Mock(RequestParamHelper)
-    def jsonResponseEnrichHelper = Mock(JsonResponseEnrichHelper)
     def jsonInputValidator = Mock(JsonInputValidator)
+    def attributesRemovalHelper = Mock(AttributesRemovalHelper)
     def tokenStore = Mock(InMemoryTokenStore)
     def underTest = new UserController(requestParamHelper: requestParamHelper,
-            jsonResponseEnrichHelper: jsonResponseEnrichHelper, jsonInputValidator: jsonInputValidator, inMemoryTokenStore: tokenStore)
+            jsonInputValidator: jsonInputValidator, inMemoryTokenStore: tokenStore, attributesRemovalHelper: attributesRemovalHelper)
     def provisioning = Mock(SCIMUserProvisioning)
     def httpServletRequest = Mock(HttpServletRequest)
     def httpServletResponse = Mock(HttpServletResponse)
     def authentication = Mock(OAuth2Authentication)
     def userAuthentication = Mock(Authentication)
     User user = new User.Builder("test").setActive(true)
-            .setAny(["ha"] as Set)
             .setDisplayName("display")
             .setLocale("locale")
             .setName(new Name.Builder().build())
@@ -88,7 +87,7 @@ class UserControllerTest extends Specification {
 
     def setup() {
         underTest.setScimUserProvisioning(provisioning)
-	authentication.getUserAuthentication() >> userAuthentication
+	    authentication.getUserAuthentication() >> userAuthentication
     }
 
     def "should return a cloned user based on a user found by provisioning on getUser"() {
@@ -179,7 +178,6 @@ class UserControllerTest extends Specification {
         assert result.password == null
         assert result.active == user.active
         assert result.addresses.empty
-        assert result.any == user.any
         assert result.displayName == user.displayName
         assert result.emails.empty
         assert result.entitlements.empty
@@ -276,7 +274,7 @@ class UserControllerTest extends Specification {
         mapping.value() == []
         mapping.method() == [RequestMethod.GET]
         body
-        1 * jsonResponseEnrichHelper.getJsonFromSearchResult(scimSearchResultMock, map, set)
+        1 * attributesRemovalHelper.removeSpecifiedAttributes(scimSearchResultMock, map)
     }
 
     def "should be able to search a user on /User/.search URI with POST method" () {
@@ -306,7 +304,7 @@ class UserControllerTest extends Specification {
         mapping.value() == ["/.search"]
         mapping.method() == [RequestMethod.POST]
         body
-        1 * jsonResponseEnrichHelper.getJsonFromSearchResult(scimSearchResultMock, map, set)
+        1 * attributesRemovalHelper.removeSpecifiedAttributes(scimSearchResultMock, map)
 
     }
     
@@ -377,7 +375,7 @@ class UserControllerTest extends Specification {
 	result.emails.get(0).primary == userEntity.emails.iterator().next().primary
 
 	result.emails.get(0).type == userEntity.emails.iterator().next().type ||
-		result.emails.get(0).type == userEntity.emails.iterator().next().type.toString()
+    result.emails.get(0).type == userEntity.emails.iterator().next().type.toString()
 		
     }
 }

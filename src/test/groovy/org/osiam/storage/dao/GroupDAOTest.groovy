@@ -33,7 +33,6 @@ import org.osiam.storage.entities.GroupEntity
 import org.osiam.storage.entities.InternalIdSkeleton
 import org.osiam.storage.entities.UserEntity
 import org.osiam.resources.exceptions.ResourceNotFoundException
-import org.osiam.storage.dao.GroupDAO
 import spock.lang.Specification
 
 import javax.persistence.EntityManager
@@ -49,6 +48,7 @@ class GroupDAOTest extends Specification {
     def filterParser = Mock(FilterParser)
     def underTest = new GroupDAO()
     String id = UUID.randomUUID().toString()
+    def aClass = GroupEntity.class
 
     def setup(){
         em.createNamedQuery("getById") >> query
@@ -132,7 +132,7 @@ class GroupDAOTest extends Specification {
 
         em.getDelegate() >> hibernateSessionMock
         hibernateSessionMock.createCriteria(GroupEntity.class) >> criteriaMock
-        filterParser.parse("anyFilter") >> filterChainMock
+        filterParser.parse("anyFilter", aClass) >> filterChainMock
         filterChainMock.buildCriterion() >> criterionMock
         criteriaMock.add(criterionMock) >> criteriaMock
         criteriaMock.setProjection(_) >> criteriaMock
@@ -147,8 +147,8 @@ class GroupDAOTest extends Specification {
 
         then:
         result != null
-        result.getTotalResult() == 1000
-        result.getResult() == groupList
+        result.getTotalResults() == 1000
+        result.getResources() == groupList
 
     }
 

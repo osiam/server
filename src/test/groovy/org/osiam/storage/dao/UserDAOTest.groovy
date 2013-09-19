@@ -34,7 +34,6 @@ import org.osiam.storage.entities.InternalIdSkeleton
 import org.osiam.storage.entities.RolesEntity
 import org.osiam.storage.entities.UserEntity
 import org.osiam.resources.exceptions.ResourceNotFoundException
-import org.osiam.storage.dao.UserDAO
 import org.springframework.security.authentication.encoding.PasswordEncoder
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder
 import spock.lang.Specification
@@ -48,6 +47,8 @@ class UserDAOTest extends Specification {
     def filterParserMock = Mock(FilterParser)
     def underTest = new UserDAO()
     def userEntity = Mock(UserEntity)
+
+    def aClass = UserEntity.class
 
     def setup() {
         underTest.setEm(em)
@@ -223,7 +224,7 @@ class UserDAOTest extends Specification {
 
         em.getDelegate() >> hibernateSessionMock
         hibernateSessionMock.createCriteria(UserEntity.class) >> criteriaMock
-        filterParserMock.parse("anyFilter") >> filterChainMock
+        filterParserMock.parse("anyFilter", aClass) >> filterChainMock
         filterChainMock.buildCriterion() >> criterionMock
         criteriaMock.add(criterionMock) >> criteriaMock
         criteriaMock.setProjection(_) >> criteriaMock
@@ -238,8 +239,8 @@ class UserDAOTest extends Specification {
 
         then:
         result != null
-        result.getTotalResult() == 1000
-        result.getResult() == userList
+        result.getTotalResults() == 1000
+        result.getResources() == userList
 
     }
 
@@ -253,7 +254,7 @@ class UserDAOTest extends Specification {
 
         em.getDelegate() >> hibernateSessionMock
         hibernateSessionMock.createCriteria(UserEntity.class) >> criteriaMock
-        filterParserMock.parse("anyFilter") >> filterChainMock
+        filterParserMock.parse("anyFilter", aClass) >> filterChainMock
         filterChainMock.buildCriterion() >> criterionMock
         criteriaMock.add(criterionMock) >> criteriaMock
         criteriaMock.setProjection(_) >> criteriaMock
@@ -268,8 +269,8 @@ class UserDAOTest extends Specification {
 
         then:
         result != null
-        result.getTotalResult() == 1000
-        result.getResult() == userList
+        result.getTotalResults() == 1000
+        result.getResources() == userList
 
     }
 }

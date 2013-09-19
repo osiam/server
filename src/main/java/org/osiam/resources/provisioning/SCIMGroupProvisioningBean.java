@@ -23,14 +23,14 @@
 
 package org.osiam.resources.provisioning;
 
+import org.osiam.resources.exceptions.ResourceExistsException;
+import org.osiam.resources.scim.Group;
+import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.storage.dao.GenericDAO;
 import org.osiam.storage.dao.GroupDAO;
-import org.osiam.resources.helper.SCIMSearchResult;
 import org.osiam.storage.entities.GroupEntity;
-import org.osiam.resources.exceptions.ResourceExistsException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.osiam.resources.scim.Group;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -70,8 +70,10 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group> imp
     public SCIMSearchResult<Group> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
         List<Group> groups = new ArrayList<>();
         SCIMSearchResult<GroupEntity> result = getDao().search(filter, sortBy, sortOrder, count, startIndex);
-        for (Object g : result.getResult()) { groups.add(((GroupEntity) g).toScim()); }
-        return new SCIMSearchResult(groups, result.getTotalResult());
+        for (Object g : result.getResources()) {
+            groups.add(((GroupEntity) g).toScim());
+        }
+        return new SCIMSearchResult(groups, result.getTotalResults(), count, result.getStartIndex(), result.getSchemas());
     }
 
     @Override

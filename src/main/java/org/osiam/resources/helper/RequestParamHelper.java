@@ -25,7 +25,7 @@ public class RequestParamHelper {
         parameterMap.put("sortOrder",
                 request.getParameter("sortOrder") != null ? request.getParameter("sortOrder") : "ascending");
         parameterMap.put("startIndex",
-                request.getParameter("startIndex") != null ? Integer.parseInt(request.getParameter("startIndex")) : 0);
+                request.getParameter("startIndex") != null ? Integer.parseInt(request.getParameter("startIndex")) : 1);
         translateAttributesForJackson(request, parameterMap);
 
         validateCount(request, parameterMap);

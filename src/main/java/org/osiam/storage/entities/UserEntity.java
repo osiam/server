@@ -125,11 +125,6 @@ public class UserEntity extends InternalIdSkeleton implements UserDetails {
     @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<X509CertificateEntity> x509Certificates;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "scim_user_additional", joinColumns = @JoinColumn(name = "id"))
-    @Column(name = "additional")
-    private Set<String> any;
-
     public UserEntity() {
         getMeta().setResourceType("User");
     }
@@ -138,7 +133,6 @@ public class UserEntity extends InternalIdSkeleton implements UserDetails {
         UserEntity userEntity = new UserEntity();
         userEntity.setActive(user.isActive());
         userEntity.setAddresses(scimUserAddressesToEntity(user.getAddresses()));
-        userEntity.setAny(scimAnyToStringSet(user.getAny()));
         userEntity.setDisplayName(user.getDisplayName());
         userEntity.setEmails(scimEmailsToEntity(user.getEmails()));
         userEntity.setEntitlements(scimEntitlementsToEntity(user.getEntitlements()));
@@ -234,16 +228,6 @@ public class UserEntity extends InternalIdSkeleton implements UserDetails {
             }
         }
         return addressEntities;
-    }
-
-    private static Set<String> scimAnyToStringSet(Set<Object> any) {
-        Set<String> anyStrings = new HashSet<>();
-        if (any != null) {
-            for (Object object : any) {
-                anyStrings.add(object.toString());
-            }
-        }
-        return anyStrings;
     }
 
     private static Set<EmailEntity> scimEmailsToEntity(List<MultiValuedAttribute> emails) {
@@ -594,27 +578,10 @@ public class UserEntity extends InternalIdSkeleton implements UserDetails {
         this.x509Certificates = x509Certificates;
     }
 
-    /**
-     * @return any
-     */
-    public Set<String> getAny() {
-        return any;
-    }
-
-    /**
-     * @param any any
-     */
-    public void setAny(Set<String> any) {
-        this.any = any;
-    }
-
-
-
     public User toScim() {
         return new User.Builder(getUsername()).
                 setActive(getActive()).
                 setAddresses(entityAddressToScim(getAddresses())).
-                setAny(anyStringSetToObjectSet(getAny())).
                 setDisplayName(getDisplayName()).
                 setEmails(entityEmailToScim(getEmails())).
                 setEntitlements(entityEntitlementsToScim(getEntitlements())).
@@ -701,17 +668,6 @@ public class UserEntity extends InternalIdSkeleton implements UserDetails {
             emailsForMapping.add(emailEntity.toScim());
         }
         return emailsForMapping;
-    }
-
-    private Set<Object> anyStringSetToObjectSet(Set<String> anySet) {
-        if (anySet == null) {
-            return null;
-        }
-        Set<Object> objectSet = new HashSet<>();
-        for (String anyForMapping : anySet) {
-            objectSet.add(anyForMapping);
-        }
-        return objectSet;
     }
 
     private List<Address> entityAddressToScim(Set<AddressEntity> addressEntities) {

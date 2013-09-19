@@ -42,9 +42,6 @@ public class GroupEntity extends InternalIdSkeleton {
     @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.REMOVE)
     private Set<InternalIdSkeleton> members = new HashSet<>();
 
-    @Column(name = "additional")
-    private String any;
-
     @Column(unique = true, nullable = false)
     private String displayName;
 
@@ -58,7 +55,6 @@ public class GroupEntity extends InternalIdSkeleton {
         groupEntity.setId(group.getId() != null ? UUID.fromString(group.getId()) : UUID.randomUUID());
         groupEntity.setExternalId(group.getExternalId());
         groupEntity.setMembers(createMembers(group));
-        groupEntity.setAny(group.getAny() != null ? group.getAny().toString() : null);
         return groupEntity;
     }
 
@@ -104,14 +100,6 @@ public class GroupEntity extends InternalIdSkeleton {
         this.members = members;
     }
 
-    public Object getAny() {
-        return any;
-    }
-
-    public void setAny(String any) {
-        this.any = any;
-    }
-
     public String getDisplayName() {
         return displayName;
     }
@@ -122,7 +110,7 @@ public class GroupEntity extends InternalIdSkeleton {
 
     @Override
     public Group toScim() {
-        return new Group.Builder().setDisplayName(getDisplayName()).setMembers(membersToScim()).setAny(getAny())
+        return new Group.Builder().setDisplayName(getDisplayName()).setMembers(membersToScim())
                 .setExternalId(getExternalId()).setId(getId().toString()).setMeta(getMeta().toScim()).build();
     }
 

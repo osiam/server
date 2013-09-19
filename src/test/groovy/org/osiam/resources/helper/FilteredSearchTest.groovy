@@ -17,16 +17,16 @@
 
 package org.osiam.resources.helper
 
-import org.osiam.resources.helper.FilterParser
-import org.osiam.resources.helper.SingularFilterChain
+import org.osiam.storage.entities.UserEntity
 import spock.lang.Specification
 
 class FilteredSearchTest extends Specification{
     def parser = new FilterParser()
+    def aClass = UserEntity.class
 
     def "should parse equals (eq)"(){
         when:
-        def result = parser.parse("userName eq \"bjensen\"")
+        def result = parser.parse("userName eq \"bjensen\"", aClass)
         then:
         result.key == 'userName'
         result.constraint == SingularFilterChain.Constraints.EQUALS
@@ -35,7 +35,7 @@ class FilteredSearchTest extends Specification{
 
     def "should parse without \""(){
         when:
-        def result = parser.parse("userName eq 1")
+        def result = parser.parse("userName eq 1", aClass)
         then:
         result.key == 'userName'
         result.constraint == SingularFilterChain.Constraints.EQUALS
@@ -44,7 +44,7 @@ class FilteredSearchTest extends Specification{
 
     def "should parse contains (co)"(){
         when:
-        def result = parser.parse("name.familyName co \"O'Malley\"")
+        def result = parser.parse("name.familyName co \"O'Malley\"", aClass)
         then:
         result.key == 'name.familyName'
         result.constraint == SingularFilterChain.Constraints.CONTAINS
@@ -52,7 +52,7 @@ class FilteredSearchTest extends Specification{
     }
     def "should parse starts with (sw)"(){
         when:
-        def result = parser.parse("userName sw \"L\"")
+        def result = parser.parse("userName sw \"L\"", aClass)
         then:
         result.key == 'userName'
         result.constraint == SingularFilterChain.Constraints.STARTS_WITH
@@ -61,7 +61,7 @@ class FilteredSearchTest extends Specification{
     }
     def "should parse present (pr)"(){
         when:
-        def result = parser.parse("title pr")
+        def result = parser.parse("title pr", aClass)
         then:
         result.key == 'title'
         result.constraint == SingularFilterChain.Constraints.PRESENT
@@ -70,7 +70,7 @@ class FilteredSearchTest extends Specification{
     }
     def "should parse greater than (gt)"(){
         when:
-        def result = parser.parse("meta.lastModified gt \"2011-05-13T04:42:34Z\"")
+        def result = parser.parse("meta.lastModified gt \"2011-05-13T04:42:34Z\"", aClass)
         then:
         result.key == 'meta.lastModified'
         result.constraint == SingularFilterChain.Constraints.GREATER_THAN
@@ -79,7 +79,7 @@ class FilteredSearchTest extends Specification{
     }
     def "should parse greater than or equal (ge)"(){
         when:
-        def result = parser.parse("meta.lastModified ge \"2011-05-13T04:42:34Z\"")
+        def result = parser.parse("meta.lastModified ge \"2011-05-13T04:42:34Z\"", aClass)
         then:
         result.key == 'meta.lastModified'
         result.constraint == SingularFilterChain.Constraints.GREATER_EQUALS
@@ -88,7 +88,7 @@ class FilteredSearchTest extends Specification{
     }
     def "should parse less than (lt)"(){
         when:
-        def result = parser.parse("meta.lastModified lt \"2011-05-13T04:42:34Z\"")
+        def result = parser.parse("meta.lastModified lt \"2011-05-13T04:42:34Z\"", aClass)
         then:
         result.key == 'meta.lastModified'
         result.constraint == SingularFilterChain.Constraints.LESS_THAN
@@ -97,7 +97,7 @@ class FilteredSearchTest extends Specification{
     }
     def "should parse less than or equal (le)"(){
         when:
-        def result = parser.parse("meta.lastModified le \"2011-05-13T04:42:34Z\"")
+        def result = parser.parse("meta.lastModified le \"2011-05-13T04:42:34Z\"", aClass)
         then:
         result.key == 'meta.lastModified'
         result.constraint == SingularFilterChain.Constraints.LESS_EQUALS

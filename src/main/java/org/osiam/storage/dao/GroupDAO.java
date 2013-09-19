@@ -23,13 +23,12 @@
 
 package org.osiam.storage.dao;
 
-import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.sql.JoinType;
-import org.osiam.resources.helper.SCIMSearchResult;
+import org.osiam.resources.exceptions.ResourceNotFoundException;
+import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.InternalIdSkeleton;
-import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 

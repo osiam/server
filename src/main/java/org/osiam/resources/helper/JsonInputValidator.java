@@ -23,7 +23,7 @@ public class JsonInputValidator {
     public User validateJsonUser(HttpServletRequest request) throws IOException {
         String jsonInput = getRequestBody(request);
 
-        if(jsonInput.contains("userName")) {
+        if(jsonInput.contains("userName") || request.getMethod().equals("PATCH")) {
             return validateResource(jsonInput, User.class);
         }
         throw new IllegalArgumentException("The attribute userName is mandatory and MUST NOT be null");
@@ -32,22 +32,22 @@ public class JsonInputValidator {
     public Group validateJsonGroup(HttpServletRequest request) throws IOException {
         String jsonInput = getRequestBody(request);
 
-        if(jsonInput.contains("displayName")) {
+        if(jsonInput.contains("displayName") || request.getMethod().equals("PATCH")) {
             return validateResource(jsonInput, Group.class);
         }
         throw new IllegalArgumentException("The attribute displayName is mandatory and MUST NOT be null.");
     }
 
     private String getRequestBody(HttpServletRequest request) throws IOException {
-        StringBuffer jb = new StringBuffer();
+        StringBuffer stringBuffer = new StringBuffer();
         String line;
 
         BufferedReader reader = request.getReader();
         while ((line = reader.readLine()) != null) {
-            jb.append(line);
+            stringBuffer.append(line);
         }
 
-        return jb.toString();
+        return stringBuffer.toString();
     }
 
     private <T> T validateResource(String jsonInput, Class<T> clazz) throws IOException {

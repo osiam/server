@@ -94,7 +94,7 @@ class RequestParamHelperSpec extends Specification {
         Map result = requestParamHelper.getRequestParameterValues(servletRequestMock)
 
         then:
-        result.get("startIndex") == 0
+        result.get("startIndex") == 1
     }
 
     def "should not use default value for startIndex if not null"() {

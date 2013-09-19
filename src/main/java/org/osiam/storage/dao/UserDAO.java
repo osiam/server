@@ -34,7 +34,7 @@ import javax.persistence.Query;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.sql.JoinType;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
-import org.osiam.resources.helper.SCIMSearchResult;
+import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.storage.entities.EmailEntity;
 import org.osiam.storage.entities.EntitlementsEntity;
 import org.osiam.storage.entities.HasUser;
@@ -157,14 +157,13 @@ public class UserDAO extends GetInternalIdSkeleton implements GenericDAO<UserEnt
         criteria.createAlias("meta", "meta", JoinType.INNER_JOIN); // NOSONAR - no code duplication, need to set alias for types
         criteria.createAlias("name", "name", JoinType.LEFT_OUTER_JOIN); // NOSONAR - no code duplication, need to set alias for types
         criteria.createAlias("emails", "emails", JoinType.LEFT_OUTER_JOIN); // NOSONAR - no code duplication, need to set alias for types
-//        criteria.createAlias("phoneNumbers", "phoneNumbers", JoinType.LEFT_OUTER_JOIN); // NOSONAR - no code duplication, need to set alias for types
-//        criteria.createAlias("ims", "ims"); // NOSONAR - no code duplication, need to set alias for types
-//        criteria.createAlias("photos", "photos"); // NOSONAR - no code duplication, need to set alias for types
-//        criteria.createAlias("addresses", "addresses", JoinType.LEFT_OUTER_JOIN); // NOSONAR - no code duplication, need to set alias for types
-//        criteria.createAlias("groups", "groups"); // NOSONAR - no code duplication, need to set alias for types
-//        criteria.createAlias("entitlements", "entitlements"); // NOSONAR - no code duplication, need to set alias for types
-//        criteria.createAlias("roles", "roles"); // NOSONAR - no code duplication, need to set alias for types
-//        criteria.createAlias("x509Certificates", "x509Certificates"); // NOSONAR - no code duplication, need to set alias for types
+        criteria.createAlias("phoneNumbers", "phoneNumbers", JoinType.LEFT_OUTER_JOIN); // NOSONAR - no code duplication, need to set alias for types
+        criteria.createAlias("ims", "ims", JoinType.LEFT_OUTER_JOIN); // NOSONAR - no code duplication, need to set alias for types
+        criteria.createAlias("photos", "photos", JoinType.LEFT_OUTER_JOIN); // NOSONAR - no code duplication, need to set alias for types
+        criteria.createAlias("addresses", "addresses", JoinType.LEFT_OUTER_JOIN); // NOSONAR - no code duplication, need to set alias for types
+        criteria.createAlias("groups", "groups", JoinType.LEFT_OUTER_JOIN); // NOSONAR - no code duplication, need to set alias for types
+        criteria.createAlias("entitlements", "entitlements", JoinType.LEFT_OUTER_JOIN); // NOSONAR - no code duplication, need to set alias for types
+        criteria.createAlias("roles", "roles", JoinType.LEFT_OUTER_JOIN); // NOSONAR - no code duplication, need to set alias for types
+        criteria.createAlias("x509Certificates", "x509Certificates", JoinType.LEFT_OUTER_JOIN); // NOSONAR - no code duplication, need to set alias for types
     }
-
 }

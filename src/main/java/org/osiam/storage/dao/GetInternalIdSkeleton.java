@@ -23,15 +23,6 @@
 
 package org.osiam.storage.dao;
 
-import java.util.List;
-import java.util.UUID;
-import java.util.logging.Logger;
-
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
 import org.hibernate.CacheMode;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -41,8 +32,17 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Subqueries;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.resources.helper.FilterParser;
-import org.osiam.resources.helper.SCIMSearchResult;
+import org.osiam.resources.scim.Constants;
+import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.storage.entities.InternalIdSkeleton;
+
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import java.util.List;
+import java.util.UUID;
+import java.util.logging.Logger;
 
 public abstract class GetInternalIdSkeleton {
 
@@ -80,24 +80,26 @@ public abstract class GetInternalIdSkeleton {
 
     protected <T> SCIMSearchResult<T> search(Class<T> clazz, String filter, int count, int startIndex, String sortBy,
                                              String sortOrder) {
-	// create subquery criteria for all possible (internal) ids that match the filter (used by result and total count queries)
-	DetachedCriteria idsOnlyCriteria = DetachedCriteria.forClass(clazz);
-	createAliasesForCriteria(idsOnlyCriteria);
-	if (filter != null && !filter.isEmpty()) {
-	    idsOnlyCriteria.add(filterParser.parse(filter).buildCriterion());
-	}
-	idsOnlyCriteria.setProjection(Projections.distinct(Projections.id()));
-	
-        List list = getResults(idsOnlyCriteria, clazz, count, startIndex, sortBy, sortOrder);
+        // create subquery criteria for all possible (internal) ids that match the filter (used by result and total count queries)
+        DetachedCriteria idsOnlyCriteria = DetachedCriteria.forClass(clazz);
+        createAliasesForCriteria(idsOnlyCriteria);
+        if (filter != null && !filter.isEmpty()) {
+            idsOnlyCriteria.add(filterParser.parse(filter, clazz).buildCriterion());
+        }
+        idsOnlyCriteria.setProjection(Projections.distinct(Projections.id()));
+
+        List results = getResults(idsOnlyCriteria, clazz, count, startIndex, sortBy, sortOrder);
         long totalResult = getTotalResults(idsOnlyCriteria, clazz);
+
+        int newStartIndex = startIndex <1 ? 1 :startIndex;
         
-        return new SCIMSearchResult(list, totalResult);
+        return new SCIMSearchResult(results, totalResult, count, newStartIndex, Constants.CORE_SCHEMAS);
     }
 
     
     private <T> List getResults(DetachedCriteria idsOnlyCriteria, Class<T> clazz, int count, int startIndex, String sortBy,
             String sortOrder) {
-	Criteria criteria = ((Session) em.getDelegate()).createCriteria(clazz);
+	    Criteria criteria = ((Session) em.getDelegate()).createCriteria(clazz);
 
         criteria.setReadOnly(true);
         criteria.setCacheMode(CacheMode.GET);
@@ -106,25 +108,26 @@ public abstract class GetInternalIdSkeleton {
         criteria.add(Subqueries.propertyIn("internalId", idsOnlyCriteria));
         setSortOrder(sortBy, sortOrder, criteria);
         criteria.setMaxResults(count);
-        criteria.setFirstResult(startIndex);
+        criteria.setFirstResult(startIndex-1);//-1 due to scim spec and default of 1 instead of 0
+
         // FIXME: The next line should not be necessary, but it is ...
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        
+
         return criteria.list();
     }
     
     private void setSortOrder(String sortBy, String sortOrder, Criteria criteria) {
-	if (sortOrder.equalsIgnoreCase("descending")) {
-	    criteria.addOrder(Order.desc(sortBy));
-	} else {
-	    criteria.addOrder(Order.asc(sortBy));
-	}
+        if (sortOrder.equalsIgnoreCase("descending")) {
+            criteria.addOrder(Order.desc(sortBy));
+        } else {
+            criteria.addOrder(Order.asc(sortBy));
+        }
     }
 
     private <T> long getTotalResults(DetachedCriteria idsOnlyCriteria, Class<T> clazz) {
-	Criteria countCriteria = ((Session) em.getDelegate()).createCriteria(clazz);
-        
-	countCriteria.setReadOnly(true);
+        Criteria countCriteria = ((Session) em.getDelegate()).createCriteria(clazz);
+
+        countCriteria.setReadOnly(true);
         countCriteria.setCacheMode(CacheMode.GET);
         countCriteria.setCacheable(true);
         

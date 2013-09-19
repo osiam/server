@@ -7,10 +7,10 @@ import org.codehaus.jackson.map.ser.FilterProvider;
 import org.codehaus.jackson.map.ser.impl.SimpleBeanPropertyFilter;
 import org.codehaus.jackson.map.ser.impl.SimpleFilterProvider;
 import org.codehaus.jackson.node.ObjectNode;
+import org.osiam.resources.scim.SCIMSearchResult;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,19 +19,14 @@ import java.util.Set;
  * Time: 17:02
  * To change this template use File | Settings | File Templates.
  */
-public class JsonResponseEnrichHelper {
+public class AttributesRemovalHelper {
 
 
-   public String getJsonFromSearchResult(SCIMSearchResult resultList, Map<String, Object> parameterMap, Set<String> schemas) {
-        String schema = "";
-        if (schemas != null && schemas.iterator().hasNext()) {
-            schema = schemas.iterator().next();
-        }
-        return getJsonResponseWithAdditionalFields(resultList, parameterMap, schema);
+    public SCIMSearchResult removeSpecifiedAttributes(SCIMSearchResult resultList, Map<String, Object> parameterMap) {
+        return getJsonResponseWithAdditionalFields(resultList, parameterMap);
     }
 
-    private String getJsonResponseWithAdditionalFields(SCIMSearchResult scimSearchResult, Map<String, Object> parameterMap, String schema) {
-
+    private SCIMSearchResult getJsonResponseWithAdditionalFields(SCIMSearchResult scimSearchResult, Map<String, Object> parameterMap) {
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -39,31 +34,35 @@ public class JsonResponseEnrichHelper {
         ObjectWriter writer = getObjectWriter(mapper, fieldsToReturn);
 
         try {
-            String jsonString = writer.writeValueAsString(scimSearchResult.getResult());
-            JsonNode jsonNode = mapper.readTree(jsonString);
-            ObjectNode rootNode = mapper.createObjectNode();
-            rootNode.put("totalResults", scimSearchResult.getTotalResult());
-            rootNode.put("itemsPerPage", (int)parameterMap.get("count"));
-            rootNode.put("startIndex", (int)parameterMap.get("startIndex"));
-            rootNode.put("schemas", schema);
-            rootNode.put("Resources", jsonNode);
+            String resourcesString = writer.writeValueAsString(scimSearchResult.getResources());
+            JsonNode resourcesNode = mapper.readTree(resourcesString);
 
-            return rootNode.toString();
+            String schemasString = writer.writeValueAsString(scimSearchResult.getSchemas());
+            JsonNode schemasNode = mapper.readTree(schemasString);
+
+            ObjectNode rootNode = mapper.createObjectNode();
+            rootNode.put("totalResults", scimSearchResult.getTotalResults());
+            rootNode.put("itemsPerPage", scimSearchResult.getItemsPerPage());
+            rootNode.put("startIndex", scimSearchResult.getStartIndex());
+            rootNode.put("schemas", schemasNode);
+            rootNode.put("Resources", resourcesNode);
+
+            return mapper.readValue(rootNode.toString(), SCIMSearchResult.class);
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
     }
 
-    private ObjectWriter getObjectWriter(ObjectMapper mapper, String[] ignorableFieldNames) {
+    private ObjectWriter getObjectWriter(ObjectMapper mapper, String[] fieldsToReturn) {
 
-        if(ignorableFieldNames.length != 0) {
+        if(fieldsToReturn.length != 0) {
             mapper.getSerializationConfig().addMixInAnnotations(
                     Object.class, PropertyFilterMixIn.class);
 
             FilterProvider filters = new SimpleFilterProvider()
                     .addFilter("filter properties by name",
                             SimpleBeanPropertyFilter.filterOutAllExcept(
-                                    ignorableFieldNames));
+                                    fieldsToReturn));
             return mapper.writer(filters);
         }
         return mapper.writer();

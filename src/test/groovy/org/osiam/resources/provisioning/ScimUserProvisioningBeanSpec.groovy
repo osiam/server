@@ -1,9 +1,9 @@
 package org.osiam.resources.provisioning
 
+import org.osiam.resources.scim.SCIMSearchResult
 import org.osiam.storage.entities.UserEntity
 import org.osiam.resources.exceptions.ResourceExistsException
 import org.osiam.resources.scim.User
-import org.osiam.resources.helper.SCIMSearchResult
 import org.osiam.storage.dao.UserDAO
 import spock.lang.Specification
 
@@ -121,14 +121,14 @@ class ScimUserProvisioningBeanSpec extends Specification {
         def userEntityMock = Mock(UserEntity)
         def user = Mock(User)
         def userList = [userEntityMock] as List
-        scimSearchResultMock.getResult() >> userList
-        scimSearchResultMock.getTotalResult() >> 1000.toLong()
+        scimSearchResultMock.getResources() >> userList
+        scimSearchResultMock.getTotalResults() >> 1000.toLong()
 
         when:
         def result = scimUserProvisioningBean.search("anyFilter", "userName", "ascending", 100, 1)
 
         then:
         result != null
-        result.getTotalResult() == 1000.toLong()
+        result.getTotalResults() == 1000.toLong()
     }
 }
