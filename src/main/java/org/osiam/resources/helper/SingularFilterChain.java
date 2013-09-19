@@ -38,8 +38,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SingularFilterChain implements FilterChain {
+
     static final Pattern SINGULAR_CHAIN_PATTERN =
             Pattern.compile("(\\S+) (" + Constraints.createOrConstraints() + ")[ ]??([\\S ]*?)");
+
+    private static final String KEYNAME_TYPE = "type";
+    private static final String KEYNAME_PRIMARY = "primary";
+
     private final String key;
     private final Constraints constraint;
     private final Object value;
@@ -64,20 +69,20 @@ public class SingularFilterChain implements FilterChain {
         Field field = getSingleField(splitKeys, fields);
         this.className = getClassName(field);
 
-        this.value = castToOriginValue(matcher.group(3).trim(), clazz); // NOSONAR - no need to make constant for number
+        this.value = castToOriginValue(matcher.group(3).trim()); // NOSONAR - no need to make constant for number
 
 
     }
 
-    private Object castToOriginValue(String group, Class clazz) {
+    private Object castToOriginValue(String group) {
 
         if (isNumber(group)) {
             return Long.valueOf(group);
         }
-        return getBooleanOrMultivalue(group, clazz);
+        return getBooleanOrMultivalue(group);
     }
 
-    private Object getBooleanOrMultivalue(String group, Class clazz) {
+    private Object getBooleanOrMultivalue(String group) {
 
         switch (className) {
             case "Boolean":
@@ -86,9 +91,9 @@ public class SingularFilterChain implements FilterChain {
                 }
                 throw new IllegalArgumentException("Value of Field " + key + " mismatch!");
             case "EmailEntity":
-                if (splitKeys.get(1).equals("type")) {
+                if (splitKeys.get(1).equals(KEYNAME_TYPE)) {
                     return EmailEntity.CanonicalEmailTypes.valueOf(group);
-                } else if (splitKeys.get(1).equals("primary")) {
+                } else if (splitKeys.get(1).equals(KEYNAME_PRIMARY)) {
                     if (group.equalsIgnoreCase("true") || group.equalsIgnoreCase("false")) {
                         return Boolean.valueOf(group);
                     }
@@ -96,22 +101,22 @@ public class SingularFilterChain implements FilterChain {
                 }
                 break;
             case "PhotoEntity":
-                if (splitKeys.get(1).equals("type")) {
+                if (splitKeys.get(1).equals(KEYNAME_TYPE)) {
                     return PhotoEntity.CanonicalPhotoTypes.valueOf(group);
                 }
                 break;
             case "ImEntity":
-                if (splitKeys.get(1).equals("type")) {
+                if (splitKeys.get(1).equals(KEYNAME_TYPE)) {
                     return ImEntity.CanonicalImTypes.valueOf(group);
                 }
                 break;
             case "PhoneNumberEntity":
-                if (splitKeys.get(1).equals("type")) {
+                if (splitKeys.get(1).equals(KEYNAME_TYPE)) {
                     return PhoneNumberEntity.CanonicalPhoneNumberTypes.valueOf(group);
                 }
                 break;
             case "AddressEntity":
-                if (splitKeys.get(1).equals("primary")) {
+                if (splitKeys.get(1).equals(KEYNAME_PRIMARY)) {
                     if (group.equalsIgnoreCase("true") || group.equalsIgnoreCase("false")) {
                         return Boolean.valueOf(group);
                     }
@@ -212,9 +217,9 @@ public class SingularFilterChain implements FilterChain {
             Expand this list of incompatible Non{@String} values if necessary.
              */
             String subvalue = splitKeys.get(1);
-            if (subvalue.equals("primary")) {
+            if (subvalue.equals(KEYNAME_PRIMARY)) {
                 return false;
-            } else if (subvalue.equals("type")) {
+            } else if (subvalue.equals(KEYNAME_TYPE)) {
                 return false;
             } else {
                 return true;
