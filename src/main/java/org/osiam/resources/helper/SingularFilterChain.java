@@ -217,9 +217,7 @@ public class SingularFilterChain implements FilterChain {
             Expand this list of incompatible Non{@String} values if necessary.
              */
             String subvalue = splitKeys.get(1);
-            if (subvalue.equals(KEYNAME_PRIMARY)) {
-                return false;
-            } else if (subvalue.equals(KEYNAME_TYPE)) {
+            if (subvalue.equals(KEYNAME_PRIMARY) || subvalue.equals(KEYNAME_TYPE)) {
                 return false;
             } else {
                 return true;
@@ -247,10 +245,8 @@ public class SingularFilterChain implements FilterChain {
 
     @Override
     public Criterion buildCriterion() {
-        if (isOnlyStringConstraint()) {
-            if (!isValueStringType()) {
-                throw new IllegalArgumentException("String filter operators 'co' and 'sw' are not applicable on " + className + " type.");
-            }
+        if (isOnlyStringConstraint() && !isValueStringType()) {
+            throw new IllegalArgumentException("String filter operators 'co' and 'sw' are not applicable on " + className + " type.");
         }
         switch (constraint) {
             case CONTAINS:

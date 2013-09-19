@@ -158,7 +158,7 @@ public class UserController {
             
             return User.Builder.generateForOutput(userEntity.toScim());
         } else {
-            throw new IllegalArgumentException("User was not authenticated with OSIAM.");
+            throw new IllegalArgumentException("User was not authenticated with OSIAM."); // NOSONAR - This method will be removed
         }
 
 
