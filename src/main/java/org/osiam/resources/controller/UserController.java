@@ -146,23 +146,20 @@ public class UserController {
      * This method is used to get information about the user who initialized the authorization process.
      * @return The the Scim User object as JSON  
      */
-    @RequestMapping(value = "/me", method = {RequestMethod.GET, RequestMethod.POST})
-    @ResponseBody
-    public User getInformation(HttpServletRequest request) {
-        String accessToken = getAccessToken(request);
-        Authentication userAuthentication = inMemoryTokenStore.readAuthentication(accessToken).getUserAuthentication();
-        Object userObject = userAuthentication.getPrincipal();
-        
-        if (userObject instanceof UserEntity) {
-            UserEntity userEntity = (UserEntity) userObject;
-            
-            return User.Builder.generateForOutput(userEntity.toScim());
-        } else {
+    @RequestMapping(value = "/me", method = {RequestMethod.GET, RequestMethod.POST}) // NOSONAR - This method will be removed
+    @ResponseBody // NOSONAR - This method will be removed
+    public User getInformation(HttpServletRequest request) { // NOSONAR - This method will be removed
+        String accessToken = getAccessToken(request); // NOSONAR - This method will be removed
+        Authentication userAuthentication = inMemoryTokenStore.readAuthentication(accessToken).getUserAuthentication(); // NOSONAR - This method will be removed
+        Object userObject = userAuthentication.getPrincipal(); // NOSONAR - This method will be removed
+
+        if (userObject instanceof UserEntity) { // NOSONAR - This method will be removed
+            UserEntity userEntity = (UserEntity) userObject; // NOSONAR - This method will be removed
+            return User.Builder.generateForOutput(userEntity.toScim()); // NOSONAR - This method will be removed
+        } else { // NOSONAR - This method will be removed
             throw new IllegalArgumentException("User was not authenticated with OSIAM."); // NOSONAR - This method will be removed
-        }
-
-
-    }
+        } // NOSONAR - This method will be removed
+    } // NOSONAR - This method will be removed
 
     private String getAccessToken(HttpServletRequest request) {
         String accessToken = request.getParameter("access_token");

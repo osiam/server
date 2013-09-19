@@ -62,7 +62,7 @@ public class MeController {
             UserEntity userEntity = (UserEntity) o;
             return new FacebookInformationConstruct(userEntity);
         } else {
-            throw new IllegalArgumentException("User was not authenticated with OSIAM."); // NOSONAR - remove this comment when Users/me will be removed
+            throw new IllegalArgumentException("User was not authenticated with OSIAM.");
         }
 
 

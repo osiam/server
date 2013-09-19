@@ -217,14 +217,9 @@ public class SingularFilterChain implements FilterChain {
             Expand this list of incompatible Non{@String} values if necessary.
              */
             String subvalue = splitKeys.get(1);
-            if (subvalue.equals(KEYNAME_PRIMARY) || subvalue.equals(KEYNAME_TYPE)) {
-                return false;
-            } else {
-                return true;
-            }
-        } else {
-            return false;
+            return !((subvalue.equals(KEYNAME_PRIMARY) || subvalue.equals(KEYNAME_TYPE)));
         }
+        return false;
     }
 
     /**
@@ -233,14 +228,8 @@ public class SingularFilterChain implements FilterChain {
      * @return true if value is a {@String}, false if not
      */
     private boolean isValueStringType() {
-        if (className.equals("String")) {
-            // First level value and String
-            return true;
-        } else if (isSubvalueAndString()) {
-            // Second level value and String
-            return true;
-        }
-        return false;
+        // First level value and String // Second level value and String
+        return className.equals("String") || isSubvalueAndString();
     }
 
     @Override
