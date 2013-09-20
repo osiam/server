@@ -87,14 +87,12 @@ public class SingularFilterChain implements FilterChain {
 
         switch (className) {
             case "Boolean":
-                return isValidBooleanValue(group);
+                return getBoolean(group);
             case "EmailEntity":
                 if (splitKeys.get(1).equals(KEYNAME_TYPE)) {
                     return EmailEntity.CanonicalEmailTypes.valueOf(group);
-                } else if (splitKeys.get(1).equals(KEYNAME_PRIMARY)) {
-                    return isValidBooleanValue(group);
                 }
-                break;
+                getPrimary(group);
             case "PhotoEntity":
                 if (splitKeys.get(1).equals(KEYNAME_TYPE)) {
                     return PhotoEntity.CanonicalPhotoTypes.valueOf(group);
@@ -111,15 +109,19 @@ public class SingularFilterChain implements FilterChain {
                 }
                 break;
             case "AddressEntity":
-                if (splitKeys.get(1).equals(KEYNAME_PRIMARY)) {
-                    return isValidBooleanValue(group);
-                }
-                break;
+                getPrimary(group);
         }
         return getStringOrDate(group);
     }
 
-    private Boolean isValidBooleanValue(String group) {
+    private Boolean getPrimary(String group) {
+        if (splitKeys.get(1).equals(KEYNAME_PRIMARY)) {
+            return getBoolean(group);
+        }
+        return null;
+    }
+
+    private Boolean getBoolean(String group) {
         if (group.equalsIgnoreCase("true") || group.equalsIgnoreCase("false")) {
             return Boolean.valueOf(group);
         }
