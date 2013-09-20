@@ -44,6 +44,9 @@ public class SingularFilterChain implements FilterChain {
 
     private static final String KEYNAME_TYPE = "type";
     private static final String KEYNAME_PRIMARY = "primary";
+    private static final String KEYNAME_ID = "id";
+    private static final String KEYNAME_CREATED = "created";
+    private static final String KEYNAME_LASTMODIFIED = "lastModified";
 
     private final String key;
     private final Constraints constraint;
@@ -151,8 +154,7 @@ public class SingularFilterChain implements FilterChain {
                 break;
             }
         }
-        if (field == null)
-        {
+        if (field == null) {
             throw new IllegalArgumentException("Filtering not possible. Field " + filterField + " not available.");
         }
         return field;
@@ -217,16 +219,17 @@ public class SingularFilterChain implements FilterChain {
      * @return true if subvalue is no {@String}
      */
     private boolean isSubvalueNotString() {
-            /*
-            Get value of subkey and return false if it is NO {@String}.
-            Expand this list of incompatible Non{@String} values if necessary.
-             */
-            String subvalue = splitKeys.get(1);
-            return (subvalue.equals(KEYNAME_PRIMARY) ||
-                    subvalue.equals(KEYNAME_TYPE)||
-                    subvalue.equals("id")||
-                    subvalue.equals("created")||
-                    subvalue.equals("lastModified"));
+        // Expand this list of incompatible Non{@String} values if necessary.
+        List<String> nonStringKeys = new ArrayList<>();
+        nonStringKeys.add(KEYNAME_PRIMARY);
+        nonStringKeys.add(KEYNAME_TYPE);
+        nonStringKeys.add(KEYNAME_ID);
+        nonStringKeys.add(KEYNAME_CREATED);
+        nonStringKeys.add(KEYNAME_LASTMODIFIED);
+
+        // Get value of subkey and return false if it is NO {@String}.
+        String subvalue = splitKeys.get(1);
+        return nonStringKeys.contains(subvalue);
     }
 
     /**
@@ -254,13 +257,12 @@ public class SingularFilterChain implements FilterChain {
     @Override
     public Criterion buildCriterion() {
         if (isOnlyStringConstraint()) {
-            if (!isSubkey())        {
+            if (!isSubkey()) {
                 // First level value and String
-                if (isValueNotString())  {
+                if (isValueNotString()) {
                     throw new IllegalArgumentException("String filter operators 'co' and 'sw' are not applicable on field '" + splitKeys.get(0) + "' of type '" + className + "'.");
                 }
-            }
-            else {
+            } else {
                 // Second level value and String
                 if (isSubvalueNotString()) {
                     throw new IllegalArgumentException("String filter operators 'co' and 'sw' are not applicable on field '" + splitKeys.get(1) + "'.");
