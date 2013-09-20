@@ -70,8 +70,6 @@ public class SingularFilterChain implements FilterChain {
         this.className = getClassName(field);
 
         this.value = castToOriginValue(matcher.group(3).trim()); // NOSONAR - no need to make constant for number
-
-
     }
 
     private Object castToOriginValue(String group) {
@@ -127,8 +125,12 @@ public class SingularFilterChain implements FilterChain {
         return getStringOrDate(group);
     }
 
-    /* Method to get the simple class name even if the field is a Set.
+    /**
+     * Method to get the simple class name even if the field is a Set.
      * In case it is a Set, the generic simple class name is returned.
+     *
+     * @param field the {@Field} whose type name should be returned
+     * @return the class name as a {@String}
      */
     private String getClassName(Field field) {
         if (field.getType().getSimpleName().equals("Set")) {
@@ -141,12 +143,17 @@ public class SingularFilterChain implements FilterChain {
     }
 
     private Field getSingleField(List<String> split, List<Field> fields) {
+        String filterField = split.get(0);
         Field field = null;
         for (Field f : fields) {
-            if (f.getName().equals(split.get(0))) {
+            if (f.getName().equals(filterField)) {
                 field = f;
                 break;
             }
+        }
+        if (field == null)
+        {
+            throw new IllegalArgumentException("Filtering not possible. Field " + filterField + " not available.");
         }
         return field;
     }
