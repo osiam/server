@@ -83,36 +83,36 @@ public class SingularFilterChain implements FilterChain {
         return getBooleanOrMultivalue(group);
     }
 
-    private Object getBooleanOrMultivalue(String group) {
+    private Object getBooleanOrMultivalue(String group) { // NOSONAR - no further complexity simplification possible
 
         switch (className) {
             case "Boolean":
                 return getBoolean(group);
             case "EmailEntity":
-                if (splitKeys.get(1).equals(KEYNAME_TYPE)) { // NOSONAR - no further complexity simplification possible
-                    return EmailEntity.CanonicalEmailTypes.valueOf(group); // NOSONAR - no further complexity simplification possible
-                } else if (splitKeys.get(1).equals(KEYNAME_PRIMARY)) { // NOSONAR - no further complexity simplification possible
-                    return getBoolean(group); // NOSONAR - no further complexity simplification possible
+                if (splitKeys.get(1).equals(KEYNAME_TYPE)) {
+                    return EmailEntity.CanonicalEmailTypes.valueOf(group);
+                } else if (splitKeys.get(1).equals(KEYNAME_PRIMARY)) {
+                    return getBoolean(group);
                 }
                 break;
             case "PhotoEntity":
-                if (splitKeys.get(1).equals(KEYNAME_TYPE)) { // NOSONAR - no further complexity simplification possible
-                    return PhotoEntity.CanonicalPhotoTypes.valueOf(group); // NOSONAR - no further complexity simplification possible
+                if (splitKeys.get(1).equals(KEYNAME_TYPE)) {
+                    return PhotoEntity.CanonicalPhotoTypes.valueOf(group);
                 }
                 break;
             case "ImEntity":
-                if (splitKeys.get(1).equals(KEYNAME_TYPE)) { // NOSONAR - no further complexity simplification possible
-                    return ImEntity.CanonicalImTypes.valueOf(group); // NOSONAR - no further complexity simplification possible
+                if (splitKeys.get(1).equals(KEYNAME_TYPE)) {
+                    return ImEntity.CanonicalImTypes.valueOf(group);
                 }
                 break;
             case "PhoneNumberEntity":
-                if (splitKeys.get(1).equals(KEYNAME_TYPE)) { // NOSONAR - no further complexity simplification possible
-                    return PhoneNumberEntity.CanonicalPhoneNumberTypes.valueOf(group); // NOSONAR - no further complexity simplification possible
+                if (splitKeys.get(1).equals(KEYNAME_TYPE)) {
+                    return PhoneNumberEntity.CanonicalPhoneNumberTypes.valueOf(group);
                 }
                 break;
             case "AddressEntity":
-                if (splitKeys.get(1).equals(KEYNAME_PRIMARY)) { // NOSONAR - no further complexity simplification possible
-                    return getBoolean(group); // NOSONAR - no further complexity simplification possible
+                if (splitKeys.get(1).equals(KEYNAME_PRIMARY)) {
+                    return getBoolean(group);
                 }
                 break;
         }
@@ -253,16 +253,16 @@ public class SingularFilterChain implements FilterChain {
     }
 
     @Override
-    public Criterion buildCriterion() {
-        if (isOnlyStringConstraint()) { // NOSONAR - no further complexity simplification possible
-            if (!isSubkey()) { // NOSONAR - no further complexity simplification possible
+    public Criterion buildCriterion() { // NOSONAR - no further complexity simplification possible
+        if (isOnlyStringConstraint()) {
+            if (!isSubkey()) {
                 // First level value and String
-                if (isValueNotString()) { // NOSONAR - no further complexity simplification possible
+                if (isValueNotString()) {
                     throw new IllegalArgumentException("String filter operators 'co' and 'sw' are not applicable on field '" + splitKeys.get(0) + "' of type '" + className + "'.");
                 }
-            } else { // NOSONAR - no further complexity simplification possible
+            } else {
                 // Second level value and String
-                if (isSubvalueNotString()) { // NOSONAR - no further complexity simplification possible
+                if (isSubvalueNotString()) {
                     throw new IllegalArgumentException("String filter operators 'co' and 'sw' are not applicable on field '" + splitKeys.get(1) + "'.");
                 }
             }
