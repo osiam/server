@@ -89,30 +89,30 @@ public class SingularFilterChain implements FilterChain {
             case "Boolean":
                 return getBoolean(group);
             case "EmailEntity":
-                if (splitKeys.get(1).equals(KEYNAME_TYPE)) {
-                    return EmailEntity.CanonicalEmailTypes.valueOf(group);
-                } else if (splitKeys.get(1).equals(KEYNAME_PRIMARY)) {
-                    return getBoolean(group);
+                if (splitKeys.get(1).equals(KEYNAME_TYPE)) { // NOSONAR - no further complexity simplification possible
+                    return EmailEntity.CanonicalEmailTypes.valueOf(group); // NOSONAR - no further complexity simplification possible
+                } else if (splitKeys.get(1).equals(KEYNAME_PRIMARY)) { // NOSONAR - no further complexity simplification possible
+                    return getBoolean(group); // NOSONAR - no further complexity simplification possible
                 }
                 break;
             case "PhotoEntity":
-                if (splitKeys.get(1).equals(KEYNAME_TYPE)) {
-                    return PhotoEntity.CanonicalPhotoTypes.valueOf(group);
+                if (splitKeys.get(1).equals(KEYNAME_TYPE)) { // NOSONAR - no further complexity simplification possible
+                    return PhotoEntity.CanonicalPhotoTypes.valueOf(group); // NOSONAR - no further complexity simplification possible
                 }
                 break;
             case "ImEntity":
-                if (splitKeys.get(1).equals(KEYNAME_TYPE)) {
-                    return ImEntity.CanonicalImTypes.valueOf(group);
+                if (splitKeys.get(1).equals(KEYNAME_TYPE)) { // NOSONAR - no further complexity simplification possible
+                    return ImEntity.CanonicalImTypes.valueOf(group); // NOSONAR - no further complexity simplification possible
                 }
                 break;
             case "PhoneNumberEntity":
-                if (splitKeys.get(1).equals(KEYNAME_TYPE)) {
-                    return PhoneNumberEntity.CanonicalPhoneNumberTypes.valueOf(group);
+                if (splitKeys.get(1).equals(KEYNAME_TYPE)) { // NOSONAR - no further complexity simplification possible
+                    return PhoneNumberEntity.CanonicalPhoneNumberTypes.valueOf(group); // NOSONAR - no further complexity simplification possible
                 }
                 break;
             case "AddressEntity":
-                if (splitKeys.get(1).equals(KEYNAME_PRIMARY)) {
-                    return getBoolean(group);
+                if (splitKeys.get(1).equals(KEYNAME_PRIMARY)) { // NOSONAR - no further complexity simplification possible
+                    return getBoolean(group); // NOSONAR - no further complexity simplification possible
                 }
                 break;
         }
@@ -254,15 +254,15 @@ public class SingularFilterChain implements FilterChain {
 
     @Override
     public Criterion buildCriterion() {
-        if (isOnlyStringConstraint()) {
-            if (!isSubkey()) {
+        if (isOnlyStringConstraint()) { // NOSONAR - no further complexity simplification possible
+            if (!isSubkey()) { // NOSONAR - no further complexity simplification possible
                 // First level value and String
-                if (isValueNotString()) {
+                if (isValueNotString()) { // NOSONAR - no further complexity simplification possible
                     throw new IllegalArgumentException("String filter operators 'co' and 'sw' are not applicable on field '" + splitKeys.get(0) + "' of type '" + className + "'.");
                 }
-            } else {
+            } else { // NOSONAR - no further complexity simplification possible
                 // Second level value and String
-                if (isSubvalueNotString()) {
+                if (isSubvalueNotString()) { // NOSONAR - no further complexity simplification possible
                     throw new IllegalArgumentException("String filter operators 'co' and 'sw' are not applicable on field '" + splitKeys.get(1) + "'.");
                 }
             }
