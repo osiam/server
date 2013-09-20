@@ -255,15 +255,16 @@ public class SingularFilterChain implements FilterChain {
     @Override
     public Criterion buildCriterion() {
         if (isOnlyStringConstraint()) {
-            if (!isSubkey() &&  isValueNotString())
-            {
+            if (!isSubkey()) {
                 // First level value and String
-                throw new IllegalArgumentException("String filter operators 'co' and 'sw' are not applicable on field '" + splitKeys.get(0) + "' of type '" + className + "'.");
-            }
-            if (isSubkey() &&  isSubvalueNotString())
-            {
+                if (isValueNotString()) {
+                    throw new IllegalArgumentException("String filter operators 'co' and 'sw' are not applicable on field '" + splitKeys.get(0) + "' of type '" + className + "'.");
+                }
+            } else {
                 // Second level value and String
-                throw new IllegalArgumentException("String filter operators 'co' and 'sw' are not applicable on field '" + splitKeys.get(1) + "'.");
+                if (isSubvalueNotString()) {
+                    throw new IllegalArgumentException("String filter operators 'co' and 'sw' are not applicable on field '" + splitKeys.get(1) + "'.");
+                }
             }
         }
         switch (constraint) {
