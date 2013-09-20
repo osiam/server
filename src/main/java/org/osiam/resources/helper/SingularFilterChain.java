@@ -212,37 +212,60 @@ public class SingularFilterChain implements FilterChain {
     }
 
     /**
-     * Check if key is concurrently a subkey and {@String}.
+     * Check if subvalue is no {@String}.
      *
-     * @return true if key is a subkey and {@String}, false if not
+     * @return true if subvalue is no {@String}
      */
-    private boolean isSubvalueAndString() {
-        // Check if there is a subkey.
-        if (splitKeys.size() >= 2) {
+    private boolean isSubvalueNotString() {
             /*
             Get value of subkey and return false if it is NO {@String}.
             Expand this list of incompatible Non{@String} values if necessary.
              */
             String subvalue = splitKeys.get(1);
-            return !((subvalue.equals(KEYNAME_PRIMARY) || subvalue.equals(KEYNAME_TYPE)));
+            return (subvalue.equals(KEYNAME_PRIMARY) ||
+                    subvalue.equals(KEYNAME_TYPE)||
+                    subvalue.equals("id")||
+                    subvalue.equals("created")||
+                    subvalue.equals("lastModified"));
+    }
+
+    /**
+     * Check if value is no {@String}.
+     *
+     * @return true if value is no {@String}
+     */
+    private boolean isValueNotString() {
+        return !className.equals("String");
+    }
+
+    /**
+     * Check if key is concurrently a subkey.
+     *
+     * @return true if key is a subkey, false if not
+     */
+    private boolean isSubkey() {
+        // Check if there is a subkey.
+        if (splitKeys.size() >= 2) {
+            return true;
         }
         return false;
     }
 
-    /**
-     * Check if value has type {@String}.
-     *
-     * @return true if value is a {@String}, false if not
-     */
-    private boolean isValueStringType() {
-        // First level value and String // Second level value and String
-        return className.equals("String") || isSubvalueAndString();
-    }
-
     @Override
     public Criterion buildCriterion() {
-        if (isOnlyStringConstraint() && !isValueStringType()) {
-            throw new IllegalArgumentException("String filter operators 'co' and 'sw' are not applicable on " + className + " type.");
+        if (isOnlyStringConstraint()) {
+            if (!isSubkey())        {
+                // First level value and String
+                if (isValueNotString())  {
+                    throw new IllegalArgumentException("String filter operators 'co' and 'sw' are not applicable on field '" + splitKeys.get(0) + "' of type '" + className + "'.");
+                }
+            }
+            else {
+                // Second level value and String
+                if (isSubvalueNotString()) {
+                    throw new IllegalArgumentException("String filter operators 'co' and 'sw' are not applicable on field '" + splitKeys.get(1) + "'.");
+                }
+            }
         }
         switch (constraint) {
             case CONTAINS:

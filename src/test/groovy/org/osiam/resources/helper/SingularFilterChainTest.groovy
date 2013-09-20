@@ -268,7 +268,7 @@ class SingularFilterChainTest extends Specification{
         new SingularFilterChain("emails.type co work", aClass).buildCriterion()
         then:
         def result = thrown(IllegalArgumentException.class)
-        result.getMessage() == "String filter operators 'co' and 'sw' are not applicable on EmailEntity type."
+        result.getMessage() == "String filter operators 'co' and 'sw' are not applicable on field 'type'."
     }
 
     def "should throw exception if EmailEntity Enum values are used with filter operator sw"() {
@@ -276,7 +276,7 @@ class SingularFilterChainTest extends Specification{
         new SingularFilterChain("emails.type sw work", aClass).buildCriterion()
         then:
         def result = thrown(IllegalArgumentException.class)
-        result.getMessage() == "String filter operators 'co' and 'sw' are not applicable on EmailEntity type."
+        result.getMessage() == "String filter operators 'co' and 'sw' are not applicable on field 'type'."
     }
 
     def "should throw exception if Boolean values are used with filter operator co"() {
@@ -284,7 +284,7 @@ class SingularFilterChainTest extends Specification{
         new SingularFilterChain("active co true", aClass).buildCriterion()
         then:
         def result = thrown(IllegalArgumentException.class)
-        result.getMessage() == "String filter operators 'co' and 'sw' are not applicable on Boolean type."
+        result.getMessage() == "String filter operators 'co' and 'sw' are not applicable on field 'active' of type 'Boolean'."
     }
 
     def "should throw exception if Boolean values are used with filter operator sw"() {
@@ -292,6 +292,6 @@ class SingularFilterChainTest extends Specification{
         new SingularFilterChain("active sw true", aClass).buildCriterion()
         then:
         def result = thrown(IllegalArgumentException.class)
-        result.getMessage() == "String filter operators 'co' and 'sw' are not applicable on Boolean type."
+        result.getMessage() == "String filter operators 'co' and 'sw' are not applicable on field 'active' of type 'Boolean'."
     }
 }
