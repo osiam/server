@@ -91,8 +91,10 @@ public class SingularFilterChain implements FilterChain {
             case "EmailEntity":
                 if (splitKeys.get(1).equals(KEYNAME_TYPE)) {
                     return EmailEntity.CanonicalEmailTypes.valueOf(group);
+                } else if (splitKeys.get(1).equals(KEYNAME_PRIMARY)) {
+                    return getBoolean(group);
                 }
-                getPrimary(group);
+                break;
             case "PhotoEntity":
                 if (splitKeys.get(1).equals(KEYNAME_TYPE)) {
                     return PhotoEntity.CanonicalPhotoTypes.valueOf(group);
@@ -109,16 +111,12 @@ public class SingularFilterChain implements FilterChain {
                 }
                 break;
             case "AddressEntity":
-                getPrimary(group);
+                if (splitKeys.get(1).equals(KEYNAME_PRIMARY)) {
+                    return getBoolean(group);
+                }
+                break;
         }
         return getStringOrDate(group);
-    }
-
-    private Boolean getPrimary(String group) {
-        if (splitKeys.get(1).equals(KEYNAME_PRIMARY)) {
-            return getBoolean(group);
-        }
-        return null;
     }
 
     private Boolean getBoolean(String group) {
