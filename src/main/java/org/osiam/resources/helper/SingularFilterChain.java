@@ -87,18 +87,12 @@ public class SingularFilterChain implements FilterChain {
 
         switch (className) {
             case "Boolean":
-                if (group.equalsIgnoreCase("true") || group.equalsIgnoreCase("false")) {
-                    return Boolean.valueOf(group);
-                }
-                throw new IllegalArgumentException("Value of Field " + key + " mismatch!");
+                return isValidBooleanValue(group);
             case "EmailEntity":
                 if (splitKeys.get(1).equals(KEYNAME_TYPE)) {
                     return EmailEntity.CanonicalEmailTypes.valueOf(group);
                 } else if (splitKeys.get(1).equals(KEYNAME_PRIMARY)) {
-                    if (group.equalsIgnoreCase("true") || group.equalsIgnoreCase("false")) {
-                        return Boolean.valueOf(group);
-                    }
-                    throw new IllegalArgumentException("Value of Field " + key + " mismatch!");
+                    return isValidBooleanValue(group);
                 }
                 break;
             case "PhotoEntity":
@@ -118,14 +112,18 @@ public class SingularFilterChain implements FilterChain {
                 break;
             case "AddressEntity":
                 if (splitKeys.get(1).equals(KEYNAME_PRIMARY)) {
-                    if (group.equalsIgnoreCase("true") || group.equalsIgnoreCase("false")) {
-                        return Boolean.valueOf(group);
-                    }
-                    throw new IllegalArgumentException("Value of Field " + key + " mismatch!");
+                    return isValidBooleanValue(group);
                 }
                 break;
         }
         return getStringOrDate(group);
+    }
+
+    private Boolean isValidBooleanValue(String group) {
+        if (group.equalsIgnoreCase("true") || group.equalsIgnoreCase("false")) {
+            return Boolean.valueOf(group);
+        }
+        throw new IllegalArgumentException("Value of Field " + key + " mismatch!");
     }
 
     /**
