@@ -130,8 +130,8 @@ public class SingularFilterChain implements FilterChain {
      * Method to get the simple class name even if the field is a Set.
      * In case it is a Set, the generic simple class name is returned.
      *
-     * @param field the {@Field} whose type name should be returned
-     * @return the class name as a {@String}
+     * @param field the {@link Field} whose type name should be returned
+     * @return the class name as a {@link String}
      */
     private String getClassName(Field field) {
         if (field.getType().getSimpleName().equals("Set")) {
@@ -153,7 +153,7 @@ public class SingularFilterChain implements FilterChain {
             }
         }
         if (field == null) {
-            throw new IllegalArgumentException("Filtering not possible. Field " + filterField + " not available.");
+            throw new IllegalArgumentException("Filtering not possible. Field '" + filterField + "' not available.");
         }
         return field;
     }
@@ -196,9 +196,9 @@ public class SingularFilterChain implements FilterChain {
     }
 
     /**
-     * Check if constraint is only applicable on {@String} types.
+     * Check if constraint is only applicable on {@link String} types.
      *
-     * @return true if only applicable on {@String}s, false if applicable on every complex type
+     * @return true if only applicable on {@link String}s, false if applicable on every complex type
      */
     private boolean isOnlyStringConstraint() {
         switch (constraint) {
@@ -212,9 +212,9 @@ public class SingularFilterChain implements FilterChain {
     }
 
     /**
-     * Check if subvalue is no {@String}.
+     * Check if subvalue is no {@link String}.
      *
-     * @return true if subvalue is no {@String}
+     * @return true if subvalue is no {@link String}
      */
     private boolean isSubvalueNotString() {
         // Expand this list of incompatible Non{@String} values if necessary.
@@ -231,9 +231,9 @@ public class SingularFilterChain implements FilterChain {
     }
 
     /**
-     * Check if value is no {@String}.
+     * Check if value is no {@link String}.
      *
-     * @return true if value is no {@String}
+     * @return true if value is no {@link String}
      */
     private boolean isValueNotString() {
         return !className.equals("String");
@@ -246,10 +246,7 @@ public class SingularFilterChain implements FilterChain {
      */
     private boolean isSubkey() {
         // Check if there is a subkey.
-        if (splitKeys.size() >= 2) {
-            return true;
-        }
-        return false;
+        return splitKeys.size() >= 2;
     }
 
     @Override

@@ -294,4 +294,20 @@ class SingularFilterChainTest extends Specification{
         def result = thrown(IllegalArgumentException.class)
         result.getMessage() == "String filter operators 'co' and 'sw' are not applicable on field 'active' of type 'Boolean'."
     }
+
+    def "should throw exception if field name is not available"() {
+        when:
+        new SingularFilterChain("non-existent sw non", aClass).buildCriterion()
+        then:
+        def result = thrown(IllegalArgumentException.class)
+        result.getMessage() == "Filtering not possible. Field 'non-existent' not available."
+    }
+
+    def "should throw exception if field prefix is missing on subkey"() {
+        when: "prefix 'meta. is missing on attribute created"
+        new SingularFilterChain("created eq 2013-08-08T19:46:20.638", aClass).buildCriterion()
+        then:
+        def result = thrown(IllegalArgumentException.class)
+        result.getMessage() == "Filtering not possible. Field 'created' not available."
+    }
 }
