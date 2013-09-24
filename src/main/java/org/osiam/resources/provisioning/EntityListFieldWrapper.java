@@ -24,8 +24,8 @@
 package org.osiam.resources.provisioning;
 
 import org.osiam.storage.entities.ChildOfMultiValueAttribute;
-import org.osiam.storage.entities.ChildOfMultiValueAttributeWithType;
-import org.osiam.storage.entities.ChildOfMultiValueAttributeWithTypeAndPrimary;
+import org.osiam.storage.entities.ChildOfMultiValueAttributeWithIdAndType;
+import org.osiam.storage.entities.ChildOfMultiValueAttributeWithIdAndTypeAndPrimary;
 import org.osiam.resources.scim.MultiValuedAttribute;
 
 import java.lang.reflect.Field;
@@ -149,11 +149,11 @@ public class EntityListFieldWrapper {
 
         ((ChildOfMultiValueAttribute) target).setValue(m.getValue() == null ? null : String.valueOf(m.getValue()));
 
-        if (target instanceof ChildOfMultiValueAttributeWithType) {
-            ((ChildOfMultiValueAttributeWithType) target).setType(m.getType());
+        if (target instanceof ChildOfMultiValueAttributeWithIdAndType) {
+            ((ChildOfMultiValueAttributeWithIdAndType) target).setType(m.getType());
         }
-        if (target instanceof ChildOfMultiValueAttributeWithTypeAndPrimary) {
-            ((ChildOfMultiValueAttributeWithTypeAndPrimary) target)
+        if (target instanceof ChildOfMultiValueAttributeWithIdAndTypeAndPrimary) {
+            ((ChildOfMultiValueAttributeWithIdAndTypeAndPrimary) target)
                     .setPrimary(m.isPrimary() != null ? m.isPrimary() : false);
         }
         return target;

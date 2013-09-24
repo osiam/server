@@ -20,5 +20,5 @@ package org.osiam.resources.helper;
 import org.hibernate.criterion.Criterion;
 
 public interface FilterChain {
-    Criterion buildCriterion();
+    Criterion buildCriterion(); // NOSONAR - no further complexity simplification possible
 }

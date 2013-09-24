@@ -26,7 +26,7 @@ package org.osiam.storage.entities;
 /**
  * Means that an Entity is expressed by an MultiValuedAttribute in SCIM and has also a type.
  */
-public interface ChildOfMultiValueAttributeWithType extends ChildOfMultiValueAttribute {
+public interface ChildOfMultiValueAttributeWithIdAndType extends ChildOfMultiValueAttributeWithId {
     /**
      * The type of a multi value attribute (e.q. home, work)
      *

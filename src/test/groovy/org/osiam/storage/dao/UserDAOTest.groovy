@@ -135,23 +135,6 @@ class UserDAOTest extends Specification {
 
     }
 
-    def "should validate if multivalue entity is present on update"(){
-        given:
-        def passwordEncoder = Mock(PasswordEncoder)
-        underTest.setPasswordEncoder(passwordEncoder)
-        def id = UUID.randomUUID()
-
-        when:
-        underTest.update(userEntity)
-        then:
-        1 * userEntity.password >> "password"
-        1 * userEntity.id >> id
-        1 * em.find(RolesEntity, "test") >> Mock(RolesEntity)
-        1* em.merge(userEntity)
-        1 * passwordEncoder.encodePassword("password", id) >> "moep"
-    }
-
-
     def "should set password hash when users password is not hashed"(){
         given:
         def passwordEncoder = Mock(PasswordEncoder)
@@ -163,9 +146,7 @@ class UserDAOTest extends Specification {
         then:
         1 * userEntity.password >> "password"
         1 * userEntity.id >> id
-        1 * em.find(RolesEntity, null)
-
-        1* em.merge(userEntity)
+        1 * em.merge(userEntity)
         1 * passwordEncoder.encodePassword("password", id) >> "moep"
     }
 
@@ -182,7 +163,7 @@ class UserDAOTest extends Specification {
         1 * userEntity.password >> password
         0 * userEntity.id >> id
         0 * passwordEncoder.encodePassword("password", id) >> "moep"
-        1* em.merge(userEntity)
+        1 * em.merge(userEntity)
 
     }
 

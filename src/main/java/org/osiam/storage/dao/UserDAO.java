@@ -23,31 +23,18 @@
 
 package org.osiam.storage.dao;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.logging.Level;
-
-import javax.inject.Inject;
-import javax.persistence.Query;
-
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.sql.JoinType;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.resources.scim.SCIMSearchResult;
-import org.osiam.storage.entities.EmailEntity;
-import org.osiam.storage.entities.EntitlementsEntity;
-import org.osiam.storage.entities.HasUser;
-import org.osiam.storage.entities.ImEntity;
-import org.osiam.storage.entities.MultiValueAttributeEntitySkeleton;
-import org.osiam.storage.entities.PhoneNumberEntity;
-import org.osiam.storage.entities.PhotoEntity;
-import org.osiam.storage.entities.RolesEntity;
 import org.osiam.storage.entities.UserEntity;
-import org.osiam.storage.entities.X509CertificateEntity;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.inject.Inject;
+import javax.persistence.Query;
+import java.util.logging.Level;
 
 @Repository
 @Transactional
@@ -65,51 +52,8 @@ public class UserDAO extends GetInternalIdSkeleton implements GenericDAO<UserEnt
     @Override
     public void create(UserEntity userEntity) {
         String hash = passwordEncoder.encodePassword(userEntity.getPassword(), userEntity.getId());
-        findExistingMultiValueAttributes(userEntity);
         userEntity.setPassword(hash);
         em.persist(userEntity);
-    }
-
-    //TODO ugly!!! is there a jpa solution for it?
-    @SuppressWarnings("unchecked")
-    private void findExistingMultiValueAttributes(UserEntity user) {
-        user.setRoles(
-                (Set<RolesEntity>) replaceInstanceWithEntityInstance(user, user.getRoles(), RolesEntity.class));
-        user.setEmails(
-                (Set<EmailEntity>) replaceInstanceWithEntityInstance(user, user.getEmails(), EmailEntity.class));
-        user.setEntitlements(
-                (Set<EntitlementsEntity>) replaceInstanceWithEntityInstance(user, user.getEntitlements(),
-                        EntitlementsEntity.class));
-        user.setIms((Set<ImEntity>) replaceInstanceWithEntityInstance(user, user.getIms(), ImEntity.class));
-        user.setPhotos(
-                (Set<PhotoEntity>) replaceInstanceWithEntityInstance(user, user.getPhotos(), PhotoEntity.class));
-        user.setPhoneNumbers(
-                (Set<PhoneNumberEntity>) replaceInstanceWithEntityInstance(user, user.getPhoneNumbers(),
-                        PhoneNumberEntity.class));
-        user.setX509Certificates(
-                (Set<X509CertificateEntity>) replaceInstanceWithEntityInstance(user, user.getX509Certificates(),
-                        X509CertificateEntity.class));
-    }
-
-    @SuppressWarnings("unchecked")
-    private Set<?> replaceInstanceWithEntityInstance(UserEntity user, Collection<?> roles, Class<?> clazz) {
-        Set<Object> result = new HashSet<>();
-        for (Object r : roles) {
-            MultiValueAttributeEntitySkeleton originValue = (MultiValueAttributeEntitySkeleton) r;
-            MultiValueAttributeEntitySkeleton entity =
-                    (MultiValueAttributeEntitySkeleton) em.find(r.getClass(), originValue.getValue());
-            if (entity != null) {
-                result.add(clazz.cast(entity));
-            } else {
-
-                Object o = clazz.cast(originValue);
-                if (o instanceof HasUser) {
-                    ((HasUser) o).setUser(user);
-                }
-                result.add(o);
-            }
-        }
-        return result;
     }
 
     @Override
@@ -135,7 +79,6 @@ public class UserDAO extends GetInternalIdSkeleton implements GenericDAO<UserEnt
         if (password.length() != PW_LENGHT) {
             entity.setPassword(passwordEncoder.encodePassword(password, entity.getId()));
         }
-        findExistingMultiValueAttributes(entity);
         em.merge(entity);
         return entity;
     }

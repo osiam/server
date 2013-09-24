@@ -66,6 +66,7 @@ CREATE TABLE scim_address (
 --
 
 CREATE TABLE scim_certificate (
+    multiValueId bigint NOT NULL,
     value text NOT NULL,
     user_internal_id bigint
 );
@@ -76,6 +77,7 @@ CREATE TABLE scim_certificate (
 --
 
 CREATE TABLE scim_email (
+    multiValueId bigint NOT NULL,
     value text NOT NULL,
     postgresql_does_not_like_primary boolean,
     type text,
@@ -103,6 +105,7 @@ CREATE TABLE scim_enterprise (
 --
 
 CREATE TABLE scim_entitlements (
+    multiValueId bigint NOT NULL,
     value text NOT NULL
 );
 
@@ -171,6 +174,7 @@ CREATE TABLE scim_id (
 --
 
 CREATE TABLE scim_im (
+    multiValueId bigint NOT NULL,
     value text NOT NULL,
     type text,
     user_internal_id bigint
@@ -208,6 +212,7 @@ CREATE TABLE scim_name (
 --
 
 CREATE TABLE scim_phonenumber (
+    multiValueId bigint NOT NULL,
     value text NOT NULL,
     type text,
     user_internal_id bigint
@@ -219,6 +224,7 @@ CREATE TABLE scim_phonenumber (
 --
 
 CREATE TABLE scim_photo (
+    multiValueId bigint NOT NULL,
     value text NOT NULL,
     type text,
     user_internal_id bigint
@@ -230,6 +236,7 @@ CREATE TABLE scim_photo (
 --
 
 CREATE TABLE scim_roles (
+    multiValueId bigint NOT NULL,
     value text NOT NULL
 );
 
@@ -271,7 +278,7 @@ CREATE TABLE scim_user_scim_address (
 
 CREATE TABLE scim_user_scim_entitlements (
     scim_user_internal_id bigint NOT NULL,
-    entitlements_value text NOT NULL
+    entitlements_multiValueId bigint NOT NULL
 );
 
 
@@ -291,7 +298,7 @@ CREATE TABLE scim_user_scim_group (
 
 CREATE TABLE scim_user_scim_roles (
     scim_user_internal_id bigint NOT NULL,
-    roles_value text NOT NULL
+    roles_multiValueId bigint NOT NULL
 );
 
 
@@ -299,10 +306,10 @@ CREATE TABLE scim_user_scim_roles (
 -- Data for Name: database_scheme_version; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO database_scheme_version VALUES (0.03);
+INSERT INTO database_scheme_version VALUES (0.04);
 
 
-SELECT pg_catalog.setval('hibernate_sequence', 5, false);
+SELECT pg_catalog.setval('hibernate_sequence', 6, false);
 
 
 
@@ -330,8 +337,8 @@ INSERT INTO osiam_client_grants VALUES(3, 'client_credentials');
 
 
 INSERT INTO scim_user VALUES (NULL, NULL, NULL, NULL, 'cbae73fac0893291c4792ef19d158a589402288b35cb18fb8406e951b9d95f6b8b06a3526ffebe96ae0d91c04ae615a7fe2af362763db386ccbf3b55c29ae800', NULL, NULL, NULL, NULL, 'marissa', NULL, 1, NULL);
-INSERT INTO scim_roles VALUES('USER');
-INSERT INTO scim_user_scim_roles VALUES(1, 'USER');
+INSERT INTO scim_roles VALUES(5, 'USER');
+INSERT INTO scim_user_scim_roles VALUES(1, 5);
 
 
 ALTER TABLE ONLY database_scheme_version
@@ -351,7 +358,7 @@ ALTER TABLE ONLY scim_address
 --
 
 ALTER TABLE ONLY scim_certificate
-    ADD CONSTRAINT scim_certificate_pkey PRIMARY KEY (value);
+    ADD CONSTRAINT scim_certificate_pkey PRIMARY KEY (multiValueId);
 
 
 --
@@ -359,7 +366,7 @@ ALTER TABLE ONLY scim_certificate
 --
 
 ALTER TABLE ONLY scim_email
-    ADD CONSTRAINT scim_email_pkey PRIMARY KEY (value);
+    ADD CONSTRAINT scim_email_pkey PRIMARY KEY (multiValueId);
 
 
 --
@@ -375,7 +382,7 @@ ALTER TABLE ONLY scim_enterprise
 --
 
 ALTER TABLE ONLY scim_entitlements
-    ADD CONSTRAINT scim_entitlements_pkey PRIMARY KEY (value);
+    ADD CONSTRAINT scim_entitlements_pkey PRIMARY KEY (multiValueId);
 
 
 --
@@ -407,7 +414,7 @@ ALTER TABLE ONLY scim_id
 --
 
 ALTER TABLE ONLY scim_im
-    ADD CONSTRAINT scim_im_pkey PRIMARY KEY (value);
+    ADD CONSTRAINT scim_im_pkey PRIMARY KEY (multiValueId);
 
 
 --
@@ -439,7 +446,7 @@ ALTER TABLE ONLY scim_name
 --
 
 ALTER TABLE ONLY scim_phonenumber
-    ADD CONSTRAINT scim_phonenumber_pkey PRIMARY KEY (value);
+    ADD CONSTRAINT scim_phonenumber_pkey PRIMARY KEY (multiValueId);
 
 
 --
@@ -447,7 +454,7 @@ ALTER TABLE ONLY scim_phonenumber
 --
 
 ALTER TABLE ONLY scim_photo
-    ADD CONSTRAINT scim_photo_pkey PRIMARY KEY (value);
+    ADD CONSTRAINT scim_photo_pkey PRIMARY KEY (multiValueId);
 
 
 --
@@ -455,7 +462,7 @@ ALTER TABLE ONLY scim_photo
 --
 
 ALTER TABLE ONLY scim_roles
-    ADD CONSTRAINT scim_roles_pkey PRIMARY KEY (value);
+    ADD CONSTRAINT scim_roles_pkey PRIMARY KEY (multiValueId);
 
 
 --
@@ -479,7 +486,7 @@ ALTER TABLE ONLY scim_user_scim_address
 --
 
 ALTER TABLE ONLY scim_user_scim_entitlements
-    ADD CONSTRAINT scim_user_scim_entitlements_pkey PRIMARY KEY (scim_user_internal_id, entitlements_value);
+    ADD CONSTRAINT scim_user_scim_entitlements_pkey PRIMARY KEY (scim_user_internal_id, entitlements_multiValueId);
 
 
 --
@@ -495,7 +502,7 @@ ALTER TABLE ONLY scim_user_scim_group
 --
 
 ALTER TABLE ONLY scim_user_scim_roles
-    ADD CONSTRAINT scim_user_scim_roles_pkey PRIMARY KEY (scim_user_internal_id, roles_value);
+    ADD CONSTRAINT scim_user_scim_roles_pkey PRIMARY KEY (scim_user_internal_id, roles_multiValueId);
 
 
 --
@@ -511,7 +518,7 @@ ALTER TABLE ONLY scim_user_scim_entitlements
 --
 
 ALTER TABLE ONLY scim_user_scim_entitlements
-    ADD CONSTRAINT fk2d322588ef67251f FOREIGN KEY (entitlements_value) REFERENCES scim_entitlements(value);
+    ADD CONSTRAINT fk2d322588ef67251f FOREIGN KEY (entitlements_multiValueId) REFERENCES scim_entitlements(multiValueId);
 
 
 --
@@ -575,7 +582,7 @@ ALTER TABLE ONLY scim_user_scim_roles
 --
 
 ALTER TABLE ONLY scim_user_scim_roles
-    ADD CONSTRAINT fk70e4b45be638e451 FOREIGN KEY (roles_value) REFERENCES scim_roles(value);
+    ADD CONSTRAINT fk70e4b45be638e451 FOREIGN KEY (roles_multiValueId) REFERENCES scim_roles(multiValueId);
 
 
 --

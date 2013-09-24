@@ -439,6 +439,12 @@ public class UserEntity extends InternalIdSkeleton implements UserDetails {
      * @param emails the emails entity
      */
     public void setEmails(Set<EmailEntity> emails) {
+        //Setting Foreign key in child entity because hibernate did it not automatically
+        if(emails != null) {
+            for (EmailEntity emailEntity : emails) {
+                emailEntity.setUser(this);
+            }
+        }
         this.emails = emails;
     }
 
@@ -456,6 +462,12 @@ public class UserEntity extends InternalIdSkeleton implements UserDetails {
      * @param phoneNumbers the phone numbers entity
      */
     public void setPhoneNumbers(Set<PhoneNumberEntity> phoneNumbers) {
+        //Setting Foreign key in child entity because hibernate did it not automatically
+        if(phoneNumbers != null) {
+            for (PhoneNumberEntity phoneNumberEntity : phoneNumbers) {
+                phoneNumberEntity.setUser(this);
+            }
+        }
         this.phoneNumbers = phoneNumbers;
     }
 
@@ -473,6 +485,12 @@ public class UserEntity extends InternalIdSkeleton implements UserDetails {
      * @param ims the instant messaging entity
      */
     public void setIms(Set<ImEntity> ims) {
+        //Setting Foreign key in child entity because hibernate did it not automatically
+        if(ims != null) {
+            for (ImEntity imEntity : ims) {
+                imEntity.setUser(this);
+            }
+        }
         this.ims = ims;
     }
 
@@ -490,6 +508,12 @@ public class UserEntity extends InternalIdSkeleton implements UserDetails {
      * @param photos the photos entity
      */
     public void setPhotos(Set<PhotoEntity> photos) {
+        //Setting Foreign key in child entity because hibernate did it not automatically
+        if(photos != null) {
+            for (PhotoEntity photoEntity : photos) {
+                photoEntity.setUser(this);
+            }
+        }
         this.photos = photos;
     }
 
@@ -575,6 +599,12 @@ public class UserEntity extends InternalIdSkeleton implements UserDetails {
      * @param x509Certificates the X509 certs
      */
     public void setX509Certificates(Set<X509CertificateEntity> x509Certificates) {
+        //Setting Foreign key in child entity because hibernate did it not automatically
+        if(x509Certificates != null) {
+            for (X509CertificateEntity certificateEntity : x509Certificates) {
+                certificateEntity.setUser(this);
+            }
+        }
         this.x509Certificates = x509Certificates;
     }
 

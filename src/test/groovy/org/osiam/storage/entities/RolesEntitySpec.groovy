@@ -77,4 +77,12 @@ class RolesEntitySpec extends Specification {
         then:
         result != null
     }
+
+    def "setter and getter for id should be present"() {
+        when:
+        rolesEntity.setMultiValueId(1234)
+
+        then:
+        rolesEntity.getMultiValueId() == 1234
+    }
 }

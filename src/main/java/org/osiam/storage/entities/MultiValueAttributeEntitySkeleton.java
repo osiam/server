@@ -23,19 +23,18 @@
 
 package org.osiam.storage.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
+import javax.persistence.*;
 
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public abstract class MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttribute {
+public abstract class MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithId {
 
     @Id
-    private String value;
+    @GeneratedValue
+    private long multiValueId;
 
+    private String value;
 
     @Override
     public String getValue() {
@@ -45,5 +44,15 @@ public abstract class MultiValueAttributeEntitySkeleton implements ChildOfMultiV
     @Override
     public void setValue(String value) {
         this.value = value;
+    }
+
+    @Override
+    public void setMultiValueId(long id) {
+        this.multiValueId = id;
+    }
+
+    @Override
+    public long getMultiValueId() {
+        return multiValueId;
     }
 }

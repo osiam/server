@@ -95,4 +95,12 @@ class PhoneNumberEntitySpec extends Specification {
         def e = thrown(IllegalArgumentException)
         e.message == "No enum constant org.osiam.storage.entities.PhoneNumberEntity.CanonicalPhoneNumberTypes.huch"
     }
+
+    def "setter and getter for id should be present"() {
+        when:
+        phoneNumberEntity.setMultiValueId(1234)
+
+        then:
+        phoneNumberEntity.getMultiValueId() == 1234
+    }
 }

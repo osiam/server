@@ -23,18 +23,13 @@
 
 package org.osiam.storage.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+/**
+ * Means that an Entity is expressed by an MultiValuedAttribute in SCIM and has also a type and primary field.
+ *
+ */
+public interface ChildOfMultiValueAttributeWithIdAndTypeAndPrimary extends ChildOfMultiValueAttributeWithIdAndType {
 
-@Entity(name = "database_scheme_version")
-public class DBVersion {
+    boolean isPrimary();
 
-    public static final double DB_VERSION = 0.04;
-
-    @Id
-    private double version = DB_VERSION;
-
-    public double getVersion() {
-        return version;
-    }
+    void setPrimary(boolean primary);
 }

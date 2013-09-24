@@ -76,4 +76,12 @@ class X509CertificateEntitySpec extends Specification {
         then:
         result != null
     }
+
+    def "setter and getter for id should be present"() {
+        when:
+        certificateEntity.setMultiValueId(1234)
+
+        then:
+        certificateEntity.getMultiValueId() == 1234
+    }
 }

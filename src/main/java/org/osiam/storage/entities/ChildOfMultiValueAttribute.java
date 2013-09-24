@@ -40,5 +40,4 @@ public interface ChildOfMultiValueAttribute {
      * Sets the value of a multi value attribute, in lists this value is also used as a key.
      */
     void setValue(String value);
-
 }

@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
  * Photos Entity
  */
 @Entity(name = "scim_photo")
-public class PhotoEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithType, HasUser, Serializable {
+public class PhotoEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithIdAndType, HasUser, Serializable {
 
     private static final long serialVersionUID = -4535056565639057058L;
 

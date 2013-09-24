@@ -98,4 +98,12 @@ class PhotoEntitySpec extends Specification {
         def e = thrown(IllegalArgumentException)
         e.message == "No enum constant org.osiam.storage.entities.PhotoEntity.CanonicalPhotoTypes.huch"
     }
+
+    def "setter and getter for id should be present"() {
+        when:
+        photoEntity.setMultiValueId(1234)
+
+        then:
+        photoEntity.getMultiValueId() == 1234
+    }
 }

@@ -66,4 +66,12 @@ class EntitlementsEntitySpec extends Specification {
         then:
         result != null
     }
+
+    def "setter and getter for id should be present"() {
+        when:
+        entitlementsEntity.setMultiValueId(1234)
+
+        then:
+        entitlementsEntity.getMultiValueId() == 1234
+    }
 }

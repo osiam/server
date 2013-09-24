@@ -33,7 +33,7 @@ import java.io.Serializable;
  * Email Entity
  */
 @Entity(name = "scim_email")
-public class EmailEntity extends MultiValueAttributeEntitySkeleton implements HasUser, ChildOfMultiValueAttributeWithTypeAndPrimary, Serializable{
+public class EmailEntity extends MultiValueAttributeEntitySkeleton implements HasUser, ChildOfMultiValueAttributeWithIdAndTypeAndPrimary, Serializable{
 
     private static final long serialVersionUID = -6535056565639057057L;
     

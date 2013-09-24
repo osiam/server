@@ -32,7 +32,7 @@ import java.io.Serializable;
  * Instant messaging Entity
  */
 @Entity(name = "scim_im")
-public class ImEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithType, HasUser, Serializable {
+public class ImEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithIdAndType, HasUser, Serializable {
 
     private static final long serialVersionUID = -6835056565639057058L;
 

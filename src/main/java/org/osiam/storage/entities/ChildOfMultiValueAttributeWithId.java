@@ -24,12 +24,20 @@
 package org.osiam.storage.entities;
 
 /**
- * Means that an Entity is expressed by an MultiValuedAttribute in SCIM and has also a type and primary field.
- *
+ * Means that an Entity is expressed by an MultiValuedAttribute in SCIM.
+ * <p/>
+ * It must have at least the methods get- and setValue
  */
-public interface ChildOfMultiValueAttributeWithTypeAndPrimary extends ChildOfMultiValueAttributeWithType {
+public interface ChildOfMultiValueAttributeWithId extends ChildOfMultiValueAttribute {
+    /**
+     * Returns the database id of a multi value attribute
+     * @return the id of a multi value attribute
+     */
+    long getMultiValueId();
 
-    boolean isPrimary();
-
-    void setPrimary(boolean primary);
+    /**
+     * Sets the id of a multi value attribute
+     * @param id the id of a multi value attribute
+     */
+    void setMultiValueId(long id);
 }

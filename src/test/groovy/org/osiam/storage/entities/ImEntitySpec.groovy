@@ -35,7 +35,7 @@ import spock.lang.Specification
  * Time: 15:07
  * To change this template use File | Settings | File Templates.
  */
-class ImsEntitySpec extends Specification {
+class ImEntitySpec extends Specification {
 
     ImEntity imsEntity = new ImEntity()
     def userEntity = Mock(UserEntity)
@@ -95,4 +95,13 @@ class ImsEntitySpec extends Specification {
         def e = thrown(IllegalArgumentException)
         e.message == "No enum constant org.osiam.storage.entities.ImEntity.CanonicalImTypes.huch"
     }
+
+    def "setter and getter for id should be present"() {
+        when:
+        imsEntity.setMultiValueId(1234)
+
+        then:
+        imsEntity.getMultiValueId() == 1234
+    }
+
 }
