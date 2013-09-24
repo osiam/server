@@ -76,46 +76,35 @@ public class SingularFilterChain implements FilterChain {
     }
 
     private Object castToOriginValue(String group) {
-
         if (isNumber(group)) {
             return Long.valueOf(group);
         }
-        return getBooleanOrMultivalue(group);
+        if (className.equals("Boolean")) {
+            return getBoolean(group);
+        }
+        return getMultivalue(group);
     }
 
-    private Object getBooleanOrMultivalue(String group) { // NOSONAR - no further complexity simplification possible
+    private Object getMultivalue(String group) {
 
-        switch (className) {
-            case "Boolean":
-                return getBoolean(group);
-            case "EmailEntity":
-                if (splitKeys.get(1).equals(KEYNAME_TYPE)) {
+        if (isSubkey()) {
+            String keyname =  splitKeys.get(1);
+            switch (className + keyname) {
+                case "EmailEntity" + KEYNAME_TYPE:
                     return EmailEntity.CanonicalEmailTypes.valueOf(group);
-                } else if (splitKeys.get(1).equals(KEYNAME_PRIMARY)) {
+                case "EmailEntity" + KEYNAME_PRIMARY:
                     return getBoolean(group);
-                }
-                break;
-            case "PhotoEntity":
-                if (splitKeys.get(1).equals(KEYNAME_TYPE)) {
+                case "PhotoEntity" + KEYNAME_TYPE:
                     return PhotoEntity.CanonicalPhotoTypes.valueOf(group);
-                }
-                break;
-            case "ImEntity":
-                if (splitKeys.get(1).equals(KEYNAME_TYPE)) {
+                case "ImEntity" + KEYNAME_TYPE:
                     return ImEntity.CanonicalImTypes.valueOf(group);
-                }
-                break;
-            case "PhoneNumberEntity":
-                if (splitKeys.get(1).equals(KEYNAME_TYPE)) {
+                case "PhoneNumberEntity" + KEYNAME_TYPE:
                     return PhoneNumberEntity.CanonicalPhoneNumberTypes.valueOf(group);
-                }
-                break;
-            case "AddressEntity":
-                if (splitKeys.get(1).equals(KEYNAME_PRIMARY)) {
+                case "AddressEntity" + KEYNAME_PRIMARY:
                     return getBoolean(group);
-                }
-                break;
+            }
         }
+
         return getStringOrDate(group);
     }
 
@@ -249,8 +238,10 @@ public class SingularFilterChain implements FilterChain {
         return splitKeys.size() >= 2;
     }
 
-    @Override
-    public Criterion buildCriterion() { // NOSONAR - no further complexity simplification possible
+    /**
+     * Check if operator is applicable on field and throw an {@link IllegalArgumentException} if not.
+     */
+    private void applicabilityCheck() {
         if (isOnlyStringConstraint()) {
             if (!isSubkey()) {
                 // First level value and String
@@ -264,6 +255,13 @@ public class SingularFilterChain implements FilterChain {
                 }
             }
         }
+    }
+
+    @Override
+    public Criterion buildCriterion() {
+
+        applicabilityCheck();
+
         switch (constraint) {
             case CONTAINS:
                 return Restrictions.like(key, "%" + value + "%");
@@ -285,7 +283,6 @@ public class SingularFilterChain implements FilterChain {
                 throw new IllegalArgumentException("Unknown constraint.");
         }
     }
-
 
     public enum Constraints {
         EQUALS("eq"),
