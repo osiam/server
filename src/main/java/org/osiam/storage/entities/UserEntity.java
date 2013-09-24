@@ -136,7 +136,7 @@ public class UserEntity extends InternalIdSkeleton implements UserDetails {
         userEntity.setDisplayName(user.getDisplayName());
         userEntity.setEmails(scimEmailsToEntity(user.getEmails()));
         userEntity.setEntitlements(scimEntitlementsToEntity(user.getEntitlements()));
-        userEntity.setExternalId(user.getExternalId());
+        userEntity.setExternalId(user.getExternalId() == null ? null : user.getExternalId().equals("") ? null : user.getExternalId()); //Due to uniqueness in databases
         userEntity.setIms(scimImsToEntity(user.getIms()));
         userEntity.setLocale(user.getLocale());
         userEntity.setName(scimNameToEntity(user.getName()));

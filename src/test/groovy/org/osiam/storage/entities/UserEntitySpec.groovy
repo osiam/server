@@ -535,6 +535,20 @@ class UserEntitySpec extends Specification {
         userEntity.getExternalId() == "externalId"
     }
 
+    def "external id should be null if empty string is provided due to database uniqueness"() {
+        given:
+        User user = new User.Builder("username").
+                setExternalId("").
+                build()
+
+        when:
+        def userEntity = UserEntity.fromScim(user)
+
+        then:
+        userEntity.getUsername() == "username"
+        userEntity.getExternalId() == null
+    }
+
     def "should contain internal_id for jpa"(){
         when:
         userEntity.setInternalId(23)

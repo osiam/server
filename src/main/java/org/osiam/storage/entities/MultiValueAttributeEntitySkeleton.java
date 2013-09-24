@@ -31,7 +31,7 @@ import javax.persistence.*;
 public abstract class MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithId {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private long multiValueId;
 
     private String value;
