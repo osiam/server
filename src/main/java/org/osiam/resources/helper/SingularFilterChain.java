@@ -76,46 +76,35 @@ public class SingularFilterChain implements FilterChain {
     }
 
     private Object castToOriginValue(String group) {
-
         if (isNumber(group)) {
             return Long.valueOf(group);
         }
-        return getBooleanOrMultivalue(group);
+        if (className.equals("Boolean")) {
+            return getBoolean(group);
+        }
+        return getMultivalue(group);
     }
 
-    private Object getBooleanOrMultivalue(String group) { // NOSONAR - no further complexity simplification possible
+    private Object getMultivalue(String group) {
 
-        switch (className) {
-            case "Boolean":
-                return getBoolean(group);
-            case "EmailEntity":
-                if (splitKeys.get(1).equals(KEYNAME_TYPE)) {
+        if (isSubkey()) {
+            String keyname =  splitKeys.get(1);
+            switch (className + keyname) {
+                case "EmailEntity" + KEYNAME_TYPE:
                     return EmailEntity.CanonicalEmailTypes.valueOf(group);
-                } else if (splitKeys.get(1).equals(KEYNAME_PRIMARY)) {
+                case "EmailEntity" + KEYNAME_PRIMARY:
                     return getBoolean(group);
-                }
-                break;
-            case "PhotoEntity":
-                if (splitKeys.get(1).equals(KEYNAME_TYPE)) {
+                case "PhotoEntity" + KEYNAME_TYPE:
                     return PhotoEntity.CanonicalPhotoTypes.valueOf(group);
-                }
-                break;
-            case "ImEntity":
-                if (splitKeys.get(1).equals(KEYNAME_TYPE)) {
+                case "ImEntity" + KEYNAME_TYPE:
                     return ImEntity.CanonicalImTypes.valueOf(group);
-                }
-                break;
-            case "PhoneNumberEntity":
-                if (splitKeys.get(1).equals(KEYNAME_TYPE)) {
+                case "PhoneNumberEntity" + KEYNAME_TYPE:
                     return PhoneNumberEntity.CanonicalPhoneNumberTypes.valueOf(group);
-                }
-                break;
-            case "AddressEntity":
-                if (splitKeys.get(1).equals(KEYNAME_PRIMARY)) {
+                case "AddressEntity" + KEYNAME_PRIMARY:
                     return getBoolean(group);
-                }
-                break;
+            }
         }
+
         return getStringOrDate(group);
     }
 
@@ -130,8 +119,8 @@ public class SingularFilterChain implements FilterChain {
      * Method to get the simple class name even if the field is a Set.
      * In case it is a Set, the generic simple class name is returned.
      *
-     * @param field the {@Field} whose type name should be returned
-     * @return the class name as a {@String}
+     * @param field the {@link Field} whose type name should be returned
+     * @return the class name as a {@link String}
      */
     private String getClassName(Field field) {
         if (field.getType().getSimpleName().equals("Set")) {
@@ -153,7 +142,7 @@ public class SingularFilterChain implements FilterChain {
             }
         }
         if (field == null) {
-            throw new IllegalArgumentException("Filtering not possible. Field " + filterField + " not available.");
+            throw new IllegalArgumentException("Filtering not possible. Field '" + filterField + "' not available.");
         }
         return field;
     }
@@ -196,9 +185,9 @@ public class SingularFilterChain implements FilterChain {
     }
 
     /**
-     * Check if constraint is only applicable on {@String} types.
+     * Check if constraint is only applicable on {@link String} types.
      *
-     * @return true if only applicable on {@String}s, false if applicable on every complex type
+     * @return true if only applicable on {@link String}s, false if applicable on every complex type
      */
     private boolean isOnlyStringConstraint() {
         switch (constraint) {
@@ -212,9 +201,9 @@ public class SingularFilterChain implements FilterChain {
     }
 
     /**
-     * Check if subvalue is no {@String}.
+     * Check if subvalue is no {@link String}.
      *
-     * @return true if subvalue is no {@String}
+     * @return true if subvalue is no {@link String}
      */
     private boolean isSubvalueNotString() {
         // Expand this list of incompatible Non{@String} values if necessary.
@@ -231,9 +220,9 @@ public class SingularFilterChain implements FilterChain {
     }
 
     /**
-     * Check if value is no {@String}.
+     * Check if value is no {@link String}.
      *
-     * @return true if value is no {@String}
+     * @return true if value is no {@link String}
      */
     private boolean isValueNotString() {
         return !className.equals("String");
@@ -246,14 +235,13 @@ public class SingularFilterChain implements FilterChain {
      */
     private boolean isSubkey() {
         // Check if there is a subkey.
-        if (splitKeys.size() >= 2) {
-            return true;
-        }
-        return false;
+        return splitKeys.size() >= 2;
     }
 
-    @Override
-    public Criterion buildCriterion() { // NOSONAR - no further complexity simplification possible
+    /**
+     * Check if operator is applicable on field and throw an {@link IllegalArgumentException} if not.
+     */
+    private void applicabilityCheck() {
         if (isOnlyStringConstraint()) {
             if (!isSubkey()) {
                 // First level value and String
@@ -267,6 +255,13 @@ public class SingularFilterChain implements FilterChain {
                 }
             }
         }
+    }
+
+    @Override
+    public Criterion buildCriterion() {
+
+        applicabilityCheck();
+
         switch (constraint) {
             case CONTAINS:
                 return Restrictions.like(key, "%" + value + "%");
@@ -288,7 +283,6 @@ public class SingularFilterChain implements FilterChain {
                 throw new IllegalArgumentException("Unknown constraint.");
         }
     }
-
 
     public enum Constraints {
         EQUALS("eq"),
