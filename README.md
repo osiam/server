@@ -10,7 +10,8 @@ For additional information visit OSIAM's homepage at [www.osiam.org](https://www
 
 This project gets build with maven, the module structure is
 
-* src -- contains the source for the OSIAM Server -> [Wiki](https://github.com/osiam/server/wiki)
+* resource-server -- contains the source for the OSIAM Resource Server -> [Wiki](https://github.com/osiam/server/wiki)
+* auth-server -- contains the source for the OSIAM Auth Server
 
 # Requirements
 
