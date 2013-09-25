@@ -236,7 +236,6 @@
                     <generateJson>false</generateJson>
                     <generateHtml>true</generateHtml>
                     <jdk>${java.version}</jdk>
-                    <singleCloverDatabase>true</singleCloverDatabase>
                 </configuration>
             </plugin>
 
