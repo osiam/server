@@ -236,7 +236,6 @@
                     <generateJson>false</generateJson>
                     <generateHtml>true</generateHtml>
                     <jdk>${java.version}</jdk>
-                    <cloverDatabase>${basedir}/.clover/coverage.db</cloverDatabase>
                     <singleCloverDatabase>true</singleCloverDatabase>
                 </configuration>
             </plugin>
