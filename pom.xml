@@ -226,7 +226,7 @@
         </pluginManagement>
 
         <plugins>
-            <!-- Coverage reports for sonar -->
+            <!-- Merge sub module reports for sonar. Instrumentation has to be on sub module layer due to clover behaviour! -->
             <plugin>
                 <groupId>com.atlassian.maven.plugins</groupId>
                 <artifactId>maven-clover2-plugin</artifactId>
@@ -237,8 +237,17 @@
                     <generateJson>false</generateJson>
                     <generateHtml>true</generateHtml>
                     <jdk>${java.version}</jdk>
-                    <singleCloverDatabase>true</singleCloverDatabase>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>main</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>clover</goal>
+                            <goal>aggregate</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>
