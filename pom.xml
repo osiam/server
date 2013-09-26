@@ -244,6 +244,7 @@
                         <phase>verify</phase>
                         <goals>
                             <goal>aggregate</goal>
+                            <goal>clover</goal>
                         </goals>
                     </execution>
                 </executions>
