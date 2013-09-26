@@ -124,20 +124,6 @@
     <build>
 
         <plugins>
-            <!-- Coverage reports for sonar -->
-            <plugin>
-                <groupId>com.atlassian.maven.plugins</groupId>
-                <artifactId>maven-clover2-plugin</artifactId>
-                <version>${clover.version}</version>
-                <configuration>
-                    <generatePdf>true</generatePdf>
-                    <generateXml>true</generateXml>
-                    <generateJson>false</generateJson>
-                    <generateHtml>true</generateHtml>
-                    <jdk>${java.version}</jdk>
-                </configuration>
-            </plugin>
-
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>maven-jetty-plugin</artifactId>
