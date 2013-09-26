@@ -49,7 +49,10 @@
         <ch.qos.logback-version>1.0.7</ch.qos.logback-version>
         <org.apache.tiles-version>3.0.1</org.apache.tiles-version>
         <sonar.clover.version>3.1.11</sonar.clover.version>
-        <sonar.clover.reportPath>${project.build.directory}/site/clover/clover.xml</sonar.clover.reportPath>
+
+        <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+        <sonar.java.coveragePlugin>clover</sonar.java.coveragePlugin>
+        <sonar.clover.reportPath>${project.build.directory}/site/clover</sonar.clover.reportPath>
 
         <org.aspectj-version>1.7.0</org.aspectj-version>
     </properties>
