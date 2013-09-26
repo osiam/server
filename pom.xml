@@ -53,6 +53,7 @@
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <sonar.java.coveragePlugin>clover</sonar.java.coveragePlugin>
         <sonar.clover.reportPath>${project.build.directory}/site/clover</sonar.clover.reportPath>
+        <sonar.surefire.reportsPath>${project.build.directory}/surefire-reports</sonar.surefire.reportsPath>
 
         <org.aspectj-version>1.7.0</org.aspectj-version>
     </properties>
