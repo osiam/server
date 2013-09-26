@@ -51,7 +51,7 @@
         <sonar.clover.version>3.1.11</sonar.clover.version>
 
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-        <sonar.java.coveragePlugin>clover</sonar.java.coveragePlugin>
+        <sonar.core.codeCoveragePlugin>clover</sonar.core.codeCoveragePlugin>
         <sonar.clover.reportPath>${project.build.directory}/site/clover</sonar.clover.reportPath>
         <sonar.surefire.reportsPath>${project.build.directory}/surefire-reports</sonar.surefire.reportsPath>
 
