@@ -248,6 +248,7 @@
                         <id>main</id>
                         <phase>verify</phase>
                         <goals>
+                            <goal>clover</goal>
                             <goal>aggregate</goal>
                             <goal>clover</goal>
                         </goals>
