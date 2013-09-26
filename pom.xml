@@ -48,7 +48,9 @@
         <org.slf4j-version>1.7.2</org.slf4j-version>
         <ch.qos.logback-version>1.0.7</ch.qos.logback-version>
         <org.apache.tiles-version>3.0.1</org.apache.tiles-version>
-        <clover.version>3.1.11</clover.version>
+        <sonar.clover.version>3.1.11</sonar.clover.version>
+        <sonar.clover.reportPath>${project.build.directory}/site/clover/clover.xml</sonar.clover.reportPath>
+
         <org.aspectj-version>1.7.0</org.aspectj-version>
     </properties>
 
@@ -227,28 +229,28 @@
 
         <plugins>
             <!-- Merge sub module reports for sonar. Instrumentation has to be on sub module layer due to clover behaviour! -->
-            <!--<plugin>-->
-                <!--<groupId>com.atlassian.maven.plugins</groupId>-->
-                <!--<artifactId>maven-clover2-plugin</artifactId>-->
-                <!--<version>${clover.version}</version>-->
-                <!--<configuration>-->
-                    <!--<generatePdf>true</generatePdf>-->
-                    <!--<generateXml>true</generateXml>-->
-                    <!--<generateJson>false</generateJson>-->
-                    <!--<generateHtml>true</generateHtml>-->
-                    <!--<jdk>${java.version}</jdk>-->
-                <!--</configuration>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>main</id>-->
-                        <!--<phase>verify</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>aggregate</goal>-->
-                            <!--<goal>clover</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
+            <plugin>
+                <groupId>com.atlassian.maven.plugins</groupId>
+                <artifactId>maven-clover2-plugin</artifactId>
+                <version>${sonar.clover.version}</version>
+                <configuration>
+                    <generatePdf>true</generatePdf>
+                    <generateXml>true</generateXml>
+                    <generateJson>false</generateJson>
+                    <generateHtml>true</generateHtml>
+                    <jdk>${java.version}</jdk>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>main</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>aggregate</goal>
+                            <goal>clover</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
