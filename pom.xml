@@ -243,7 +243,6 @@
                         <id>main</id>
                         <phase>verify</phase>
                         <goals>
-                            <goal>clover</goal>
                             <goal>aggregate</goal>
                         </goals>
                     </execution>
