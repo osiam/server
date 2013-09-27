@@ -21,29 +21,37 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.security.authentication;
+package org.osiam.resources;
 
-import org.osiam.storage.dao.ClientDao;
-import org.springframework.security.oauth2.provider.ClientDetails;
-import org.springframework.security.oauth2.provider.ClientDetailsService;
-import org.springframework.stereotype.Component;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.inject.Inject;
-
+import java.util.Collection;
+import java.util.Set;
 
 /**
- * This class is used by clientAuthenticationManager in Spring to authenticate a client when trading an auth_code to an
- * access_token.
+ * TODO
+ *
+ * @author: Andreas Grau, tarent solutions GmbH, 27.09.13
+ * @version: 1.0
  */
-@Component("clientDetails")
-public class ClientDetailsLoadingBean implements ClientDetailsService {
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
+public class RoleSpring implements GrantedAuthority {
 
-    @Inject
-    private ClientDao clientDao;
+    private String value;
 
     @Override
-    public ClientDetails loadClientByClientId(final String clientId) {
-        //return clientDao.getClient(clientId);
-        return null;
+    public String getAuthority() {
+        return "ROLE_" + value;
     }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
 }

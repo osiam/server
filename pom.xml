@@ -32,9 +32,10 @@
     <name>OSIAM Server Parent</name>
 
      <modules>
+        <module>interaction-model</module>
         <module>auth-server</module>
         <module>resource-server</module>
-    </modules>
+     </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
