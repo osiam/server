@@ -21,22 +21,37 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.security.authentication
+package org.osiam.resources;
 
-import spock.lang.Ignore
-import spock.lang.Specification
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-class ClientDetailsLoadingBeanTest extends Specification {
+import java.util.Collection;
+import java.util.Set;
 
-    def clientDaoMock = Mock()
-    def underTest = new ClientDetailsLoadingBean(clientDao: clientDaoMock)
+/**
+ * TODO
+ *
+ * @author: Andreas Grau, tarent solutions GmbH, 27.09.13
+ * @version: 1.0
+ */
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
+public class RoleSpring implements GrantedAuthority {
 
-    @Ignore
-    def "should return a client"(){
-        when:
-        underTest.loadClientByClientId("hanz")
+    private String value;
 
-        then:
-        //1 * clientDaoMock.getClient("hanz")
+    @Override
+    public String getAuthority() {
+        return "ROLE_" + value;
     }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
 }
