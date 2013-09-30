@@ -21,22 +21,23 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.security.authentication
+package org.osiam.security.authentication;
 
-import org.osiam.security.authentication.ClientDetailsLoadingBean
-import org.osiam.storage.dao.ClientDao
-import spock.lang.Specification
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.stereotype.Component;
 
-class ClientDetailsLoadingBeanTest extends Specification {
+@Component("userDetailsService")
+/**
+ * Mainly used for demonstration, it is used to validate the user login, before he grants or denies the client access
+ * to a resource.
+ */
+public class AuthenticationBean implements UserDetailsService {
 
-    def clientDaoMock = Mock(ClientDao)
-    def underTest = new ClientDetailsLoadingBean(clientDao: clientDaoMock)
-
-    def "should return a client"(){
-        when:
-        underTest.loadClientByClientId("hanz")
-
-        then:
-        1 * clientDaoMock.getClient("hanz")
+    @Override
+    public UserDetails loadUserByUsername(final String username) {
+        return null;
+        //TODO: call /authentication/User on resource server side
+        //return userDAO.getByUsername(username);
     }
 }

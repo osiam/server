@@ -1,13 +1,10 @@
 package org.osiam.security.authorization;
 
-import org.osiam.storage.dao.ClientDao;
-import org.osiam.storage.entities.ClientEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.approval.DefaultUserApprovalHandler;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.Date;
 
 /**
@@ -19,9 +16,6 @@ import java.util.Date;
 @Component("userApprovalHandler")
 public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
 
-    @Inject
-    private ClientDao clientDao;
-
     private static final int MILLISECONDS = 1000;
 
     /**
@@ -30,7 +24,7 @@ public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
      * So the user is not bothered every time to approve the client.
      *
      * @param authorizationRequest spring authorizationRequest
-     * @param userAuthentication spring userAuthentication
+     * @param userAuthentication   spring userAuthentication
      * @return the authorizationRequest
      */
     @Override
@@ -42,7 +36,9 @@ public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
             ClientEntity client = getClientDetails(authorizationRequest);
             Date date = new Date(System.currentTimeMillis() + (client.getValidityInSeconds() * MILLISECONDS));
             client.setExpiry(date);
-            clientDao.update(client, authorizationRequest.getClientId());
+
+            //TODO: call /authentication/Client on resource server side
+            //clientDao.update(client, authorizationRequest.getClientId());
         }
         return super.updateBeforeApproval(authorizationRequest, userAuthentication);
     }
@@ -51,7 +47,7 @@ public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
      * Checks if the client is configured to not ask the user for approval or if the date to ask again expires.
      *
      * @param authorizationRequest spring authorizationRequest
-     * @param userAuthentication spring userAuthentication
+     * @param userAuthentication   spring userAuthentication
      * @return whether user approved the client or not
      */
     @Override
@@ -67,6 +63,32 @@ public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
     }
 
     private ClientEntity getClientDetails(AuthorizationRequest authorizationRequest) {
-        return clientDao.getClient(authorizationRequest.getClientId());
+        return new ClientEntity();
+        //TODO: call /authentication/Client on resource server side
+        //return clientDao.getClient(authorizationRequest.getClientId());
+    }
+
+
+    //TODO: remove this
+    private class ClientEntity {
+        private int validityInSeconds = 1000;
+        private Date expiry = new Date();
+        private boolean implicit = true;
+
+        public int getValidityInSeconds() {
+            return validityInSeconds;
+        }
+
+        public void setExpiry(Date expiry) {
+            this.expiry = expiry;
+        }
+
+        public Date getExpiry() {
+            return expiry;
+        }
+
+        public boolean isImplicit() {
+            return implicit;
+        }
     }
 }

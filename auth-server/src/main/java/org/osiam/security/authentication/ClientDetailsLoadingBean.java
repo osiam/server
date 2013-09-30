@@ -21,27 +21,24 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.security.authentication
+package org.osiam.security.authentication;
 
-import org.osiam.storage.dao.UserDAO
-import org.osiam.storage.entities.UserEntity
-import org.osiam.security.authentication.AuthenticationBean
-import spock.lang.Specification
+import org.springframework.security.oauth2.provider.ClientDetails;
+import org.springframework.security.oauth2.provider.ClientDetailsService;
+import org.springframework.stereotype.Component;
 
-class AuthenticationBeanTest extends Specification {
-    def userDao = Mock(UserDAO)
-    def underTest = new AuthenticationBean(userDAO: userDao)
 
-    def "should return an user found by userdao"() {
-        given:
-        def user = Mock(UserEntity)
-        when:
-        def result = underTest.loadUserByUsername("hui")
-        then:
-        1 * userDao.getByUsername("hui") >> user
-        result == user
+/**
+ * This class is used by clientAuthenticationManager in Spring to authenticate a client when trading an auth_code to an
+ * access_token.
+ */
+@Component("clientDetails")
+public class ClientDetailsLoadingBean implements ClientDetailsService {
 
+    @Override
+    public ClientDetails loadClientByClientId(final String clientId) {
+        return null;
+        //TODO: call /authentication/Client on resource server side
+        //return clientDao.getClient(clientId);
     }
-
-
 }
