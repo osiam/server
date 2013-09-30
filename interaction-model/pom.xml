@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>interaction-model</artifactId>
+    <artifactId>osiam-interaction-model</artifactId>
     <name>OSIAM Interaction Model</name>
 
     <dependencies>
