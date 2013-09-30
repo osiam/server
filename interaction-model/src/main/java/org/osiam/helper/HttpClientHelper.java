@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.security.helper;
+package org.osiam.helper;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
