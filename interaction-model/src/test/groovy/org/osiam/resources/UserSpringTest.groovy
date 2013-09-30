@@ -1,17 +1,18 @@
 package org.osiam.resources
 
 import org.springframework.security.core.userdetails.UserDetails
+import spock.lang.Specification
 
 /**
- * 
+ *
  *
  * @author: Andreas Grau, tarent solutions GmbH, 27.09.13
  * @version: 1.0
  */
-class UserSpringTest {
+class UserSpringTest extends Specification {
     def userSpring = new UserSpring()
 
-    def "should inherit UserDetails"(){
+    def "should inherit UserDetails"() {
         given:
         def roles = [new RoleSpring()] as Set
         when:

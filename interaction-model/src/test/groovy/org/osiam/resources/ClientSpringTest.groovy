@@ -1,12 +1,14 @@
 package org.osiam.resources
 
+import spock.lang.Specification
+
 /**
- * 
+ *
  *
  * @author: Andreas Grau, tarent solutions GmbH, 27.09.13
  * @version: 1.0
  */
-class ClientSpringTest {
+class ClientSpringTest extends Specification {
     def clientSpring = new ClientSpring()
 
     def "resource ids should be empty"() {
