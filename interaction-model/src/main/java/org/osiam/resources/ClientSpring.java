@@ -46,6 +46,9 @@ public class ClientSpring implements ClientDetails {
     private String redirectUri;
     private Integer accessTokenValiditySeconds;
     private Date expiry;
+    private boolean implicit;
+    private long validityInSeconds;
+
 
     @Override
     public String getClientId() {
@@ -156,5 +159,21 @@ public class ClientSpring implements ClientDetails {
 
     public void setExpiry(Date expiry) {
         this.expiry = expiry!= null ? (Date) expiry.clone() : null;
+    }
+
+    public boolean isImplicit() {
+        return implicit;
+    }
+
+    public void setImplicit(boolean implicit) {
+        this.implicit = implicit;
+    }
+
+    public long getValidityInSeconds() {
+        return validityInSeconds;
+    }
+
+    public void setValidityInSeconds(long validity) {
+        this.validityInSeconds = validity;
     }
 }
