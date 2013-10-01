@@ -23,6 +23,7 @@
 
 package org.osiam.helper;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -51,13 +52,14 @@ public class HttpClientHelper {
     private final HttpClient client;
 
     private HttpResponse response;
-    private String result;
+
 
     public HttpClientHelper() {
         client = new DefaultHttpClient();
     }
 
     public String executeHttpGet(String url) {
+        String result;
         final HttpGet request = new HttpGet(url);
 
         try {
@@ -83,17 +85,17 @@ public class HttpClientHelper {
     }
 
     private String getResponseBody(HttpResponse response) throws IOException {
-        final BufferedReader rd = new BufferedReader(
-                new InputStreamReader(response.getEntity().getContent()));
+        BufferedReader rd = null;
         final StringBuffer stringBuffer = new StringBuffer();
 
         try {
+            rd =  new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
             String line;
             while ((line = rd.readLine()) != null) {
                 stringBuffer.append(line);
             }
-        }   finally {
-             rd.close();
+        } finally {
+            IOUtils.closeQuietly(rd);
         }
 
         return stringBuffer.toString();

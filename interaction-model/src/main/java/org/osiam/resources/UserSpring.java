@@ -31,7 +31,7 @@ import java.util.Collection;
 import java.util.Set;
 
 /**
- * TODO
+ * Serializable {@link UserDetails} implementation.
  *
  * @author: Andreas Grau, tarent solutions GmbH, 27.09.13
  * @version: 1.0

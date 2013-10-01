@@ -30,7 +30,7 @@ import org.springframework.security.oauth2.provider.ClientDetails;
 import java.util.*;
 
 /**
- * TODO
+ * Serializable {@link ClientDetails} implementation.
  *
  * @author: Andreas Grau, tarent solutions GmbH, 27.09.13
  * @version: 1.0
@@ -57,7 +57,7 @@ public class ClientSpring implements ClientDetails {
     }
 
     /**
-     * TODO: Not yet implemented.
+     * Get a set of resource id's.
      *
      * @return always empty
      */
@@ -103,11 +103,21 @@ public class ClientSpring implements ClientDetails {
         return Collections.EMPTY_SET;
     }
 
+    /**
+     * Get the access token validity seconds.
+     *
+     * @return the accessTokenValiditySeconds
+     */
     @Override
     public Integer getAccessTokenValiditySeconds() {
         return accessTokenValiditySeconds;
     }
 
+    /**
+     * Get the refresh token validity seconds.
+     *
+     * @return always returns the accessTokenValiditySeconds
+     */
     @Override
     public Integer getRefreshTokenValiditySeconds() {
         return accessTokenValiditySeconds;
