@@ -21,7 +21,7 @@ public class AuthorizationRequestSpring implements AuthorizationRequest {
     private String clientId;
     private Set<String> scope;
     private Set<String> resourceIds;
-    private Collection<? extends RoleSpring> authorities;
+    private Collection<? super RoleSpring> authorities;
     private boolean approved;
     private boolean denied;
     private String state;
@@ -83,6 +83,5 @@ public class AuthorizationRequestSpring implements AuthorizationRequest {
     public Set<String> getResponseTypes() {
         return responseTypes;
     }
-
 
 }
