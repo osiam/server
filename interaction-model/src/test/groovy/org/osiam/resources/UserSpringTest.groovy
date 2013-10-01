@@ -4,7 +4,7 @@ import org.springframework.security.core.userdetails.UserDetails
 import spock.lang.Specification
 
 /**
- *
+ * Unit-Tests for {@link UserSpring}.
  *
  * @author: Andreas Grau, tarent solutions GmbH, 27.09.13
  * @version: 1.0

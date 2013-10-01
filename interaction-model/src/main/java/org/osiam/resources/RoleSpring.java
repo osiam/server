@@ -27,7 +27,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
- * TODO
+ * Serializable {@link GrantedAuthority} implementation.
  *
  * @author: Andreas Grau, tarent solutions GmbH, 27.09.13
  * @version: 1.0
