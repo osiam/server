@@ -52,13 +52,14 @@ public class HttpClientHelper {
     private final HttpClient client;
 
     private HttpResponse response;
-    private String result;
+
 
     public HttpClientHelper() {
         client = new DefaultHttpClient();
     }
 
     public String executeHttpGet(String url) {
+        String result;
         final HttpGet request = new HttpGet(url);
 
         try {
