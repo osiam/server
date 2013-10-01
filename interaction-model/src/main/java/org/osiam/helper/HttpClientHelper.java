@@ -85,12 +85,17 @@ public class HttpClientHelper {
     private String getResponseBody(HttpResponse response) throws IOException {
         final BufferedReader rd = new BufferedReader(
                 new InputStreamReader(response.getEntity().getContent()));
-
         final StringBuffer stringBuffer = new StringBuffer();
-        String line;
-        while ((line = rd.readLine()) != null) {
-            stringBuffer.append(line);
+
+        try {
+            String line;
+            while ((line = rd.readLine()) != null) {
+                stringBuffer.append(line);
+            }
+        }   finally {
+             rd.close();
         }
+
         return stringBuffer.toString();
     }
 

@@ -38,8 +38,9 @@ import java.util.*;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
 public class ClientSpring implements ClientDetails {
 
-    private String id;
+    private static final long serialVersionUID = 4649122233093279685L;
 
+    private String id;
     private String clientSecret;
     private Set<String> scope;
     private Set<String> grants;

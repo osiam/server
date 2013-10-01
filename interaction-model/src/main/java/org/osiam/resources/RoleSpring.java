@@ -35,6 +35,8 @@ import org.springframework.security.core.GrantedAuthority;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
 public class RoleSpring implements GrantedAuthority {
 
+    private static final long serialVersionUID = 6776336074250400615L;
+
     private String value;
 
     @Override

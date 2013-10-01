@@ -13,6 +13,8 @@ import java.util.Collection;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
 public class AuthenticationSpring implements Authentication {
 
+    private static final long serialVersionUID = 8575148481619626424L;
+
     private Collection<? extends RoleSpring> authorities;
     private Object credentials;
     private Object details;
