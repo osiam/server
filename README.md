@@ -20,6 +20,6 @@ This project gets build with maven, the module structure is
 * for performance reasons it recommend to have at least 2 GB RAM
 * Tomcat (tested with 7.0.37)
 
-# Issue tracker for the Connector
+# Issue tracker for the Server
 
 Issues, bugs and feature requests can be brought to us using [OSIAM's issue tracker](https://jira.osiam.org/browse/BT).
