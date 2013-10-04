@@ -22,4 +22,4 @@ This project gets build with maven, the module structure is
 
 # Issue tracker for the Connector
 
-Issues, bugs and feature requests can be brought to us using [OSIAM Connector for Java's issue tracker](https://github.com/osiam/server/issues).
+Issues, bugs and feature requests can be brought to us using [OSIAM's issue tracker](https://jira.osiam.org/browse/BT).
