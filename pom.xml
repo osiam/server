@@ -140,8 +140,11 @@
                             <id>generate-data</id>
                             <phase>package</phase>
                             <goals>
-                                <goal>instrument</goal>
+                                <goal>cobertura</goal>
                             </goals>
+                            <configuration>
+                                <quiet>true</quiet>
+                            </configuration>
                         </execution>
                     </executions>
                 </plugin>
