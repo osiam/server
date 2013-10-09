@@ -55,7 +55,7 @@
         <!-- force sonar to reuse reports generated during build cycle -->
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <!-- set path for unit tests reports -->
-        <sonar.jacoco.reportPath>${project.basedir}/target/jacoco-unit.exec</sonar.jacoco.reportPath>
+        <sonar.jacoco.reportPath>${project.basedir}/target/jacoco.exec</sonar.jacoco.reportPath>
         <sonar.surefire.reportsPath>${project.basedir}/target/surefire-reports</sonar.surefire.reportsPath>
         <!-- all modules have to use the same integration tests report file -->
         <!-- <sonar.jacoco.itReportPath>${project.basedir}/../target/jacoco-it.exec</sonar.jacoco.itReportPath> -->
