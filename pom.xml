@@ -136,7 +136,6 @@
                     <artifactId>cobertura-maven-plugin</artifactId>
                     <version>2.5.2</version>
                     <configuration>
-                        <argLine>-XX:-UseSplitVerifier</argLine>
                         <formats>
                             <format>xml</format>
                         </formats>
@@ -187,6 +186,7 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.13</version>
                     <configuration>
+                        <argLine>-XX:-UseSplitVerifier</argLine>
                         <includes>
                             <include>**/*Test.*</include>
                             <include>**/*Spec.*</include>
