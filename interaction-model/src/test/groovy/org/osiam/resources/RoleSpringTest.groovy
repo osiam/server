@@ -21,4 +21,15 @@ class RoleSpringTest extends Specification {
         authority == "ROLE_USER"
         roleSpring instanceof GrantedAuthority
     }
+
+    def "should be able to get the value field"() {
+        given:
+        roleSpring.setValue("USER")
+
+        when:
+        def value = roleSpring.getValue()
+
+        then:
+        value == "USER"
+    }
 }

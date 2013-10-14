@@ -48,9 +48,9 @@ public class UserSpring implements UserDetails {
     private String password;
 
     /**
-     * TODO
+     * Returning the users granted authorities
      *
-     * @return TODO
+     * @return users roles
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -58,9 +58,9 @@ public class UserSpring implements UserDetails {
     }
 
     /**
-     * TODO
+     * Returning the users password
      *
-     * @return TODO
+     * @return password
      */
     @Override
     public String getPassword() {
@@ -68,9 +68,9 @@ public class UserSpring implements UserDetails {
     }
 
     /**
-     * TODO
+     * Returning the user name
      *
-     * @return TODO
+     * @return userName
      */
     @Override
     public String getUsername() {
@@ -78,7 +78,7 @@ public class UserSpring implements UserDetails {
     }
 
     /**
-     * TODO: Not implemented yet.
+     * Not implemented yet.
      *
      * @return always true
      */
@@ -88,7 +88,7 @@ public class UserSpring implements UserDetails {
     }
 
     /**
-     * TODO: Not implemented yet.
+     * Not implemented yet.
      *
      * @return always true
      */
@@ -98,7 +98,7 @@ public class UserSpring implements UserDetails {
     }
 
     /**
-     * TODO: Not implemented yet.
+     * Not implemented yet.
      *
      * @return always true
      */
@@ -108,7 +108,7 @@ public class UserSpring implements UserDetails {
     }
 
     /**
-     * TODO: Not implemented yet.
+     * Not implemented yet.
      *
      * @return always true
      */

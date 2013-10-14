@@ -54,7 +54,6 @@ public class AuthorizationRequestSpring implements AuthorizationRequest {
     }
 
     @Override
-    //TODO: Check Jackson serialization
     public Collection<GrantedAuthority> getAuthorities() {
         return (Collection<GrantedAuthority>) authorities;
     }
@@ -84,4 +83,47 @@ public class AuthorizationRequestSpring implements AuthorizationRequest {
         return responseTypes;
     }
 
+    public void setAuthorizationParameters(Map<String, String> authorizationParameters) {
+        this.authorizationParameters = authorizationParameters;
+    }
+
+    public void setApprovalParameters(Map<String, String> approvalParameters) {
+        this.approvalParameters = approvalParameters;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
+
+    public void setScope(Set<String> scope) {
+        this.scope = scope;
+    }
+
+    public void setResourceIds(Set<String> resourceIds) {
+        this.resourceIds = resourceIds;
+    }
+
+    public void setAuthorities(Collection<? super RoleSpring> authorities) {
+        this.authorities = authorities;
+    }
+
+    public void setApproved(boolean approved) {
+        this.approved = approved;
+    }
+
+    public void setDenied(boolean denied) {
+        this.denied = denied;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public void setRedirectUri(String redirectUri) {
+        this.redirectUri = redirectUri;
+    }
+
+    public void setResponseTypes(Set<String> responseTypes) {
+        this.responseTypes = responseTypes;
+    }
 }

@@ -1,14 +1,8 @@
 package org.osiam.helper
 
-import org.apache.http.Header
-import org.apache.http.HeaderIterator
 import org.apache.http.HttpEntity
 import org.apache.http.HttpResponse
-import org.apache.http.ProtocolVersion
-import org.apache.http.StatusLine
 import org.apache.http.client.HttpClient
-import org.apache.http.client.methods.HttpGet
-import org.apache.http.params.HttpParams
 import spock.lang.Specification
 
 /**
@@ -18,6 +12,10 @@ import spock.lang.Specification
  * @version: 1.0
  */
 class HttpClientHelperTest extends Specification {
+
+    def httpClientMock = Mock(HttpClient)
+    def httpResponseMock = Mock(HttpResponse)
+    def httpClientHelper = new HttpClientHelper(client: httpClientMock, response: httpResponseMock)
 
     def "the helper constructor should work"() {
         when: "a new helper instance is created"
@@ -30,4 +28,44 @@ class HttpClientHelperTest extends Specification {
         helper != null
     }
 
+    def "should be able to execute the http get method and getting response"() {
+        given:
+        def httpEntityMock = Mock(HttpEntity)
+        def content = "The response content"
+
+        when:
+        def result = httpClientHelper.executeHttpGet("http://localhost:8080/test")
+
+        then:
+        1 * httpClientMock.execute(_) >> httpResponseMock
+        1 * httpResponseMock.getEntity() >> httpEntityMock
+        1 * httpEntityMock.getContent() >> new ByteArrayInputStream(content.getBytes("UTF-8"))
+        result == content
+    }
+
+    def "should wrap IOException from httpClientHelper.executeHttpGet to RuntimeException if"() {
+        when:
+        httpClientHelper.executeHttpGet("http://localhost:8080/test")
+
+        then:
+        1 * httpClientMock.execute(_) >> {throw new IOException()}
+        thrown(RuntimeException)
+    }
+
+    def "should be able to execute the http put method for updating"() {
+        when:
+        httpClientHelper.executeHttpPut("http://localhost:8080/test", "paramName", "paramValue")
+
+        then:
+        1 * httpClientMock.execute(_) >> httpResponseMock
+    }
+
+    def "should wrap IOException from httpClientHelper.executeHttpPut to RuntimeException if"() {
+        when:
+        httpClientHelper.executeHttpPut("http://localhost:8080/test", "paramName", "paramValue")
+
+        then:
+        1 * httpClientMock.execute(_) >> {throw new IOException()}
+        thrown(RuntimeException)
+    }
 }

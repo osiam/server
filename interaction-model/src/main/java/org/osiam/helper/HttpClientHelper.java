@@ -49,7 +49,7 @@ import java.util.List;
  */
 public class HttpClientHelper {
 
-    private final HttpClient client;
+    private HttpClient client; //NOSONAR : need to mock therefore the final identifier was removed
 
     private HttpResponse response;
 
