@@ -23,6 +23,7 @@
 
 package org.osiam.resources;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -33,6 +34,8 @@ import org.springframework.security.core.GrantedAuthority;
  * @version: 1.0
  */
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+
 public class RoleSpring implements GrantedAuthority {
 
     private static final long serialVersionUID = 6776336074250400615L;

@@ -23,6 +23,7 @@
 
 package org.osiam.resources;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -37,6 +38,7 @@ import java.util.Set;
  * @version: 1.0
  */
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserSpring implements UserDetails {
 
     private static final long serialVersionUID = 4325248547364376955L;

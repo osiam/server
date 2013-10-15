@@ -23,6 +23,7 @@
 
 package org.osiam.resources;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
@@ -36,6 +37,7 @@ import java.util.*;
  * @version: 1.0
  */
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ClientSpring implements ClientDetails {
 
     private static final long serialVersionUID = 4649122233093279685L;
@@ -124,6 +126,7 @@ public class ClientSpring implements ClientDetails {
     }
 
     @Override
+
     public Map<String, Object> getAdditionalInformation() {
         return Collections.emptyMap();
     }
@@ -165,7 +168,7 @@ public class ClientSpring implements ClientDetails {
     }
 
     public Date getExpiry() {
-        return expiry !=  null ? (Date) expiry.clone() : null;
+        return expiry != null ? (Date) expiry.clone() : null;
     }
 
     public void setExpiry(Date expiry) {
