@@ -37,6 +37,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,7 +67,7 @@ public class HttpClientHelper {
             response = client.execute(request);
             result = getResponseBody(response);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); //NOSONAR : Need only wrapping to a runtime exception
         }
 
         return result;
@@ -80,7 +81,7 @@ public class HttpClientHelper {
             request.setEntity(setRequestBody(parameterName, parameterValue));
             response = client.execute(request);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); //NOSONAR : Need only wrapping to a runtime exception
         }
     }
 
@@ -89,7 +90,7 @@ public class HttpClientHelper {
         final StringBuffer stringBuffer = new StringBuffer();
 
         try {
-            rd =  new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+            rd =  new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
             String line;
             while ((line = rd.readLine()) != null) {
                 stringBuffer.append(line);
