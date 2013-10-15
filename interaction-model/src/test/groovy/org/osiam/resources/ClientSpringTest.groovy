@@ -10,11 +10,8 @@ import spock.lang.Specification
  * @version: 1.0
  */
 class ClientSpringTest extends Specification {
-    def clientSpring
 
-    def setup() {
-        clientSpring = new ClientSpring()
-    }
+    def clientSpring = new ClientSpring()
 
     def "resource ids should be empty"() {
         when:
@@ -181,6 +178,18 @@ class ClientSpringTest extends Specification {
 
         then:
         clientSpring.getValidityInSeconds() == validitySeconds
+    }
+
+    def "should not throw null pointer exception if expiry is null"() {
+        given:
+        clientSpring.setExpiry(null)
+
+        when:
+        def result = clientSpring.getExpiry()
+
+        then:
+        notThrown(NullPointerException)
+        result == null
     }
 
 }

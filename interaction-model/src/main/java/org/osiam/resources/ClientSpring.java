@@ -165,7 +165,7 @@ public class ClientSpring implements ClientDetails {
     }
 
     public Date getExpiry() {
-        return (Date) expiry.clone();
+        return expiry !=  null ? (Date) expiry.clone() : null;
     }
 
     public void setExpiry(Date expiry) {
