@@ -51,4 +51,12 @@ class UserSpringTest extends Specification {
         then:
         userSpring.getUserName() == "userName"
     }
+
+    def "should be able to set users id"() {
+        when:
+        userSpring.setId("someUUID")
+
+        then:
+        userSpring.getId() == "someUUID"
+    }
 }
