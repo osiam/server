@@ -23,6 +23,7 @@
 
 package org.osiam.resources;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.springframework.security.core.GrantedAuthority;
@@ -55,6 +56,7 @@ public class UserSpring implements UserDetails {
      * @return users roles
      */
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;
     }
