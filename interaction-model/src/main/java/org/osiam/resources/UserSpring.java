@@ -50,6 +50,8 @@ public class UserSpring implements UserDetails {
 
     private String password;
 
+    private String Id;
+
     /**
      * Returning the users granted authorities
      *
@@ -59,6 +61,10 @@ public class UserSpring implements UserDetails {
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;
+    }
+
+    public String getId() {
+        return Id;
     }
 
     /**
@@ -123,6 +129,11 @@ public class UserSpring implements UserDetails {
 
     public String getUserName() {
         return userName;
+    }
+
+
+    public void setId(String id) {
+        Id = id;
     }
 
     public void setUserName(String userName) {
