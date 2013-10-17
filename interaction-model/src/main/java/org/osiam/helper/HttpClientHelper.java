@@ -33,8 +33,6 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpParams;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -55,10 +53,16 @@ public class HttpClientHelper {
 
     private HttpResponse response;
 
+    private int statusCode;
+
 
     public HttpClientHelper() {
         PoolingClientConnectionManager poolingClientConnectionManager = new PoolingClientConnectionManager();
         client = new DefaultHttpClient(poolingClientConnectionManager);
+    }
+
+    public int getStatusCode() {
+        return statusCode;
     }
 
     public String executeHttpGet(String url) {
@@ -67,6 +71,7 @@ public class HttpClientHelper {
 
         try {
             response = client.execute(request);
+            statusCode = response.getStatusLine().getStatusCode();
             result = getResponseBody(response);
         } catch (IOException e) {
             throw new RuntimeException(e); //NOSONAR : Need only wrapping to a runtime exception
@@ -85,6 +90,7 @@ public class HttpClientHelper {
             UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(formParams, "UTF-8");
             request.setEntity(formEntity);
             response = client.execute(request);
+            statusCode = response.getStatusLine().getStatusCode();
         } catch (IOException e) {
             throw new RuntimeException(e); //NOSONAR : Need only wrapping to a runtime exception
         }

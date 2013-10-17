@@ -2,6 +2,7 @@ package org.osiam.helper
 
 import org.apache.http.HttpEntity
 import org.apache.http.HttpResponse
+import org.apache.http.StatusLine
 import org.apache.http.client.HttpClient
 import spock.lang.Specification
 
@@ -32,15 +33,19 @@ class HttpClientHelperTest extends Specification {
         given:
         def httpEntityMock = Mock(HttpEntity)
         def content = "The response content"
+        def statusLineMock = Mock(StatusLine)
 
         when:
         def result = httpClientHelper.executeHttpGet("http://localhost:8080/test")
 
         then:
         1 * httpClientMock.execute(_) >> httpResponseMock
+        1 * httpResponseMock.getStatusLine() >> statusLineMock
+        1 * statusLineMock.getStatusCode() >> 200
         1 * httpResponseMock.getEntity() >> httpEntityMock
         1 * httpEntityMock.getContent() >> new ByteArrayInputStream(content.getBytes("UTF-8"))
         result == content
+        httpClientHelper.getStatusCode() == 200
     }
 
     def "should wrap IOException from httpClientHelper.executeHttpGet to RuntimeException if"() {
@@ -53,11 +58,17 @@ class HttpClientHelperTest extends Specification {
     }
 
     def "should be able to execute the http put method for updating"() {
+        given:
+        def statusLineMock = Mock(StatusLine)
+
         when:
         httpClientHelper.executeHttpPut("http://localhost:8080/test", "paramName", "paramValue")
 
         then:
         1 * httpClientMock.execute(_) >> httpResponseMock
+        1 * httpResponseMock.getStatusLine() >> statusLineMock
+        1 * statusLineMock.getStatusCode() >> 200
+        httpClientHelper.getStatusCode() == 200
     }
 
     def "should wrap IOException from httpClientHelper.executeHttpPut to RuntimeException if"() {
