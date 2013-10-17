@@ -25,20 +25,16 @@ package org.osiam.helper;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -75,9 +71,11 @@ public class HttpClientHelper {
     public void executeHttpPut(String url, String parameterName, String parameterValue) {
 
         final HttpPut request = new HttpPut(url);
+        final HttpParams httpParams = new BasicHttpParams();
+        httpParams.setParameter(parameterName, parameterValue);
 
         try {
-            request.setEntity(setRequestBody(parameterName, parameterValue));
+            request.setParams(httpParams);
             response = client.execute(request);
         } catch (IOException e) {
             throw new RuntimeException(e); //NOSONAR : Need only wrapping to a runtime exception
@@ -99,12 +97,5 @@ public class HttpClientHelper {
         }
 
         return stringBuffer.toString();
-    }
-
-    private UrlEncodedFormEntity setRequestBody(String name, String value) throws UnsupportedEncodingException {
-        List<NameValuePair> urlParameters = new ArrayList<>();
-        urlParameters.add(new BasicNameValuePair(name, value));
-
-        return new UrlEncodedFormEntity(urlParameters);
     }
 }
