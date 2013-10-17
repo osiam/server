@@ -25,16 +25,22 @@ package org.osiam.helper;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -51,7 +57,8 @@ public class HttpClientHelper {
 
 
     public HttpClientHelper() {
-        client = new DefaultHttpClient();
+        PoolingClientConnectionManager poolingClientConnectionManager = new PoolingClientConnectionManager();
+        client = new DefaultHttpClient(poolingClientConnectionManager);
     }
 
     public String executeHttpGet(String url) {
@@ -71,11 +78,12 @@ public class HttpClientHelper {
     public void executeHttpPut(String url, String parameterName, String parameterValue) {
 
         final HttpPut request = new HttpPut(url);
-        final HttpParams httpParams = new BasicHttpParams();
-        httpParams.setParameter(parameterName, parameterValue);
+        List<NameValuePair> formParams = new ArrayList<>();
+        formParams.add(new BasicNameValuePair(parameterName, parameterValue));
 
         try {
-            request.setParams(httpParams);
+            UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(formParams, "UTF-8");
+            request.setEntity(formEntity);
             response = client.execute(request);
         } catch (IOException e) {
             throw new RuntimeException(e); //NOSONAR : Need only wrapping to a runtime exception
