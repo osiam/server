@@ -115,6 +115,12 @@
             </exclusions>
         </dependency>
 
+        <!-- @Inject -->
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+        </dependency>
+
         <!-- JSON -->
         <dependency>
             <groupId>org.codehaus.jackson</groupId>

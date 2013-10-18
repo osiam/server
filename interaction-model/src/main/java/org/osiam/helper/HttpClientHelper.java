@@ -33,55 +33,42 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
+import org.springframework.stereotype.Component;
 
+import javax.inject.Named;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created with IntelliJ IDEA.
- * User: jochen
- * Date: 30.09.13
- * Time: 09:08
- * To change this template use File | Settings | File Templates.
- */
+@Named("httpClientHelper")
 public class HttpClientHelper {
 
     private HttpClient client; //NOSONAR : need to mock therefore the final identifier was removed
-
-    private HttpResponse response;
-
-    private int statusCode;
-
 
     public HttpClientHelper() {
         PoolingClientConnectionManager poolingClientConnectionManager = new PoolingClientConnectionManager();
         client = new DefaultHttpClient(poolingClientConnectionManager);
     }
 
-    public int getStatusCode() {
-        return statusCode;
-    }
-
-    public String executeHttpGet(String url) {
-        String result;
+    public HttpClientRequestResult executeHttpGet(String url) {
+        HttpClientRequestResult result;
         final HttpGet request = new HttpGet(url);
 
         try {
-            response = client.execute(request);
-            statusCode = response.getStatusLine().getStatusCode();
-            result = getResponseBody(response);
+            HttpResponse response = client.execute(request);
+            String responseBody = getResponseBody(response);
+            int statusCode = response.getStatusLine().getStatusCode();
+            result = new HttpClientRequestResult(responseBody, statusCode);
         } catch (IOException e) {
             throw new RuntimeException(e); //NOSONAR : Need only wrapping to a runtime exception
         }
-
         return result;
     }
 
-    public void executeHttpPut(String url, String parameterName, String parameterValue) {
-
+    public HttpClientRequestResult executeHttpPut(String url, String parameterName, String parameterValue) {
+        HttpClientRequestResult result;
         final HttpPut request = new HttpPut(url);
         List<NameValuePair> formParams = new ArrayList<>();
         formParams.add(new BasicNameValuePair(parameterName, parameterValue));
@@ -89,19 +76,22 @@ public class HttpClientHelper {
         try {
             UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(formParams, "UTF-8");
             request.setEntity(formEntity);
-            response = client.execute(request);
-            statusCode = response.getStatusLine().getStatusCode();
+            HttpResponse response = client.execute(request);
+            String responseBody = getResponseBody(response);
+            int statusCode = response.getStatusLine().getStatusCode();
+            result = new HttpClientRequestResult(responseBody, statusCode);
         } catch (IOException e) {
             throw new RuntimeException(e); //NOSONAR : Need only wrapping to a runtime exception
         }
+        return result;
     }
 
     private String getResponseBody(HttpResponse response) throws IOException {
         BufferedReader rd = null;
-        final StringBuffer stringBuffer = new StringBuffer();
+        final StringBuffer stringBuffer = new StringBuffer("");
 
         try {
-            rd =  new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+            rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
             String line;
             while ((line = rd.readLine()) != null) {
                 stringBuffer.append(line);
