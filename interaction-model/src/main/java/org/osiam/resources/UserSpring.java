@@ -50,7 +50,7 @@ public class UserSpring implements UserDetails {
 
     private String password;
 
-    private String Id;
+    private String id;
 
     /**
      * Returning the users granted authorities
@@ -64,7 +64,7 @@ public class UserSpring implements UserDetails {
     }
 
     public String getId() {
-        return Id;
+        return id;
     }
 
     /**
@@ -133,7 +133,7 @@ public class UserSpring implements UserDetails {
 
 
     public void setId(String id) {
-        Id = id;
+        this.id = id;
     }
 
     public void setUserName(String userName) {
