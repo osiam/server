@@ -16,7 +16,7 @@ class HttpClientHelperTest extends Specification {
 
     def httpClientMock = Mock(HttpClient)
     def httpResponseMock = Mock(HttpResponse)
-    def httpClientHelper = new HttpClientHelper(client: httpClientMock, response: httpResponseMock)
+    def httpClientHelper = new HttpClientHelper(client: httpClientMock)
 
     def "the helper constructor should work"() {
         when: "a new helper instance is created"
@@ -44,8 +44,8 @@ class HttpClientHelperTest extends Specification {
         1 * statusLineMock.getStatusCode() >> 200
         1 * httpResponseMock.getEntity() >> httpEntityMock
         1 * httpEntityMock.getContent() >> new ByteArrayInputStream(content.getBytes("UTF-8"))
-        result == content
-        httpClientHelper.getStatusCode() == 200
+        result.body == content
+        result.statusCode == 200
     }
 
     def "should wrap IOException from httpClientHelper.executeHttpGet to RuntimeException if"() {
@@ -59,16 +59,21 @@ class HttpClientHelperTest extends Specification {
 
     def "should be able to execute the http put method for updating"() {
         given:
+        def httpEntityMock = Mock(HttpEntity)
+        def content = "The response content"
         def statusLineMock = Mock(StatusLine)
 
         when:
-        httpClientHelper.executeHttpPut("http://localhost:8080/test", "paramName", "paramValue")
+        def result = httpClientHelper.executeHttpPut("http://localhost:8080/test", "paramName", "paramValue")
 
         then:
         1 * httpClientMock.execute(_) >> httpResponseMock
         1 * httpResponseMock.getStatusLine() >> statusLineMock
         1 * statusLineMock.getStatusCode() >> 200
-        httpClientHelper.getStatusCode() == 200
+        1 * httpResponseMock.getEntity() >> httpEntityMock
+        1 * httpEntityMock.getContent() >> new ByteArrayInputStream(content.getBytes("UTF-8"))
+        result.body == content
+        result.statusCode == 200
     }
 
     def "should wrap IOException from httpClientHelper.executeHttpPut to RuntimeException if"() {
