@@ -30,11 +30,15 @@ public class LessStrictRedirectUriAuthorizationCodeTokenGranter extends Abstract
 
 
     private static final String GRANT_TYPE = "authorization_code";
+
+    /*Do not add a bean definition to spring xml. It will cause the problem, that two instances are used to serve
+    * the "change auth code to access token" request. This will end up with a fault because the code is stored in
+    * one instance and will be read from another where it does not exist.*/
     @Inject
     private AuthorizationCodeServices authorizationCodeServices;
 
     public LessStrictRedirectUriAuthorizationCodeTokenGranter(AuthorizationServerTokenServices tokenServices,
-                                                              ClientDetailsService clientDetailsService) {
+                        ClientDetailsService clientDetailsService) {
         super(tokenServices, clientDetailsService, GRANT_TYPE);
     }
 
@@ -53,7 +57,7 @@ public class LessStrictRedirectUriAuthorizationCodeTokenGranter extends Abstract
         // in the pendingAuthorizationRequest. We do want to check that a secret is provided
         // in the token request, but that happens elsewhere.
         Map<String, String> combinedParameters =
-                new HashMap<String, String>(storedAuth.getAuthenticationRequest().getAuthorizationParameters());
+                new HashMap<>(storedAuth.getAuthenticationRequest().getAuthorizationParameters());
         // Combine the parameters adding the new ones last so they override if there are any clashes
         combinedParameters.putAll(parameters);
         // Similarly scopes are not required in the token request, so we don't make a comparison here, just

@@ -21,27 +21,38 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.security.authentication;
+package org.osiam.resources;
 
-import org.osiam.storage.dao.UserDAO;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.stereotype.Component;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.springframework.security.core.GrantedAuthority;
 
-import javax.inject.Inject;
-
-@Component("userDetailsService")
 /**
- * Mainly used for demonstration, it is used to validate the user login, before he grants or denies the client access
- * to a resource.
+ * Serializable {@link GrantedAuthority} implementation.
+ *
+ * @author: Andreas Grau, tarent solutions GmbH, 27.09.13
+ * @version: 1.0
  */
-public class AuthenticationBean implements UserDetailsService {
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
 
-    @Inject
-    private UserDAO userDAO;
+public class RoleSpring implements GrantedAuthority {
+
+    private static final long serialVersionUID = 6776336074250400615L;
+
+    private String value;
 
     @Override
-    public UserDetails loadUserByUsername(final String username) {
-        return userDAO.getByUsername(username);
+    public String getAuthority() {
+        return "ROLE_" + value;
     }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
 }
