@@ -27,7 +27,7 @@
 
     <groupId>org.osiam</groupId>
     <artifactId>osiam-server-parent</artifactId>
-    <version>0.10</version>
+    <version>0.10.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>OSIAM Server Parent</name>
