@@ -23,16 +23,10 @@
 
 package org.osiam.resources;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.security.core.GrantedAuthority;
 
-/**
- * Serializable {@link GrantedAuthority} implementation.
- *
- * @author: Andreas Grau, tarent solutions GmbH, 27.09.13
- * @version: 1.0
- */
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 
