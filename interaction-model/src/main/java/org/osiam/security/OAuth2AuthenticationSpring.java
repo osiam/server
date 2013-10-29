@@ -1,11 +1,8 @@
 package org.osiam.security;
 
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 
-/**
- * @author: Andreas Grau, tarent solutions GmbH, 30.09.13
- * @version: 1.0
- */
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
 public class OAuth2AuthenticationSpring {
 

@@ -1,15 +1,11 @@
 package org.osiam.security;
 
-import org.codehaus.jackson.map.annotate.JsonSerialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.osiam.resources.RoleSpring;
 import org.springframework.security.core.Authentication;
 
 import java.util.Collection;
 
-/**
- * @author: Andreas Grau, tarent solutions GmbH, 30.09.13
- * @version: 1.0
- */
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
 public class AuthenticationSpring implements Authentication {
 

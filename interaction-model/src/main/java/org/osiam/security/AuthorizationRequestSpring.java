@@ -1,6 +1,6 @@
 package org.osiam.security;
 
-import org.codehaus.jackson.map.annotate.JsonSerialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.osiam.resources.RoleSpring;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
@@ -9,10 +9,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * @author: Andreas Grau, tarent solutions GmbH, 30.09.13
- * @version: 1.0
- */
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
 public class AuthorizationRequestSpring implements AuthorizationRequest {
 
