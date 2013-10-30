@@ -27,10 +27,10 @@ public class ExtensionEntity implements Serializable {
     private long internalId;
 
     @Column(name = "urn", nullable = false, unique = true)
-    private String extensionUrn;
+    private String urn;
 
     @OneToMany(mappedBy = "extension")
-    private Set<ExtensionFieldEntity> extensionFields;
+    private Set<ExtensionFieldEntity> fields;
 
     public long getInternalId() {
         return internalId;
@@ -40,35 +40,35 @@ public class ExtensionEntity implements Serializable {
         this.internalId = internalId;
     }
 
-    public String getExtensionUrn() {
-        return extensionUrn;
+    public String getUrn() {
+        return urn;
     }
 
-    public void setExtensionUrn(String extensionUrn) {
-        this.extensionUrn = extensionUrn;
+    public void setUrn(String extensionUrn) {
+        this.urn = extensionUrn;
     }
 
-    public Set<ExtensionFieldEntity> getExtensionFields() {
-        if (extensionFields == null) {
-            extensionFields = new HashSet<>();
+    public Set<ExtensionFieldEntity> getFields() {
+        if (fields == null) {
+            fields = new HashSet<>();
         }
-        return extensionFields;
+        return fields;
     }
 
-    public void setExtensionFields(Set<ExtensionFieldEntity> extensionFields) {
+    public void setFields(Set<ExtensionFieldEntity> extensionFields) {
         if (extensionFields != null) {
             for (ExtensionFieldEntity extensionFieldEntity : extensionFields) {
                 extensionFieldEntity.setExtension(this);
             }
         }
-        this.extensionFields = extensionFields;
+        this.fields = extensionFields;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((extensionUrn == null) ? 0 : extensionUrn.hashCode());
+        result = prime * result + ((urn == null) ? 0 : urn.hashCode());
         return result;
     }
 
@@ -81,10 +81,10 @@ public class ExtensionEntity implements Serializable {
         if (getClass() != obj.getClass())
             return false;
         ExtensionEntity other = (ExtensionEntity) obj;
-        if (extensionUrn == null) {
-            if (other.extensionUrn != null)
+        if (urn == null) {
+            if (other.urn != null)
                 return false;
-        } else if (!extensionUrn.equals(other.extensionUrn))
+        } else if (!urn.equals(other.urn))
             return false;
         return true;
     }
@@ -101,7 +101,7 @@ public class ExtensionEntity implements Serializable {
         // Sorting all fields by extension
         Map<String, Map<String, String>> sortedValues = new HashMap<>();
         for (ExtensionFieldValueEntity extFieldValue : userEntity.getUserExtensions()) {
-            String urn = extFieldValue.getExtensionField().getExtension().getExtensionUrn();
+            String urn = extFieldValue.getExtensionField().getExtension().getUrn();
             String fieldName = extFieldValue.getExtensionField().getName();
             String value = extFieldValue.getValue();
 
@@ -116,7 +116,7 @@ public class ExtensionEntity implements Serializable {
         // Convert Extensions to scim Extensions
         Map<String, Extension> res = new HashMap<>();
         for(Map.Entry<String, Map<String, String>> extensionEntry : sortedValues.entrySet()) {
-            Extension ext = new Extension(extensionEntry.getValue());
+            Extension ext = new Extension(extensionEntry.getKey(), extensionEntry.getValue());
             String urn = extensionEntry.getKey();
             res.put(urn, ext);
         }
