@@ -2,8 +2,8 @@ package org.osiam.helper;
 
 public class HttpClientRequestResult {
 
-    final private String body;
-    final private int statusCode;
+    private final String body;
+    private final int statusCode;
 
     public HttpClientRequestResult(String body, int statusCode) {
         this.body = body;

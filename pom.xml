@@ -27,7 +27,7 @@
 
     <groupId>org.osiam</groupId>
     <artifactId>osiam-server-parent</artifactId>
-    <version>0.10.1</version>
+    <version>0.11</version>
     <packaging>pom</packaging>
 
     <name>OSIAM Server Parent</name>
@@ -268,7 +268,7 @@
             <dependency>
                 <groupId>org.springframework.security.oauth</groupId>
                 <artifactId>spring-security-oauth2</artifactId>
-                <version>1.0.0.RC3</version>
+                <version>1.0.5.RELEASE</version>
             </dependency>
             <!-- Spring -->
             <dependency>
@@ -384,13 +384,6 @@
                 <scope>provided</scope>
             </dependency>
 
-            <!-- JSON -->
-            <dependency>
-                <groupId>org.codehaus.jackson</groupId>
-                <artifactId>jackson-mapper-asl</artifactId>
-                <version>1.9.9</version>
-            </dependency>
-
             <!-- Groovy SDK LICENSE: Apache 2.0 according to http://grepcode.com/snapshot/repo1.maven.org/maven2/org.codehaus.groovy/groovy-all/2.0.4 -->
             <dependency>
                 <groupId>org.codehaus.groovy</groupId>
@@ -446,7 +439,7 @@
             <dependency>
                 <groupId>org.osiam</groupId>
                 <artifactId>scim-schema</artifactId>
-                <version>0.22</version>
+                <version>0.30</version>
             </dependency>
 
             <dependency>

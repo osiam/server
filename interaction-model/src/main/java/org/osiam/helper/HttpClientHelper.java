@@ -33,7 +33,6 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
-import org.springframework.stereotype.Component;
 
 import javax.inject.Named;
 import java.io.BufferedReader;
