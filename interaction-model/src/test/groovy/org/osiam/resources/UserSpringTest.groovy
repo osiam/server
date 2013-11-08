@@ -21,6 +21,7 @@ class UserSpringTest extends Specification {
         userSpring.setUserName("username")
         userSpring.setRoles(roles)
         userSpring.setPassword("thePassword")
+        userSpring.setActive(true)
 
         then:
         userSpring instanceof UserDetails
@@ -58,5 +59,13 @@ class UserSpringTest extends Specification {
 
         then:
         userSpring.getId() == "someUUID"
+    }
+
+    def "should be able to set users active flag"() {
+        when:
+        userSpring.setActive(true)
+
+        then:
+        userSpring.getActive()
     }
 }

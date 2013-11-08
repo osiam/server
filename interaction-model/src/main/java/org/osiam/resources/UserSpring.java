@@ -46,6 +46,8 @@ public class UserSpring implements UserDetails {
 
     private String id;
 
+    private Boolean active;
+
     /**
      * Returning the users granted authorities
      *
@@ -92,13 +94,13 @@ public class UserSpring implements UserDetails {
     }
 
     /**
-     * Not implemented yet.
+     * Returns the status of the active flag
      *
-     * @return always true
+     * @return the value of the active flag
      */
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return active;
     }
 
     /**
@@ -119,6 +121,15 @@ public class UserSpring implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 
     public String getUserName() {
