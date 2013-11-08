@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>osiam-registration-module</artifactId>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
 
     <name>OSIAM Registration Module</name>
 
@@ -86,6 +86,14 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.1.1</version>
+                <configuration>
+                    <warName>osiam-registration-module</warName>
+                </configuration>
             </plugin>
         </plugins>
     </build>
