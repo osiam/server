@@ -1,4 +1,4 @@
-package org.osiam.security.controller.web
+package org.osiam.web.controller
 
 import spock.lang.Specification
 
@@ -21,7 +21,7 @@ class RegisterControllerTest extends Specification {
     def "The registration controller should return a HTML file as stream"() {
         given:
         def httpServletResponseMock = Mock(HttpServletResponse)
-        def inputStreamMock = Mock(InputStream)
+        def inputStreamMock = new ByteArrayInputStream("neunbytes".bytes)
         def outputStreamMock = Mock(ServletOutputStream)
 
         when:
