@@ -29,6 +29,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
@@ -51,9 +52,13 @@ public class HttpClientHelper {
         client = new DefaultHttpClient(poolingClientConnectionManager);
     }
 
-    public HttpClientRequestResult executeHttpGet(String url) {
+    public HttpClientRequestResult executeHttpGet(String url, String headerName, String headerValue) {
         HttpClientRequestResult result;
         final HttpGet request = new HttpGet(url);
+
+        if (headerName != null && headerValue != null) {
+            request.addHeader(headerName, headerValue);
+        }
 
         try {
             HttpResponse response = client.execute(request);
@@ -66,9 +71,14 @@ public class HttpClientHelper {
         return result;
     }
 
-    public HttpClientRequestResult executeHttpPut(String url, String parameterName, String parameterValue) {
+    public HttpClientRequestResult executeHttpPut(String url, String parameterName, String parameterValue, String headerName, String headerValue) {
         HttpClientRequestResult result;
         final HttpPut request = new HttpPut(url);
+
+        if (headerName != null && headerValue != null) {
+            request.addHeader(headerName, headerValue);
+        }
+
         List<NameValuePair> formParams = new ArrayList<>();
         formParams.add(new BasicNameValuePair(parameterName, parameterValue));
 
@@ -82,6 +92,31 @@ public class HttpClientHelper {
         } catch (IOException e) {
             throw new RuntimeException(e); //NOSONAR : Need only wrapping to a runtime exception
         }
+        return result;
+    }
+
+    public HttpClientRequestResult executeHttpPost(String url, String parameterName, String parameterValue, String headerName, String headerValue){
+        HttpClientRequestResult result;
+        final HttpPost request = new HttpPost(url);
+
+        if (headerName != null && headerValue != null) {
+            request.addHeader(headerName, headerValue);
+        }
+
+        List<NameValuePair> formParams = new ArrayList<>();
+        formParams.add(new BasicNameValuePair(parameterName, parameterValue));
+
+        try {
+            UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(formParams, "UTF-8");
+            request.setEntity(formEntity);
+            HttpResponse response = client.execute(request);
+            String responseBody = getResponseBody(response);
+            int statusCode = response.getStatusLine().getStatusCode();
+            result = new HttpClientRequestResult(responseBody, statusCode);
+        } catch (IOException e) {
+            throw new RuntimeException(e); //NOSONAR : Need only wrapping to a runtime exception
+        }
+
         return result;
     }
 

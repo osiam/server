@@ -36,7 +36,26 @@ class HttpClientHelperTest extends Specification {
         def statusLineMock = Mock(StatusLine)
 
         when:
-        def result = httpClientHelper.executeHttpGet("http://localhost:8080/test")
+        def result = httpClientHelper.executeHttpGet("http://localhost:8080/test", null, null)
+
+        then:
+        1 * httpClientMock.execute(_) >> httpResponseMock
+        1 * httpResponseMock.getStatusLine() >> statusLineMock
+        1 * statusLineMock.getStatusCode() >> 200
+        1 * httpResponseMock.getEntity() >> httpEntityMock
+        1 * httpEntityMock.getContent() >> new ByteArrayInputStream(content.getBytes("UTF-8"))
+        result.body == content
+        result.statusCode == 200
+    }
+
+    def "should be able to execute the http get method with header and getting response"() {
+        given:
+        def httpEntityMock = Mock(HttpEntity)
+        def content = "The response content"
+        def statusLineMock = Mock(StatusLine)
+
+        when:
+        def result = httpClientHelper.executeHttpGet("http://localhost:8080/test", "headerName", "headerValue")
 
         then:
         1 * httpClientMock.execute(_) >> httpResponseMock
@@ -50,7 +69,7 @@ class HttpClientHelperTest extends Specification {
 
     def "should wrap IOException from httpClientHelper.executeHttpGet to RuntimeException if"() {
         when:
-        httpClientHelper.executeHttpGet("http://localhost:8080/test")
+        httpClientHelper.executeHttpGet("http://localhost:8080/test", null, null)
 
         then:
         1 * httpClientMock.execute(_) >> {throw new IOException()}
@@ -64,7 +83,45 @@ class HttpClientHelperTest extends Specification {
         def statusLineMock = Mock(StatusLine)
 
         when:
-        def result = httpClientHelper.executeHttpPut("http://localhost:8080/test", "paramName", "paramValue")
+        def result = httpClientHelper.executeHttpPut("http://localhost:8080/test", "paramName", "paramValue", null, null)
+
+        then:
+        1 * httpClientMock.execute(_) >> httpResponseMock
+        1 * httpResponseMock.getStatusLine() >> statusLineMock
+        1 * statusLineMock.getStatusCode() >> 200
+        1 * httpResponseMock.getEntity() >> httpEntityMock
+        1 * httpEntityMock.getContent() >> new ByteArrayInputStream(content.getBytes("UTF-8"))
+        result.body == content
+        result.statusCode == 200
+    }
+
+    def "should be able to execute the http put method with header for updating"() {
+        given:
+        def httpEntityMock = Mock(HttpEntity)
+        def content = "The response content"
+        def statusLineMock = Mock(StatusLine)
+
+        when:
+        def result = httpClientHelper.executeHttpPut("http://localhost:8080/test", "paramName", "paramValue", "headerName", "headerValue")
+
+        then:
+        1 * httpClientMock.execute(_) >> httpResponseMock
+        1 * httpResponseMock.getStatusLine() >> statusLineMock
+        1 * statusLineMock.getStatusCode() >> 200
+        1 * httpResponseMock.getEntity() >> httpEntityMock
+        1 * httpEntityMock.getContent() >> new ByteArrayInputStream(content.getBytes("UTF-8"))
+        result.body == content
+        result.statusCode == 200
+    }
+
+    def "should be able to execute the http post method with header for creating"() {
+        given:
+        def httpEntityMock = Mock(HttpEntity)
+        def content = "The response content"
+        def statusLineMock = Mock(StatusLine)
+
+        when:
+        def result = httpClientHelper.executeHttpPost("http://localhost:8080/test", "paramName", "paramValue", "headerName", "headerValue")
 
         then:
         1 * httpClientMock.execute(_) >> httpResponseMock
@@ -78,7 +135,7 @@ class HttpClientHelperTest extends Specification {
 
     def "should wrap IOException from httpClientHelper.executeHttpPut to RuntimeException if"() {
         when:
-        httpClientHelper.executeHttpPut("http://localhost:8080/test", "paramName", "paramValue")
+        httpClientHelper.executeHttpPut("http://localhost:8080/test", "paramName", "paramValue", null, null)
 
         then:
         1 * httpClientMock.execute(_) >> {throw new IOException()}

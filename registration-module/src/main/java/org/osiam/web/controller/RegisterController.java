@@ -1,6 +1,5 @@
 package org.osiam.web.controller;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -11,6 +10,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.osiam.helper.HttpClientHelper;
+import org.osiam.helper.HttpClientRequestResult;
 import org.osiam.resources.helper.UserDeserializer;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.MultiValuedAttribute;
@@ -21,30 +21,27 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.mail.*;
+import javax.inject.Inject;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.UUID;
-
-import static org.apache.http.HttpStatus.*;
-
-import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.UUID;
 
 @Controller
 @RequestMapping(value = "/register")
 public class RegisterController {
 
     private static final String AUTHORIZATION = "Authorization";
-    private static final String BEARER = "Bearer ";
-    private static final String internalScimExtensionUrn = "urn:scim:schemas:osiam:1.0:webregister";
+    private static final String INTERNAL_SCIM_EXTENSION_URN = "urn:scim:schemas:osiam:1.0:webregister";
+    private static final String ACTIVATION_TOKEN_FIELD = "activationToken";
 
     private HttpClientHelper httpClient;
     private ObjectMapper mapper;
@@ -56,7 +53,7 @@ public class RegisterController {
     @Value("${osiam.web.registermail.linkprefix}")
     private String registermailLinkPrefix;
 
-    private String createUserUri = "https://localhost"; // TODO
+    private String createUserUri = "http://localhost:8080/osiam-resource-server/User"; // TODO
 
     @Inject
     ServletContext context;
@@ -109,7 +106,7 @@ public class RegisterController {
 
                 // generate Activation Token
                 String activationToken = UUID.randomUUID().toString();
-                Extension webRegisterExt = parsedUser.getExtension(internalScimExtensionUrn);
+                Extension webRegisterExt = parsedUser.getExtension(INTERNAL_SCIM_EXTENSION_URN);
                 webRegisterExt.setField("activation_token", activationToken);
 
 
@@ -167,19 +164,49 @@ public class RegisterController {
             } catch (Exception ignore) {/* if fails we don't care */}
         }
     }
+
     /**
-     * Activates a created user.
+     * Activates a previously registered user.
      *
-     * @param authorization
-     * @param user
-     * @param token
-     * @return
+     * After activation E-Mail arrived the activation link will point to this URI.
+     *
+     * @param authorization an valid OAuth2 token
+     * @param user the id of the registered user
+     * @param token the user's activation token, send by E-Mail
+     *
+     * @return HTTP status, HTTP.OK (200) for a valid activation
      */
     @RequestMapping(value = "/activate", method = RequestMethod.GET)
-    public ResponseEntity<String> activate(@RequestHeader final String authorization,
-                            @RequestParam("user") final String user, @RequestParam("token") final String token) {
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    public ResponseEntity activate(@RequestHeader final String authorization,
+                                   @RequestParam("user") final String user, @RequestParam("token") final String token) throws IOException {
+
+        ResponseEntity response = new ResponseEntity(HttpStatus.UNAUTHORIZED);
+
+        String uri = createUserUri + "/" + user;
+        HttpClientRequestResult result = httpClient.executeHttpGet(uri, AUTHORIZATION, authorization);
+
+        if (result.getStatusCode() == 200) {
+            User userForActivation = mapper.readValue(result.getBody(), User.class);
+            Extension extension = userForActivation.getExtension(INTERNAL_SCIM_EXTENSION_URN);
+            String activationTokenFieldValue = extension.getField(ACTIVATION_TOKEN_FIELD);
+
+            if (activationTokenFieldValue.equals(token)) {
+                extension.setField(ACTIVATION_TOKEN_FIELD, null);
+                User updateUser = new User.Builder(userForActivation).setActive(true).build();
+
+                HttpClientRequestResult requestResult = httpClient.executeHttpPut(uri,
+                        "updateUser", mapper.writeValueAsString(updateUser), AUTHORIZATION, authorization);
+
+                if (requestResult.getStatusCode() == 200) {
+                    response = new ResponseEntity(HttpStatus.OK);
+                } else {
+                    response = new ResponseEntity(HttpStatus.valueOf(requestResult.getStatusCode()));
+                }
+            }
+        } else {
+            response = new ResponseEntity(HttpStatus.valueOf(result.getStatusCode()));
+        }
+
+        return response;
     }
 }
-
-
