@@ -23,6 +23,7 @@
 
 package org.osiam.storage.entities;
 
+import com.google.common.collect.ImmutableSet;
 import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.MultiValuedAttribute;
 
@@ -57,7 +58,6 @@ public class GroupEntity extends InternalIdSkeleton {
         groupEntity.setDisplayName(group.getDisplayName());
         groupEntity.setId(group.getId() != null ? UUID.fromString(group.getId()) : UUID.randomUUID());
         groupEntity.setExternalId(group.getExternalId());
-        groupEntity.setMembers(createMembers(group));
         return groupEntity;
     }
 
@@ -99,11 +99,23 @@ public class GroupEntity extends InternalIdSkeleton {
     }
 
     public Set<InternalIdSkeleton> getMembers() {
-        return members;
+        return ImmutableSet.copyOf(members);
     }
 
-    public void setMembers(Set<InternalIdSkeleton> members) {
-        this.members = members;
+    public void addMember(InternalIdSkeleton member) {
+        if (members.contains(member)) {
+            return;
+        }
+        this.members.add(member);
+        member.addToGroup(this);
+    }
+
+    public void removeMember(InternalIdSkeleton member) {
+        if (!members.contains(member)) {
+            return;
+        }
+        members.remove(member);
+        member.removeFromGroup(this);
     }
 
     public String getDisplayName() {
@@ -112,6 +124,22 @@ public class GroupEntity extends InternalIdSkeleton {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
+        return super.equals(other);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
     @Override
@@ -128,5 +156,13 @@ public class GroupEntity extends InternalIdSkeleton {
                             .build());
         }
         return members1;
+    }
+
+    @Override
+    public String toString() {
+        return "GroupEntity{" +
+                "UUID='" + getId() + "\', " +
+                "displayName='" + displayName + '\'' +
+                '}';
     }
 }
