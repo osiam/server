@@ -40,7 +40,7 @@ import java.util.UUID;
 public class RegisterController {
 
     private static final String AUTHORIZATION = "Authorization";
-    private static final String INTERNAL_SCIM_EXTENSION_URN = "urn:scim:schemas:osiam:1.0:webregister";
+    private static final String INTERNAL_SCIM_EXTENSION_URN = "urn:scim:schemas:osiam:1.0:Registration";
     private static final String ACTIVATION_TOKEN_FIELD = "activationToken";
 
     private HttpClientHelper httpClient;
@@ -53,7 +53,7 @@ public class RegisterController {
     @Value("${osiam.web.registermail.linkprefix}")
     private String registermailLinkPrefix;
 
-    private String createUserUri = "http://localhost:8080/osiam-resource-server/User"; // TODO
+    private String createUserUri = "http://localhost:8080/osiam-resource-server/Users"; // TODO
 
     @Inject
     ServletContext context;
@@ -195,7 +195,7 @@ public class RegisterController {
                 User updateUser = new User.Builder(userForActivation).setActive(true).build();
 
                 HttpClientRequestResult requestResult = httpClient.executeHttpPut(uri,
-                        "updateUser", mapper.writeValueAsString(updateUser), AUTHORIZATION, authorization);
+                        mapper.writeValueAsString(updateUser), AUTHORIZATION, authorization);
 
                 if (requestResult.getStatusCode() == 200) {
                     response = new ResponseEntity(HttpStatus.OK);

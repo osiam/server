@@ -95,7 +95,7 @@ class HttpClientHelperTest extends Specification {
         result.statusCode == 200
     }
 
-    def "should be able to execute the http put method with header for updating"() {
+    def "should be able to execute the http put method with header and parameter for updating"() {
         given:
         def httpEntityMock = Mock(HttpEntity)
         def content = "The response content"
@@ -114,6 +114,25 @@ class HttpClientHelperTest extends Specification {
         result.statusCode == 200
     }
 
+    def "should be able to execute the http put method with header and body for updating"() {
+        given:
+        def httpEntityMock = Mock(HttpEntity)
+        def content = "The response content"
+        def statusLineMock = Mock(StatusLine)
+
+        when:
+        def result = httpClientHelper.executeHttpPut("http://localhost:8080/test", "theBody", "headerName", "headerValue")
+
+        then:
+        1 * httpClientMock.execute(_) >> httpResponseMock
+        1 * httpResponseMock.getStatusLine() >> statusLineMock
+        1 * statusLineMock.getStatusCode() >> 200
+        1 * httpResponseMock.getEntity() >> httpEntityMock
+        1 * httpEntityMock.getContent() >> new ByteArrayInputStream(content.getBytes("UTF-8"))
+        result.body == content
+        result.statusCode == 200
+    }
+
     def "should be able to execute the http post method with header for creating"() {
         given:
         def httpEntityMock = Mock(HttpEntity)
@@ -121,7 +140,7 @@ class HttpClientHelperTest extends Specification {
         def statusLineMock = Mock(StatusLine)
 
         when:
-        def result = httpClientHelper.executeHttpPost("http://localhost:8080/test", "paramName", "paramValue", "headerName", "headerValue")
+        def result = httpClientHelper.executeHttpPost("http://localhost:8080/test", "theBody", "headerName", "headerValue")
 
         then:
         1 * httpClientMock.execute(_) >> httpResponseMock

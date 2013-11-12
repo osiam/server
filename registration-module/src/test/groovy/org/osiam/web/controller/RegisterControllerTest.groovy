@@ -58,7 +58,7 @@ class RegisterControllerTest extends Specification {
         given:
         def userId = UUID.randomUUID().toString()
         def activationToken = UUID.randomUUID().toString()
-        def uri = "http://localhost:8080/osiam-resource-server/User/"
+        def uri = "http://localhost:8080/osiam-resource-server/Users/"
         def requestResultMock = Mock(HttpClientRequestResult)
         def userString = getUserAsStringWithExtension(activationToken)
 
@@ -69,13 +69,13 @@ class RegisterControllerTest extends Specification {
         1 * httpClientMock.executeHttpGet(uri + userId, "Authorization", "Bearer ACCESS_TOKEN") >> requestResultMock
         1 * requestResultMock.getStatusCode() >> 200
         1 * requestResultMock.getBody() >> userString
-        1 * httpClientMock.executeHttpPut(uri + userId, "updateUser", _, "Authorization", "Bearer ACCESS_TOKEN") >> requestResultMock
+        1 * httpClientMock.executeHttpPut(uri + userId, _, "Authorization", "Bearer ACCESS_TOKEN") >> requestResultMock
         1 * requestResultMock.getStatusCode() >> 200
         response.getStatusCode() == HttpStatus.OK
     }
 
     def getUserAsStringWithExtension(String token) {
-        def urn = "urn:scim:schemas:osiam:1.0:webregister"
+        def urn = "urn:scim:schemas:osiam:1.0:Registration"
         def extensionData = ["activationToken":token]
 
         Extension extension = new Extension(urn, extensionData)
@@ -99,7 +99,7 @@ class RegisterControllerTest extends Specification {
         def response = registerController.activate("Bearer ACCESS_TOKEN", userId, activationToken)
 
         then:
-        1 * httpClientMock.executeHttpGet("http://localhost:8080/osiam-resource-server/User/" + userId, "Authorization", "Bearer ACCESS_TOKEN") >> requestResultMock
+        1 * httpClientMock.executeHttpGet("http://localhost:8080/osiam-resource-server/Users/" + userId, "Authorization", "Bearer ACCESS_TOKEN") >> requestResultMock
         2 * requestResultMock.getStatusCode() >> 400
         response.getStatusCode() == HttpStatus.BAD_REQUEST
     }
@@ -108,7 +108,7 @@ class RegisterControllerTest extends Specification {
         given:
         def userId = UUID.randomUUID().toString()
         def activationToken = UUID.randomUUID().toString()
-        def uri = "http://localhost:8080/osiam-resource-server/User/"
+        def uri = "http://localhost:8080/osiam-resource-server/Users/"
         def requestResultGetMock = Mock(HttpClientRequestResult)
         def requestResultPutMock = Mock(HttpClientRequestResult)
         def userString = getUserAsStringWithExtension(activationToken)
@@ -120,7 +120,7 @@ class RegisterControllerTest extends Specification {
         1 * httpClientMock.executeHttpGet(uri + userId, "Authorization", "Bearer ACCESS_TOKEN") >> requestResultGetMock
         1 * requestResultGetMock.getStatusCode() >> 200
         1 * requestResultGetMock.getBody() >> userString
-        1 * httpClientMock.executeHttpPut(uri + userId, "updateUser", _, "Authorization", "Bearer ACCESS_TOKEN") >> requestResultPutMock
+        1 * httpClientMock.executeHttpPut(uri + userId, _, "Authorization", "Bearer ACCESS_TOKEN") >> requestResultPutMock
         2 * requestResultPutMock.getStatusCode() >> 400
         response.getStatusCode() == HttpStatus.BAD_REQUEST
     }
@@ -129,7 +129,7 @@ class RegisterControllerTest extends Specification {
         given:
         def userId = UUID.randomUUID().toString()
         def activationToken = UUID.randomUUID().toString()
-        def uri = "http://localhost:8080/osiam-resource-server/User/"
+        def uri = "http://localhost:8080/osiam-resource-server/Users/"
         def requestResultMock = Mock(HttpClientRequestResult)
         def userString = getUserAsStringWithExtension(activationToken)
 
