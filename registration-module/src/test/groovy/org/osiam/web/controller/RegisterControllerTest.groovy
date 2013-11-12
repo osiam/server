@@ -7,7 +7,9 @@ import org.osiam.helper.HttpClientHelper
 import org.osiam.helper.HttpClientRequestResult
 import org.osiam.resources.helper.UserDeserializer
 import org.osiam.resources.scim.Extension
+import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.User
+import org.osiam.web.util.MailSender
 import org.springframework.http.HttpStatus
 import spock.lang.Shared
 import spock.lang.Specification
@@ -16,27 +18,19 @@ import javax.servlet.ServletContext
 import javax.servlet.ServletOutputStream
 import javax.servlet.http.HttpServletResponse
 
-/**
- * CHANGE THIS TEXT TO SOMETHING USEFUL, DESCRIBING THE CLASS.
- * User: Jochen Todea
- * Date: 07.11.13
- * Time: 14:08
- * Created: with Intellij IDEA
- */
 class RegisterControllerTest extends Specification {
 
-    def contextMock = Mock(ServletContext)
-    def httpClientMock = Mock(HttpClientHelper)
-    def registerController = new RegisterController(context: contextMock, httpClient: httpClientMock)
-
     @Shared def mapper
+    def httpClientMock = Mock(HttpClientHelper)
+
+    def contextMock = Mock(ServletContext)
+    def registerController = new RegisterController(context: contextMock, httpClient: httpClientMock)
 
     def setupSpec() {
         mapper = new ObjectMapper()
         def userDeserializerModule = new SimpleModule("userDeserializerModule", new Version(1, 0, 0, null))
                 .addDeserializer(User.class, new UserDeserializer(User.class))
         mapper.registerModule(userDeserializerModule)
-
     }
 
     def "The registration controller should return a HTML file as stream"() {
@@ -72,20 +66,6 @@ class RegisterControllerTest extends Specification {
         1 * httpClientMock.executeHttpPut(uri + userId, _, "Authorization", "Bearer ACCESS_TOKEN") >> requestResultMock
         1 * requestResultMock.getStatusCode() >> 200
         response.getStatusCode() == HttpStatus.OK
-    }
-
-    def getUserAsStringWithExtension(String token) {
-        def urn = "urn:scim:schemas:osiam:1.0:Registration"
-        def extensionData = ["activationToken":token]
-
-        Extension extension = new Extension(urn, extensionData)
-        def user = new User.Builder("George")
-                .setPassword("password")
-                .addExtension(urn, extension)
-                .setActive(false)
-                .build()
-
-        return mapper.writeValueAsString(user)
     }
 
     def "The registration controller should return the status code if the user was not found by his id at activation"(){
@@ -141,5 +121,47 @@ class RegisterControllerTest extends Specification {
         1 * requestResultMock.getStatusCode() >> 200
         1 * requestResultMock.getBody() >> userString
         response.getStatusCode() == HttpStatus.UNAUTHORIZED
+    }
+
+    def "The registration controller should send a register-mail"() {
+
+        given:
+        registerController.registermailFrom = "noreply@example.org"
+        registerController.registermailSubject = "Ihre Registrierung"
+        registerController.registermailLinkPrefix = "https://example.org/register?"
+
+        def mailSenderMock = Mock(MailSender)
+        registerController.mailSender = mailSenderMock
+
+        def registerMailContent = new ByteArrayInputStream("Hallo \$REGISTERLINK Tschuess".bytes)
+        def auth = "BEARER ABC=="
+        def body = getUserAsStringWithExtension("")
+
+        when:
+        def response = registerController.create(auth, body)
+
+        then:
+        httpClientMock.executeHttpPut(_, _, _, _, _) >> new HttpClientRequestResult("body", 200)
+        contextMock.getResourceAsStream("/WEB-INF/registration/registermail-content.txt") >> registerMailContent
+        response.statusCode == HttpStatus.OK
+
+        1 * mailSenderMock.sendMail(_)
+    }
+
+    def getUserAsStringWithExtension(String token) {
+        def urn = "urn:scim:schemas:osiam:1.0:Registration"
+        def extensionData = ["activationToken":token]
+
+        def emails = new MultiValuedAttribute(primary: true, value: "email@example.org")
+
+        Extension extension = new Extension(urn, extensionData)
+        def user = new User.Builder("George")
+                .setPassword("password")
+                .setEmails([emails])
+                .addExtension(urn, extension)
+                .setActive(false)
+                .build()
+
+        return mapper.writeValueAsString(user)
     }
 }

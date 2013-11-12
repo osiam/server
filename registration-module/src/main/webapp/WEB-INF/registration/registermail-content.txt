@@ -1,0 +1,9 @@
+Sehr geehrter Kunde,
+
+für Sie wurde ein Benutzerkonto bei campus.kas.de angelegt.
+Um Ihre Registrierung zu bestätigen rufen Sie bitte folgenden Link auf:
+
+$REGISTERLINK
+
+Mit freundlichen Grüßen,
+Ihr campus.kas.de-Team der KAS-Begabtenförderung
