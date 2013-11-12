@@ -195,7 +195,7 @@ public class RegisterController {
             String activationTokenFieldValue = extension.getField(ACTIVATION_TOKEN_FIELD);
 
             if (activationTokenFieldValue.equals(token)) {
-                extension.setField(ACTIVATION_TOKEN_FIELD, null);
+                extension.setField(ACTIVATION_TOKEN_FIELD, "");
                 User updateUser = new User.Builder(userForActivation).setActive(true).build();
 
                 HttpClientRequestResult requestResult = httpClient.executeHttpPut(uri,
