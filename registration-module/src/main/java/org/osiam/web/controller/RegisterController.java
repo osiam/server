@@ -173,26 +173,11 @@ public class RegisterController {
     }
 
     private HttpClientRequestResult saveUser(User userToSave, String authorization) throws IOException {
-        InputStream content = null;
-        try {
-//            HttpPost realWebResource = new HttpPost(createUserUri);
-  //          realWebResource.addHeader();
-
-            String userAsString = mapper.writeValueAsString(userToSave);
-
-            //ContentType ct = ContentType.create("application/json", "utf-8");
-            //realWebResource.setEntity(new StringEntity(userAsString, ct));
-
-            HttpClientRequestResult response = httpClient.executeHttpPut(createUserUri, "name", userAsString, AUTHORIZATION, authorization);
-            //HttpResponse response = httpclient.execute(realWebResource);
-
-            return response;
-        } finally {
-            try {
-                content.close();
-            } catch (Exception ignore) {/* if fails we don't care */}
-        }
+        String userAsString = mapper.writeValueAsString(userToSave);
+        HttpClientRequestResult response = httpClient.executeHttpPut(createUserUri, "name", userAsString, AUTHORIZATION, authorization);
+        return response;
     }
+
     /**
      * Activates a created user.
      *
