@@ -23,18 +23,8 @@
 
 package org.osiam.storage.entities
 
-import org.osiam.resources.scim.Address
-
-import spock.lang.Ignore
 import spock.lang.Specification
 
-/**
- * Created with IntelliJ IDEA.
- * User: jtodea
- * Date: 15.03.13
- * Time: 11:56
- * To change this template use File | Settings | File Templates.
- */
 class AddressEntitySpec extends Specification {
 
     AddressEntity addressEntity = new AddressEntity()
@@ -128,39 +118,4 @@ class AddressEntitySpec extends Specification {
         addressEntity.getUser() == userEntity
     }
 
-    @Ignore('Temporarily ignored because of merge in propgress')
-    def "mapping from scim should be possible"() {
-        given:
-        Address address =new Address.Builder().
-                setCountry("country").
-                setFormatted("formatted").
-                setLocality("locality").
-                setPostalCode("123456").
-                setRegion("region").
-                setStreetAddress("streetAddress").setPrimary(true).
-                build()
-        when:
-        def result = AddressEntity.fromScim(address)
-
-        then:
-        result != null
-    }
-
-    @Ignore('Temporarily ignored because of merge in propgress')
-    def "should set primary to false when null"() {
-        given:
-        Address address =new Address.Builder().
-                setCountry("country").
-                setFormatted("formatted").
-                setLocality("locality").
-                setPostalCode("123456").
-                setRegion("region").
-                setStreetAddress("streetAddress").
-                build()
-        when:
-        def result = AddressEntity.fromScim(address)
-
-        then:
-        !result.isPrimary()
-    }
 }
