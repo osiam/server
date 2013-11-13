@@ -37,7 +37,7 @@
 
     <mvc:default-servlet-handler/>
 
-    <!--<context:property-placeholder location="classpath:osiam_registration.properties"/>-->
+    <context:property-placeholder location="classpath:osiam.properties, classpath:osiam-registration.properties"/>
 
     <context:component-scan base-package="org.osiam"/>
     <context:annotation-config/>

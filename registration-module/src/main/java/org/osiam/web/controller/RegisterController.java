@@ -41,8 +41,6 @@ public class RegisterController {
     private static final Logger LOGGER = Logger.getLogger(RegisterController.class.getName());
 
     private static final String AUTHORIZATION = "Authorization";
-    private static final String INTERNAL_SCIM_EXTENSION_URN = "urn:scim:schemas:osiam:1.0:Registration";
-    private static final String ACTIVATION_TOKEN_FIELD = "activationToken";
 
     private HttpClientHelper httpClient;
     private ObjectMapper mapper;
@@ -54,8 +52,20 @@ public class RegisterController {
     @Value("${osiam.web.registermail.linkprefix}")
     private String registermailLinkPrefix;
 
-    @Value("${osiam.web.authserver.url}")
-    private String createUserUri = "http://localhost:8080/osiam-resource-server/Users"; // TODO
+    @Value("${osiam.server.port}")
+    private int serverPort;
+    @Value("${osiam.server.host}")
+    private String serverHost;
+    @Value("${osiam.server.http.scheme}")
+    private String httpScheme;
+
+    private static final String RESOURCE_SERVER_URI = "/osiam-resource-server/Users";
+
+    @Value("${osiam.internal.scim.extension.urn}")
+    private String internalScimExtensionUrn;
+
+    @Value("${osiam.activation.token.field}")
+    private String activationTokenField;
 
 
     @Inject
@@ -65,6 +75,7 @@ public class RegisterController {
 
     public RegisterController() {
         httpClient = new HttpClientHelper();
+
         mapper = new ObjectMapper();
         SimpleModule userDeserializerModule = new SimpleModule("userDeserializerModule", new Version(1, 0, 0, null))
                 .addDeserializer(User.class, new UserDeserializer(User.class));
@@ -112,14 +123,13 @@ public class RegisterController {
 
                 // generate Activation Token
                 String activationToken = UUID.randomUUID().toString();
-                Extension webRegisterExt = null;
 
                 // Extension und Token zum User hinzufügen}
                 User.Builder builder = new User.Builder(parsedUser);
 
                 Map<String,String> fields = new HashMap<>();
                 fields.put("activation_token", activationToken);
-                builder.addExtension(INTERNAL_SCIM_EXTENSION_URN, new Extension(INTERNAL_SCIM_EXTENSION_URN, fields));
+                builder.addExtension(internalScimExtensionUrn, new Extension(internalScimExtensionUrn, fields));
                 parsedUser = builder.build();
 
                 // Save user
@@ -165,7 +175,8 @@ public class RegisterController {
 
     private HttpClientRequestResult saveUser(User userToSave, String authorization) throws IOException {
         String userAsString = mapper.writeValueAsString(userToSave);
-        HttpClientRequestResult response = httpClient.executeHttpPut(createUserUri, "name", userAsString, AUTHORIZATION, authorization);
+        String createUserUri = httpScheme + "://" + serverHost + ":" + serverPort + RESOURCE_SERVER_URI;
+        HttpClientRequestResult response = httpClient.executeHttpPost(createUserUri, userAsString, AUTHORIZATION, authorization);
         return response;
     }
 
@@ -186,16 +197,16 @@ public class RegisterController {
 
         ResponseEntity response = new ResponseEntity(HttpStatus.UNAUTHORIZED);
 
-        String uri = createUserUri + "/" + user;
+        String uri = httpScheme + "://" + serverHost + ":" + serverPort + RESOURCE_SERVER_URI + "/" + user;
         HttpClientRequestResult result = httpClient.executeHttpGet(uri, AUTHORIZATION, authorization);
 
         if (result.getStatusCode() == 200) {
             User userForActivation = mapper.readValue(result.getBody(), User.class);
-            Extension extension = userForActivation.getExtension(INTERNAL_SCIM_EXTENSION_URN);
-            String activationTokenFieldValue = extension.getField(ACTIVATION_TOKEN_FIELD);
+            Extension extension = userForActivation.getExtension(internalScimExtensionUrn);
+            String activationTokenFieldValue = extension.getField(activationTokenField);
 
             if (activationTokenFieldValue.equals(token)) {
-                extension.setField(ACTIVATION_TOKEN_FIELD, "");
+                extension.setField(activationTokenField, "");
                 User updateUser = new User.Builder(userForActivation).setActive(true).build();
 
                 HttpClientRequestResult requestResult = httpClient.executeHttpPut(uri,

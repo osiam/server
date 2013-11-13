@@ -24,7 +24,16 @@ class RegisterControllerTest extends Specification {
     def httpClientMock = Mock(HttpClientHelper)
 
     def contextMock = Mock(ServletContext)
-    def registerController = new RegisterController(context: contextMock, httpClient: httpClientMock)
+
+    def serverPort = 8080
+    def serverHost = "localhost"
+    def httpScheme = "http"
+    def internalScimExtensionUrn = "urn:scim:schemas:osiam:1.0:Registration"
+    def activationTokenField = "activationToken"
+
+    def registerController = new RegisterController(context: contextMock, httpClient: httpClientMock, serverPort: serverPort,
+            serverHost: serverHost, httpScheme: httpScheme,
+            internalScimExtensionUrn: internalScimExtensionUrn, activationTokenField: activationTokenField)
 
     def setupSpec() {
         mapper = new ObjectMapper()
@@ -141,8 +150,8 @@ class RegisterControllerTest extends Specification {
         def response = registerController.create(auth, body)
 
         then:
-        httpClientMock.executeHttpPut(_, _, _, _, _) >> new HttpClientRequestResult("body", 200)
-        contextMock.getResourceAsStream("/WEB-INF/registration/registermail-content.txt") >> registerMailContent
+        1 * httpClientMock.executeHttpPost(_, _, _, _) >> new HttpClientRequestResult("body", 200)
+        1 * contextMock.getResourceAsStream("/WEB-INF/registration/registermail-content.txt") >> registerMailContent
         response.statusCode == HttpStatus.OK
 
         1 * mailSenderMock.sendMail(_)
