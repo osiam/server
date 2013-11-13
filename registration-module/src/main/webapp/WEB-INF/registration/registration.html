@@ -1,32 +1,47 @@
-<html ng-app>
+<html ng-app="registration">
 <head>
     <title>Registrierung</title>
     <script src="http://code.angularjs.org/1.2.0-rc.3/angular.min.js"></script>
     <script>
-        function RegistrationController($scope, $http) {
+        var app = angular.module('registration', []);
+        app.controller('regController', function($scope, $http){
 
             $scope.registration = {
                 emails : {'primary':'true','value':''}
-            }
+            };
+
+            $scope.password_validate = ''
 
             $scope.submitRegistration = function() {
-                $scope.json = $scope.registration
-
                 $http({method: 'POST', url: 'http://localhost:8080/osiam-auth-server/register/create',
-                    data: $scope.registration, headers: {'Authorization':'Bearer ACCESS_TOKEN',
-                        'Content-Type': 'application/json'}}).
+                    data: $scope.registration, headers: {'Content-Type': 'application/json'}}).
                         success(function(data, status, headers, config) {
-                            $scope.status = 'Request success with code ' + status  + ' | ' + data
+                            $scope.status = status
+                            $scope.data = data
                         }).
                         error(function(data, status, headers, config) {
-                            $scope.status = 'Request failed with code ' + status + ' | ' + data
+                            $scope.status = status
+                            $scope.data = data
                         });
             };
-        }
+        });
+        app.directive('match', function($parse) {
+            return {
+                require: 'ngModel',
+                link: function(scope, elem, attrs, ctrl) {
+                    scope.$watch(function() {
+                        //$parse(attrs.match) defines a method. the parameter 'scope' will be searched for the 'attrs.match' value
+                        return $parse(attrs.match)(scope) === ctrl.$modelValue;
+                    }, function(currentValue) {
+                        ctrl.$setValidity('mismatch', currentValue);
+                    });
+                }
+            }
+        });
     </script>
 </head>
 <body>
-<div ng-controller="RegistrationController">
+<div ng-controller="regController">
     <h1>Registrierung</h1>
     <hr>
 
@@ -37,7 +52,7 @@
                     <label>E-Mail Adresse*</label>
                 </td>
                 <td>
-                    <input type="email" ng-model="registration.userName" ng-change="registration.emails.value=registration.userName" required/>
+                    <input type="email" name="email" ng-model="registration.userName" ng-change="registration.emails.value=registration.userName" required/>
                 </td>
             </tr>
             <tr>
@@ -45,7 +60,7 @@
                     <label>Vorname*</label>
                 </td>
                 <td>
-                    <input type="text" ng-model="registration.name.givenName" required>
+                    <input type="text" name="vorname" ng-model="registration.name.givenName" required>
                 </td>
             </tr>
             <tr>
@@ -53,15 +68,23 @@
                     <label>Nachname*</label>
                 </td>
                 <td>
-                    <input type="text" ng-model="registration.name.familyName" required>
+                    <input type="text" name="nachname" ng-model="registration.name.familyName" required>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <label>Passwort*</label>
+                    <label>Passwort* (8 Zeichen)</label>
                 </td>
                 <td>
-                    <input type="password" ng-model="registration.password" required>
+                    <input type="password" name="pw" ng-model="registration.password" ng-minlength=8 required>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>Passwort wiederholen*</label>
+                </td>
+                <td>
+                    <input type="password" name="pw2" ng-model="password_validate" match="registration.password" required>
                 </td>
             </tr>
             <tr>
@@ -69,7 +92,7 @@
                     <label>Namenszusatz*</label>
                 </td>
                 <td>
-                    <input type="text" ng-model="registration.name.honorificSuffix" required>
+                    <input type="text" name="namenszusatz" ng-model="registration.name.honorificSuffix" required>
                 </td>
             </tr>
             <tr>
@@ -77,7 +100,7 @@
                     <label>Anrede*</label>
                 </td>
                 <td>
-                    <input type="text" ng-model="registration.name.honorificPrefix" required>
+                    <input type="text" name="anrede" ng-model="registration.name.honorificPrefix" required>
                 </td>
             </tr>
             <tr>
@@ -85,7 +108,7 @@
                     <label>Geburtsname*</label>
                 </td>
                 <td>
-                    <input type="text" ng-model="registration.geburtsName" required>
+                    <input type="text" name="gebname" ng-model="registration.geburtsName" required>
                 </td>
             </tr>
             <tr>
@@ -93,7 +116,7 @@
                     <label>Geburtsdatum*</label>
                 </td>
                 <td>
-                    <input type="text" ng-model="registration.geburtsDatum" required>
+                    <input type="text" name="gebdatum" ng-model="registration.geburtsDatum" required>
                 </td>
             </tr>
             <tr>
@@ -109,13 +132,13 @@
                     <label>EV Erklaerung*</label>
                 </td>
                 <td>
-                    <input type="text" ng-model="registration.evErklaerung" required>
+                    <input type="text" name="stipendium" ng-model="registration.evErklaerung" required>
                 </td>
             </tr>
             <tr>
                 <td/>
                 <td>
-                    <button ng-click='submitRegistration()' ng-disabled="form.$invalid" >Speichern</button>
+                    <button name="speichernBtn" ng-click='submitRegistration()' ng-disabled="form.$invalid" >Speichern</button>
                 </td>
             </tr>
         </table>
