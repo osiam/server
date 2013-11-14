@@ -14,12 +14,12 @@
                 $http({method: 'POST', url: '$REGISTERLINK',
                     data: $scope.registration, headers: {'Content-Type': 'application/json'}}).
                         success(function(data, status, headers, config) {
-                            $scope.status = status
-                            $scope.data = data
+                            $scope.status = status;
+                            $scope.data = data;
                         }).
                         error(function(data, status, headers, config) {
-                            $scope.status = status
-                            $scope.data = data
+                            $scope.status = status;
+                            $scope.data = data;
                         });
             };
         });
