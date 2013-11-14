@@ -56,7 +56,7 @@ class UserPatchSpec extends Specification {
         when:
         bean.update(id, user)
         then:
-        1 * userDao.getById(id) >> entity
+        2 * userDao.getById(id) >> entity
         entity.getX509Certificates().empty
         !entity.getAddresses().empty
         entity.getEmails().size() == 1
@@ -90,7 +90,7 @@ class UserPatchSpec extends Specification {
         when:
         bean.update(id, user)
         then:
-        1 * userDao.getById(id) >> entity
+        2 * userDao.getById(id) >> entity
         entity.getX509Certificates().empty
         entity.getAddresses().empty
         entity.getEmails().empty
@@ -139,7 +139,7 @@ class UserPatchSpec extends Specification {
         when:
         bean.update(id, user)
         then:
-        1 * userDao.getById(id) >> entity
+        2 * userDao.getById(id) >> entity
         entity.getX509Certificates().size() == 1
         entity.getAddresses().size() == 1
         entity.getEmails().size() == 2
@@ -178,7 +178,7 @@ class UserPatchSpec extends Specification {
         when:
         bean.update(id, user)
         then:
-        1 * userDao.getById(id) >> entity
+        2 * userDao.getById(id) >> entity
         entity.getEmails().size() == 1
         entity.getEmails().first().value == "email2"
 
@@ -201,7 +201,7 @@ class UserPatchSpec extends Specification {
         when:
         bean.update(id, user)
         then:
-        1 * userDao.getById(id) >> entity
+        2 * userDao.getById(id) >> entity
         entity.getAddresses().size() == 2
         for (AddressEntity a : entity.getAddresses())
             assert a.streetAddress == "123 Elm Street" || a.streetAddress == "Kingroad 42"
@@ -217,10 +217,9 @@ class UserPatchSpec extends Specification {
         bean.update(id, user)
 
         then:
-        1 * userDao.getById(id) >> entity
+        2 * userDao.getById(id) >> entity
         entity.userName == "username"
         entity.displayName == "hallo"
-        1 * userDao.update(entity) >> entity
     }
 
     private UserEntity createEntityWithInternalId() {
@@ -242,10 +241,9 @@ class UserPatchSpec extends Specification {
         when:
         bean.update(id, user)
         then:
-        1 * userDao.getById(id) >> entity
+        2 * userDao.getById(id) >> entity
         entity.userName == "username"
         entity.displayName == null
-        1 * userDao.update(entity) >> entity
 
     }
 
@@ -258,7 +256,7 @@ class UserPatchSpec extends Specification {
         when:
         bean.update(id, user)
         then:
-        1 * userDao.getById(id) >> entity
+        2 * userDao.getById(id) >> entity
         entity.userName == "username"
     }
 
@@ -273,10 +271,9 @@ class UserPatchSpec extends Specification {
         when:
         bean.update(id, user)
         then:
-        1 * userDao.getById(id) >> entity
+        2 * userDao.getById(id) >> entity
         entity.userName == "Harald"
         entity.displayName == null
-        1 * userDao.update(entity) >> entity
 
     }
 
@@ -291,10 +288,9 @@ class UserPatchSpec extends Specification {
         when:
         bean.update(id, user)
         then:
-        1 * userDao.getById(id) >> entity
+        2 * userDao.getById(id) >> entity
         entity.userName == "Harald"
         entity.displayName == null
-        1 * userDao.update(entity) >> entity
     }
 
     def "should update parts of an complex attribute"() {
@@ -314,7 +310,7 @@ class UserPatchSpec extends Specification {
         when:
         bean.update(id, user)
         then:
-        1 * userDao.getById(id) >> entity
+        2 * userDao.getById(id) >> entity
         entity.name.givenName == "Arthur"
         entity.name.familyName == "Dent"
         entity.name.middleName == "FNORD"
@@ -341,7 +337,7 @@ class UserPatchSpec extends Specification {
         when:
         bean.update(id, user)
         then:
-        1 * userDao.getById(id) >> entity
+        2 * userDao.getById(id) >> entity
         entity.name.givenName == "Arthur"
         entity.name.familyName == "Dent"
         entity.name.middleName == '(")(°v°)(")'
@@ -360,7 +356,7 @@ class UserPatchSpec extends Specification {
         when:
         bean.update(id, user)
         then:
-        1 * userDao.getById(id) >> entity
+        2 * userDao.getById(id) >> entity
         //should be thrown if it would continue a read only field, because UUID has no field test ...
         notThrown(NullPointerException)
 
@@ -377,7 +373,7 @@ class UserPatchSpec extends Specification {
         when:
         bean.update(id, user)
         then:
-        1 * userDao.getById(id) >> entity
+        2 * userDao.getById(id) >> entity
         entity.groups == [] as Set
     }
 
@@ -394,7 +390,7 @@ class UserPatchSpec extends Specification {
         when:
         bean.update(id, user)
         then:
-        1 * userDao.getById(id) >> entity
+        2 * userDao.getById(id) >> entity
         entity.groups.size() == 1
     }
 
@@ -407,8 +403,7 @@ class UserPatchSpec extends Specification {
         bean.update(id, user)
 
         then:
-        1 * userDao.getById(id) >> entity
-        1 * userDao.update(entity) >> entity
+        2 * userDao.getById(id) >> entity
         lastModified <= entity.getMeta().getLastModified()
     }
 
@@ -421,6 +416,7 @@ class UserPatchSpec extends Specification {
         bean.replace(id, user)
 
         then:
+        1 * userDao.getById(id) >> entity
         1 * userDao.update(entity) >> entity
         lastModified <= entity.getMeta().getLastModified()
     }
