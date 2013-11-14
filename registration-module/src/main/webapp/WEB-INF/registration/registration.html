@@ -1,6 +1,4 @@
-<html ng-app="registration">
-<head>
-    <title>Registrierung</title>
+<div ng-app="registration" ng-controller="regController">
     <script src="http://code.angularjs.org/1.2.0-rc.3/angular.min.js"></script>
     <script>
         var app = angular.module('registration', []);
@@ -39,12 +37,8 @@
             }
         });
     </script>
-</head>
-<body>
-<div ng-controller="regController">
     <h1>Registrierung</h1>
     <hr>
-
     <form name="form" class="css-form" novalidate>
         <table>
             <tr>
@@ -144,21 +138,19 @@
         </table>
         <hr>
     </form>
-</div>
-<style type="text/css">
-    .css-form input.ng-invalid.ng-dirty {
-        background-color: #FA787E;
-    }
+    <style type="text/css">
+        .css-form input.ng-invalid.ng-dirty {
+            background-color: #FA787E;
+        }
 
-    .css-form input.ng-valid.ng-dirty {
-        background-color: #78FA89;
-    }
-    input {
-        margin-left: 30%;
-    }
-    button {
-        margin-left: 30%;
-    }
-</style>
-</body>
-</html>
+        .css-form input.ng-valid.ng-dirty {
+            background-color: #78FA89;
+        }
+        input {
+            margin-left: 30%;
+        }
+        button {
+            margin-left: 30%;
+        }
+    </style>
+</div>
