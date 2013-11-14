@@ -28,6 +28,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,6 +50,9 @@ public class RegisterController {
     private String registermailSubject;
     @Value("${osiam.web.registermail.linkprefix}")
     private String registermailLinkPrefix;
+
+    @Value("${osiam.web.register.url}")
+    private String clientRegistrationUri;
 
     @Value("${osiam.server.port}")
     private int serverPort;
@@ -88,7 +92,13 @@ public class RegisterController {
     @RequestMapping(method=RequestMethod.GET)
     public void index(@RequestHeader final String authorization, HttpServletResponse response) throws IOException {
         response.setContentType("text/html");
-        InputStream in = context.getResourceAsStream("/WEB-INF/registration/registration.html");
+
+        InputStream inputStream = context.getResourceAsStream("/WEB-INF/registration/registration.html");
+
+        String htmlContent = IOUtils.toString(inputStream, "UTF-8");
+        String replacedHtmlContent = htmlContent.replace("$REGISTERLINK", clientRegistrationUri);
+        InputStream in = IOUtils.toInputStream(replacedHtmlContent);
+
         IOUtils.copy(in, response.getOutputStream());
     }
 
@@ -170,7 +180,7 @@ public class RegisterController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        String mailContent = IOUtils.toString(registerMailContentStream);
+        String mailContent = IOUtils.toString(registerMailContentStream, "UTF-8");
         StringBuilder activateURL = new StringBuilder(registermailLinkPrefix);
         activateURL.append("?user=").append(parsedUser.getName());
         activateURL.append("&token=").append(activationToken);

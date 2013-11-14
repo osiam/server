@@ -30,9 +30,10 @@ class RegisterControllerTest extends Specification {
     def httpScheme = "http"
     def internalScimExtensionUrn = "urn:scim:schemas:osiam:1.0:Registration"
     def activationTokenField = "activationToken"
+    def clientRegistrationUri = "http://someStuff.de/"
 
     def registerController = new RegisterController(context: contextMock, httpClient: httpClientMock, serverPort: serverPort,
-            serverHost: serverHost, httpScheme: httpScheme,
+            serverHost: serverHost, httpScheme: httpScheme, clientRegistrationUri: clientRegistrationUri,
             internalScimExtensionUrn: internalScimExtensionUrn, activationTokenField: activationTokenField)
 
     def setupSpec() {
@@ -45,7 +46,7 @@ class RegisterControllerTest extends Specification {
     def "The registration controller should return a HTML file as stream"() {
         given:
         def httpServletResponseMock = Mock(HttpServletResponse)
-        def inputStreamMock = new ByteArrayInputStream("neunbytes".bytes)
+        def inputStream = new ByteArrayInputStream('nine bytes and one placeholder $REGISTERLINK'.bytes)
         def outputStreamMock = Mock(ServletOutputStream)
 
         when:
@@ -53,7 +54,7 @@ class RegisterControllerTest extends Specification {
 
         then:
         1 * httpServletResponseMock.setContentType("text/html")
-        1 * contextMock.getResourceAsStream("/WEB-INF/registration/registration.html") >> inputStreamMock
+        1 * contextMock.getResourceAsStream("/WEB-INF/registration/registration.html") >> inputStream
         1 * httpServletResponseMock.getOutputStream() >> outputStreamMock
     }
 
