@@ -150,7 +150,7 @@ class RegisterControllerTest extends Specification {
         def response = registerController.create(auth, body)
 
         then:
-        1 * httpClientMock.executeHttpPost(_, _, _, _) >> new HttpClientRequestResult("body", 200)
+        1 * httpClientMock.executeHttpPost(_, _, _, _) >> new HttpClientRequestResult("body", 201)
         1 * contextMock.getResourceAsStream("/WEB-INF/registration/registermail-content.txt") >> registerMailContent
         response.statusCode == HttpStatus.OK
 

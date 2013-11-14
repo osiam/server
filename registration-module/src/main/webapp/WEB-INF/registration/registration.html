@@ -10,10 +10,10 @@
                 emails : {'primary':'true','value':''}
             };
 
-            $scope.password_validate = ''
+            $scope.password_validate = '';
 
             $scope.submitRegistration = function() {
-                $http({method: 'POST', url: 'http://localhost:8080/osiam-auth-server/register/create',
+                $http({method: 'POST', url: '$REGISTERLINK',
                     data: $scope.registration, headers: {'Content-Type': 'application/json'}}).
                         success(function(data, status, headers, config) {
                             $scope.status = status

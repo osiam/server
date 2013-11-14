@@ -28,9 +28,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -77,16 +75,15 @@ public class RegisterController {
         httpClient = new HttpClientHelper();
 
         mapper = new ObjectMapper();
-        SimpleModule userDeserializerModule = new SimpleModule("userDeserializerModule", new Version(1, 0, 0, null))
+        SimpleModule userDeserializerModule = new SimpleModule("userDeserializerModule", new Version(1, 0, 0, null, null, null))
                 .addDeserializer(User.class, new UserDeserializer(User.class));
         mapper.registerModule(userDeserializerModule);
     }
 
     /**
-     * Generates a form with all needed fields for creating a new user.
+     * Generates a form with all needed fields for registration purpose.
      *
-     * @param authorization
-     * @return
+     * @param authorization a valid access token
      */
     @RequestMapping(method=RequestMethod.GET)
     public void index(@RequestHeader final String authorization, HttpServletResponse response) throws IOException {
@@ -96,17 +93,17 @@ public class RegisterController {
     }
 
     /**
-     *
      * Creates a new User.
      *
      * Needs all data given by the 'index'-form. Saves the user in an inactivate-state. Sends an activation-email to
      * the registered email-address.
-     * @param authorization
-     * @return
+     *
+     * @param authorization a valid access token
+     * @return the saved user and HTTP.OK (200) for successful creation, otherwise only the HTTP status
      */
     @RequestMapping(value = "/create", method = RequestMethod.POST, produces = "application/json")
     public ResponseEntity<String> create(@RequestHeader final String authorization, @RequestBody String body) {
-        ResponseEntity res = null;
+        ResponseEntity<String> res;
         try {
             User parsedUser = mapper.readValue(body, User.class);
 
@@ -120,49 +117,16 @@ public class RegisterController {
                 LOGGER.log(Level.WARNING, "No primary email found!");
                 res = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             } else {
-
                 // generate Activation Token
                 String activationToken = UUID.randomUUID().toString();
-
-                // Extension und Token zum User hinzufügen}
-                User.Builder builder = new User.Builder(parsedUser);
-
-                Map<String,String> fields = new HashMap<>();
-                fields.put("activation_token", activationToken);
-                builder.addExtension(internalScimExtensionUrn, new Extension(internalScimExtensionUrn, fields));
-                parsedUser = builder.build();
+                parsedUser = createUserForRegistration(parsedUser, activationToken);
 
                 // Save user
                 HttpClientRequestResult saveUserResponse = saveUser(parsedUser, authorization);
-                if (saveUserResponse.getStatusCode() != 200) {
-                    res = new ResponseEntity(HttpStatus.valueOf(saveUserResponse.getStatusCode()));
+                if (saveUserResponse.getStatusCode() != 201) {
+                    res = new ResponseEntity<>(HttpStatus.valueOf(saveUserResponse.getStatusCode()));
                 } else {
-
-                    // Send activation mail
-                    MimeMessage msg = new MimeMessage(Session.getDefaultInstance(System.getProperties()));
-                    msg.addFrom(InternetAddress.parse(registermailFrom));
-                    msg.addRecipient(Message.RecipientType.TO, InternetAddress.parse(foundEmail)[0]);
-                    msg.addHeader("Subject", MimeUtility.encodeText(registermailSubject));
-
-                    // Mailcontent with $REGISTERLINK as placeholder
-                    InputStream registerMailContentStream = context.getResourceAsStream("/WEB-INF/registration/registermail-content.txt");
-
-                    if (registerMailContentStream == null) {
-                        LOGGER.log(Level.SEVERE, "Cant open registermail-content.txt on classpath! Please configure!");
-                        res = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-                    } else {
-                        String mailContent = IOUtils.toString(registerMailContentStream);
-                        StringBuilder activateURL = new StringBuilder(registermailLinkPrefix);
-                        activateURL.append("?user=").append(parsedUser.getName());
-                        activateURL.append("&token=").append(activationToken);
-
-                        mailContent.replace("$REGISTERLINK", activateURL);
-                        msg.setContent(mailContent, "text/plain");
-
-                        mailSender.sendMail(msg);
-
-                        res = new ResponseEntity(HttpStatus.OK);
-                    }
+                    res = sendActivationMail(foundEmail, parsedUser, activationToken, saveUserResponse);
                 }
             }
         } catch (IOException | MessagingException e) {
@@ -170,14 +134,59 @@ public class RegisterController {
             res = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return res;
+    }
 
+    private User createUserForRegistration(User parsedUser, String activationToken) {
+
+        // Add Extension with the token to the user and set active to false
+        User.Builder builder = new User.Builder(parsedUser);
+        builder.setActive(false);
+
+        //Add user to role 'USER' to be able to login afterwards
+        List<MultiValuedAttribute> roles = new ArrayList<>();
+        roles.add(new MultiValuedAttribute.Builder().setValue("USER").build());
+        builder.setRoles(roles);
+
+        Map<String,String> fields = new HashMap<>();
+        fields.put("activationToken", activationToken);
+        builder.addExtension(internalScimExtensionUrn, new Extension(internalScimExtensionUrn, fields));
+
+        return builder.build();
+    }
+
+    private ResponseEntity<String> sendActivationMail(String foundEmail, User parsedUser, String activationToken,
+                                  HttpClientRequestResult saveUserResponse) throws MessagingException, IOException {
+
+        MimeMessage msg = new MimeMessage(Session.getDefaultInstance(System.getProperties()));
+        msg.addFrom(InternetAddress.parse(registermailFrom));
+        msg.addRecipient(Message.RecipientType.TO, InternetAddress.parse(foundEmail)[0]);
+        msg.addHeader("Subject", MimeUtility.encodeText(registermailSubject));
+
+        // Mailcontent with $REGISTERLINK as placeholder
+        InputStream registerMailContentStream = context.getResourceAsStream("/WEB-INF/registration/registermail-content.txt");
+
+        if (registerMailContentStream == null) {
+            LOGGER.log(Level.SEVERE, "Cant open registermail-content.txt on classpath! Please configure!");
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        String mailContent = IOUtils.toString(registerMailContentStream);
+        StringBuilder activateURL = new StringBuilder(registermailLinkPrefix);
+        activateURL.append("?user=").append(parsedUser.getName());
+        activateURL.append("&token=").append(activationToken);
+
+        String replacedMailContent = mailContent.replace("$REGISTERLINK", activateURL);
+        msg.setContent(replacedMailContent, "text/plain");
+
+        mailSender.sendMail(msg);
+
+        return new ResponseEntity<>(saveUserResponse.getBody(), HttpStatus.OK);
     }
 
     private HttpClientRequestResult saveUser(User userToSave, String authorization) throws IOException {
         String userAsString = mapper.writeValueAsString(userToSave);
         String createUserUri = httpScheme + "://" + serverHost + ":" + serverPort + RESOURCE_SERVER_URI;
-        HttpClientRequestResult response = httpClient.executeHttpPost(createUserUri, userAsString, AUTHORIZATION, authorization);
-        return response;
+        return httpClient.executeHttpPost(createUserUri, userAsString, AUTHORIZATION, authorization);
     }
 
     /**
