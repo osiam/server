@@ -83,6 +83,10 @@ public class UserSpring implements UserDetails {
         return userName;
     }
 
+    public void setUsername(String userName) {
+        this.userName = userName;
+    }
+
     /**
      * Not implemented yet.
      *
@@ -132,17 +136,8 @@ public class UserSpring implements UserDetails {
         this.active = active;
     }
 
-    public String getUserName() {
-        return userName;
-    }
-
-
     public void setId(String id) {
         this.id = id;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
     }
 
     public Set<RoleSpring> getRoles() {
