@@ -33,6 +33,9 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Controller to handel the registration purpose
+ */
 @Controller
 @RequestMapping(value = "/register")
 public class RegisterController {
