@@ -36,8 +36,6 @@ import java.util.Set;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserSpring implements UserDetails {
 
-    private static final long serialVersionUID = 4325248547364376955L;
-
     private String userName;
 
     private Set<RoleSpring> roles;
