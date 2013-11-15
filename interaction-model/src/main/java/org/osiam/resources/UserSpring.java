@@ -44,7 +44,7 @@ public class UserSpring implements UserDetails {
 
     private String id;
 
-    private Boolean active;
+    private boolean active;
 
     /**
      * Returning the users granted authorities
@@ -122,11 +122,11 @@ public class UserSpring implements UserDetails {
     }
 
 
-    public Boolean getActive() {
+    public boolean isActive() {
         return active;
     }
 
-    public void setActive(Boolean active) {
+    public void setActive(boolean active) {
         this.active = active;
     }
 
