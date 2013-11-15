@@ -33,10 +33,10 @@ import org.osiam.resources.scim.User;
 import org.osiam.storage.dao.ExtensionDao;
 import org.osiam.storage.dao.GenericDAO;
 import org.osiam.storage.dao.UserDAO;
+import org.osiam.storage.entities.ExtensionEntity;
+import org.osiam.storage.entities.ExtensionFieldEntity;
+import org.osiam.storage.entities.ExtensionFieldValueEntity;
 import org.osiam.storage.entities.UserEntity;
-import org.osiam.storage.entities.extension.ExtensionEntity;
-import org.osiam.storage.entities.extension.ExtensionFieldEntity;
-import org.osiam.storage.entities.extension.ExtensionFieldValueEntity;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -96,10 +96,11 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
 
     @Override
     public User replace(String id, User user) {
-        user = new User.Builder(user).setId(id).build();
+
+        UserEntity existingEntity = userDao.getById(id);
+
         UserEntity userEntity = userConverter.fromScim(user);
 
-        UserEntity existingEntity = userDao.getById(user.getId());
         userEntity.setInternalId(existingEntity.getInternalId());
         userEntity.setMeta(existingEntity.getMeta());
         userEntity.setId(existingEntity.getId());
@@ -123,7 +124,7 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
             User scimResultUser = userConverter.toScim((UserEntity) g);
             users.add(User.Builder.generateForOutput(scimResultUser));
         }
-        return new SCIMSearchResult(users, result.getTotalResults(), count, result.getStartIndex(), result.getSchemas());
+        return new SCIMSearchResult<>(users, result.getTotalResults(), count, result.getStartIndex(), result.getSchemas());
     }
 
     @Override

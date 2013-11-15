@@ -29,15 +29,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import java.io.Serializable;
 
 /**
  * Name Entity
  */
 @Entity(name = "scim_name")
-public class NameEntity implements Serializable {
-
-    private static final long serialVersionUID = -6535056565659057058L;
+public class NameEntity {
 
     @Id
     @GeneratedValue
@@ -163,7 +160,7 @@ public class NameEntity implements Serializable {
 
     @Override
     public int hashCode() {
-        int prime = 31;
+        final int prime = 31;
         int result = formatted != null ? formatted.hashCode() : 0;
         result = prime * result + (familyName != null ? familyName.hashCode() : 0);
         result = prime * result + (givenName != null ? givenName.hashCode() : 0);

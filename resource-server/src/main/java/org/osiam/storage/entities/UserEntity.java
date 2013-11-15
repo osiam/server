@@ -23,9 +23,6 @@
 
 package org.osiam.storage.entities;
 
-import org.osiam.storage.entities.extension.ExtensionEntity;
-import org.osiam.storage.entities.extension.ExtensionFieldValueEntity;
-
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -38,7 +35,6 @@ import java.util.Set;
 public class UserEntity extends InternalIdSkeleton {
 
     private static final String MAPPING_NAME = "user";
-    private static final long serialVersionUID = -6535056565639057058L;
 
     @Column(nullable = false, unique = true)
     private String userName;
@@ -528,7 +524,7 @@ public class UserEntity extends InternalIdSkeleton {
 
     @Override
     public int hashCode() {
-        int prime = 31;
+        final int prime = 31;
         int result = super.hashCode();
         result = prime * result + (userName != null ? userName.hashCode() : 0);
         return result;
