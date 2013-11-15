@@ -43,31 +43,47 @@
         <table>
             <tr>
                 <td>
+                    <label>Benutzername* (min. 3 Zeichen)</label>
+                </td>
+                <td>
+                    <input type="text" name="email" ng-model="registration.userName" ng-minlength=3 required/>
+                </td>
+            </tr>
+            <tr>
+                <td>
                     <label>E-Mail Adresse*</label>
                 </td>
                 <td>
-                    <input type="email" name="email" ng-model="registration.userName" ng-change="registration.emails.value=registration.userName" required/>
+                    <input type="email" name="email" ng-model="registration.emails.value" required/>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <label>Vorname*</label>
+                    <label>Anrede</label>
                 </td>
                 <td>
-                    <input type="text" name="vorname" ng-model="registration.name.givenName" required>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label>Nachname*</label>
-                </td>
-                <td>
-                    <input type="text" name="nachname" ng-model="registration.name.familyName" required>
+                    <input type="text" name="anrede" ng-model="registration.name.honorificPrefix">
                 </td>
             </tr>
             <tr>
                 <td>
-                    <label>Passwort* (8 Zeichen)</label>
+                    <label>Vorname</label>
+                </td>
+                <td>
+                    <input type="text" name="vorname" ng-model="registration.name.givenName">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>Nachname</label>
+                </td>
+                <td>
+                    <input type="text" name="nachname" ng-model="registration.name.familyName">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>Passwort* (min. 8 Zeichen)</label>
                 </td>
                 <td>
                     <input type="password" name="pw" ng-model="registration.password" ng-minlength=8 required>
@@ -79,54 +95,6 @@
                 </td>
                 <td>
                     <input type="password" name="pw2" ng-model="password_validate" match="registration.password" required>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label>Namenszusatz*</label>
-                </td>
-                <td>
-                    <input type="text" name="namenszusatz" ng-model="registration.name.honorificSuffix" required>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label>Anrede*</label>
-                </td>
-                <td>
-                    <input type="text" name="anrede" ng-model="registration.name.honorificPrefix" required>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label>Geburtsname*</label>
-                </td>
-                <td>
-                    <input type="text" name="gebname" ng-model="registration.geburtsName" required>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label>Geburtsdatum*</label>
-                </td>
-                <td>
-                    <input type="text" name="gebdatum" ng-model="registration.geburtsDatum" required>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label>Stipendium*</label>
-                </td>
-                <td>
-                    <input type="text" ng-model="registration.stipfoetyp" required>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label>EV Erklaerung*</label>
-                </td>
-                <td>
-                    <input type="text" name="stipendium" ng-model="registration.evErklaerung" required>
                 </td>
             </tr>
             <tr>
