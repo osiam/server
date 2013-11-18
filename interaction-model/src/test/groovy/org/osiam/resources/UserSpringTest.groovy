@@ -18,7 +18,7 @@ class UserSpringTest extends Specification {
         def roles = [new RoleSpring()] as Set
 
         when:
-        userSpring.setUserName("username")
+        userSpring.setUsername("username")
         userSpring.setRoles(roles)
         userSpring.setPassword("thePassword")
         userSpring.setActive(true)
@@ -47,7 +47,7 @@ class UserSpringTest extends Specification {
 
     def "should be able to set users userName"() {
         when:
-        userSpring.setUserName("userName")
+        userSpring.setUsername("userName")
 
         then:
         userSpring.getUserName() == "userName"
@@ -66,6 +66,6 @@ class UserSpringTest extends Specification {
         userSpring.setActive(true)
 
         then:
-        userSpring.getActive()
+        userSpring.isActive()
     }
 }

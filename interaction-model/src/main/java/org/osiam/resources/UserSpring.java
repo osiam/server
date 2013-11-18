@@ -36,7 +36,7 @@ import java.util.Set;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserSpring implements UserDetails {
 
-    private static final long serialVersionUID = 4325248547364376955L;
+    private static final long serialVersionUID = 1L;
 
     private String userName;
 
@@ -46,7 +46,7 @@ public class UserSpring implements UserDetails {
 
     private String id;
 
-    private Boolean active;
+    private boolean active;
 
     /**
      * Returning the users granted authorities
@@ -81,6 +81,10 @@ public class UserSpring implements UserDetails {
     @Override
     public String getUsername() {
         return userName;
+    }
+
+    public void setUsername(String userName) {
+        this.userName = userName;
     }
 
     /**
@@ -123,26 +127,20 @@ public class UserSpring implements UserDetails {
         return true;
     }
 
-
-    public Boolean getActive() {
-        return active;
-    }
-
-    public void setActive(Boolean active) {
-        this.active = active;
-    }
-
     public String getUserName() {
         return userName;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
     }
 
     public Set<RoleSpring> getRoles() {
