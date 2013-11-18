@@ -3,7 +3,7 @@ package org.osiam.web.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Controller to handel the lost password flow
@@ -16,15 +16,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(value = "/password")
 public class LostPasswordController {
 
-    public ResponseEntity<String> lost() {
+    @RequestMapping(value = "/lost/{userId}", method = RequestMethod.POST)
+    public ResponseEntity<String> lost(@PathVariable final String userId) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    public void lostFrom() {
-
+    @RequestMapping(value = "/lostForm", method = RequestMethod.GET)
+    public ResponseEntity<String> lostFrom(@RequestParam String otp, @RequestParam String userId) {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    public ResponseEntity<String> change() {
+    @RequestMapping(value = "/change", method = RequestMethod.POST)
+    public ResponseEntity<String> change(@RequestBody String body) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 }
