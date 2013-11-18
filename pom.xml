@@ -57,6 +57,8 @@
         <!-- set path for unit tests reports -->
 
         <org.aspectj-version>1.7.0</org.aspectj-version>
+        
+        <org.osiam.scim-schema.version>0.31</org.osiam.scim-schema.version>
     </properties>
 
     <scm>
@@ -439,7 +441,7 @@
             <dependency>
                 <groupId>org.osiam</groupId>
                 <artifactId>scim-schema</artifactId>
-                <version>0.31-SNAPSHOT</version>
+                <version>${org.osiam.scim-schema.version}</version>
             </dependency>
 
             <dependency>
