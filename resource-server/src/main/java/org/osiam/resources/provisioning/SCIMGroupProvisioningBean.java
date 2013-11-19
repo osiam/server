@@ -28,8 +28,8 @@ import org.osiam.resources.converter.GroupConverter;
 import org.osiam.resources.exceptions.ResourceExistsException;
 import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.SCIMSearchResult;
-import org.osiam.storage.dao.GenericDAO;
-import org.osiam.storage.dao.GroupDAO;
+import org.osiam.storage.dao.GenericDao;
+import org.osiam.storage.dao.GroupDao;
 import org.osiam.storage.entities.GroupEntity;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -50,11 +50,11 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, Gro
     private GroupConverter groupConverter;
 
     @Inject
-    private GroupDAO groupDAO;
+    private GroupDao groupDao;
 
     @Override
-    protected GenericDAO<GroupEntity> getDao() {
-        return groupDAO;
+    protected GenericDao<GroupEntity> getDao() {
+        return groupDao;
     }
 
     @Override
@@ -67,7 +67,7 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, Gro
         GroupEntity enrichedGroup = groupConverter.fromScim(group);
         enrichedGroup.setId(UUID.randomUUID());
         try {
-            groupDAO.create(enrichedGroup);
+            groupDao.create(enrichedGroup);
         } catch (DataIntegrityViolationException e) {
             LOGGER.log(Level.INFO, "An exception got thrown while creating a group.", e);
 
@@ -79,7 +79,7 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, Gro
     @Override
     public Group replace(String id, Group group) {
 
-        GroupEntity existingEntity = groupDAO.getById(id);
+        GroupEntity existingEntity = groupDao.getById(id);
 
         GroupEntity groupEntity = groupConverter.fromScim(group);
 
@@ -88,7 +88,7 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, Gro
         groupEntity.setMeta(existingEntity.getMeta());
         groupEntity.touch();
 
-        groupEntity = groupDAO.update(groupEntity);
+        groupEntity = groupDao.update(groupEntity);
         return groupConverter.toScim(groupEntity);
     }
 

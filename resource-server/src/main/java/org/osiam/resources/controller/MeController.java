@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.osiam.security.authorization.AccessTokenValidationService;
-import org.osiam.storage.dao.UserDAO;
+import org.osiam.storage.dao.UserDao;
 import org.osiam.storage.entities.EmailEntity;
 import org.osiam.storage.entities.NameEntity;
 import org.osiam.storage.entities.UserEntity;
@@ -33,7 +33,7 @@ public class MeController {
     private AccessTokenValidationService accessTokenValidationService;
 
     @Inject
-    private UserDAO userDAO;
+    private UserDao userDao;
 
     /**
      * This method is used to get information about the user who initialised the authorization process.
@@ -68,7 +68,7 @@ public class MeController {
         Object o = userAuthentication.getPrincipal();
         if (o instanceof LinkedHashMap) {
             String principalId = (String) ((LinkedHashMap) o).get("id");
-            UserEntity userEntity = userDAO.getById(principalId);
+            UserEntity userEntity = userDao.getById(principalId);
             return new FacebookInformationConstruct(userEntity);
         } else {
             throw new IllegalArgumentException("User was not authenticated with OSIAM.");

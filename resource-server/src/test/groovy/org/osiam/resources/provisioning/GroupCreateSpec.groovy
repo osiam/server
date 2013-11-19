@@ -5,17 +5,17 @@ import org.osiam.resources.exceptions.ResourceExistsException
 import org.osiam.resources.exceptions.ResourceNotFoundException
 import org.osiam.resources.scim.Group
 import org.osiam.resources.scim.MemberRef
-import org.osiam.storage.dao.GroupDAO
+import org.osiam.storage.dao.GroupDao
 import org.osiam.storage.entities.GroupEntity
 import org.springframework.dao.DataIntegrityViolationException
 import spock.lang.Specification
 
 class GroupCreateSpec extends Specification {
 
-    GroupDAO groupDao = Mock()
+    GroupDao groupDao = Mock()
     GroupConverter groupConverter = Mock()
 
-    SCIMGroupProvisioningBean underTest = new SCIMGroupProvisioningBean(groupDAO: groupDao, groupConverter: groupConverter)
+    SCIMGroupProvisioningBean underTest = new SCIMGroupProvisioningBean(groupDao: groupDao, groupConverter: groupConverter)
 
     Group group
     GroupEntity groupEntity = Mock()

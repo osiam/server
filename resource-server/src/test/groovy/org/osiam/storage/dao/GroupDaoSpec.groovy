@@ -37,7 +37,7 @@ import spock.lang.Specification
 import javax.persistence.EntityManager
 import javax.persistence.Query
 
-class GroupDAOSpec extends Specification {
+class GroupDaoSpec extends Specification {
 
     EntityManager em = Mock(EntityManager)
 
@@ -45,7 +45,7 @@ class GroupDAOSpec extends Specification {
     InternalIdSkeleton internalidSkeleton = new GroupEntity(id: UUID.randomUUID())
 
     def filterParser = Mock(FilterParser)
-    def underTest = new GroupDAO(em: em, filterParser: filterParser)
+    def underTest = new GroupDao(em: em, filterParser: filterParser)
     String id = UUID.randomUUID().toString()
     def aClass = GroupEntity.class
 
