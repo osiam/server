@@ -204,7 +204,7 @@ public class RegisterController {
      *
      * @return HTTP status, HTTP.OK (200) for a valid activation
      */
-    @RequestMapping(value = "/activate", method = RequestMethod.GET)
+    @RequestMapping(value = "/activate", method = RequestMethod.POST)
     public ResponseEntity activate(@RequestHeader final String authorization,
                                    @RequestParam final String userId, @RequestParam final String activationToken) throws IOException {
 
