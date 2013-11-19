@@ -29,6 +29,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
@@ -128,6 +129,28 @@ public class HttpClientHelper {
         try {
             StringEntity entity = new StringEntity(body, "UTF-8");
             request.setEntity(entity);
+            HttpResponse response = client.execute(request);
+            String responseBody = getResponseBody(response);
+            int statusCode = response.getStatusLine().getStatusCode();
+            result = new HttpClientRequestResult(responseBody, statusCode);
+        } catch (IOException e) {
+            throw new RuntimeException(e); //NOSONAR : Need only wrapping to a runtime exception
+        }
+
+        return result;
+    }
+
+    public HttpClientRequestResult executeHttpPatch(String url, String body, String headerName, String headerValue) {
+        HttpClientRequestResult result;
+        final HttpPatch request = new HttpPatch(url);
+
+        if (headerName != null && headerValue != null) {
+            request.addHeader(headerName, headerValue);
+        }
+
+        try {
+            StringEntity stringEntity = new StringEntity(body, "UTF-8");
+            request.setEntity(stringEntity);
             HttpResponse response = client.execute(request);
             String responseBody = getResponseBody(response);
             int statusCode = response.getStatusLine().getStatusCode();

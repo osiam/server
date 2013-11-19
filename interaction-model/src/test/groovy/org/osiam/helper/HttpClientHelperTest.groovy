@@ -152,12 +152,31 @@ class HttpClientHelperTest extends Specification {
         result.statusCode == 200
     }
 
-    def "should wrap IOException from httpClientHelper.executeHttpPut to RuntimeException if"() {
+    def "should wrap IOException from httpClientHelper.executeHttpPut to RuntimeException"() {
         when:
         httpClientHelper.executeHttpPut("http://localhost:8080/test", "paramName", "paramValue", null, null)
 
         then:
         1 * httpClientMock.execute(_) >> {throw new IOException()}
         thrown(RuntimeException)
+    }
+
+    def "should be able to execute the http patch method with header, body and uri parameters"() {
+        given:
+        def httpEntityMock = Mock(HttpEntity)
+        def content = "The response content"
+        def statusLineMock = Mock(StatusLine)
+
+        when:
+        def result = httpClientHelper.executeHttpPatch("http://localhost:8080/test", "theBody", "headerName", "headerValue")
+
+        then:
+        1 * httpClientMock.execute(_) >> httpResponseMock
+        1 * httpResponseMock.getStatusLine() >> statusLineMock
+        1 * statusLineMock.getStatusCode() >> 200
+        1 * httpResponseMock.getEntity() >> httpEntityMock
+        1 * httpEntityMock.getContent() >> new ByteArrayInputStream(content.getBytes("UTF-8"))
+        result.body == content
+        result.statusCode == 200
     }
 }
