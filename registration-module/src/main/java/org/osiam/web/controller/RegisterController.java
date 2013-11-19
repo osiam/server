@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -167,13 +168,8 @@ public class RegisterController {
         return builder.build();
     }
 
-    private ResponseEntity<String> sendActivationMail(String foundEmail, User parsedUser, String activationToken,
+    private ResponseEntity<String> sendActivationMail(String toAddress, User parsedUser, String activationToken,
                                   HttpClientRequestResult saveUserResponse) throws MessagingException, IOException {
-
-        MimeMessage msg = new MimeMessage(Session.getDefaultInstance(System.getProperties()));
-        msg.addFrom(InternetAddress.parse(registermailFrom));
-        msg.addRecipient(Message.RecipientType.TO, InternetAddress.parse(foundEmail)[0]);
-        msg.addHeader("Subject", MimeUtility.encodeText(registermailSubject));
 
         // Mailcontent with $REGISTERLINK as placeholder
         InputStream registerMailContentStream = context.getResourceAsStream("/WEB-INF/registration/registermail-content.txt");
@@ -182,17 +178,14 @@ public class RegisterController {
             LOGGER.log(Level.SEVERE, "Cant open registermail-content.txt on classpath! Please configure!");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
         String mailContent = IOUtils.toString(registerMailContentStream, "UTF-8");
         StringBuilder activateURL = new StringBuilder(registermailLinkPrefix);
         activateURL.append("userId=").append(parsedUser.getId());
         activateURL.append("&activationToken=").append(activationToken);
 
-        String replacedMailContent = mailContent.replace("$REGISTERLINK", activateURL);
-        msg.setContent(replacedMailContent, "text/plain");
+        mailContent = mailContent.replace("$REGISTERLINK", activateURL);
 
-        mailSender.sendMail(msg);
-
+        mailSender.sendMail(registermailFrom, toAddress, registermailSubject, mailContent);
         return new ResponseEntity<>(saveUserResponse.getBody(), HttpStatus.OK);
     }
 
