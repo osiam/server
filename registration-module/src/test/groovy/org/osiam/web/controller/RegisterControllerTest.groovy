@@ -50,7 +50,7 @@ class RegisterControllerTest extends Specification {
         def outputStreamMock = Mock(ServletOutputStream)
 
         when:
-        registerController.index("Bearer ACCESS_TOKEN", httpServletResponseMock)
+        registerController.index(httpServletResponseMock)
 
         then:
         1 * httpServletResponseMock.setContentType("text/html")

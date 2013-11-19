@@ -90,11 +90,9 @@ public class RegisterController {
 
     /**
      * Generates a form with all needed fields for registration purpose.
-     *
-     * @param authorization a valid access token
      */
     @RequestMapping(method=RequestMethod.GET)
-    public void index(@RequestHeader final String authorization, HttpServletResponse response) throws IOException {
+    public void index(HttpServletResponse response) throws IOException {
         response.setContentType("text/html");
 
         InputStream inputStream = context.getResourceAsStream("/WEB-INF/registration/registration.html");
