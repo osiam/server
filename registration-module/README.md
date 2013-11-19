@@ -98,6 +98,8 @@ Here also the configurations **osiam.web.passwdchangemail.linkprefix**, **osiam.
 You need also to enhance the request with the authorization header and a valid access token before sending to the
 registration modules HTTP endpoint.
 
+The base URI for the module is: **http://HOST:PORT/osiam-registration-module**
+
 # User registration
 The registration will be done via a double opt in mechanism.
 
@@ -109,8 +111,6 @@ The client application will then send the activation request to osiam and the us
 activation token validation will be correct and the user is able to login.
 
 There are three HTTP endpoints:
-
-The base URI is: http://HOST:PORT/osiam-registration-module
 
 <table>
     <tr>
@@ -152,8 +152,6 @@ Then the request must be submitted to the registration module where the one time
 and if this was successful the new password will be saved and the user is able to login with the new password.
 
 There are two HTTP endpoint:
-
-The base URI is: http://HOST:PORT/osiam-registration-module
 
 <table>
     <tr>
