@@ -185,8 +185,8 @@ public class RegisterController {
 
         String mailContent = IOUtils.toString(registerMailContentStream, "UTF-8");
         StringBuilder activateURL = new StringBuilder(registermailLinkPrefix);
-        activateURL.append("?user=").append(parsedUser.getName());
-        activateURL.append("&token=").append(activationToken);
+        activateURL.append("userId=").append(parsedUser.getId());
+        activateURL.append("&activationToken=").append(activationToken);
 
         String replacedMailContent = mailContent.replace("$REGISTERLINK", activateURL);
         msg.setContent(replacedMailContent, "text/plain");
@@ -208,18 +208,18 @@ public class RegisterController {
      * After activation E-Mail arrived the activation link will point to this URI.
      *
      * @param authorization an valid OAuth2 token
-     * @param user the id of the registered user
-     * @param token the user's activation token, send by E-Mail
+     * @param userId the id of the registered user
+     * @param activationToken the user's activation token, send by E-Mail
      *
      * @return HTTP status, HTTP.OK (200) for a valid activation
      */
     @RequestMapping(value = "/activate", method = RequestMethod.GET)
     public ResponseEntity activate(@RequestHeader final String authorization,
-                                   @RequestParam("user") final String user, @RequestParam("token") final String token) throws IOException {
+                                   @RequestParam final String userId, @RequestParam final String activationToken) throws IOException {
 
         ResponseEntity response = new ResponseEntity(HttpStatus.UNAUTHORIZED);
 
-        String uri = httpScheme + "://" + serverHost + ":" + serverPort + RESOURCE_SERVER_URI + "/" + user;
+        String uri = httpScheme + "://" + serverHost + ":" + serverPort + RESOURCE_SERVER_URI + "/" + userId;
         HttpClientRequestResult result = httpClient.executeHttpGet(uri, AUTHORIZATION, authorization);
 
         if (result.getStatusCode() == 200) {
@@ -227,7 +227,7 @@ public class RegisterController {
             Extension extension = userForActivation.getExtension(internalScimExtensionUrn);
             String activationTokenFieldValue = extension.getField(activationTokenField);
 
-            if (activationTokenFieldValue.equals(token)) {
+            if (activationTokenFieldValue.equals(activationToken)) {
                 extension.setField(activationTokenField, "");
                 User updateUser = new User.Builder(userForActivation).setActive(true).build();
 
