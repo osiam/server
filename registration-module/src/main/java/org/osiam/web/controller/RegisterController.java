@@ -140,7 +140,7 @@ public class RegisterController {
                 if (saveUserResponse.getStatusCode() != 201) {
                     res = new ResponseEntity<>(HttpStatus.valueOf(saveUserResponse.getStatusCode()));
                 } else {
-                    res = sendActivationMail(foundEmail, parsedUser, activationToken, saveUserResponse);
+                    res = sendActivationMail(foundEmail, activationToken, saveUserResponse);
                 }
             }
         } catch (IOException | MessagingException e) {
@@ -168,7 +168,7 @@ public class RegisterController {
         return builder.build();
     }
 
-    private ResponseEntity<String> sendActivationMail(String toAddress, User parsedUser, String activationToken,
+    private ResponseEntity<String> sendActivationMail(String toAddress, String activationToken,
                                   HttpClientRequestResult saveUserResponse) throws MessagingException, IOException {
 
         // Mailcontent with $REGISTERLINK as placeholder
@@ -180,7 +180,7 @@ public class RegisterController {
         }
         String mailContent = IOUtils.toString(registerMailContentStream, "UTF-8");
         StringBuilder activateURL = new StringBuilder(registermailLinkPrefix);
-        activateURL.append("userId=").append(parsedUser.getId());
+        activateURL.append("userId=").append(mapper.readValue(saveUserResponse.getBody(), User.class).getId());
         activateURL.append("&activationToken=").append(activationToken);
 
         mailContent = mailContent.replace("$REGISTERLINK", activateURL);
