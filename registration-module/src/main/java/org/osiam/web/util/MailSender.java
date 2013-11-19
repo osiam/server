@@ -1,8 +1,13 @@
 package org.osiam.web.util;
 
+import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Session;
 import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeUtility;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,7 +18,16 @@ import javax.mail.internet.MimeMessage;
  */
 public class MailSender {
 
-    public void sendMail(MimeMessage msg ) throws MessagingException {
+    void transportMail(MimeMessage msg ) throws MessagingException {
         Transport.send(msg);
+    }
+
+    public void sendMail(String fromAddress, String toAddress, String subject, String mailContent) throws MessagingException, UnsupportedEncodingException {
+        MimeMessage msg = new MimeMessage(Session.getDefaultInstance(System.getProperties()));
+        msg.addFrom(InternetAddress.parse(fromAddress));
+        msg.addRecipient(Message.RecipientType.TO, InternetAddress.parse(toAddress)[0]);
+        msg.addHeader("Subject", MimeUtility.encodeText(subject));
+        msg.setContent(mailContent, "text/plain");
+        transportMail(msg);
     }
 }
