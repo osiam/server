@@ -62,7 +62,7 @@ with content based on this example:
 
 Some additional information for the configuration values:
 
-osiam.web.registermail.linkprefix:
+**osiam.web.registermail.linkprefix:**
 
 This must be a URL on client side and must not point directly to the osiam registration module due to security issues.
 
@@ -73,11 +73,11 @@ Here some examples:
  * http://localhost:1234/client/activationMail?
  * http://localhost:1234/client/activationMail?someParameter=value&
 
-osiam.web.register.url:
+**osiam.web.register.url:**
 
 This must be a URL on client side and must not point directly to the osiam registration module due to security issues.
 
-osiam.web.passwdchangemail.linkprefix:
+**osiam.web.passwdchangemail.linkprefix:**
 
 This must be a URL on client side and must not point directly to the osiam registration module due to security issues.
 
@@ -88,11 +88,18 @@ To deploy the registration module into Tomcat server the downloaded .war files n
 
 For further information on Tomcat's configuration [read this section:](https://github.com/osiam/server/wiki/detailed_reference_installation#deployment-into-the-application-server)
 
-# User registration
-The registration will be done via a double opt in mechanism.
-
+# Integration
 For the integration in your app you need to define a client side mechanism for calling the registration module's HTTP API and
 to receive the user requests. The user agent will not directly speak with the registration module.
+
+Here also the configurations **osiam.web.passwdchangemail.linkprefix**, **osiam.web.register.url** and
+**osiam.web.registermail.linkprefix** come in place.
+
+You need also to enhance the request with the authorization header and a valid access token before sending to the
+registration modules HTTP endpoint.
+
+# User registration
+The registration will be done via a double opt in mechanism.
 
 In the first step the user will register at osiam via the client application.
 Then a email will be send to the address provided in the first step. The content of that email will
@@ -102,6 +109,7 @@ The client application will then send the activation request to osiam and the us
 activation token validation will be correct and the user is able to login.
 
 There are three HTTP endpoints:
+
 The base URI is: http://HOST:PORT/osiam-registration-module
 
 <table>
@@ -133,9 +141,6 @@ The base URI is: http://HOST:PORT/osiam-registration-module
 # Change password mechanism
 The change password mechanism has also multiple steps.
 
-For the integration in your app you need to define a client side mechanism for calling the registration module's HTTP API and
-to receive the user requests. The user agent will not directly speak with the registration module.
-
 There is no HTML form available yet and must be provided by the client.
 
 First of all the user has to indicate on client side that he lost his password. Then the client will send a request to
@@ -147,6 +152,7 @@ Then the request must be submitted to the registration module where the one time
 and if this was successful the new password will be saved and the user is able to login with the new password.
 
 There are two HTTP endpoint:
+
 The base URI is: http://HOST:PORT/osiam-registration-module
 
 <table>
