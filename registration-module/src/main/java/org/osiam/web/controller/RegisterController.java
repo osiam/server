@@ -170,14 +170,15 @@ public class RegisterController {
             LOGGER.log(Level.SEVERE, "Cant open registermail-content.txt on classpath! Please configure!");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        String mailContent = IOUtils.toString(registerMailContentStream, "UTF-8");
+
         StringBuilder activateURL = new StringBuilder(registermailLinkPrefix);
         activateURL.append("userId=").append(parsedUser.getId());
         activateURL.append("&activationToken=").append(activationToken);
 
-        mailContent = mailContent.replace("$REGISTERLINK", activateURL);
+        Map<String, String> mailVars = new HashMap<>();
+        mailVars.put("$REGISTERLINK", activateURL.toString());
 
-        mailSender.sendMail(registermailFrom, toAddress, registermailSubject, mailContent);
+        mailSender.sendMail(registermailFrom, toAddress, registermailSubject, registerMailContentStream, mailVars);
         return new ResponseEntity<>(saveUserResponse.getBody(), HttpStatus.OK);
     }
 
