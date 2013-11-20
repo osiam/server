@@ -118,14 +118,8 @@ public class RegisterController {
         ResponseEntity<String> res;
         try {
             User parsedUser = mapper.readValue(body, User.class);
-
-            String foundEmail = null;
-            for (MultiValuedAttribute email : parsedUser.getEmails()) {
-                if (email.isPrimary()) {
-                    foundEmail = (String) email.getValue();
-                }
-            }
-            if (foundEmail == null) {
+            String primaryEmail = mailSender.extractPrimaryEmail(parsedUser);
+            if (primaryEmail == null) {
                 LOGGER.log(Level.WARNING, "No primary email found!");
                 res = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             } else {
@@ -138,7 +132,7 @@ public class RegisterController {
                 if (saveUserResponse.getStatusCode() != 201) {
                     res = new ResponseEntity<>(HttpStatus.valueOf(saveUserResponse.getStatusCode()));
                 } else {
-                    res = sendActivationMail(foundEmail, activationToken, saveUserResponse);
+                    res = sendActivationMail(primaryEmail, parsedUser, activationToken, saveUserResponse);
                 }
             }
         } catch (IOException | MessagingException e) {
@@ -166,7 +160,7 @@ public class RegisterController {
         return builder.build();
     }
 
-    private ResponseEntity<String> sendActivationMail(String toAddress, String activationToken,
+    private ResponseEntity<String> sendActivationMail(String toAddress, User parsedUser, String activationToken,
                                   HttpClientRequestResult saveUserResponse) throws MessagingException, IOException {
 
         // Mailcontent with $REGISTERLINK as placeholder
@@ -176,14 +170,15 @@ public class RegisterController {
             LOGGER.log(Level.SEVERE, "Cant open registermail-content.txt on classpath! Please configure!");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        String mailContent = IOUtils.toString(registerMailContentStream, "UTF-8");
+
         StringBuilder activateURL = new StringBuilder(registermailLinkPrefix);
-        activateURL.append("userId=").append(mapper.readValue(saveUserResponse.getBody(), User.class).getId());
+        activateURL.append("userId=").append(parsedUser.getId());
         activateURL.append("&activationToken=").append(activationToken);
 
-        mailContent = mailContent.replace("$REGISTERLINK", activateURL);
+        Map<String, String> mailVars = new HashMap<>();
+        mailVars.put("$REGISTERLINK", activateURL.toString());
 
-        mailSender.sendMail(registermailFrom, toAddress, registermailSubject, mailContent);
+        mailSender.sendMail(registermailFrom, toAddress, registermailSubject, registerMailContentStream, mailVars);
         return new ResponseEntity<>(saveUserResponse.getBody(), HttpStatus.OK);
     }
 
@@ -204,7 +199,7 @@ public class RegisterController {
      *
      * @return HTTP status, HTTP.OK (200) for a valid activation
      */
-    @RequestMapping(value = "/activate", method = RequestMethod.POST)
+    @RequestMapping(value = "/activate", method = RequestMethod.GET)
     public ResponseEntity activate(@RequestHeader final String authorization,
                                    @RequestParam final String userId, @RequestParam final String activationToken) throws IOException {
 

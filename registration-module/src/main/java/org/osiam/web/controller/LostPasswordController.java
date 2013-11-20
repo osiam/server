@@ -8,13 +8,21 @@ import org.osiam.helper.HttpClientRequestResult;
 import org.osiam.resources.helper.UserDeserializer;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.User;
+import org.osiam.web.util.MailSender;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.inject.Inject;
+import javax.mail.MessagingException;
+import javax.servlet.ServletContext;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -51,6 +59,14 @@ public class LostPasswordController {
     @Value("${osiam.one.time.password.field}")
     private String oneTimePassword;
 
+    @Inject
+    ServletContext context;
+
+    private MailSender mailSender = new MailSender();
+    
+    private String passwordlostLinkPrefix;
+    private String passwordlostMailFrom;
+    private String passwordlostMailSubject;
 
     public LostPasswordController() {
         mapper = new ObjectMapper();
@@ -61,15 +77,77 @@ public class LostPasswordController {
 
 
     @RequestMapping(value = "/lost/{userId}", method = RequestMethod.POST)
-    public ResponseEntity<String> lost(@RequestHeader final String authorization, @PathVariable final String userId) {
+    public ResponseEntity<String> lost(@RequestHeader final String authorization, @PathVariable final String userId) throws IOException {
+
+        ResponseEntity<String> res;
+        try {
+            String uri = httpScheme + "://" + serverHost + ":" + serverPort + RESOURCE_SERVER_URI + "/" + userId;
+            HttpClientRequestResult getResult = httpClient.executeHttpGet(uri, AUTHORIZATION, authorization);
+
+            if (getResult.getStatusCode() == 200) {
+                User user = mapper.readValue(getResult.getBody(), User.class);
+
+                String oneTimePassword = UUID.randomUUID().toString();
+                Map<String,String> fields = new HashMap<>();
+                fields.put(this.oneTimePassword, oneTimePassword);
+
+                User.Builder builder = new User.Builder(user);
+                builder.addExtension(internalScimExtensionUrn, new Extension(internalScimExtensionUrn, fields));
+
+                // Save user
+                String userAsString = mapper.writeValueAsString(builder.build());
+                HttpClientRequestResult saveUserResponse = httpClient.executeHttpPatch(uri, userAsString, AUTHORIZATION, authorization);
+
+                if (saveUserResponse.getStatusCode() != 200) {
+                    res = new ResponseEntity<>(HttpStatus.valueOf(saveUserResponse.getStatusCode()));
+                } else {
+                    if (!sendPasswordLostMail(user, oneTimePassword)) {
+                        res =  new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                    } else {
+                        res = new ResponseEntity<>(HttpStatus.OK);
+                    }
+                }
+            } else {
+                res = new ResponseEntity<>(HttpStatus.valueOf(getResult.getStatusCode()));
+            }
+        } catch (MessagingException e) {
+            LOGGER.log(Level.SEVERE, "Error while processing!", e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    private boolean sendPasswordLostMail(User parsedUser, String oneTimePassword) throws MessagingException, IOException {
+
+        String primaryEmail = mailSender.extractPrimaryEmail(parsedUser);
+        if (primaryEmail == null) {
+            LOGGER.log(Level.WARNING, "No primary email found!");
+            return false;
+        } else {
+
+            StringBuilder activateURL = new StringBuilder(passwordlostLinkPrefix);
+            activateURL.append("userId=").append(parsedUser.getId());
+            activateURL.append("&onetimepassword=").append(oneTimePassword);
+
+            Map<String, String> vars = new HashMap<>();
+            vars.put("$PASSWORDLOSTURL", activateURL.toString());
+
+            InputStream registerMailContentStream = context.getResourceAsStream("/WEB-INF/registration/passwordlostmail-content.txt");
+
+            if (registerMailContentStream == null) {
+                LOGGER.log(Level.SEVERE, "Cant open registermail-content.txt on classpath! Please configure!");
+                return false;
+            }
+
+            mailSender.sendMail(passwordlostMailFrom, primaryEmail, passwordlostMailSubject, registerMailContentStream, vars);
+            return true;
+        }
     }
 
     @RequestMapping(value = "/lostForm", method = RequestMethod.GET, produces = "text/html")
     public ResponseEntity<String> lostFrom(@RequestParam String otp, @RequestParam String userId) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
-
 
     /**
      * Method to change the users password if the preconditions are satisfied.
