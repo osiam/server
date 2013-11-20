@@ -9,9 +9,13 @@ import org.osiam.resources.helper.UserDeserializer
 import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.User
+import org.osiam.web.util.MailSender
 import org.springframework.http.HttpStatus
 import spock.lang.Shared
 import spock.lang.Specification
+
+import javax.servlet.ServletContext
+import javax.servlet.ServletOutputStream
 
 
 /**
@@ -26,6 +30,8 @@ class LostPasswordControllerTest extends Specification {
     @Shared def mapper
     def httpClientMock = Mock(HttpClientHelper)
 
+    def contextMock = Mock(ServletContext)
+
     def serverPort = 8080
     def serverHost = "localhost"
     def httpScheme = "http"
@@ -34,7 +40,7 @@ class LostPasswordControllerTest extends Specification {
 
     def lostPasswordController = new LostPasswordController(httpClient: httpClientMock, serverPort: serverPort,
             serverHost: serverHost, httpScheme: httpScheme, internalScimExtensionUrn: internalScimExtensionUrn,
-            oneTimePassword: oneTimePasswordField)
+            oneTimePassword: oneTimePasswordField, context: contextMock)
 
     def setupSpec() {
         mapper = new ObjectMapper()
@@ -49,10 +55,33 @@ class LostPasswordControllerTest extends Specification {
         def userId = "someId"
         def authZHeader = "Bearer ACCESSTOKEN"
 
+        def uri = "http://localhost:8080/osiam-resource-server/Users/"
+        def requestResultMock = Mock(HttpClientRequestResult)
+        def userString = getUserAsStringWithExtension("token")
+
+        def mailSenderMock = Mock(MailSender)
+        lostPasswordController.mailSender = mailSenderMock
+
+        lostPasswordController.passwordlostLinkPrefix = "http://localhost:8080"
+        lostPasswordController.passwordlostMailFrom = "noreply@example.org"
+        lostPasswordController.passwordlostMailSubject = "Subject"
+
+        def inputStream = new ByteArrayInputStream('nine bytes and one placeholder $REGISTERLINK'.bytes)
+
         when:
         def result = lostPasswordController.lost(authZHeader, userId)
 
         then:
+        1 * httpClientMock.executeHttpGet(uri + userId, "Authorization", authZHeader) >> requestResultMock
+        1 * httpClientMock.executeHttpPatch(uri + userId, _, "Authorization", authZHeader) >> new HttpClientRequestResult("body", 200);
+
+        1 * requestResultMock.getStatusCode() >> 200
+        1 * requestResultMock.getBody() >> userString
+
+        1 * contextMock.getResourceAsStream("/WEB-INF/registration/passwordlostmail-content.txt") >> inputStream
+        1 * mailSenderMock.sendMail("noreply@example.org", "toemail@example.org", "Subject", inputStream, _)
+        1 * mailSenderMock.extractPrimaryEmail(_) >> "toemail@example.org"
+
         result.getStatusCode() == HttpStatus.NOT_IMPLEMENTED //HttpStatus.CREATED
     }
 

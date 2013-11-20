@@ -155,7 +155,8 @@ class RegisterControllerTest extends Specification {
         1 * contextMock.getResourceAsStream("/WEB-INF/registration/registermail-content.txt") >> registerMailContent
         response.statusCode == HttpStatus.OK
 
-        1 * mailSenderMock.sendMail(_, _, _, _)
+        1 * mailSenderMock.sendMail("noreply@example.org", "toemail@example.org", "Ihre Registrierung", registerMailContent, _)
+        1 * mailSenderMock.extractPrimaryEmail(_) >> "toemail@example.org"
     }
 
     def getUserAsStringWithExtension(String token) {

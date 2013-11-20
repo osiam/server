@@ -118,14 +118,8 @@ public class RegisterController {
         ResponseEntity<String> res;
         try {
             User parsedUser = mapper.readValue(body, User.class);
-
-            String foundEmail = null;
-            for (MultiValuedAttribute email : parsedUser.getEmails()) {
-                if (email.isPrimary()) {
-                    foundEmail = (String) email.getValue();
-                }
-            }
-            if (foundEmail == null) {
+            String primaryEmail = mailSender.extractPrimaryEmail(parsedUser);
+            if (primaryEmail == null) {
                 LOGGER.log(Level.WARNING, "No primary email found!");
                 res = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             } else {
@@ -138,7 +132,7 @@ public class RegisterController {
                 if (saveUserResponse.getStatusCode() != 201) {
                     res = new ResponseEntity<>(HttpStatus.valueOf(saveUserResponse.getStatusCode()));
                 } else {
-                    res = sendActivationMail(foundEmail, parsedUser, activationToken, saveUserResponse);
+                    res = sendActivationMail(primaryEmail, parsedUser, activationToken, saveUserResponse);
                 }
             }
         } catch (IOException | MessagingException e) {
@@ -169,6 +163,13 @@ public class RegisterController {
     private ResponseEntity<String> sendActivationMail(String toAddress, User parsedUser, String activationToken,
                                   HttpClientRequestResult saveUserResponse) throws MessagingException, IOException {
 
+        StringBuilder activateURL = new StringBuilder(registermailLinkPrefix);
+        activateURL.append("userId=").append(parsedUser.getId());
+        activateURL.append("&activationToken=").append(activationToken);
+
+        Map<String, String> vars = new HashMap<>();
+        vars.put("$REGISTERLINK", activateURL.toString());
+
         // Mailcontent with $REGISTERLINK as placeholder
         InputStream registerMailContentStream = context.getResourceAsStream("/WEB-INF/registration/registermail-content.txt");
 
@@ -176,14 +177,8 @@ public class RegisterController {
             LOGGER.log(Level.SEVERE, "Cant open registermail-content.txt on classpath! Please configure!");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        String mailContent = IOUtils.toString(registerMailContentStream, "UTF-8");
-        StringBuilder activateURL = new StringBuilder(registermailLinkPrefix);
-        activateURL.append("userId=").append(parsedUser.getId());
-        activateURL.append("&activationToken=").append(activationToken);
 
-        mailContent = mailContent.replace("$REGISTERLINK", activateURL);
-
-        mailSender.sendMail(registermailFrom, toAddress, registermailSubject, mailContent);
+        mailSender.sendMail(registermailFrom, toAddress, registermailSubject, registerMailContentStream, vars);
         return new ResponseEntity<>(saveUserResponse.getBody(), HttpStatus.OK);
     }
 
