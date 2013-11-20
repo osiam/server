@@ -15,8 +15,6 @@ import spock.lang.Shared
 import spock.lang.Specification
 
 import javax.servlet.ServletContext
-import javax.servlet.ServletOutputStream
-
 
 /**
  * Test for LostPasswordController

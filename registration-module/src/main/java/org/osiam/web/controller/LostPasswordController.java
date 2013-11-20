@@ -78,7 +78,13 @@ public class LostPasswordController {
         mapper.registerModule(userDeserializerModule);
     }
 
-
+    /**
+     * This endpoint generates an one time password and send an confirmation email including the one time password to users primary email
+     * @param authorization authZ header with valid access token
+     * @param userId the user id for whom you want to change the password
+     * @return the HTTP status code
+     * @throws IOException
+     */
     @RequestMapping(value = "/lost/{userId}", method = RequestMethod.POST)
     public ResponseEntity<String> lost(@RequestHeader final String authorization, @PathVariable final String userId) throws IOException {
 

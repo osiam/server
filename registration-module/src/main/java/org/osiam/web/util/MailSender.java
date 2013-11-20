@@ -3,8 +3,6 @@ package org.osiam.web.util;
 import org.apache.commons.io.IOUtils;
 import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.resources.scim.User;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -15,9 +13,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
-import java.util.logging.Level;
 
 /**
  * Created with IntelliJ IDEA.
