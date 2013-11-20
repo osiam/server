@@ -39,7 +39,7 @@ public class ChangeEmailController {
      * @param confirmToken The previously generated confirmation token from the confirmation email
      * @return The HTTP status code and the updated user if successful
      */
-    @RequestMapping(method = RequestMethod.POST, value = "/confirm")
+    @RequestMapping(method = RequestMethod.POST, value = "/confirm", produces = "application/json")
     public ResponseEntity<String> confirm(@RequestHeader final String authorization, @RequestParam final String userId,
                                           @RequestParam final String confirmToken) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
