@@ -82,7 +82,7 @@ class LostPasswordControllerTest extends Specification {
         1 * mailSenderMock.sendMail("noreply@example.org", "toemail@example.org", "Subject", inputStream, _)
         1 * mailSenderMock.extractPrimaryEmail(_) >> "toemail@example.org"
 
-        result.getStatusCode() == HttpStatus.NOT_IMPLEMENTED //HttpStatus.CREATED
+        result.getStatusCode() == HttpStatus.OK
     }
 
     def "The controller should serve a html form to enable the user to submit the his new password"() {

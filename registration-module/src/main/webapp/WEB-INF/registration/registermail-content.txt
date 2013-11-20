@@ -6,4 +6,4 @@ Um Ihre Registrierung zu bestätigen rufen Sie bitte folgenden Link auf:
 $REGISTERLINK
 
 Mit freundlichen Grüßen,
-Ihr campus.kas.de-Team der KAS-Begabtenförderung
+Ihr OSIAM-Team

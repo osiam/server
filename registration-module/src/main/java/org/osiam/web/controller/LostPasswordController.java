@@ -63,9 +63,12 @@ public class LostPasswordController {
     ServletContext context;
 
     private MailSender mailSender = new MailSender();
-    
+
+    @Value("${osiam.web.passwordlostmail.linkprefix}")
     private String passwordlostLinkPrefix;
+    @Value("${osiam.web.passwordlostmail.from}")
     private String passwordlostMailFrom;
+    @Value("${osiam.web.passwordlostmail.subject}")
     private String passwordlostMailSubject;
 
     public LostPasswordController() {
@@ -114,7 +117,7 @@ public class LostPasswordController {
             LOGGER.log(Level.SEVERE, "Error while processing!", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+        return res;
     }
 
     private boolean sendPasswordLostMail(User parsedUser, String oneTimePassword) throws MessagingException, IOException {
