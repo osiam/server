@@ -136,7 +136,7 @@ public class LostPasswordController {
 
             StringBuilder activateURL = new StringBuilder(passwordlostLinkPrefix);
             activateURL.append("userId=").append(parsedUser.getId());
-            activateURL.append("&onetimepassword=").append(oneTimePassword);
+            activateURL.append("&oneTimePassword=").append(oneTimePassword);
 
             Map<String, String> vars = new HashMap<>();
             vars.put("$PASSWORDLOSTURL", activateURL.toString());
@@ -161,14 +161,14 @@ public class LostPasswordController {
     /**
      * Method to change the users password if the preconditions are satisfied.
      * @param authorization authZ header with valid access token
-     * @param otp the previously generated one time password
+     * @param oneTimePassword the previously generated one time password
      * @param userId the user id for whom you want to change the password
      * @param newPassword the new user password
      * @return the response with status code and the updated user if successfully
      * @throws IOException
      */
     @RequestMapping(value = "/change", method = RequestMethod.POST, produces = "application/json")
-    public ResponseEntity<String> change(@RequestHeader final String authorization, @RequestParam String otp,
+    public ResponseEntity<String> change(@RequestHeader final String authorization, @RequestParam String oneTimePassword,
                                  @RequestParam String userId, @RequestParam String newPassword) throws IOException {
 
         String uri = httpScheme + "://" + serverHost + ":" + serverPort + RESOURCE_SERVER_URI + "/" + userId;
@@ -181,16 +181,16 @@ public class LostPasswordController {
         }
         User user = mapper.readValue(result.getBody(), User.class);
 
-        //validate the otp with the saved one from DB
+        //validate the oneTimePassword with the saved one from DB
         Extension extension = user.getExtension(internalScimExtensionUrn);
-        String savedOTP = extension.getField(oneTimePassword);
-        if (!savedOTP.equals(otp)) {
+        String savedOTP = extension.getField(this.oneTimePassword);
+        if (!savedOTP.equals(oneTimePassword)) {
             LOGGER.log(Level.SEVERE, "The submitted one time password is invalid!");
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
-        //delete the otp from user entity
-        extension.setField(oneTimePassword, "");
+        //delete the oneTimePassword from user entity
+        extension.setField(this.oneTimePassword, "");
 
         //set new password for the user
         User updateUser = new User.Builder(user).setPassword(newPassword).build();

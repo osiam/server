@@ -64,7 +64,7 @@ class LostPasswordControllerTest extends Specification {
         lostPasswordController.passwordlostMailFrom = "noreply@example.org"
         lostPasswordController.passwordlostMailSubject = "Subject"
 
-        def inputStream = new ByteArrayInputStream('nine bytes and one placeholder $REGISTERLINK'.bytes)
+        def inputStream = new ByteArrayInputStream('nine bytes and one placeholder $PASSWORDLOSTURL'.bytes)
 
         when:
         def result = lostPasswordController.lost(authZHeader, userId)

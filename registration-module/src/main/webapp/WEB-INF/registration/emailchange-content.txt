@@ -1,0 +1,8 @@
+Sehr geehrter Kunde,
+
+um ihre E-Mail Adresse zu ändern, klicken Sie bitte folgenden Link:
+
+$EMAILCHANGEURL
+
+Mit freundlichen Grüßen,
+Ihr OSIAM-Team
