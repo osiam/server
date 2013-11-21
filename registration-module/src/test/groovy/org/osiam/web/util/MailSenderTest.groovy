@@ -51,4 +51,32 @@ class MailSenderTest extends Specification {
         then:
         email == thePrimaryMail
     }
+
+    def "should return null if no primary email was found"() {
+        given:
+        def mailSender = new MailSender()
+        def thePrimaryMail = "primary@mail.com"
+
+        def theEmail = new MultiValuedAttribute.Builder().setPrimary(false).setValue(thePrimaryMail).build()
+        def user = new User.Builder("theMan").setEmails([theEmail] as List).build()
+
+        when:
+        def email = mailSender.extractPrimaryEmail(user)
+
+        then:
+        email == null
+    }
+
+    def "should not throw exception if users emails are not present"() {
+        given:
+        def mailSender = new MailSender()
+
+        def user = new User.Builder("theMan").build()
+
+        when:
+        def email = mailSender.extractPrimaryEmail(user)
+
+        then:
+        email == null
+    }
 }
