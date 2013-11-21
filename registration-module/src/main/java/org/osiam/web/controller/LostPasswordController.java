@@ -110,9 +110,8 @@ public class LostPasswordController {
                 if (saveUserResponse.getStatusCode() != 200) {
                     res = new ResponseEntity<>(HttpStatus.valueOf(saveUserResponse.getStatusCode()));
                 } else {
-                    if (!sendPasswordLostMail(user, oneTimePassword)) {
-                        res =  new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-                    } else {
+                    res = sendPasswordLostMail(user, oneTimePassword);
+                    if (res == null) {
                         res = new ResponseEntity<>(HttpStatus.OK);
                     }
                 }
@@ -126,12 +125,12 @@ public class LostPasswordController {
         return res;
     }
 
-    private boolean sendPasswordLostMail(User parsedUser, String oneTimePassword) throws MessagingException, IOException {
+    private ResponseEntity sendPasswordLostMail(User parsedUser, String oneTimePassword) throws MessagingException, IOException {
 
         String primaryEmail = mailSender.extractPrimaryEmail(parsedUser);
         if (primaryEmail == null) {
             LOGGER.log(Level.WARNING, "No primary email found!");
-            return false;
+            return new ResponseEntity<String>("No primary email found!", HttpStatus.INTERNAL_SERVER_ERROR);
         } else {
 
             StringBuilder activateURL = new StringBuilder(passwordlostLinkPrefix);
@@ -145,11 +144,11 @@ public class LostPasswordController {
 
             if (registerMailContentStream == null) {
                 LOGGER.log(Level.SEVERE, "Cant open registermail-content.txt on classpath! Please configure!");
-                return false;
+                return new ResponseEntity<String>("Cant open registermail-content.txt on classpath! Please configure!", HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
             mailSender.sendMail(passwordlostMailFrom, primaryEmail, passwordlostMailSubject, registerMailContentStream, vars);
-            return true;
+            return null;
         }
     }
 
