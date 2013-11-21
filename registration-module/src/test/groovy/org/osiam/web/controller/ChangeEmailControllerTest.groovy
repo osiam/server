@@ -6,14 +6,17 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import org.osiam.helper.HttpClientHelper
 import org.osiam.helper.HttpClientRequestResult
 import org.osiam.resources.helper.UserDeserializer
+import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.User
 import org.osiam.web.util.MailSender
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import spock.lang.Shared
 import spock.lang.Specification
 
 import javax.servlet.ServletContext
+import java.util.logging.Level
 
 /**
  * Unit test for change email controller.
@@ -38,13 +41,14 @@ class ChangeEmailControllerTest extends Specification {
     def emailChangeLinkPrefix = "http://localhost:8080/stuff"
     def emailChangeMailFrom = "bugs@bunny.com"
     def emailChangeMailSubject = "email change"
+    def emailChangeInfoMailSubject = " email change done"
     def context = Mock(ServletContext)
 
     def changeEmailController = new ChangeEmailController(httpScheme: httpScheme, serverHost: httpHost,
             serverPort: httpPort, httpClient: httpClientMock, confirmationTokenField: confirmTokenField,
             tempEmail: tempMailField, internalScimExtensionUrn: urn, mailSender: mailSender, context: context,
             emailChangeLinkPrefix: emailChangeLinkPrefix, emailChangeMailFrom: emailChangeMailFrom,
-            emailChangeMailSubject: emailChangeMailSubject)
+            emailChangeMailSubject: emailChangeMailSubject, emailChangeInfoMailSubject: emailChangeInfoMailSubject)
 
     def setupSpec() {
         mapper = new ObjectMapper()
@@ -136,14 +140,46 @@ class ChangeEmailControllerTest extends Specification {
     // TODO TBD
     def "Confirm email should validate the confirmation token and save the new email value as primary email ans send an email"() {
         given:
-        def authZHeader = ""
-        def userId = ""
-        def confirmToken = ""
+        def authZHeader = "abc"
+        def userId = "userId"
+        def confirmToken = "confToken"
+        def url = "http://localhost:8080/osiam-resource-server/Users/" + userId;
+
+        def resultMock = Mock(HttpClientRequestResult)
+        def user = getUserWithTempEmailAsString()
+
+        def inputStream = new ByteArrayInputStream('nine bytes and one placeholder $EMAILCHANGEURL'.bytes)
 
         when:
         def result = changeEmailController.confirm(authZHeader, userId, confirmToken)
 
         then:
-        result.getStatusCode() == HttpStatus.NOT_IMPLEMENTED
+        1 * httpClientMock.executeHttpGet(url, "Authorization", authZHeader) >> resultMock
+        2 * resultMock.getStatusCode() >> 200
+        2 * resultMock.getBody() >> user
+        1 * httpClientMock.executeHttpPatch(url, _, "Authorization", authZHeader) >> resultMock
+
+        //1 * context.getResourceAsStream("/WEB-INF/registration/emailchange-content.txt") >> inputStream
+        //1 * mailSender.sendMail(emailChangeMailFrom, "email@example.org", emailChangeInfoMailSubject, inputStream, _)
+
+        result.getStatusCode() == HttpStatus.OK
+    }
+
+    def getUserWithTempEmailAsString() {
+        def emails = new MultiValuedAttribute(primary: true, value: "email@example.org")
+
+        def fields = [:]
+        fields.put(confirmTokenField, "confToken")
+        fields.put(tempMailField, "newemail@example.org")
+        def extension = new Extension(urn, fields);
+
+        def user = new User.Builder("Boy George")
+                .setPassword("password")
+                .setEmails([emails])
+                .setActive(false)
+                .addExtension(urn, extension)
+                .build()
+
+        return mapper.writeValueAsString(user)
     }
 }

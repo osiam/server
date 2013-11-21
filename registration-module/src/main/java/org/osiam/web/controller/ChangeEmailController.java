@@ -1,5 +1,6 @@
 package org.osiam.web.controller;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -7,6 +8,7 @@ import org.osiam.helper.HttpClientHelper;
 import org.osiam.helper.HttpClientRequestResult;
 import org.osiam.resources.helper.UserDeserializer;
 import org.osiam.resources.scim.Extension;
+import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.resources.scim.User;
 import org.osiam.web.util.MailSender;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,9 +25,7 @@ import javax.mail.MessagingException;
 import javax.servlet.ServletContext;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -74,9 +74,11 @@ public class ChangeEmailController {
     @Value("${osiam.web.emailchange.subject}")
     private String emailChangeMailSubject;
 
+    @Value("${osiam.web.emailchange-info.subject}")
+    private String emailChangeInfoMailSubject;
+
     @Inject
     ServletContext context;
-
 
     public ChangeEmailController() {
         mapper = new ObjectMapper();
@@ -174,7 +176,66 @@ public class ChangeEmailController {
      */
     @RequestMapping(method = RequestMethod.POST, value = "/confirm", produces = "application/json")
     public ResponseEntity<String> confirm(@RequestHeader final String authorization, @RequestParam final String userId,
-                                          @RequestParam final String confirmToken) {
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+                                          @RequestParam final String confirmToken) throws IOException, MessagingException {
+
+        String uri = httpScheme + "://" + serverHost + ":" + serverPort + RESOURCE_SERVER_URI + "/" + userId;
+
+        //get user by user id
+        HttpClientRequestResult result = httpClient.executeHttpGet(uri, AUTHORIZATION, authorization);
+        if (result.getStatusCode() != 200) {
+            LOGGER.log(Level.WARNING, "Problems retrieving user by ID!");
+            return new ResponseEntity<>(HttpStatus.valueOf(result.getStatusCode()));
+        }
+
+        //add extensions to user
+        User user = mapper.readValue(result.getBody(), User.class);
+
+        Extension extension = user.getExtension(this.internalScimExtensionUrn);
+        String existingConfirmToken = extension.getField(this.confirmationTokenField);
+
+        if (existingConfirmToken != null && !existingConfirmToken.equals("") && existingConfirmToken.equals(confirmToken)) {
+            // given confirm token is valid.
+            extension.setField(this.confirmationTokenField, "");
+            String newEmail = extension.getField(this.tempEmail);
+            extension.setField(this.tempEmail, "");
+
+            User.Builder builder = new User.Builder(user);
+
+            // get old emailaddress
+            String oldEmail = mailSender.extractPrimaryEmail(user);
+            // replace prim email
+            List<MultiValuedAttribute> emails = new ArrayList<MultiValuedAttribute>();
+            emails.add(new MultiValuedAttribute.Builder().
+                    setValue(newEmail).
+                    setPrimary(true).
+                    build());
+
+            builder.setEmails(emails);
+            builder.addExtension(this.internalScimExtensionUrn, extension);
+
+            User updateUser = builder.build();
+
+            //update the user
+            String updateUserAsString = mapper.writeValueAsString(updateUser);
+            HttpClientRequestResult updateUserResult = httpClient.executeHttpPatch(uri, updateUserAsString, AUTHORIZATION, authorization);
+            if (updateUserResult.getStatusCode() != 200) {
+                LOGGER.log(Level.WARNING, "Problems updating user with extensions!");
+                return new ResponseEntity<>(HttpStatus.valueOf(result.getStatusCode()));
+            }
+
+            // Send infomail
+            User savedUser = mapper.readValue(updateUserResult.getBody(), User.class);
+            sendingInfoMailToOldAddress(oldEmail, savedUser);
+
+            return new ResponseEntity(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<String>("No ongoing emailchange!", HttpStatus.FORBIDDEN);
+        }
+    }
+
+    private void sendingInfoMailToOldAddress(String oldEmailAddress, User user) throws IOException, MessagingException {
+        //get mail content as stream and check failure if file is not present
+        InputStream mailContentStream = context.getResourceAsStream("/WEB-INF/registration/emailchangeinfo-content.txt");
+        mailSender.sendMail(emailChangeMailFrom, oldEmailAddress, emailChangeInfoMailSubject, mailContentStream, null);
     }
 }

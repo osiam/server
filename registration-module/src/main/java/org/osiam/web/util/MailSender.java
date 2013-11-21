@@ -32,8 +32,10 @@ public class MailSender {
                          Map<String, String> mailContentReplacements) throws MessagingException, IOException {
 
         String strMailContent = IOUtils.toString(mailContent, "UTF-8");
-        for (Map.Entry<String, String> entry : mailContentReplacements.entrySet()) {
-            strMailContent = strMailContent.replace(entry.getKey(), entry.getValue());
+        if (mailContentReplacements != null) {
+            for (Map.Entry<String, String> entry : mailContentReplacements.entrySet()) {
+                strMailContent = strMailContent.replace(entry.getKey(), entry.getValue());
+            }
         }
 
         MimeMessage msg = new MimeMessage(Session.getDefaultInstance(System.getProperties()));
