@@ -57,7 +57,7 @@
 
         <org.aspectj-version>1.7.0</org.aspectj-version>
         
-        <org.osiam.scim-schema.version>0.31</org.osiam.scim-schema.version>
+        <org.osiam.scim-schema.version>0.32-SNAPSHOT</org.osiam.scim-schema.version>
     </properties>
 
     <scm>
