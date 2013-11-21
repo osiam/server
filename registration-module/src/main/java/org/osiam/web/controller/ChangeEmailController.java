@@ -106,7 +106,7 @@ public class ChangeEmailController {
         HttpClientRequestResult result = httpClient.executeHttpGet(uri, AUTHORIZATION, authorization);
         if (result.getStatusCode() != 200) {
             LOGGER.log(Level.WARNING, "Problems retrieving user by ID!");
-            return new ResponseEntity<>(HttpStatus.valueOf(result.getStatusCode()));
+            return new ResponseEntity<>("Problems retrieving user by ID!", HttpStatus.valueOf(result.getStatusCode()));
         }
 
         //generate confirmation token
@@ -120,14 +120,13 @@ public class ChangeEmailController {
         HttpClientRequestResult updateUserResult = httpClient.executeHttpPatch(uri, updateUserAsString, AUTHORIZATION, authorization);
         if (updateUserResult.getStatusCode() != 200) {
             LOGGER.log(Level.WARNING, "Problems updating user with extensions!");
-            return new ResponseEntity<>(HttpStatus.valueOf(result.getStatusCode()));
+            return new ResponseEntity<>("Problems updating user with extensions!", HttpStatus.valueOf(result.getStatusCode()));
         }
 
         //send email to the new address with confirmation token and user id
         User savedUser = mapper.readValue(updateUserResult.getBody(), User.class);
-        sendingConfirmationMailToNewAddress(newEmailValue, confirmationToken, savedUser);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return sendingConfirmationMailToNewAddress(newEmailValue, confirmationToken, savedUser);
     }
 
     private User buildUserForUpdate(String newEmailValue, HttpClientRequestResult result, String confirmationToken) throws IOException {
@@ -149,7 +148,7 @@ public class ChangeEmailController {
         return new User.Builder(user).addExtension(internalScimExtensionUrn, extension).build();
     }
 
-    private void sendingConfirmationMailToNewAddress(String newEmailAddress, String confirmationToken, User user) throws IOException, MessagingException {
+    private ResponseEntity<String> sendingConfirmationMailToNewAddress(String newEmailAddress, String confirmationToken, User user) throws IOException, MessagingException {
 
         //build the string for confirmation link
         StringBuilder activateURL = new StringBuilder(emailChangeLinkPrefix);
@@ -163,8 +162,15 @@ public class ChangeEmailController {
         //get mail content as stream and check failure if file is not present
         InputStream mailContentStream = context.getResourceAsStream("/WEB-INF/registration/emailchange-content.txt");
 
+        if (mailContentStream == null) {
+            LOGGER.log(Level.SEVERE, "Cant open registermail-content.txt on classpath! Please configure!");
+            return new ResponseEntity<>("Cant open registermail-content.txt on classpath! Please configure!", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
         //send the mail
         mailSender.sendMail(emailChangeMailFrom, newEmailAddress, emailChangeMailSubject, mailContentStream, vars);
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**

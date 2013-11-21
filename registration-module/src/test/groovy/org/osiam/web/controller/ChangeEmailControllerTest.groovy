@@ -32,7 +32,10 @@ class ChangeEmailControllerTest extends Specification {
     def httpScheme = "http"
     def httpHost = "localhost"
     def httpPort = 8080
+
     def httpClientMock = Mock(HttpClientHelper)
+    def resultMock = Mock(HttpClientRequestResult)
+
     def urn = "urn:scim:schemas:osiam:1.0:Registration"
     def confirmTokenField = "emailConfirmToken"
     def tempMailField = "tempMail"
@@ -57,14 +60,12 @@ class ChangeEmailControllerTest extends Specification {
         mapper.registerModule(userDeserializerModule)
     }
 
-    def "Change email should return the status code if update user with extensions failed"() {
+    def "there should be an failure in change email if update user with extensions failed"() {
         given:
         def authZHeader = "Bearer ACCESSTOKEN"
         def userId = "theUserId"
         def newEmailValue = "bam@boom.com"
         def uri = "http://localhost:8080/osiam-resource-server/Users/" + userId
-
-        def resultMock = Mock(HttpClientRequestResult)
 
         when:
         def result = changeEmailController.change(authZHeader, userId, newEmailValue)
@@ -75,14 +76,12 @@ class ChangeEmailControllerTest extends Specification {
         result.getStatusCode() == HttpStatus.BAD_REQUEST
     }
 
-    def "Change email should return the status code if get user by id failed"() {
+    def "there should be an failure in change email if get user by id failed"() {
         given:
         def authZHeader = "Bearer ACCESSTOKEN"
         def userId = "theUserId"
         def newEmailValue = "bam@boom.com"
         def uri = "http://localhost:8080/osiam-resource-server/Users/" + userId
-
-        def resultMock = Mock(HttpClientRequestResult)
 
         def user = getUserAsString()
 
@@ -98,14 +97,35 @@ class ChangeEmailControllerTest extends Specification {
         result.getStatusCode() == HttpStatus.BAD_REQUEST
     }
 
-    def "Change email should generate a confirmation token, save the new email temporarily and send an email"() {
+    def "there should be an failure in change email if email content was not found"(){
         given:
         def authZHeader = "Bearer ACCESSTOKEN"
         def userId = "theUserId"
         def newEmailValue = "bam@boom.com"
         def uri = "http://localhost:8080/osiam-resource-server/Users/" + userId
 
-        def resultMock = Mock(HttpClientRequestResult)
+        def user = getUserAsString()
+
+        when:
+        def result = changeEmailController.change(authZHeader, userId, newEmailValue)
+
+        then:
+        1 * httpClientMock.executeHttpGet(uri, "Authorization", authZHeader) >> resultMock
+        1 * resultMock.getStatusCode() >> 200
+        2 * resultMock.getBody() >> user
+        1 * httpClientMock.executeHttpPatch(uri, _, "Authorization", authZHeader) >> resultMock
+        1 * resultMock.getStatusCode() >> 200
+        1 * context.getResourceAsStream("/WEB-INF/registration/emailchange-content.txt") >> null
+        result.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR
+        result.getBody() != null
+    }
+
+    def "Change email should generate a confirmation token, save the new email temporarily and send an email"() {
+        given:
+        def authZHeader = "Bearer ACCESSTOKEN"
+        def userId = "theUserId"
+        def newEmailValue = "bam@boom.com"
+        def uri = "http://localhost:8080/osiam-resource-server/Users/" + userId
 
         def user = getUserAsString()
 
@@ -137,7 +157,6 @@ class ChangeEmailControllerTest extends Specification {
         return mapper.writeValueAsString(user)
     }
 
-    // TODO TBD
     def "Confirm email should validate the confirmation token and save the new email value as primary email ans send an email"() {
         given:
         def authZHeader = "abc"

@@ -32,9 +32,17 @@ class RegisterControllerTest extends Specification {
     def activationTokenField = "activationToken"
     def clientRegistrationUri = "http://someStuff.de/"
 
+    def registermailFrom = "noreply@example.org"
+    def registermailSubject = "Ihre Registrierung"
+    def registermailLinkPrefix = "https://example.org/register?"
+
+    def mailSenderMock = Mock(MailSender)
+
     def registerController = new RegisterController(context: contextMock, httpClient: httpClientMock, serverPort: serverPort,
             serverHost: serverHost, httpScheme: httpScheme, clientRegistrationUri: clientRegistrationUri,
-            internalScimExtensionUrn: internalScimExtensionUrn, activationTokenField: activationTokenField)
+            internalScimExtensionUrn: internalScimExtensionUrn, activationTokenField: activationTokenField,
+            mailSender: mailSenderMock, registermailFrom: registermailFrom, registermailSubject: registermailSubject,
+            registermailLinkPrefix: registermailLinkPrefix)
 
     def setupSpec() {
         mapper = new ObjectMapper()
@@ -134,15 +142,7 @@ class RegisterControllerTest extends Specification {
     }
 
     def "The registration controller should send a register-mail"() {
-
         given:
-        registerController.registermailFrom = "noreply@example.org"
-        registerController.registermailSubject = "Ihre Registrierung"
-        registerController.registermailLinkPrefix = "https://example.org/register?"
-
-        def mailSenderMock = Mock(MailSender)
-        registerController.mailSender = mailSenderMock
-
         def registerMailContent = new ByteArrayInputStream("Hallo \$REGISTERLINK Tschuess".bytes)
         def auth = "BEARER ABC=="
         def body = getUserAsStringWithExtension("")
@@ -153,10 +153,51 @@ class RegisterControllerTest extends Specification {
         then:
         1 * httpClientMock.executeHttpPost(_, _, _, _) >> new HttpClientRequestResult('{"id":"1234","schemas":["urn"]}', 201)
         1 * contextMock.getResourceAsStream("/WEB-INF/registration/registermail-content.txt") >> registerMailContent
-        response.statusCode == HttpStatus.OK
-
         1 * mailSenderMock.sendMail("noreply@example.org", "toemail@example.org", "Ihre Registrierung", registerMailContent, _)
         1 * mailSenderMock.extractPrimaryEmail(_) >> "toemail@example.org"
+        response.statusCode == HttpStatus.OK
+    }
+
+    def "there should be an failure if no primary email was found"() {
+        given:
+        def auth = "BEARER ABC=="
+        def body = getUserAsStringWithExtension("")
+
+        when:
+        def response = registerController.create(auth, body)
+
+        then:
+        1 * mailSenderMock.extractPrimaryEmail(_) >> null
+        response.getStatusCode() == HttpStatus.BAD_REQUEST
+    }
+
+    def "there should be an failure if the user could not be updated with activation token"() {
+        given:
+        def auth = "BEARER ABC=="
+        def body = getUserAsStringWithExtension("")
+
+        when:
+        def response = registerController.create(auth, body)
+
+        then:
+        1 * mailSenderMock.extractPrimaryEmail(_) >> "primary@mail.com"
+        1 * httpClientMock.executeHttpPost(_, _, _, _) >> new HttpClientRequestResult('', 400)
+        response.getStatusCode() == HttpStatus.BAD_REQUEST
+    }
+
+    def "there should be an failure if the email content for confirmation mail was not found"() {
+        given:
+        def auth = "BEARER ABC=="
+        def body = getUserAsStringWithExtension("")
+
+        when:
+        def response = registerController.create(auth, body)
+
+        then:
+        1 * mailSenderMock.extractPrimaryEmail(_) >> "primary@mail.com"
+        1 * httpClientMock.executeHttpPost(_, _, _, _) >> new HttpClientRequestResult('{"id":"1234","schemas":["urn"]}', 201)
+        1 * contextMock.getResourceAsStream("/WEB-INF/registration/registermail-content.txt") >> null
+        response.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR
     }
 
     def getUserAsStringWithExtension(String token) {

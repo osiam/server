@@ -84,76 +84,80 @@ public class LostPasswordController {
      * @param userId the user id for whom you want to change the password
      * @return the HTTP status code
      * @throws IOException
+     * @throws MessagingException
      */
     @RequestMapping(value = "/lost/{userId}", method = RequestMethod.POST)
-    public ResponseEntity<String> lost(@RequestHeader final String authorization, @PathVariable final String userId) throws IOException {
+    public ResponseEntity<String> lost(@RequestHeader final String authorization, @PathVariable final String userId) throws IOException, MessagingException {
 
-        ResponseEntity<String> res;
-        try {
-            String uri = httpScheme + "://" + serverHost + ":" + serverPort + RESOURCE_SERVER_URI + "/" + userId;
-            HttpClientRequestResult getResult = httpClient.executeHttpGet(uri, AUTHORIZATION, authorization);
+        String uri = httpScheme + "://" + serverHost + ":" + serverPort + RESOURCE_SERVER_URI + "/" + userId;
 
-            if (getResult.getStatusCode() == 200) {
-                User user = mapper.readValue(getResult.getBody(), User.class);
+        //get user by his id
+        HttpClientRequestResult getResult = httpClient.executeHttpGet(uri, AUTHORIZATION, authorization);
 
-                String oneTimePassword = UUID.randomUUID().toString();
-                Map<String,String> fields = new HashMap<>();
-                fields.put(this.oneTimePassword, oneTimePassword);
-
-                User.Builder builder = new User.Builder(user);
-                builder.addExtension(internalScimExtensionUrn, new Extension(internalScimExtensionUrn, fields));
-
-                // Save user
-                String userAsString = mapper.writeValueAsString(builder.build());
-                HttpClientRequestResult saveUserResponse = httpClient.executeHttpPatch(uri, userAsString, AUTHORIZATION, authorization);
-
-                if (saveUserResponse.getStatusCode() != 200) {
-                    res = new ResponseEntity<>(HttpStatus.valueOf(saveUserResponse.getStatusCode()));
-                } else {
-                    res = sendPasswordLostMail(user, oneTimePassword);
-                    if (res == null) {
-                        res = new ResponseEntity<>(HttpStatus.OK);
-                    }
-                }
-            } else {
-                res = new ResponseEntity<>(HttpStatus.valueOf(getResult.getStatusCode()));
-            }
-        } catch (MessagingException e) {
-            LOGGER.log(Level.SEVERE, "Error while processing!", e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        if (getResult.getStatusCode() != 200) {
+            LOGGER.log(Level.WARNING, "Problems getting user by id!");
+            return new ResponseEntity<>("Problems getting user by id!", HttpStatus.valueOf(getResult.getStatusCode()));
         }
-        return res;
+
+        //generate one time password
+        String oneTimePassword = UUID.randomUUID().toString();
+        User userForUpdate = buildUserForUpdate(mapper.readValue(getResult.getBody(), User.class), oneTimePassword);
+
+        //update user
+        String userAsString = mapper.writeValueAsString(userForUpdate);
+        HttpClientRequestResult saveUserResponse = httpClient.executeHttpPatch(uri, userAsString, AUTHORIZATION, authorization);
+
+        if (saveUserResponse.getStatusCode() != 200) {
+            LOGGER.log(Level.WARNING, "Problems updating the user with extensions!");
+            return new ResponseEntity<>("Problems updating the user with extensions!", HttpStatus.valueOf(saveUserResponse.getStatusCode()));
+        }
+
+        return sendPasswordLostMail(userForUpdate, oneTimePassword);
     }
 
-    private ResponseEntity sendPasswordLostMail(User parsedUser, String oneTimePassword) throws MessagingException, IOException {
+    private User buildUserForUpdate(User user, String oneTimePassword) {
+        Map<String,String> fields = new HashMap<>();
+        fields.put(this.oneTimePassword, oneTimePassword);
+
+        return new User.Builder(user).
+                addExtension(internalScimExtensionUrn, new Extension(internalScimExtensionUrn, fields)).build();
+    }
+
+    private ResponseEntity<String> sendPasswordLostMail(User parsedUser, String oneTimePassword) throws MessagingException, IOException {
 
         String primaryEmail = mailSender.extractPrimaryEmail(parsedUser);
         if (primaryEmail == null) {
             LOGGER.log(Level.WARNING, "No primary email found!");
-            return new ResponseEntity<String>("No primary email found!", HttpStatus.INTERNAL_SERVER_ERROR);
-        } else {
-
-            StringBuilder activateURL = new StringBuilder(passwordlostLinkPrefix);
-            activateURL.append("userId=").append(parsedUser.getId());
-            activateURL.append("&oneTimePassword=").append(oneTimePassword);
-
-            Map<String, String> vars = new HashMap<>();
-            vars.put("$PASSWORDLOSTURL", activateURL.toString());
-
-            InputStream registerMailContentStream = context.getResourceAsStream("/WEB-INF/registration/passwordlostmail-content.txt");
-
-            if (registerMailContentStream == null) {
-                LOGGER.log(Level.SEVERE, "Cant open registermail-content.txt on classpath! Please configure!");
-                return new ResponseEntity<String>("Cant open registermail-content.txt on classpath! Please configure!", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-
-            mailSender.sendMail(passwordlostMailFrom, primaryEmail, passwordlostMailSubject, registerMailContentStream, vars);
-            return null;
+            return new ResponseEntity<>("No primary email found!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
+        StringBuilder activateURL = new StringBuilder(passwordlostLinkPrefix);
+        activateURL.append("userId=").append(parsedUser.getId());
+        activateURL.append("&oneTimePassword=").append(oneTimePassword);
+
+        Map<String, String> vars = new HashMap<>();
+        vars.put("$PASSWORDLOSTURL", activateURL.toString());
+
+        InputStream mailContentStream = context.getResourceAsStream("/WEB-INF/registration/passwordlostmail-content.txt");
+
+        if (mailContentStream == null) {
+            LOGGER.log(Level.SEVERE, "Cant open registermail-content.txt on classpath! Please configure!");
+            return new ResponseEntity<>("Cant open registermail-content.txt on classpath! Please configure!", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        mailSender.sendMail(passwordlostMailFrom, primaryEmail, passwordlostMailSubject, mailContentStream, vars);
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * Method to get an HTML form with the appropriate input fields for changing the password
+     * @param oneTimePassword the one time password from confirmation email
+     * @param userId the user id for whom the password change should be
+     * @return HTML form with hidden fields for userId and otp
+     */
     @RequestMapping(value = "/lostForm", method = RequestMethod.GET, produces = "text/html")
-    public ResponseEntity<String> lostFrom(@RequestParam String otp, @RequestParam String userId) {
+    public ResponseEntity<String> lostFrom(@RequestParam String oneTimePassword, @RequestParam String userId) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -176,7 +180,7 @@ public class LostPasswordController {
         HttpClientRequestResult result = httpClient.executeHttpGet(uri, AUTHORIZATION, authorization);
         if (result.getStatusCode() != 200) {
             LOGGER.log(Level.WARNING, "Problems retrieving user by ID!");
-            return new ResponseEntity<>(HttpStatus.valueOf(result.getStatusCode()));
+            return new ResponseEntity<>("Problems retrieving user by ID!", HttpStatus.valueOf(result.getStatusCode()));
         }
         User user = mapper.readValue(result.getBody(), User.class);
 
@@ -185,7 +189,7 @@ public class LostPasswordController {
         String savedOTP = extension.getField(this.oneTimePassword);
         if (!savedOTP.equals(oneTimePassword)) {
             LOGGER.log(Level.SEVERE, "The submitted one time password is invalid!");
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>("The submitted one time password is invalid!", HttpStatus.FORBIDDEN);
         }
 
         //delete the oneTimePassword from user entity
