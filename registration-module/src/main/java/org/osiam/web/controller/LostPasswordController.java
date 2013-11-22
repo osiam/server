@@ -218,6 +218,6 @@ public class LostPasswordController {
         }
 
         //return saved user with corresponding status code
-        return new ResponseEntity<>(savedResult.getBody(), HttpStatus.valueOf(savedResult.getStatusCode()));
+        return new ResponseEntity<>(savedResult.getBody(), HttpStatus.OK);
     }
 }
