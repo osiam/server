@@ -40,7 +40,6 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Subqueries;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.resources.helper.FilterParser;
-import org.osiam.resources.scim.Constants;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.storage.entities.InternalIdSkeleton;
 
@@ -79,16 +78,16 @@ public abstract class InternalIdSkeletonDao {
         }
         idsOnlyCriteria.setProjection(Projections.distinct(Projections.id()));
 
-        List results = getResults(idsOnlyCriteria, clazz, count, startIndex, sortBy, sortOrder);
+        List<T> results = getResults(idsOnlyCriteria, clazz, count, startIndex, sortBy, sortOrder);
         long totalResult = getTotalResults(idsOnlyCriteria, clazz);
 
         int newStartIndex = startIndex <1 ? 1 :startIndex;
 
-        return new SCIMSearchResult(results, totalResult, count, newStartIndex, Constants.CORE_SCHEMA);
+        return new SCIMSearchResult<T>(results, totalResult, count, newStartIndex, getCoreSchema());
     }
 
 
-    private <T> List getResults(DetachedCriteria idsOnlyCriteria, Class<T> clazz, int count, int startIndex, String sortBy,
+    private <T> List<T> getResults(DetachedCriteria idsOnlyCriteria, Class<T> clazz, int count, int startIndex, String sortBy,
             String sortOrder) {
 	    Criteria criteria = ((Session) em.getDelegate()).createCriteria(clazz);
 
@@ -130,4 +129,5 @@ public abstract class InternalIdSkeletonDao {
     }
 
     protected abstract void createAliasesForCriteria(DetachedCriteria criteria);
+    protected abstract String getCoreSchema();
 }
