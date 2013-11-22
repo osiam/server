@@ -231,6 +231,14 @@ class LostPasswordControllerTest extends Specification {
         result.getStatusCode() == HttpStatus.FORBIDDEN
     }
 
+    def "there should be a failure if the provided one time password is empty"() {
+        when:
+        def result = lostPasswordController.change("authZ", "", "userId", "newPW")
+
+        then:
+        result.getStatusCode() == HttpStatus.UNAUTHORIZED
+    }
+
     def getUserAsStringWithExtension(String otp) {
         def urn = "urn:scim:schemas:osiam:1.0:Registration"
         def extensionData = ["oneTimePassword":otp]

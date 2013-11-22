@@ -200,6 +200,14 @@ class RegisterControllerTest extends Specification {
         response.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR
     }
 
+    def "there should be an failure if the provided activation token is empty"() {
+        when:
+        def result = registerController.activate("authZ", "userId", "")
+
+        then:
+        result.getStatusCode() == HttpStatus.UNAUTHORIZED
+    }
+
     def getUserAsStringWithExtension(String token) {
         def urn = "urn:scim:schemas:osiam:1.0:Registration"
         def extensionData = ["activationToken":token]

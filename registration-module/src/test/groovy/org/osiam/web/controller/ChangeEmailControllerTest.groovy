@@ -44,7 +44,7 @@ class ChangeEmailControllerTest extends Specification {
     def emailChangeLinkPrefix = "http://localhost:8080/stuff"
     def emailChangeMailFrom = "bugs@bunny.com"
     def emailChangeMailSubject = "email change"
-    def emailChangeInfoMailSubject = " email change done"
+    def emailChangeInfoMailSubject = "email change done"
     def context = Mock(ServletContext)
 
     def changeEmailController = new ChangeEmailController(httpScheme: httpScheme, serverHost: httpHost,
@@ -164,10 +164,9 @@ class ChangeEmailControllerTest extends Specification {
         def confirmToken = "confToken"
         def url = "http://localhost:8080/osiam-resource-server/Users/" + userId;
 
-        def resultMock = Mock(HttpClientRequestResult)
-        def user = getUserWithTempEmailAsString()
+        def user = getUserWithTempEmailAsString("confToken")
 
-        def inputStream = new ByteArrayInputStream('nine bytes and one placeholder $EMAILCHANGEURL'.bytes)
+        def inputStream = new ByteArrayInputStream('nine bytes and one placeholder'.bytes)
 
         when:
         def result = changeEmailController.confirm(authZHeader, userId, confirmToken)
@@ -175,26 +174,93 @@ class ChangeEmailControllerTest extends Specification {
         then:
         1 * httpClientMock.executeHttpGet(url, "Authorization", authZHeader) >> resultMock
         2 * resultMock.getStatusCode() >> 200
-        2 * resultMock.getBody() >> user
+        3 * resultMock.getBody() >> user
         1 * httpClientMock.executeHttpPatch(url, _, "Authorization", authZHeader) >> resultMock
-
-        //1 * context.getResourceAsStream("/WEB-INF/registration/emailchange-content.txt") >> inputStream
-        //1 * mailSender.sendMail(emailChangeMailFrom, "email@example.org", emailChangeInfoMailSubject, inputStream, _)
+        1 * mailSender.extractPrimaryEmail(_) >> "email@example.org"
+        1 * context.getResourceAsStream("/WEB-INF/registration/emailchange-info.txt") >> inputStream
+        1 * mailSender.sendMail(emailChangeMailFrom, "email@example.org", emailChangeInfoMailSubject, inputStream, _)
 
         result.getStatusCode() == HttpStatus.OK
+        User savedUser = mapper.readValue(result.getBody(), User)
+        savedUser.getEmails().size() == 2
     }
 
-    def getUserWithTempEmailAsString() {
-        def emails = new MultiValuedAttribute(primary: true, value: "email@example.org")
+    def "there should be an failure if retrieving user by id failed"() {
+        given:
+        def authZHeader = "abc"
+        def userId = "userId"
+        def confirmToken = "confToken"
+        def url = "http://localhost:8080/osiam-resource-server/Users/" + userId;
+
+        when:
+        def response = changeEmailController.confirm(authZHeader, userId, confirmToken)
+
+        then:
+        1 * httpClientMock.executeHttpGet(url, "Authorization", authZHeader) >> resultMock
+        2 * resultMock.getStatusCode() >> 400
+        response.getStatusCode() == HttpStatus.BAD_REQUEST
+    }
+
+    def "there should be an failure if confirmation token miss match"() {
+        given:
+        def authZHeader = "abc"
+        def userId = "userId"
+        def confirmToken = "confToken"
+        def url = "http://localhost:8080/osiam-resource-server/Users/" + userId;
+
+        def user = getUserWithTempEmailAsString("bullShit")
+
+        when:
+        def response = changeEmailController.confirm(authZHeader, userId, confirmToken)
+
+        then:
+        1 * httpClientMock.executeHttpGet(url, "Authorization", authZHeader) >> resultMock
+        1 * resultMock.getStatusCode() >> 200
+        1 * resultMock.getBody() >> user
+        response.getStatusCode() == HttpStatus.FORBIDDEN
+    }
+
+    def "there should be an failure if updating user with extensions failed"() {
+        given:
+        def authZHeader = "abc"
+        def userId = "userId"
+        def confirmToken = "confToken"
+        def url = "http://localhost:8080/osiam-resource-server/Users/" + userId;
+
+        def user = getUserWithTempEmailAsString("confToken")
+
+        when:
+        def response = changeEmailController.confirm(authZHeader, userId, confirmToken)
+
+        then:
+        1 * httpClientMock.executeHttpGet(url, "Authorization", authZHeader) >> resultMock
+        1 * resultMock.getStatusCode() >> 200
+        1 * resultMock.getBody() >> user
+        1 * httpClientMock.executeHttpPatch(url, _,"Authorization", authZHeader) >> resultMock
+        2 * resultMock.getStatusCode() >> 400
+        response.getStatusCode() == HttpStatus.BAD_REQUEST
+    }
+
+    def "there should be a failure if the provided confirmation tiken is empty"() {
+        when:
+        def result = changeEmailController.confirm("authZ", "userId", "")
+
+        then:
+        result.getStatusCode() == HttpStatus.UNAUTHORIZED
+    }
+
+    def getUserWithTempEmailAsString(confToken) {
+        def primary = new MultiValuedAttribute(primary: true, value: "email@example.org")
+        def email = new MultiValuedAttribute(primary: false, value: "nonPrimary@example.org")
 
         def fields = [:]
-        fields.put(confirmTokenField, "confToken")
+        fields.put(confirmTokenField, confToken)
         fields.put(tempMailField, "newemail@example.org")
         def extension = new Extension(urn, fields);
 
         def user = new User.Builder("Boy George")
                 .setPassword("password")
-                .setEmails([emails])
+                .setEmails([primary, email] as List)
                 .setActive(false)
                 .addExtension(urn, extension)
                 .build()

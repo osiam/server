@@ -128,7 +128,8 @@ public class RegisterController {
             return new ResponseEntity<>("Problems creating user for registration", HttpStatus.valueOf(saveUserResponse.getStatusCode()));
         }
 
-        return sendActivationMail(primaryEmail, parsedUser, activationToken, saveUserResponse);
+        String savedUserId = mapper.readValue(saveUserResponse.getBody(), User.class).getId();
+        return sendActivationMail(primaryEmail, savedUserId, activationToken, saveUserResponse);
     }
 
     private User createUserForRegistration(User parsedUser, String activationToken) {
@@ -149,7 +150,7 @@ public class RegisterController {
         return builder.build();
     }
 
-    private ResponseEntity<String> sendActivationMail(String toAddress, User parsedUser, String activationToken,
+    private ResponseEntity<String> sendActivationMail(String toAddress, String userId, String activationToken,
                                   HttpClientRequestResult saveUserResponse) throws MessagingException, IOException {
 
         // Mailcontent with $REGISTERLINK as placeholder
@@ -161,7 +162,7 @@ public class RegisterController {
         }
 
         StringBuilder activateURL = new StringBuilder(registermailLinkPrefix);
-        activateURL.append("userId=").append(parsedUser.getId());
+        activateURL.append("userId=").append(userId);
         activateURL.append("&activationToken=").append(activationToken);
 
         Map<String, String> mailVars = new HashMap<>();
@@ -192,6 +193,10 @@ public class RegisterController {
     public ResponseEntity activate(@RequestHeader final String authorization,
                                    @RequestParam final String userId, @RequestParam final String activationToken) throws IOException {
 
+        if (activationToken.equals("")) {
+            LOGGER.log(Level.WARNING, "Activation token miss match!");
+            return new ResponseEntity<>("Activation token miss match!", HttpStatus.UNAUTHORIZED);
+        }
 
         String uri = httpScheme + "://" + serverHost + ":" + serverPort + RESOURCE_SERVER_URI + "/" + userId;
 

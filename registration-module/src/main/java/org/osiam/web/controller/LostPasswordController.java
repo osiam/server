@@ -174,6 +174,11 @@ public class LostPasswordController {
     public ResponseEntity<String> change(@RequestHeader final String authorization, @RequestParam String oneTimePassword,
                                  @RequestParam String userId, @RequestParam String newPassword) throws IOException {
 
+        if (oneTimePassword.equals("")) {
+            LOGGER.log(Level.SEVERE, "The submitted one time password is invalid!");
+            return new ResponseEntity<>("The submitted one time password is invalid!", HttpStatus.UNAUTHORIZED);
+        }
+
         String uri = httpScheme + "://" + serverHost + ":" + serverPort + RESOURCE_SERVER_URI + "/" + userId;
 
         //get user by id
@@ -187,6 +192,7 @@ public class LostPasswordController {
         //validate the oneTimePassword with the saved one from DB
         Extension extension = user.getExtension(internalScimExtensionUrn);
         String savedOTP = extension.getField(this.oneTimePassword);
+
         if (!savedOTP.equals(oneTimePassword)) {
             LOGGER.log(Level.SEVERE, "The submitted one time password is invalid!");
             return new ResponseEntity<>("The submitted one time password is invalid!", HttpStatus.FORBIDDEN);

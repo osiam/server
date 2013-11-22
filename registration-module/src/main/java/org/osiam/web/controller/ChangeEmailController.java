@@ -1,6 +1,5 @@
 package org.osiam.web.controller;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -184,13 +183,18 @@ public class ChangeEmailController {
     public ResponseEntity<String> confirm(@RequestHeader final String authorization, @RequestParam final String userId,
                                           @RequestParam final String confirmToken) throws IOException, MessagingException {
 
+        if (confirmToken.equals("")) {
+            LOGGER.log(Level.WARNING, "Confirmation token miss match!");
+            return new ResponseEntity<>("No ongoing emailchange!", HttpStatus.UNAUTHORIZED);
+        }
+
         String uri = httpScheme + "://" + serverHost + ":" + serverPort + RESOURCE_SERVER_URI + "/" + userId;
 
         //get user by user id
         HttpClientRequestResult result = httpClient.executeHttpGet(uri, AUTHORIZATION, authorization);
         if (result.getStatusCode() != 200) {
             LOGGER.log(Level.WARNING, "Problems retrieving user by ID!");
-            return new ResponseEntity<>(HttpStatus.valueOf(result.getStatusCode()));
+            return new ResponseEntity<>("Problems retrieving user by ID!", HttpStatus.valueOf(result.getStatusCode()));
         }
 
         //add extensions to user
@@ -199,49 +203,64 @@ public class ChangeEmailController {
         Extension extension = user.getExtension(this.internalScimExtensionUrn);
         String existingConfirmToken = extension.getField(this.confirmationTokenField);
 
-        if (existingConfirmToken != null && !existingConfirmToken.equals("") && existingConfirmToken.equals(confirmToken)) {
-            // given confirm token is valid.
-            extension.setField(this.confirmationTokenField, "");
-            String newEmail = extension.getField(this.tempEmail);
-            extension.setField(this.tempEmail, "");
-
-            User.Builder builder = new User.Builder(user);
-
-            // get old emailaddress
-            String oldEmail = mailSender.extractPrimaryEmail(user);
-            // replace prim email
-            List<MultiValuedAttribute> emails = new ArrayList<MultiValuedAttribute>();
-            emails.add(new MultiValuedAttribute.Builder().
-                    setValue(newEmail).
-                    setPrimary(true).
-                    build());
-
-            builder.setEmails(emails);
-            builder.addExtension(this.internalScimExtensionUrn, extension);
-
-            User updateUser = builder.build();
-
-            //update the user
-            String updateUserAsString = mapper.writeValueAsString(updateUser);
-            HttpClientRequestResult updateUserResult = httpClient.executeHttpPatch(uri, updateUserAsString, AUTHORIZATION, authorization);
-            if (updateUserResult.getStatusCode() != 200) {
-                LOGGER.log(Level.WARNING, "Problems updating user with extensions!");
-                return new ResponseEntity<>(HttpStatus.valueOf(result.getStatusCode()));
-            }
-
-            // Send infomail
-            User savedUser = mapper.readValue(updateUserResult.getBody(), User.class);
-            sendingInfoMailToOldAddress(oldEmail, savedUser);
-
-            return new ResponseEntity(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<String>("No ongoing emailchange!", HttpStatus.FORBIDDEN);
+        if (!existingConfirmToken.equals(confirmToken)) {
+            LOGGER.log(Level.WARNING, "Confirmation token miss match!");
+            return new ResponseEntity<>("No ongoing emailchange!", HttpStatus.FORBIDDEN);
         }
+
+        // given confirm token is valid.
+        extension.setField(this.confirmationTokenField, "");
+        String newEmail = extension.getField(this.tempEmail);
+        extension.setField(this.tempEmail, "");
+
+        // get old email address
+        String oldEmail = mailSender.extractPrimaryEmail(user);
+
+        //replacing only the old primary, non primary are still valid
+        List<MultiValuedAttribute> emails = replaceOldPrimaryMail(newEmail, user.getEmails());
+
+        //add mails and extensions to user
+        User updateUser = new User.Builder(user).setEmails(emails).addExtension(this.internalScimExtensionUrn, extension).build();
+
+        //update the user
+        String updateUserAsString = mapper.writeValueAsString(updateUser);
+        HttpClientRequestResult updateUserResult = httpClient.executeHttpPatch(uri, updateUserAsString, AUTHORIZATION, authorization);
+        if (updateUserResult.getStatusCode() != 200) {
+            LOGGER.log(Level.WARNING, "Problems updating user with extensions!");
+            return new ResponseEntity<>("Problems updating user with extensions!", HttpStatus.valueOf(result.getStatusCode()));
+        }
+
+        // Send info mail
+        User savedUser = mapper.readValue(updateUserResult.getBody(), User.class);
+        sendingInfoMailToOldAddress(oldEmail, savedUser);
+
+        return new ResponseEntity<>(updateUserResult.getBody(), HttpStatus.OK);
+
+    }
+
+    private List<MultiValuedAttribute> replaceOldPrimaryMail(String newEmail, List<MultiValuedAttribute> emails) {
+
+        List<MultiValuedAttribute> updatedEmailList = new ArrayList<>();
+
+        // add new primary email address
+        updatedEmailList.add(new MultiValuedAttribute.Builder().
+                setValue(newEmail).
+                setPrimary(true).
+                build());
+
+        //add only non primary mails to new list and remove all primary entries
+        for (MultiValuedAttribute mail : emails) {
+            if (!mail.isPrimary()) {
+                updatedEmailList.add(mail);
+            }
+        }
+
+        return updatedEmailList;
     }
 
     private void sendingInfoMailToOldAddress(String oldEmailAddress, User user) throws IOException, MessagingException {
         //get mail content as stream and check failure if file is not present
-        InputStream mailContentStream = context.getResourceAsStream("/WEB-INF/registration/emailchangeinfo-content.txt");
+        InputStream mailContentStream = context.getResourceAsStream("/WEB-INF/registration/emailchange-info.txt");
         mailSender.sendMail(emailChangeMailFrom, oldEmailAddress, emailChangeInfoMailSubject, mailContentStream, null);
     }
 }
