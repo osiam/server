@@ -212,6 +212,11 @@ public class LostPasswordController {
         //update the user with PATCH
         HttpClientRequestResult savedResult = httpClient.executeHttpPatch(uri, updateUserAsString, AUTHORIZATION, authorization);
 
+        if (savedResult.getStatusCode() != 200) {
+            LOGGER.log(Level.WARNING, "Problems updating the user with extensions!");
+            return new ResponseEntity<>("{\"error\":\"Problems updating the user with extensions!\"}", HttpStatus.valueOf(savedResult.getStatusCode()));
+        }
+
         //return saved user with corresponding status code
         return new ResponseEntity<>(savedResult.getBody(), HttpStatus.valueOf(savedResult.getStatusCode()));
     }

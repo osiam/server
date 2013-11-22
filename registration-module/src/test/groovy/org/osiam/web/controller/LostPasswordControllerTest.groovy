@@ -210,7 +210,7 @@ class LostPasswordControllerTest extends Specification {
         result.getStatusCode() == HttpStatus.BAD_REQUEST
     }
 
-    def "If the provided one time password has no match with the saved on from the database the appropriate status code will be returned and the process is stopped"() {
+    def "If the provided one time password has no match with the saved one from the database the appropriate status code will be returned and the process is stopped"() {
         given:
         def otp = "someOTP"
         def userId = "someId"
@@ -229,6 +229,29 @@ class LostPasswordControllerTest extends Specification {
         1 * requestResultMock.getBody() >> userById
 
         result.getStatusCode() == HttpStatus.FORBIDDEN
+    }
+
+    def "there should be a failure if the user update with extensions failed"() {
+        given:
+        def otp = "someOTP"
+        def userId = "someId"
+        def newPassword = "newPassword"
+        def authZHeader = "Bearer ACCESSTOKEN"
+        def uri = "http://localhost:8080/osiam-resource-server/Users/"
+
+        def userById = getUserAsStringWithExtension("someOTP")
+
+        when:
+        def result = lostPasswordController.change(authZHeader, otp, userId, newPassword)
+
+        then:
+        1 * httpClientMock.executeHttpGet(uri + userId, "Authorization", authZHeader) >> requestResultMock
+        1 * requestResultMock.getStatusCode() >> 200
+        1 * requestResultMock.getBody() >> userById
+        1 * httpClientMock.executeHttpPatch(uri + userId, _, "Authorization", authZHeader) >> requestResultMock
+        2 * requestResultMock.getStatusCode() >> 400
+        result.getStatusCode() == HttpStatus.BAD_REQUEST
+        result.getBody() != null
     }
 
     def "there should be a failure if the provided one time password is empty"() {
