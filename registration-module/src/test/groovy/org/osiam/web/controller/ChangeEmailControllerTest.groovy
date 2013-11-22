@@ -115,7 +115,7 @@ class ChangeEmailControllerTest extends Specification {
         2 * resultMock.getBody() >> user
         1 * httpClientMock.executeHttpPatch(uri, _, "Authorization", authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
-        1 * context.getResourceAsStream("/WEB-INF/registration/emailchange-content.txt") >> null
+        1 * mailSender.getEmailContentAsStream("/WEB-INF/registration/emailchange-content.txt", _, context) >> null
         result.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR
         result.getBody() != null
     }
@@ -140,7 +140,7 @@ class ChangeEmailControllerTest extends Specification {
         2 * resultMock.getBody() >> user
         1 * httpClientMock.executeHttpPatch(uri, _, "Authorization", authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
-        1 * context.getResourceAsStream("/WEB-INF/registration/emailchange-content.txt") >> inputStream
+        1 * mailSender.getEmailContentAsStream("/WEB-INF/registration/emailchange-content.txt", _, context) >> inputStream
         1 * mailSender.sendMail(emailChangeMailFrom, newEmailValue, emailChangeMailSubject, inputStream, _)
         result.getStatusCode() == HttpStatus.OK
     }
@@ -174,10 +174,10 @@ class ChangeEmailControllerTest extends Specification {
         then:
         1 * httpClientMock.executeHttpGet(url, "Authorization", authZHeader) >> resultMock
         2 * resultMock.getStatusCode() >> 200
-        3 * resultMock.getBody() >> user
+        2 * resultMock.getBody() >> user
         1 * httpClientMock.executeHttpPatch(url, _, "Authorization", authZHeader) >> resultMock
         1 * mailSender.extractPrimaryEmail(_) >> "email@example.org"
-        1 * context.getResourceAsStream("/WEB-INF/registration/emailchange-info.txt") >> inputStream
+        1 * mailSender.getEmailContentAsStream("/WEB-INF/registration/emailchange-info.txt", _, context) >> inputStream
         1 * mailSender.sendMail(emailChangeMailFrom, "email@example.org", emailChangeInfoMailSubject, inputStream, _)
 
         result.getStatusCode() == HttpStatus.OK
@@ -241,7 +241,29 @@ class ChangeEmailControllerTest extends Specification {
         response.getStatusCode() == HttpStatus.BAD_REQUEST
     }
 
-    def "there should be a failure if the provided confirmation tiken is empty"() {
+    def "there should be an failure if content input stream is null"() {
+        given:
+        def authZHeader = "abc"
+        def userId = "userId"
+        def confirmToken = "confToken"
+        def url = "http://localhost:8080/osiam-resource-server/Users/" + userId;
+
+        def user = getUserWithTempEmailAsString("confToken")
+
+        when:
+        def response = changeEmailController.confirm(authZHeader, userId, confirmToken)
+
+        then:
+        1 * httpClientMock.executeHttpGet(url, "Authorization", authZHeader) >> resultMock
+        1 * resultMock.getStatusCode() >> 200
+        2 * resultMock.getBody() >> user
+        1 * httpClientMock.executeHttpPatch(url, _,"Authorization", authZHeader) >> resultMock
+        1 * resultMock.getStatusCode() >> 200
+        1 * mailSender.getEmailContentAsStream("/WEB-INF/registration/emailchange-info.txt", _, context) >> null
+        response.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR
+    }
+
+    def "there should be a failure if the provided confirmation token is empty"() {
         when:
         def result = changeEmailController.confirm("authZ", "userId", "")
 

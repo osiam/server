@@ -47,6 +47,8 @@ public class RegisterController {
     private String registermailSubject;
     @Value("${osiam.web.registermail.linkprefix}")
     private String registermailLinkPrefix;
+    @Value("${osiam.web.registermail.content.path}")
+    private String pathToContentFile;
 
     @Value("${osiam.web.register.url}")
     private String clientRegistrationUri;
@@ -115,7 +117,7 @@ public class RegisterController {
         String primaryEmail = mailSender.extractPrimaryEmail(parsedUser);
         if (primaryEmail == null) {
             LOGGER.log(Level.WARNING, "No primary email found!");
-            return new ResponseEntity<>("No primary email found!", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("{\"error\":\"No primary email found!\"}", HttpStatus.BAD_REQUEST);
         }
         // generate Activation Token
         String activationToken = UUID.randomUUID().toString();
@@ -125,7 +127,7 @@ public class RegisterController {
         HttpClientRequestResult saveUserResponse = saveUser(parsedUser, authorization);
         if (saveUserResponse.getStatusCode() != 201) {
             LOGGER.log(Level.WARNING, "Problems creating user for registration");
-            return new ResponseEntity<>("Problems creating user for registration", HttpStatus.valueOf(saveUserResponse.getStatusCode()));
+            return new ResponseEntity<>("{\"error\":\"Problems creating user for registration\"}", HttpStatus.valueOf(saveUserResponse.getStatusCode()));
         }
 
         String savedUserId = mapper.readValue(saveUserResponse.getBody(), User.class).getId();
@@ -153,12 +155,13 @@ public class RegisterController {
     private ResponseEntity<String> sendActivationMail(String toAddress, String userId, String activationToken,
                                   HttpClientRequestResult saveUserResponse) throws MessagingException, IOException {
 
-        // Mailcontent with $REGISTERLINK as placeholder
-        InputStream registerMailContentStream = context.getResourceAsStream("/WEB-INF/registration/registermail-content.txt");
+        InputStream registerMailContentStream =
+                mailSender.getEmailContentAsStream("/WEB-INF/registration/registermail-content.txt", pathToContentFile,
+                        context);
 
         if (registerMailContentStream == null) {
             LOGGER.log(Level.SEVERE, "Cant open registermail-content.txt on classpath! Please configure!");
-            return new ResponseEntity<>("Cant open registermail-content.txt on classpath! Please configure!", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("{\"error\":\"Cant open registermail-content.txt on classpath! Please configure!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         StringBuilder activateURL = new StringBuilder(registermailLinkPrefix);
@@ -189,13 +192,13 @@ public class RegisterController {
      *
      * @return HTTP status, HTTP.OK (200) for a valid activation
      */
-    @RequestMapping(value = "/activate", method = RequestMethod.POST)
+    @RequestMapping(value = "/activate", method = RequestMethod.POST, produces = "application/json")
     public ResponseEntity activate(@RequestHeader final String authorization,
                                    @RequestParam final String userId, @RequestParam final String activationToken) throws IOException {
 
         if (activationToken.equals("")) {
             LOGGER.log(Level.WARNING, "Activation token miss match!");
-            return new ResponseEntity<>("Activation token miss match!", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>("{\"error\":\"Activation token miss match!\"}", HttpStatus.UNAUTHORIZED);
         }
 
         String uri = httpScheme + "://" + serverHost + ":" + serverPort + RESOURCE_SERVER_URI + "/" + userId;
@@ -205,7 +208,7 @@ public class RegisterController {
 
         if (result.getStatusCode() != 200) {
             LOGGER.log(Level.WARNING, "Problems retrieving user by his ID!");
-            return new ResponseEntity<>("Problems retrieving user by his ID!", HttpStatus.valueOf(result.getStatusCode()));
+            return new ResponseEntity<>("{\"error\":\"Problems retrieving user by his ID!\"}", HttpStatus.valueOf(result.getStatusCode()));
         }
 
         //get extension field to check activation token validity
@@ -215,7 +218,7 @@ public class RegisterController {
 
         if (!activationTokenFieldValue.equals(activationToken)) {
             LOGGER.log(Level.WARNING, "Activation token miss match!");
-            return new ResponseEntity<>("Activation token miss match!", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>("{\"error\":\"Activation token miss match!\"}", HttpStatus.UNAUTHORIZED);
         }
 
         //validation successful -> delete token and activate user
@@ -228,7 +231,7 @@ public class RegisterController {
 
         if (requestResult.getStatusCode() != 200) {
             LOGGER.log(Level.WARNING, "Updating user with extensions failed!");
-            return new ResponseEntity<>("Updating user with extensions failed!", HttpStatus.valueOf(requestResult.getStatusCode()));
+            return new ResponseEntity<>("{\"error\":\"Updating user with extensions failed!\"}", HttpStatus.valueOf(requestResult.getStatusCode()));
         }
 
         return new ResponseEntity(HttpStatus.OK);

@@ -70,6 +70,8 @@ public class LostPasswordController {
     private String passwordlostMailFrom;
     @Value("${osiam.web.passwordlostmail.subject}")
     private String passwordlostMailSubject;
+    @Value("${osiam.web.passwordlostmail.content.path}")
+    private String pathToEmailContent;
 
     public LostPasswordController() {
         mapper = new ObjectMapper();
@@ -86,7 +88,7 @@ public class LostPasswordController {
      * @throws IOException
      * @throws MessagingException
      */
-    @RequestMapping(value = "/lost/{userId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/lost/{userId}", method = RequestMethod.POST, produces = "application/json")
     public ResponseEntity<String> lost(@RequestHeader final String authorization, @PathVariable final String userId) throws IOException, MessagingException {
 
         String uri = httpScheme + "://" + serverHost + ":" + serverPort + RESOURCE_SERVER_URI + "/" + userId;
@@ -96,7 +98,7 @@ public class LostPasswordController {
 
         if (getResult.getStatusCode() != 200) {
             LOGGER.log(Level.WARNING, "Problems getting user by id!");
-            return new ResponseEntity<>("Problems getting user by id!", HttpStatus.valueOf(getResult.getStatusCode()));
+            return new ResponseEntity<>("{\"error\":\"Problems getting user by id!\"}", HttpStatus.valueOf(getResult.getStatusCode()));
         }
 
         //generate one time password
@@ -109,7 +111,7 @@ public class LostPasswordController {
 
         if (saveUserResponse.getStatusCode() != 200) {
             LOGGER.log(Level.WARNING, "Problems updating the user with extensions!");
-            return new ResponseEntity<>("Problems updating the user with extensions!", HttpStatus.valueOf(saveUserResponse.getStatusCode()));
+            return new ResponseEntity<>("{\"error\":\"Problems updating the user with extensions!\"}", HttpStatus.valueOf(saveUserResponse.getStatusCode()));
         }
 
         return sendPasswordLostMail(userForUpdate, oneTimePassword);
@@ -128,7 +130,7 @@ public class LostPasswordController {
         String primaryEmail = mailSender.extractPrimaryEmail(parsedUser);
         if (primaryEmail == null) {
             LOGGER.log(Level.WARNING, "No primary email found!");
-            return new ResponseEntity<>("No primary email found!", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("{\"error\":\"No primary email found!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         StringBuilder activateURL = new StringBuilder(passwordlostLinkPrefix);
@@ -138,11 +140,13 @@ public class LostPasswordController {
         Map<String, String> vars = new HashMap<>();
         vars.put("$PASSWORDLOSTURL", activateURL.toString());
 
-        InputStream mailContentStream = context.getResourceAsStream("/WEB-INF/registration/passwordlostmail-content.txt");
+        InputStream mailContentStream =
+                mailSender.getEmailContentAsStream("/WEB-INF/registration/passwordlostmail-content.txt",
+                        pathToEmailContent, context);
 
         if (mailContentStream == null) {
             LOGGER.log(Level.SEVERE, "Cant open registermail-content.txt on classpath! Please configure!");
-            return new ResponseEntity<>("Cant open registermail-content.txt on classpath! Please configure!", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("{\"error\":\"Cant open registermail-content.txt on classpath! Please configure!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         mailSender.sendMail(passwordlostMailFrom, primaryEmail, passwordlostMailSubject, mailContentStream, vars);
@@ -176,7 +180,7 @@ public class LostPasswordController {
 
         if (oneTimePassword.equals("")) {
             LOGGER.log(Level.SEVERE, "The submitted one time password is invalid!");
-            return new ResponseEntity<>("The submitted one time password is invalid!", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>("{\"error\":\"The submitted one time password is invalid!\"}", HttpStatus.UNAUTHORIZED);
         }
 
         String uri = httpScheme + "://" + serverHost + ":" + serverPort + RESOURCE_SERVER_URI + "/" + userId;
@@ -185,7 +189,7 @@ public class LostPasswordController {
         HttpClientRequestResult result = httpClient.executeHttpGet(uri, AUTHORIZATION, authorization);
         if (result.getStatusCode() != 200) {
             LOGGER.log(Level.WARNING, "Problems retrieving user by ID!");
-            return new ResponseEntity<>("Problems retrieving user by ID!", HttpStatus.valueOf(result.getStatusCode()));
+            return new ResponseEntity<>("{\"error\":\"Problems retrieving user by ID!\"}", HttpStatus.valueOf(result.getStatusCode()));
         }
         User user = mapper.readValue(result.getBody(), User.class);
 
@@ -195,7 +199,7 @@ public class LostPasswordController {
 
         if (!savedOTP.equals(oneTimePassword)) {
             LOGGER.log(Level.SEVERE, "The submitted one time password is invalid!");
-            return new ResponseEntity<>("The submitted one time password is invalid!", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>("{\"error\":\"The submitted one time password is invalid!\"}", HttpStatus.FORBIDDEN);
         }
 
         //delete the oneTimePassword from user entity

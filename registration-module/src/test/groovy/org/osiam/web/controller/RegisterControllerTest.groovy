@@ -152,7 +152,7 @@ class RegisterControllerTest extends Specification {
 
         then:
         1 * httpClientMock.executeHttpPost(_, _, _, _) >> new HttpClientRequestResult('{"id":"1234","schemas":["urn"]}', 201)
-        1 * contextMock.getResourceAsStream("/WEB-INF/registration/registermail-content.txt") >> registerMailContent
+        1 * mailSenderMock.getEmailContentAsStream("/WEB-INF/registration/registermail-content.txt", _, contextMock) >> registerMailContent
         1 * mailSenderMock.sendMail("noreply@example.org", "toemail@example.org", "Ihre Registrierung", registerMailContent, _)
         1 * mailSenderMock.extractPrimaryEmail(_) >> "toemail@example.org"
         response.statusCode == HttpStatus.OK
@@ -196,7 +196,7 @@ class RegisterControllerTest extends Specification {
         then:
         1 * mailSenderMock.extractPrimaryEmail(_) >> "primary@mail.com"
         1 * httpClientMock.executeHttpPost(_, _, _, _) >> new HttpClientRequestResult('{"id":"1234","schemas":["urn"]}', 201)
-        1 * contextMock.getResourceAsStream("/WEB-INF/registration/registermail-content.txt") >> null
+        1 * mailSenderMock.getEmailContentAsStream("/WEB-INF/registration/registermail-content.txt", _, contextMock) >> null
         response.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR
     }
 

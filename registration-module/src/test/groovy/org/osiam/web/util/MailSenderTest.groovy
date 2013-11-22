@@ -7,6 +7,7 @@ import spock.lang.Specification
 
 import javax.mail.Message
 import javax.mail.internet.MimeMessage
+import javax.servlet.ServletContext
 
 /**
  * Created with IntelliJ IDEA.
@@ -78,5 +79,60 @@ class MailSenderTest extends Specification {
 
         then:
         email == null
+    }
+
+    def "should read the email content from default path if user defined path is null"() {
+        given:
+        def mailSender = new MailSender()
+        def contextMock = Mock(ServletContext)
+
+        def inputStream = new ByteArrayInputStream("the email content".bytes)
+
+        when:
+        def result = mailSender.getEmailContentAsStream("defaultPath", null, contextMock)
+
+        then:
+        1 * contextMock.getResourceAsStream("defaultPath") >> inputStream
+        result == inputStream
+    }
+
+    def "should read the email content from default path if user defined path is empty"() {
+        given:
+        def mailSender = new MailSender()
+        def contextMock = Mock(ServletContext)
+
+        def inputStream = new ByteArrayInputStream("the email content".bytes)
+
+        when:
+        def result = mailSender.getEmailContentAsStream("defaultPath", "", contextMock)
+
+        then:
+        1 * contextMock.getResourceAsStream("defaultPath") >> inputStream
+        result == inputStream
+    }
+
+    def "should read the email content from user defined path if it is not null"() {
+        given:
+        def mailSender = new MailSender()
+        def contextMock = Mock(ServletContext)
+
+        def url = this.getClass().getResource("/test-content.txt")
+
+        when:
+        def result = mailSender.getEmailContentAsStream("defaultPath", url.getFile(), contextMock)
+
+        then:
+        def fileAsString = getStringFromStream(result)
+        fileAsString == "Just a test!"
+    }
+
+    def getStringFromStream(result) {
+        def builder = new StringBuilder()
+        int ch
+        while((ch = result.read()) != -1){
+            builder.append((char)ch)
+        }
+
+        return builder.toString()
     }
 }

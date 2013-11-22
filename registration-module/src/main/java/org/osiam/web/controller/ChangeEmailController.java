@@ -73,8 +73,13 @@ public class ChangeEmailController {
     @Value("${osiam.web.emailchange.subject}")
     private String emailChangeMailSubject;
 
+    @Value("${osiam.web.emailchange.content.path}")
+    private String pathToEmailContent;
+
     @Value("${osiam.web.emailchange-info.subject}")
     private String emailChangeInfoMailSubject;
+    @Value("${osiam.web.emailchange-info.content.path}")
+    private String pathToEmailInfoContent;
 
     @Inject
     ServletContext context;
@@ -95,7 +100,7 @@ public class ChangeEmailController {
      * @throws IOException
      * @throws MessagingException
      */
-    @RequestMapping(method = RequestMethod.POST, value = "/change")
+    @RequestMapping(method = RequestMethod.POST, value = "/change", produces = "application/json")
     public ResponseEntity<String> change(@RequestHeader final String authorization, @RequestParam final String userId,
                                          @RequestParam final String newEmailValue) throws IOException, MessagingException {
 
@@ -105,7 +110,7 @@ public class ChangeEmailController {
         HttpClientRequestResult result = httpClient.executeHttpGet(uri, AUTHORIZATION, authorization);
         if (result.getStatusCode() != 200) {
             LOGGER.log(Level.WARNING, "Problems retrieving user by ID!");
-            return new ResponseEntity<>("Problems retrieving user by ID!", HttpStatus.valueOf(result.getStatusCode()));
+            return new ResponseEntity<>("{\"error\":\"Problems retrieving user by ID!\"}", HttpStatus.valueOf(result.getStatusCode()));
         }
 
         //generate confirmation token
@@ -119,7 +124,7 @@ public class ChangeEmailController {
         HttpClientRequestResult updateUserResult = httpClient.executeHttpPatch(uri, updateUserAsString, AUTHORIZATION, authorization);
         if (updateUserResult.getStatusCode() != 200) {
             LOGGER.log(Level.WARNING, "Problems updating user with extensions!");
-            return new ResponseEntity<>("Problems updating user with extensions!", HttpStatus.valueOf(result.getStatusCode()));
+            return new ResponseEntity<>("{\"error\":\"Problems updating user with extensions!\"}", HttpStatus.valueOf(result.getStatusCode()));
         }
 
         //send email to the new address with confirmation token and user id
@@ -159,11 +164,13 @@ public class ChangeEmailController {
         vars.put("$EMAILCHANGEURL", activateURL.toString());
 
         //get mail content as stream and check failure if file is not present
-        InputStream mailContentStream = context.getResourceAsStream("/WEB-INF/registration/emailchange-content.txt");
+        InputStream mailContentStream =
+                mailSender.getEmailContentAsStream("/WEB-INF/registration/emailchange-content.txt", pathToEmailContent,
+                        context);
 
         if (mailContentStream == null) {
             LOGGER.log(Level.SEVERE, "Cant open registermail-content.txt on classpath! Please configure!");
-            return new ResponseEntity<>("Cant open registermail-content.txt on classpath! Please configure!", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("{\"error\":\"Cant open registermail-content.txt on classpath! Please configure!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         //send the mail
@@ -185,7 +192,7 @@ public class ChangeEmailController {
 
         if (confirmToken.equals("")) {
             LOGGER.log(Level.WARNING, "Confirmation token miss match!");
-            return new ResponseEntity<>("No ongoing emailchange!", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>("{\"error\":\"No ongoing email change!\"}", HttpStatus.UNAUTHORIZED);
         }
 
         String uri = httpScheme + "://" + serverHost + ":" + serverPort + RESOURCE_SERVER_URI + "/" + userId;
@@ -194,7 +201,7 @@ public class ChangeEmailController {
         HttpClientRequestResult result = httpClient.executeHttpGet(uri, AUTHORIZATION, authorization);
         if (result.getStatusCode() != 200) {
             LOGGER.log(Level.WARNING, "Problems retrieving user by ID!");
-            return new ResponseEntity<>("Problems retrieving user by ID!", HttpStatus.valueOf(result.getStatusCode()));
+            return new ResponseEntity<>("{\"error\":\"Problems retrieving user by ID!\"}", HttpStatus.valueOf(result.getStatusCode()));
         }
 
         //add extensions to user
@@ -205,7 +212,7 @@ public class ChangeEmailController {
 
         if (!existingConfirmToken.equals(confirmToken)) {
             LOGGER.log(Level.WARNING, "Confirmation token miss match!");
-            return new ResponseEntity<>("No ongoing emailchange!", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>("{\"error\":\"No ongoing email change!\"}", HttpStatus.FORBIDDEN);
         }
 
         // given confirm token is valid.
@@ -227,15 +234,11 @@ public class ChangeEmailController {
         HttpClientRequestResult updateUserResult = httpClient.executeHttpPatch(uri, updateUserAsString, AUTHORIZATION, authorization);
         if (updateUserResult.getStatusCode() != 200) {
             LOGGER.log(Level.WARNING, "Problems updating user with extensions!");
-            return new ResponseEntity<>("Problems updating user with extensions!", HttpStatus.valueOf(result.getStatusCode()));
+            return new ResponseEntity<>("{\"error\":\"Problems updating user with extensions!\"}", HttpStatus.valueOf(updateUserResult.getStatusCode()));
         }
 
         // Send info mail
-        User savedUser = mapper.readValue(updateUserResult.getBody(), User.class);
-        sendingInfoMailToOldAddress(oldEmail, savedUser);
-
-        return new ResponseEntity<>(updateUserResult.getBody(), HttpStatus.OK);
-
+        return sendingInfoMailToOldAddress(oldEmail, updateUserResult.getBody());
     }
 
     private List<MultiValuedAttribute> replaceOldPrimaryMail(String newEmail, List<MultiValuedAttribute> emails) {
@@ -258,9 +261,20 @@ public class ChangeEmailController {
         return updatedEmailList;
     }
 
-    private void sendingInfoMailToOldAddress(String oldEmailAddress, User user) throws IOException, MessagingException {
+    private ResponseEntity<String> sendingInfoMailToOldAddress(String oldEmailAddress, String user) throws IOException, MessagingException {
+
         //get mail content as stream and check failure if file is not present
-        InputStream mailContentStream = context.getResourceAsStream("/WEB-INF/registration/emailchange-info.txt");
+        InputStream mailContentStream =
+                mailSender.getEmailContentAsStream("/WEB-INF/registration/emailchange-info.txt", pathToEmailInfoContent,
+                        context);
+
+        if (mailContentStream == null) {
+            LOGGER.log(Level.SEVERE, "Cant open registermail-content.txt on classpath! Please configure!");
+            return new ResponseEntity<>("{\"error\":\"Cant open registermail-content.txt on classpath! Please configure!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
         mailSender.sendMail(emailChangeMailFrom, oldEmailAddress, emailChangeInfoMailSubject, mailContentStream, null);
+
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 }

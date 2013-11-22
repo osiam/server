@@ -75,7 +75,7 @@ class LostPasswordControllerTest extends Specification {
         1 * requestResultMock.getStatusCode() >> 200
         1 * requestResultMock.getBody() >> userString
 
-        1 * contextMock.getResourceAsStream("/WEB-INF/registration/passwordlostmail-content.txt") >> inputStream
+        1 * mailSenderMock.getEmailContentAsStream("/WEB-INF/registration/passwordlostmail-content.txt", _, contextMock) >> inputStream
         1 * mailSenderMock.sendMail("noreply@example.org", "toemail@example.org", "Subject", inputStream, _)
         1 * mailSenderMock.extractPrimaryEmail(_) >> "toemail@example.org"
 
@@ -150,7 +150,7 @@ class LostPasswordControllerTest extends Specification {
         1 * requestResultMock.getBody() >> userString
         1 * httpClientMock.executeHttpPatch(uri + userId, _, "Authorization", authZHeader) >> new HttpClientRequestResult("body", 200);
         1 * mailSenderMock.extractPrimaryEmail(_) >> "primary@mail.com"
-        1 * contextMock.getResourceAsStream("/WEB-INF/registration/passwordlostmail-content.txt") >> null
+        1 * mailSenderMock.getEmailContentAsStream("/WEB-INF/registration/passwordlostmail-content.txt", _, contextMock) >> null
         response.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR
         response.getBody() != null
     }

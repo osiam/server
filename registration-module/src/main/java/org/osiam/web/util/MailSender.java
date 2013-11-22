@@ -11,16 +11,16 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.servlet.ServletContext;
+import java.io.*;
 import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
+ * Class for sending mails.
+ * Also getting primary email from users email list and loads the mail content as stream.
  * User: Igor
  * Date: 12.11.13
  * Time: 10:59
- * To change this template use File | Settings | File Templates.
  */
 public class MailSender {
 
@@ -54,5 +54,15 @@ public class MailSender {
             }
         }
         return foundEmail;
+    }
+
+    public InputStream getEmailContentAsStream(String defaultPath, String pathToContentFile, ServletContext context) throws FileNotFoundException {
+
+        if(pathToContentFile == null || pathToContentFile.isEmpty()) {
+            // Mail content with placeholders, default file from deployment
+            return context.getResourceAsStream(defaultPath);
+        }
+        // Mail content with placeholders, user defined
+        return new FileInputStream(pathToContentFile);
     }
 }
