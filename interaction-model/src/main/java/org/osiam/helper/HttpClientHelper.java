@@ -115,8 +115,8 @@ public class HttpClientHelper {
 
     private HttpClientRequestResult executeHttpRequest(HttpEntityEnclosingRequestBase request, String body, List<NameValuePair> formParams) {
         try {
-            request = addEntityToRequest(request, body, formParams);
-            HttpResponse response = client.execute(request);
+            HttpEntityEnclosingRequestBase requestWithEntity = addEntityToRequest(request, body, formParams);
+            HttpResponse response = client.execute(requestWithEntity);
             String responseBody = getResponseBody(response);
             int statusCode = response.getStatusLine().getStatusCode();
 
