@@ -1,5 +1,6 @@
 package org.osiam.web.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -9,7 +10,10 @@ import org.osiam.resources.helper.UserDeserializer;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.resources.scim.User;
+import org.osiam.web.util.HttpHeader;
 import org.osiam.web.util.MailSender;
+import org.osiam.web.util.RegistrationExtensionUrnProvider;
+import org.osiam.web.util.ResourceServerUriBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,58 +43,50 @@ import java.util.logging.Logger;
 @RequestMapping(value = "/email")
 public class ChangeEmailController {
 
-    private static final Logger LOGGER = Logger.getLogger(LostPasswordController.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ChangeEmailController.class.getName());
 
-    private static final String AUTHORIZATION = "Authorization";
-
-    private static final int HTTP_STATUS_CODE_OK = 200;
-
-    private HttpClientHelper httpClient = new HttpClientHelper();
+    private RegistrationExtensionUrnProvider registrationExtensionUrnProvider;
+    private HttpClientHelper httpClient;
+    private ResourceServerUriBuilder resourceServerUriBuilder;
+    private MailSender mailSender;
     private ObjectMapper mapper;
 
-    @Value("${osiam.server.port}")
-    private int serverPort;
-    @Value("${osiam.server.host}")
-    private String serverHost;
-    @Value("${osiam.server.http.scheme}")
-    private String httpScheme;
+    @Inject
+    private ServletContext context;
 
-    private static final String RESOURCE_SERVER_URI = "/osiam-resource-server/Users";
-
-    @Value("${osiam.internal.scim.extension.urn}")
-    private String internalScimExtensionUrn;
-
+    /* Extension configuration */
     @Value("${osiam.confirm.email.token.field}")
     private String confirmationTokenField;
-
     @Value("${osiam.temp.email.field}")
     private String tempEmail;
 
-    private MailSender mailSender = new MailSender();
-
+    /* Change email configuration */
     @Value("${osiam.web.emailchange.linkprefix}")
     private String emailChangeLinkPrefix;
     @Value("${osiam.web.emailchange.from}")
     private String emailChangeMailFrom;
     @Value("${osiam.web.emailchange.subject}")
     private String emailChangeMailSubject;
-
     @Value("${osiam.web.emailchange.content.path}")
     private String pathToEmailContent;
 
+    /* Info mail configuration */
     @Value("${osiam.web.emailchange-info.subject}")
     private String emailChangeInfoMailSubject;
     @Value("${osiam.web.emailchange-info.content.path}")
     private String pathToEmailInfoContent;
 
-    @Inject
-    private ServletContext context;
 
     public ChangeEmailController() {
         mapper = new ObjectMapper();
         SimpleModule userDeserializerModule = new SimpleModule("userDeserializerModule", new Version(1, 0, 0, null, null, null))
                 .addDeserializer(User.class, new UserDeserializer(User.class));
         mapper.registerModule(userDeserializerModule);
+
+        httpClient = new HttpClientHelper();
+        resourceServerUriBuilder = new ResourceServerUriBuilder();
+        mailSender = new MailSender();
+        registrationExtensionUrnProvider = new RegistrationExtensionUrnProvider();
     }
 
     /**
@@ -106,11 +102,11 @@ public class ChangeEmailController {
     public ResponseEntity<String> change(@RequestHeader final String authorization, @RequestParam final String userId,
                                          @RequestParam final String newEmailValue) throws IOException, MessagingException {
 
-        String uri = httpScheme + "://" + serverHost + ":" + serverPort + RESOURCE_SERVER_URI + "/" + userId;
+        String uri = resourceServerUriBuilder.buildUriWithUserId(userId);
 
         //get user by user id
-        HttpClientRequestResult result = httpClient.executeHttpGet(uri, AUTHORIZATION, authorization);
-        if (result.getStatusCode() != HTTP_STATUS_CODE_OK) {
+        HttpClientRequestResult result = httpClient.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authorization);
+        if (result.getStatusCode() != HttpStatus.OK.value()) {
             LOGGER.log(Level.WARNING, "Problems retrieving user by ID!");
             return new ResponseEntity<>("{\"error\":\"Problems retrieving user by ID!\"}", HttpStatus.valueOf(result.getStatusCode()));
         }
@@ -119,12 +115,11 @@ public class ChangeEmailController {
         String confirmationToken = UUID.randomUUID().toString();
 
         //building the user for update with confirm token and temp email as extensions
-        User updateUser = buildUserForUpdate(newEmailValue, result, confirmationToken);
+        String updateUser = buildUserForUpdateAsString(newEmailValue, result, confirmationToken);
 
         //update the user
-        String updateUserAsString = mapper.writeValueAsString(updateUser);
-        HttpClientRequestResult updateUserResult = httpClient.executeHttpPatch(uri, updateUserAsString, AUTHORIZATION, authorization);
-        if (updateUserResult.getStatusCode() != HTTP_STATUS_CODE_OK) {
+        HttpClientRequestResult updateUserResult = httpClient.executeHttpPatch(uri, updateUser, HttpHeader.AUTHORIZATION, authorization);
+        if (updateUserResult.getStatusCode() != HttpStatus.OK.value()) {
             LOGGER.log(Level.WARNING, "Problems updating user with extensions!");
             return new ResponseEntity<>("{\"error\":\"Problems updating user with extensions!\"}", HttpStatus.valueOf(result.getStatusCode()));
         }
@@ -135,7 +130,68 @@ public class ChangeEmailController {
         return sendingConfirmationMailToNewAddress(newEmailValue, confirmationToken, savedUser);
     }
 
-    private User buildUserForUpdate(String newEmailValue, HttpClientRequestResult result, String confirmationToken) throws IOException {
+    /**
+     * Validating the confirm token and saving the new email value as primary email if the validation was successful.
+     * @param authorization Authorization header with HTTP Bearer authorization and a valid access token
+     * @param userId The user id for the user whom email address should be changed
+     * @param confirmToken The previously generated confirmation token from the confirmation email
+     * @return The HTTP status code and the updated user if successful
+     */
+    @RequestMapping(method = RequestMethod.POST, value = "/confirm", produces = "application/json")
+    public ResponseEntity<String> confirm(@RequestHeader final String authorization, @RequestParam final String userId,
+                                          @RequestParam final String confirmToken) throws IOException, MessagingException {
+
+        if (confirmToken.equals("")) {
+            LOGGER.log(Level.WARNING, "Confirmation token miss match!");
+            return new ResponseEntity<>("{\"error\":\"No ongoing email change!\"}", HttpStatus.UNAUTHORIZED);
+        }
+
+        String uri = resourceServerUriBuilder.buildUriWithUserId(userId);
+
+        //get user by user id
+        HttpClientRequestResult result = httpClient.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authorization);
+        if (result.getStatusCode() != HttpStatus.OK.value()) {
+            LOGGER.log(Level.WARNING, "Problems retrieving user by ID!");
+            return new ResponseEntity<>("{\"error\":\"Problems retrieving user by ID!\"}", HttpStatus.valueOf(result.getStatusCode()));
+        }
+
+        User user = mapper.readValue(result.getBody(), User.class);
+
+        // get user extensions for validation purpose
+        Extension extension = user.getExtension(registrationExtensionUrnProvider.getExtensionUrn());
+        String existingConfirmToken = extension.getField(this.confirmationTokenField);
+
+        if (!existingConfirmToken.equals(confirmToken)) {
+            LOGGER.log(Level.WARNING, "Confirmation token miss match!");
+            return new ResponseEntity<>("{\"error\":\"No ongoing email change!\"}", HttpStatus.FORBIDDEN);
+        }
+
+        // get new email
+        String newEmail = extension.getField(this.tempEmail);
+
+        // get old email address
+        String oldEmail = mailSender.extractPrimaryEmail(user);
+
+        //replacing only the old primary, non primary are still valid
+        List<MultiValuedAttribute> emails = replaceOldPrimaryMail(newEmail, user.getEmails());
+
+        String updateUserAsString = getUserAsStringWithUpdatedExtensionsAndEmails(extension, user, emails);
+
+        //update the user
+        HttpClientRequestResult updateUserResult = httpClient.executeHttpPatch(uri, updateUserAsString, HttpHeader.AUTHORIZATION, authorization);
+        if (updateUserResult.getStatusCode() != HttpStatus.OK.value()) {
+            LOGGER.log(Level.WARNING, "Problems updating user with extensions!");
+            return new ResponseEntity<>("{\"error\":\"Problems updating user with extensions!\"}", HttpStatus.valueOf(updateUserResult.getStatusCode()));
+        }
+
+        // Send info mail
+        return sendingInfoMailToOldAddress(oldEmail, updateUserResult.getBody());
+    }
+
+
+    /*---- private methods for change endpoint ----*/
+
+    private String buildUserForUpdateAsString(String newEmailValue, HttpClientRequestResult result, String confirmationToken) throws IOException {
 
         //create extension Map
         Map<String, String> extMap = new HashMap<>();
@@ -147,11 +203,16 @@ public class ChangeEmailController {
         extMap.put(tempEmail, newEmailValue);
 
         //Add extension Map to Extensions
-        Extension extension = new Extension(internalScimExtensionUrn, extMap);
+        Extension extension = new Extension(registrationExtensionUrnProvider.getExtensionUrn(), extMap);
+
+        User user = mapper.readValue(result.getBody(), User.class);
 
         //add extensions to user
-        User user = mapper.readValue(result.getBody(), User.class);
-        return new User.Builder(user).addExtension(internalScimExtensionUrn, extension).build();
+        User updateUser = new User.Builder(user).addExtension(registrationExtensionUrnProvider.getExtensionUrn(), extension).build();
+
+        String updateUserAsString = mapper.writeValueAsString(updateUser);
+
+        return updateUserAsString;
     }
 
     private ResponseEntity<String> sendingConfirmationMailToNewAddress(String newEmailAddress, String confirmationToken, User user) throws IOException, MessagingException {
@@ -181,66 +242,18 @@ public class ChangeEmailController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    /**
-     * Validating the confirm token and saving the new email value as primary email if the validation was successful.
-     * @param authorization Authorization header with HTTP Bearer authorization and a valid access token
-     * @param userId The user id for the user whom email address should be changed
-     * @param confirmToken The previously generated confirmation token from the confirmation email
-     * @return The HTTP status code and the updated user if successful
-     */
-    @RequestMapping(method = RequestMethod.POST, value = "/confirm", produces = "application/json")
-    public ResponseEntity<String> confirm(@RequestHeader final String authorization, @RequestParam final String userId,
-                                          @RequestParam final String confirmToken) throws IOException, MessagingException {
+    /*---- private methods for confirm endpoint ----*/
 
-        if (confirmToken.equals("")) {
-            LOGGER.log(Level.WARNING, "Confirmation token miss match!");
-            return new ResponseEntity<>("{\"error\":\"No ongoing email change!\"}", HttpStatus.UNAUTHORIZED);
-        }
-
-        String uri = httpScheme + "://" + serverHost + ":" + serverPort + RESOURCE_SERVER_URI + "/" + userId;
-
-        //get user by user id
-        HttpClientRequestResult result = httpClient.executeHttpGet(uri, AUTHORIZATION, authorization);
-        if (result.getStatusCode() != HTTP_STATUS_CODE_OK) {
-            LOGGER.log(Level.WARNING, "Problems retrieving user by ID!");
-            return new ResponseEntity<>("{\"error\":\"Problems retrieving user by ID!\"}", HttpStatus.valueOf(result.getStatusCode()));
-        }
-
-        //add extensions to user
-        User user = mapper.readValue(result.getBody(), User.class);
-
-        Extension extension = user.getExtension(this.internalScimExtensionUrn);
-        String existingConfirmToken = extension.getField(this.confirmationTokenField);
-
-        if (!existingConfirmToken.equals(confirmToken)) {
-            LOGGER.log(Level.WARNING, "Confirmation token miss match!");
-            return new ResponseEntity<>("{\"error\":\"No ongoing email change!\"}", HttpStatus.FORBIDDEN);
-        }
-
-        // given confirm token is valid.
+    private String getUserAsStringWithUpdatedExtensionsAndEmails(Extension extension, User user, List<MultiValuedAttribute> emails) throws JsonProcessingException {
+        // remove extension values after already successful validation.
         extension.setField(this.confirmationTokenField, "");
-        String newEmail = extension.getField(this.tempEmail);
         extension.setField(this.tempEmail, "");
 
-        // get old email address
-        String oldEmail = mailSender.extractPrimaryEmail(user);
-
-        //replacing only the old primary, non primary are still valid
-        List<MultiValuedAttribute> emails = replaceOldPrimaryMail(newEmail, user.getEmails());
-
         //add mails and extensions to user
-        User updateUser = new User.Builder(user).setEmails(emails).addExtension(this.internalScimExtensionUrn, extension).build();
+        User updateUser = new User.Builder(user).setEmails(emails).addExtension(registrationExtensionUrnProvider.
+                getExtensionUrn(), extension).build();
 
-        //update the user
-        String updateUserAsString = mapper.writeValueAsString(updateUser);
-        HttpClientRequestResult updateUserResult = httpClient.executeHttpPatch(uri, updateUserAsString, AUTHORIZATION, authorization);
-        if (updateUserResult.getStatusCode() != HTTP_STATUS_CODE_OK) {
-            LOGGER.log(Level.WARNING, "Problems updating user with extensions!");
-            return new ResponseEntity<>("{\"error\":\"Problems updating user with extensions!\"}", HttpStatus.valueOf(updateUserResult.getStatusCode()));
-        }
-
-        // Send info mail
-        return sendingInfoMailToOldAddress(oldEmail, updateUserResult.getBody());
+        return mapper.writeValueAsString(updateUser);
     }
 
     private List<MultiValuedAttribute> replaceOldPrimaryMail(String newEmail, List<MultiValuedAttribute> emails) {

@@ -1,5 +1,6 @@
 package org.osiam.web.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -10,7 +11,10 @@ import org.osiam.resources.helper.UserDeserializer;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.resources.scim.User;
+import org.osiam.web.util.HttpHeader;
 import org.osiam.web.util.MailSender;
+import org.osiam.web.util.RegistrationExtensionUrnProvider;
+import org.osiam.web.util.ResourceServerUriBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,14 +40,16 @@ public class RegisterController {
 
     private static final Logger LOGGER = Logger.getLogger(RegisterController.class.getName());
 
-    private static final String AUTHORIZATION = "Authorization";
-
-    private static final int HTTP_STATUS_CODE_OK = 200;
-    private static final int HTTP_STATUS_CODE_CREATED = 201;
-
+    private RegistrationExtensionUrnProvider registrationExtensionUrnProvider;
     private HttpClientHelper httpClient;
+    private ResourceServerUriBuilder resourceServerUriBuilder;
+    private MailSender mailSender;
     private ObjectMapper mapper;
 
+    @Inject
+    private ServletContext context;
+
+    /* Registration email configuration */
     @Value("${osiam.web.registermail.from}")
     private String registermailFrom;
     @Value("${osiam.web.registermail.subject}")
@@ -53,29 +59,14 @@ public class RegisterController {
     @Value("${osiam.web.registermail.content.path}")
     private String pathToContentFile;
 
+    /* URI for the registration call from JavaScript */
     @Value("${osiam.web.register.url}")
     private String clientRegistrationUri;
 
-    @Value("${osiam.server.port}")
-    private int serverPort;
-    @Value("${osiam.server.host}")
-    private String serverHost;
-    @Value("${osiam.server.http.scheme}")
-    private String httpScheme;
-
-    private static final String RESOURCE_SERVER_URI = "/osiam-resource-server/Users";
-
-    @Value("${osiam.internal.scim.extension.urn}")
-    private String internalScimExtensionUrn;
-
+    /* Registration extension configuration */
     @Value("${osiam.activation.token.field}")
     private String activationTokenField;
 
-
-    @Inject
-    private ServletContext context;
-
-    private MailSender mailSender = new MailSender();
 
     public RegisterController() {
         httpClient = new HttpClientHelper();
@@ -84,10 +75,15 @@ public class RegisterController {
         SimpleModule userDeserializerModule = new SimpleModule("userDeserializerModule", new Version(1, 0, 0, null, null, null))
                 .addDeserializer(User.class, new UserDeserializer(User.class));
         mapper.registerModule(userDeserializerModule);
+
+        httpClient = new HttpClientHelper();
+        resourceServerUriBuilder = new ResourceServerUriBuilder();
+        mailSender = new MailSender();
+        registrationExtensionUrnProvider = new RegistrationExtensionUrnProvider();
     }
 
     /**
-     * Generates a form with all needed fields for registration purpose.
+     * Generates a HTTP form with the fields for registration purpose.
      */
     @RequestMapping(method=RequestMethod.GET)
     public void index(HttpServletResponse response) throws IOException {
@@ -128,7 +124,7 @@ public class RegisterController {
 
         // Save user
         HttpClientRequestResult saveUserResponse = saveUser(parsedUser, authorization);
-        if (saveUserResponse.getStatusCode() != HTTP_STATUS_CODE_CREATED) {
+        if (saveUserResponse.getStatusCode() != HttpStatus.CREATED.value()) {
             LOGGER.log(Level.WARNING, "Problems creating user for registration");
             return new ResponseEntity<>("{\"error\":\"Problems creating user for registration\"}", HttpStatus.valueOf(saveUserResponse.getStatusCode()));
         }
@@ -136,6 +132,70 @@ public class RegisterController {
         String savedUserId = mapper.readValue(saveUserResponse.getBody(), User.class).getId();
         return sendActivationMail(primaryEmail, savedUserId, activationToken, saveUserResponse);
     }
+
+    /**
+     * Activates a previously registered user.
+     *
+     * After activation E-Mail arrived the activation link will point to this URI.
+     *
+     * @param authorization an valid OAuth2 token
+     * @param userId the id of the registered user
+     * @param activationToken the user's activation token, send by E-Mail
+     *
+     * @return HTTP status, HTTP.OK (200) for a valid activation
+     */
+    @RequestMapping(value = "/activate", method = RequestMethod.POST, produces = "application/json")
+    public ResponseEntity activate(@RequestHeader final String authorization,
+                                   @RequestParam final String userId, @RequestParam final String activationToken) throws IOException {
+
+        if (activationToken.equals("")) {
+            LOGGER.log(Level.WARNING, "Activation token miss match!");
+            return new ResponseEntity<>("{\"error\":\"Activation token miss match!\"}", HttpStatus.UNAUTHORIZED);
+        }
+
+        String uri = resourceServerUriBuilder.buildUriWithUserId(userId);
+
+        //get user by his id
+        HttpClientRequestResult result = httpClient.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authorization);
+        if (result.getStatusCode() != HttpStatus.OK.value()) {
+            LOGGER.log(Level.WARNING, "Problems retrieving user by his ID!");
+            return new ResponseEntity<>("{\"error\":\"Problems retrieving user by his ID!\"}", HttpStatus.valueOf(result.getStatusCode()));
+        }
+
+        //get extension field to check activation token validity
+        User userForActivation = mapper.readValue(result.getBody(), User.class);
+        Extension extension = userForActivation.getExtension(registrationExtensionUrnProvider.getExtensionUrn());
+        String activationTokenFieldValue = extension.getField(activationTokenField);
+
+        if (!activationTokenFieldValue.equals(activationToken)) {
+            LOGGER.log(Level.WARNING, "Activation token miss match!");
+            return new ResponseEntity<>("{\"error\":\"Activation token miss match!\"}", HttpStatus.UNAUTHORIZED);
+        }
+
+        String updateUser = getUserForActivationAsString(extension, userForActivation);
+
+        //update user
+        HttpClientRequestResult requestResult = httpClient.executeHttpPut(uri, updateUser, HttpHeader.AUTHORIZATION, authorization);
+        if (requestResult.getStatusCode() != HttpStatus.OK.value()) {
+            LOGGER.log(Level.WARNING, "Updating user with extensions failed!");
+            return new ResponseEntity<>("{\"error\":\"Updating user with extensions failed!\"}", HttpStatus.valueOf(requestResult.getStatusCode()));
+        }
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+
+    /*---- Private methods for activate endpoint ----*/
+
+    private String getUserForActivationAsString(Extension extension, User user) throws JsonProcessingException {
+        //validation successful -> delete token and activate user
+        extension.setField(activationTokenField, "");
+        User updateUser = new User.Builder(user).setActive(true).build();
+        return mapper.writeValueAsString(updateUser);
+    }
+
+
+    /*---- Private methods for create endpoint ----*/
 
     private User createUserForRegistration(User parsedUser, String activationToken) {
 
@@ -150,13 +210,14 @@ public class RegisterController {
 
         Map<String,String> fields = new HashMap<>();
         fields.put("activationToken", activationToken);
-        builder.addExtension(internalScimExtensionUrn, new Extension(internalScimExtensionUrn, fields));
+        builder.addExtension(registrationExtensionUrnProvider.getExtensionUrn(),
+                new Extension(registrationExtensionUrnProvider.getExtensionUrn(), fields));
 
         return builder.build();
     }
 
     private ResponseEntity<String> sendActivationMail(String toAddress, String userId, String activationToken,
-                                  HttpClientRequestResult saveUserResponse) throws MessagingException, IOException {
+                                                      HttpClientRequestResult saveUserResponse) throws MessagingException, IOException {
 
         InputStream registerMailContentStream =
                 mailSender.getEmailContentAsStream("/WEB-INF/registration/registermail-content.txt", pathToContentFile,
@@ -180,63 +241,7 @@ public class RegisterController {
 
     private HttpClientRequestResult saveUser(User userToSave, String authorization) throws IOException {
         String userAsString = mapper.writeValueAsString(userToSave);
-        String createUserUri = httpScheme + "://" + serverHost + ":" + serverPort + RESOURCE_SERVER_URI;
-        return httpClient.executeHttpPost(createUserUri, userAsString, AUTHORIZATION, authorization);
-    }
-
-    /**
-     * Activates a previously registered user.
-     *
-     * After activation E-Mail arrived the activation link will point to this URI.
-     *
-     * @param authorization an valid OAuth2 token
-     * @param userId the id of the registered user
-     * @param activationToken the user's activation token, send by E-Mail
-     *
-     * @return HTTP status, HTTP.OK (200) for a valid activation
-     */
-    @RequestMapping(value = "/activate", method = RequestMethod.POST, produces = "application/json")
-    public ResponseEntity activate(@RequestHeader final String authorization,
-                                   @RequestParam final String userId, @RequestParam final String activationToken) throws IOException {
-
-        if (activationToken.equals("")) {
-            LOGGER.log(Level.WARNING, "Activation token miss match!");
-            return new ResponseEntity<>("{\"error\":\"Activation token miss match!\"}", HttpStatus.UNAUTHORIZED);
-        }
-
-        String uri = httpScheme + "://" + serverHost + ":" + serverPort + RESOURCE_SERVER_URI + "/" + userId;
-
-        //get user by his id
-        HttpClientRequestResult result = httpClient.executeHttpGet(uri, AUTHORIZATION, authorization);
-
-        if (result.getStatusCode() != HTTP_STATUS_CODE_OK) {
-            LOGGER.log(Level.WARNING, "Problems retrieving user by his ID!");
-            return new ResponseEntity<>("{\"error\":\"Problems retrieving user by his ID!\"}", HttpStatus.valueOf(result.getStatusCode()));
-        }
-
-        //get extension field to check activation token validity
-        User userForActivation = mapper.readValue(result.getBody(), User.class);
-        Extension extension = userForActivation.getExtension(internalScimExtensionUrn);
-        String activationTokenFieldValue = extension.getField(activationTokenField);
-
-        if (!activationTokenFieldValue.equals(activationToken)) {
-            LOGGER.log(Level.WARNING, "Activation token miss match!");
-            return new ResponseEntity<>("{\"error\":\"Activation token miss match!\"}", HttpStatus.UNAUTHORIZED);
-        }
-
-        //validation successful -> delete token and activate user
-        extension.setField(activationTokenField, "");
-        User updateUser = new User.Builder(userForActivation).setActive(true).build();
-
-        //update user
-        HttpClientRequestResult requestResult = httpClient.executeHttpPut(uri,
-                mapper.writeValueAsString(updateUser), AUTHORIZATION, authorization);
-
-        if (requestResult.getStatusCode() != HTTP_STATUS_CODE_OK) {
-            LOGGER.log(Level.WARNING, "Updating user with extensions failed!");
-            return new ResponseEntity<>("{\"error\":\"Updating user with extensions failed!\"}", HttpStatus.valueOf(requestResult.getStatusCode()));
-        }
-
-        return new ResponseEntity(HttpStatus.OK);
+        String createUserUri = resourceServerUriBuilder.buildUriWithUserId("");
+        return httpClient.executeHttpPost(createUserUri, userAsString, HttpHeader.AUTHORIZATION, authorization);
     }
 }

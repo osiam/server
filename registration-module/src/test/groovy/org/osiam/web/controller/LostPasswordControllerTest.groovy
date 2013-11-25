@@ -9,7 +9,10 @@ import org.osiam.resources.helper.UserDeserializer
 import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.User
+import org.osiam.web.util.HttpHeader
 import org.osiam.web.util.MailSender
+import org.osiam.web.util.RegistrationExtensionUrnProvider
+import org.osiam.web.util.ResourceServerUriBuilder
 import org.springframework.http.HttpStatus
 import spock.lang.Shared
 import spock.lang.Specification
@@ -30,10 +33,11 @@ class LostPasswordControllerTest extends Specification {
     def requestResultMock = Mock(HttpClientRequestResult)
     def contextMock = Mock(ServletContext)
 
-    def serverPort = 8080
-    def serverHost = "localhost"
-    def httpScheme = "http"
-    def internalScimExtensionUrn = "urn:scim:schemas:osiam:1.0:Registration"
+    def registrationExtensionUrnProvider = Mock(RegistrationExtensionUrnProvider)
+    def resourceServerUriBuilder = Mock(ResourceServerUriBuilder)
+
+    def urn = "urn:scim:schemas:osiam:1.0:Registration"
+
     def oneTimePasswordField = "oneTimePassword"
 
     def mailSenderMock = Mock(MailSender)
@@ -41,11 +45,10 @@ class LostPasswordControllerTest extends Specification {
     def passwordlostMailFrom = "noreply@example.org"
     def passwordlostMailSubject = "Subject"
 
-    def lostPasswordController = new LostPasswordController(httpClient: httpClientMock, serverPort: serverPort,
-            serverHost: serverHost, httpScheme: httpScheme, internalScimExtensionUrn: internalScimExtensionUrn,
-            oneTimePassword: oneTimePasswordField, context: contextMock, mailSender: mailSenderMock,
-            passwordlostLinkPrefix: passwordlostLinkPrefix, passwordlostMailFrom: passwordlostMailFrom,
-            passwordlostMailSubject: passwordlostMailSubject)
+    def lostPasswordController = new LostPasswordController(httpClient: httpClientMock, oneTimePassword: oneTimePasswordField,
+            context: contextMock, mailSender: mailSenderMock, passwordlostLinkPrefix: passwordlostLinkPrefix,
+            passwordlostMailFrom: passwordlostMailFrom, passwordlostMailSubject: passwordlostMailSubject,
+            registrationExtensionUrnProvider: registrationExtensionUrnProvider, resourceServerUriBuilder: resourceServerUriBuilder)
 
     def setupSpec() {
         mapper = new ObjectMapper()
@@ -60,7 +63,7 @@ class LostPasswordControllerTest extends Specification {
         def userId = "someId"
         def authZHeader = "Bearer ACCESSTOKEN"
 
-        def uri = "http://localhost:8080/osiam-resource-server/Users/"
+        def uri = "http://localhost:8080/osiam-resource-server/Users/"+ userId
         def userString = getUserAsStringWithExtension("token")
 
         def inputStream = new ByteArrayInputStream('nine bytes and one placeholder $PASSWORDLOSTURL'.bytes)
@@ -69,8 +72,10 @@ class LostPasswordControllerTest extends Specification {
         def result = lostPasswordController.lost(authZHeader, userId)
 
         then:
-        1 * httpClientMock.executeHttpGet(uri + userId, "Authorization", authZHeader) >> requestResultMock
-        1 * httpClientMock.executeHttpPatch(uri + userId, _, "Authorization", authZHeader) >> new HttpClientRequestResult("body", 200);
+        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        2 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
+        1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> requestResultMock
+        1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> new HttpClientRequestResult("body", 200);
 
         1 * requestResultMock.getStatusCode() >> 200
         1 * requestResultMock.getBody() >> userString
@@ -84,51 +89,56 @@ class LostPasswordControllerTest extends Specification {
 
     def "there should be an failure if retrieving the user by his id failed"(){
         given:
-        def uri = "http://localhost:8080/osiam-resource-server/Users/"
         def userId = "someId"
         def authZHeader = "Bearer ACCESSTOKEN"
+        def uri = "http://localhost:8080/osiam-resource-server/Users/" + userId
 
         when:
         def response = lostPasswordController.lost(authZHeader, userId)
 
         then:
-        1 * httpClientMock.executeHttpGet(uri + userId, "Authorization", authZHeader) >> new HttpClientRequestResult('', 400)
+        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> new HttpClientRequestResult('', 400)
         response.getStatusCode() == HttpStatus.BAD_REQUEST
     }
 
     def "there should be an failure if the user could not be updated with one time password"(){
         given:
-        def uri = "http://localhost:8080/osiam-resource-server/Users/"
         def userId = "someId"
         def authZHeader = "Bearer ACCESSTOKEN"
+        def uri = "http://localhost:8080/osiam-resource-server/Users/" + userId
         def userString = getUserAsStringWithExtension("token")
 
         when:
         def response = lostPasswordController.lost(authZHeader, userId)
 
         then:
-        1 * httpClientMock.executeHttpGet(uri + userId, "Authorization", authZHeader) >> requestResultMock
+        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> requestResultMock
         1 * requestResultMock.getStatusCode() >> 200
         1 * requestResultMock.getBody() >> userString
-        1 * httpClientMock.executeHttpPatch(uri + userId, _, "Authorization", authZHeader) >> new HttpClientRequestResult("body", 400);
+        2 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
+        1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> new HttpClientRequestResult("body", 400);
         response.getStatusCode() == HttpStatus.BAD_REQUEST
     }
 
     def "there should be an failure if no primary email was found"(){
         given:
-        def uri = "http://localhost:8080/osiam-resource-server/Users/"
         def userId = "someId"
         def authZHeader = "Bearer ACCESSTOKEN"
+        def uri = "http://localhost:8080/osiam-resource-server/Users/" + userId
         def userString = getUserAsStringWithExtension("token")
 
         when:
         def response = lostPasswordController.lost(authZHeader, userId)
 
         then:
-        1 * httpClientMock.executeHttpGet(uri + userId, "Authorization", authZHeader) >> requestResultMock
+        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> requestResultMock
         1 * requestResultMock.getStatusCode() >> 200
         1 * requestResultMock.getBody() >> userString
-        1 * httpClientMock.executeHttpPatch(uri + userId, _, "Authorization", authZHeader) >> new HttpClientRequestResult("body", 200);
+        2 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
+        1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> new HttpClientRequestResult("body", 200);
         1 * mailSenderMock.extractPrimaryEmail(_) >> null
         response.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR
         response.getBody() != null
@@ -136,19 +146,21 @@ class LostPasswordControllerTest extends Specification {
 
     def "there should be an failure if the email content for confirmation mail was not found"(){
         given:
-        def uri = "http://localhost:8080/osiam-resource-server/Users/"
         def userId = "someId"
         def authZHeader = "Bearer ACCESSTOKEN"
+        def uri = "http://localhost:8080/osiam-resource-server/Users/" + userId
         def userString = getUserAsStringWithExtension("token")
 
         when:
         def response = lostPasswordController.lost(authZHeader, userId)
 
         then:
-        1 * httpClientMock.executeHttpGet(uri + userId, "Authorization", authZHeader) >> requestResultMock
+        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> requestResultMock
         1 * requestResultMock.getStatusCode() >> 200
         1 * requestResultMock.getBody() >> userString
-        1 * httpClientMock.executeHttpPatch(uri + userId, _, "Authorization", authZHeader) >> new HttpClientRequestResult("body", 200);
+        2 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
+        1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> new HttpClientRequestResult("body", 200);
         1 * mailSenderMock.extractPrimaryEmail(_) >> "primary@mail.com"
         1 * mailSenderMock.getEmailContentAsStream("/WEB-INF/registration/passwordlostmail-content.txt", _, contextMock) >> null
         response.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR
@@ -173,7 +185,7 @@ class LostPasswordControllerTest extends Specification {
         def userId = "someId"
         def newPassword = "newPassword"
         def authZHeader = "Bearer ACCESSTOKEN"
-        def uri = "http://localhost:8080/osiam-resource-server/Users/"
+        def uri = "http://localhost:8080/osiam-resource-server/Users/" + userId
 
         def userById = getUserAsStringWithExtension(otp)
 
@@ -181,10 +193,12 @@ class LostPasswordControllerTest extends Specification {
         def result = lostPasswordController.change(authZHeader, otp, userId, newPassword)
 
         then:
-        1 * httpClientMock.executeHttpGet(uri + userId, "Authorization", authZHeader) >> requestResultMock
+        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> requestResultMock
         1 * requestResultMock.getStatusCode() >> 200
         1 * requestResultMock.getBody() >> userById
-        1 * httpClientMock.executeHttpPatch(uri + userId, _, "Authorization", authZHeader) >> requestResultMock
+        1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
+        1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> requestResultMock
         1 * requestResultMock.getStatusCode() >> 200
         1 * requestResultMock.getBody() >> "updated user"
 
@@ -198,13 +212,14 @@ class LostPasswordControllerTest extends Specification {
         def userId = "someId"
         def newPassword = "newPassword"
         def authZHeader = "Bearer ACCESSTOKEN"
-        def uri = "http://localhost:8080/osiam-resource-server/Users/"
+        def uri = "http://localhost:8080/osiam-resource-server/Users/" + userId
 
         when:
         def result = lostPasswordController.change(authZHeader, otp, userId, newPassword)
 
         then:
-        1 * httpClientMock.executeHttpGet(uri + userId, "Authorization", authZHeader) >> requestResultMock
+        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> requestResultMock
         2 * requestResultMock.getStatusCode() >> 400
 
         result.getStatusCode() == HttpStatus.BAD_REQUEST
@@ -216,7 +231,7 @@ class LostPasswordControllerTest extends Specification {
         def userId = "someId"
         def newPassword = "newPassword"
         def authZHeader = "Bearer ACCESSTOKEN"
-        def uri = "http://localhost:8080/osiam-resource-server/Users/"
+        def uri = "http://localhost:8080/osiam-resource-server/Users/" + userId
 
         def userById = getUserAsStringWithExtension("Invalid OTP")
 
@@ -224,10 +239,11 @@ class LostPasswordControllerTest extends Specification {
         def result = lostPasswordController.change(authZHeader, otp, userId, newPassword)
 
         then:
-        1 * httpClientMock.executeHttpGet(uri + userId, "Authorization", authZHeader) >> requestResultMock
+        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> requestResultMock
         1 * requestResultMock.getStatusCode() >> 200
         1 * requestResultMock.getBody() >> userById
-
+        1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
         result.getStatusCode() == HttpStatus.FORBIDDEN
     }
 
@@ -237,7 +253,7 @@ class LostPasswordControllerTest extends Specification {
         def userId = "someId"
         def newPassword = "newPassword"
         def authZHeader = "Bearer ACCESSTOKEN"
-        def uri = "http://localhost:8080/osiam-resource-server/Users/"
+        def uri = "http://localhost:8080/osiam-resource-server/Users/" + userId
 
         def userById = getUserAsStringWithExtension("someOTP")
 
@@ -245,10 +261,12 @@ class LostPasswordControllerTest extends Specification {
         def result = lostPasswordController.change(authZHeader, otp, userId, newPassword)
 
         then:
-        1 * httpClientMock.executeHttpGet(uri + userId, "Authorization", authZHeader) >> requestResultMock
+        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> requestResultMock
         1 * requestResultMock.getStatusCode() >> 200
         1 * requestResultMock.getBody() >> userById
-        1 * httpClientMock.executeHttpPatch(uri + userId, _, "Authorization", authZHeader) >> requestResultMock
+        1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
+        1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> requestResultMock
         2 * requestResultMock.getStatusCode() >> 400
         result.getStatusCode() == HttpStatus.BAD_REQUEST
         result.getBody() != null
@@ -263,7 +281,6 @@ class LostPasswordControllerTest extends Specification {
     }
 
     def getUserAsStringWithExtension(String otp) {
-        def urn = "urn:scim:schemas:osiam:1.0:Registration"
         def extensionData = ["oneTimePassword":otp]
 
         def emails = new MultiValuedAttribute(primary: true, value: "email@example.org")

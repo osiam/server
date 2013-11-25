@@ -9,14 +9,15 @@ import org.osiam.resources.helper.UserDeserializer
 import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.User
+import org.osiam.web.util.HttpHeader
 import org.osiam.web.util.MailSender
+import org.osiam.web.util.RegistrationExtensionUrnProvider
+import org.osiam.web.util.ResourceServerUriBuilder
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import spock.lang.Shared
 import spock.lang.Specification
 
 import javax.servlet.ServletContext
-import java.util.logging.Level
 
 /**
  * Unit test for change email controller.
@@ -29,14 +30,13 @@ class ChangeEmailControllerTest extends Specification {
 
     @Shared def mapper
 
-    def httpScheme = "http"
-    def httpHost = "localhost"
-    def httpPort = 8080
-
     def httpClientMock = Mock(HttpClientHelper)
     def resultMock = Mock(HttpClientRequestResult)
+    def registrationExtensionUrnProvider = Mock(RegistrationExtensionUrnProvider)
+    def resourceServerUriBuilder = Mock(ResourceServerUriBuilder)
 
     def urn = "urn:scim:schemas:osiam:1.0:Registration"
+
     def confirmTokenField = "emailConfirmToken"
     def tempMailField = "tempMail"
 
@@ -47,11 +47,11 @@ class ChangeEmailControllerTest extends Specification {
     def emailChangeInfoMailSubject = "email change done"
     def context = Mock(ServletContext)
 
-    def changeEmailController = new ChangeEmailController(httpScheme: httpScheme, serverHost: httpHost,
-            serverPort: httpPort, httpClient: httpClientMock, confirmationTokenField: confirmTokenField,
-            tempEmail: tempMailField, internalScimExtensionUrn: urn, mailSender: mailSender, context: context,
-            emailChangeLinkPrefix: emailChangeLinkPrefix, emailChangeMailFrom: emailChangeMailFrom,
-            emailChangeMailSubject: emailChangeMailSubject, emailChangeInfoMailSubject: emailChangeInfoMailSubject)
+    def changeEmailController = new ChangeEmailController(httpClient: httpClientMock, confirmationTokenField: confirmTokenField,
+            tempEmail: tempMailField, mailSender: mailSender, context: context, emailChangeLinkPrefix: emailChangeLinkPrefix,
+            emailChangeMailFrom: emailChangeMailFrom, emailChangeMailSubject: emailChangeMailSubject,
+            emailChangeInfoMailSubject: emailChangeInfoMailSubject, registrationExtensionUrnProvider: registrationExtensionUrnProvider,
+            resourceServerUriBuilder: resourceServerUriBuilder)
 
     def setupSpec() {
         mapper = new ObjectMapper()
@@ -71,7 +71,8 @@ class ChangeEmailControllerTest extends Specification {
         def result = changeEmailController.change(authZHeader, userId, newEmailValue)
 
         then:
-        1 * httpClientMock.executeHttpGet(uri, "Authorization", authZHeader) >> resultMock
+        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         2 * resultMock.getStatusCode() >> 400
         result.getStatusCode() == HttpStatus.BAD_REQUEST
     }
@@ -89,10 +90,12 @@ class ChangeEmailControllerTest extends Specification {
         def result = changeEmailController.change(authZHeader, userId, newEmailValue)
 
         then:
-        1 * httpClientMock.executeHttpGet(uri, "Authorization", authZHeader) >> resultMock
+        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
         1 * resultMock.getBody() >> user
-        1 * httpClientMock.executeHttpPatch(uri, _, "Authorization", authZHeader) >> resultMock
+        2 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
+        1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         2 * resultMock.getStatusCode() >> 400
         result.getStatusCode() == HttpStatus.BAD_REQUEST
     }
@@ -110,10 +113,12 @@ class ChangeEmailControllerTest extends Specification {
         def result = changeEmailController.change(authZHeader, userId, newEmailValue)
 
         then:
-        1 * httpClientMock.executeHttpGet(uri, "Authorization", authZHeader) >> resultMock
+        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
         2 * resultMock.getBody() >> user
-        1 * httpClientMock.executeHttpPatch(uri, _, "Authorization", authZHeader) >> resultMock
+        2 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
+        1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
         1 * mailSender.getEmailContentAsStream("/WEB-INF/registration/emailchange-content.txt", _, context) >> null
         result.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR
@@ -135,10 +140,12 @@ class ChangeEmailControllerTest extends Specification {
         def result = changeEmailController.change(authZHeader, userId, newEmailValue)
 
         then:
-        1 * httpClientMock.executeHttpGet(uri, "Authorization", authZHeader) >> resultMock
+        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
         2 * resultMock.getBody() >> user
-        1 * httpClientMock.executeHttpPatch(uri, _, "Authorization", authZHeader) >> resultMock
+        2 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
+        1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
         1 * mailSender.getEmailContentAsStream("/WEB-INF/registration/emailchange-content.txt", _, context) >> inputStream
         1 * mailSender.sendMail(emailChangeMailFrom, newEmailValue, emailChangeMailSubject, inputStream, _)
@@ -172,10 +179,12 @@ class ChangeEmailControllerTest extends Specification {
         def result = changeEmailController.confirm(authZHeader, userId, confirmToken)
 
         then:
-        1 * httpClientMock.executeHttpGet(url, "Authorization", authZHeader) >> resultMock
+        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> url
+        1 * httpClientMock.executeHttpGet(url, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         2 * resultMock.getStatusCode() >> 200
         2 * resultMock.getBody() >> user
-        1 * httpClientMock.executeHttpPatch(url, _, "Authorization", authZHeader) >> resultMock
+        2 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
+        1 * httpClientMock.executeHttpPatch(url, _, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * mailSender.extractPrimaryEmail(_) >> "email@example.org"
         1 * mailSender.getEmailContentAsStream("/WEB-INF/registration/emailchange-info.txt", _, context) >> inputStream
         1 * mailSender.sendMail(emailChangeMailFrom, "email@example.org", emailChangeInfoMailSubject, inputStream, _)
@@ -196,7 +205,8 @@ class ChangeEmailControllerTest extends Specification {
         def response = changeEmailController.confirm(authZHeader, userId, confirmToken)
 
         then:
-        1 * httpClientMock.executeHttpGet(url, "Authorization", authZHeader) >> resultMock
+        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> url
+        1 * httpClientMock.executeHttpGet(url, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         2 * resultMock.getStatusCode() >> 400
         response.getStatusCode() == HttpStatus.BAD_REQUEST
     }
@@ -214,9 +224,11 @@ class ChangeEmailControllerTest extends Specification {
         def response = changeEmailController.confirm(authZHeader, userId, confirmToken)
 
         then:
-        1 * httpClientMock.executeHttpGet(url, "Authorization", authZHeader) >> resultMock
+        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> url
+        1 * httpClientMock.executeHttpGet(url, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
         1 * resultMock.getBody() >> user
+        1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
         response.getStatusCode() == HttpStatus.FORBIDDEN
     }
 
@@ -233,10 +245,12 @@ class ChangeEmailControllerTest extends Specification {
         def response = changeEmailController.confirm(authZHeader, userId, confirmToken)
 
         then:
-        1 * httpClientMock.executeHttpGet(url, "Authorization", authZHeader) >> resultMock
+        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> url
+        1 * httpClientMock.executeHttpGet(url, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
         1 * resultMock.getBody() >> user
-        1 * httpClientMock.executeHttpPatch(url, _,"Authorization", authZHeader) >> resultMock
+        2 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
+        1 * httpClientMock.executeHttpPatch(url, _,HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         2 * resultMock.getStatusCode() >> 400
         response.getStatusCode() == HttpStatus.BAD_REQUEST
     }
@@ -254,10 +268,12 @@ class ChangeEmailControllerTest extends Specification {
         def response = changeEmailController.confirm(authZHeader, userId, confirmToken)
 
         then:
-        1 * httpClientMock.executeHttpGet(url, "Authorization", authZHeader) >> resultMock
+        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> url
+        1 * httpClientMock.executeHttpGet(url, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
         2 * resultMock.getBody() >> user
-        1 * httpClientMock.executeHttpPatch(url, _,"Authorization", authZHeader) >> resultMock
+        2 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
+        1 * httpClientMock.executeHttpPatch(url, _,HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
         1 * mailSender.getEmailContentAsStream("/WEB-INF/registration/emailchange-info.txt", _, context) >> null
         response.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR

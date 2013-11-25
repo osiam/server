@@ -1,5 +1,6 @@
 package org.osiam.web.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -8,7 +9,10 @@ import org.osiam.helper.HttpClientRequestResult;
 import org.osiam.resources.helper.UserDeserializer;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.User;
+import org.osiam.web.util.HttpHeader;
 import org.osiam.web.util.MailSender;
+import org.osiam.web.util.RegistrationExtensionUrnProvider;
+import org.osiam.web.util.ResourceServerUriBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,33 +43,20 @@ public class LostPasswordController {
 
     private static final Logger LOGGER = Logger.getLogger(LostPasswordController.class.getName());
 
-    private static final String AUTHORIZATION = "Authorization";
-
-    private static final int HTTP_STATUS_CODE_OK = 200;
-
-    private HttpClientHelper httpClient = new HttpClientHelper();
+    private RegistrationExtensionUrnProvider registrationExtensionUrnProvider;
+    private HttpClientHelper httpClient;
+    private ResourceServerUriBuilder resourceServerUriBuilder;
+    private MailSender mailSender;
     private ObjectMapper mapper;
-
-    @Value("${osiam.server.port}")
-    private int serverPort;
-    @Value("${osiam.server.host}")
-    private String serverHost;
-    @Value("${osiam.server.http.scheme}")
-    private String httpScheme;
-
-    private static final String RESOURCE_SERVER_URI = "/osiam-resource-server/Users";
-
-    @Value("${osiam.internal.scim.extension.urn}")
-    private String internalScimExtensionUrn;
-
-    @Value("${osiam.one.time.password.field}")
-    private String oneTimePassword;
 
     @Inject
     private ServletContext context;
 
-    private MailSender mailSender = new MailSender();
+    /* Extension configuration */
+    @Value("${osiam.one.time.password.field}")
+    private String oneTimePassword;
 
+    /* Password lost email configuration */
     @Value("${osiam.web.passwordlostmail.linkprefix}")
     private String passwordlostLinkPrefix;
     @Value("${osiam.web.passwordlostmail.from}")
@@ -75,11 +66,17 @@ public class LostPasswordController {
     @Value("${osiam.web.passwordlostmail.content.path}")
     private String pathToEmailContent;
 
+
     public LostPasswordController() {
         mapper = new ObjectMapper();
         SimpleModule userDeserializerModule = new SimpleModule("userDeserializerModule", new Version(1, 0, 0, null, null, null))
                 .addDeserializer(User.class, new UserDeserializer(User.class));
         mapper.registerModule(userDeserializerModule);
+
+        httpClient = new HttpClientHelper();
+        resourceServerUriBuilder = new ResourceServerUriBuilder();
+        mailSender = new MailSender();
+        registrationExtensionUrnProvider = new RegistrationExtensionUrnProvider();
     }
 
     /**
@@ -93,12 +90,12 @@ public class LostPasswordController {
     @RequestMapping(value = "/lost/{userId}", method = RequestMethod.POST, produces = "application/json")
     public ResponseEntity<String> lost(@RequestHeader final String authorization, @PathVariable final String userId) throws IOException, MessagingException {
 
-        String uri = httpScheme + "://" + serverHost + ":" + serverPort + RESOURCE_SERVER_URI + "/" + userId;
+        String uri = resourceServerUriBuilder.buildUriWithUserId(userId);
 
         //get user by his id
-        HttpClientRequestResult getResult = httpClient.executeHttpGet(uri, AUTHORIZATION, authorization);
+        HttpClientRequestResult getResult = httpClient.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authorization);
 
-        if (getResult.getStatusCode() != HTTP_STATUS_CODE_OK) {
+        if (getResult.getStatusCode() != HttpStatus.OK.value()) {
             LOGGER.log(Level.WARNING, "Problems getting user by id!");
             return new ResponseEntity<>("{\"error\":\"Problems getting user by id!\"}", HttpStatus.valueOf(getResult.getStatusCode()));
         }
@@ -107,53 +104,16 @@ public class LostPasswordController {
         String otp = UUID.randomUUID().toString();
         User userForUpdate = buildUserForUpdate(mapper.readValue(getResult.getBody(), User.class), otp);
 
-        //update user
         String userAsString = mapper.writeValueAsString(userForUpdate);
-        HttpClientRequestResult saveUserResponse = httpClient.executeHttpPatch(uri, userAsString, AUTHORIZATION, authorization);
+        //update the user
+        HttpClientRequestResult saveUserResponse = httpClient.executeHttpPatch(uri, userAsString, HttpHeader.AUTHORIZATION, authorization);
 
-        if (saveUserResponse.getStatusCode() != HTTP_STATUS_CODE_OK) {
+        if (saveUserResponse.getStatusCode() != HttpStatus.OK.value()) {
             LOGGER.log(Level.WARNING, "Problems updating the user with extensions!");
             return new ResponseEntity<>("{\"error\":\"Problems updating the user with extensions!\"}", HttpStatus.valueOf(saveUserResponse.getStatusCode()));
         }
 
         return sendPasswordLostMail(userForUpdate, otp);
-    }
-
-    private User buildUserForUpdate(User user, String oneTimePassword) {
-        Map<String,String> fields = new HashMap<>();
-        fields.put(this.oneTimePassword, oneTimePassword);
-
-        return new User.Builder(user).
-                addExtension(internalScimExtensionUrn, new Extension(internalScimExtensionUrn, fields)).build();
-    }
-
-    private ResponseEntity<String> sendPasswordLostMail(User parsedUser, String oneTimePassword) throws MessagingException, IOException {
-
-        String primaryEmail = mailSender.extractPrimaryEmail(parsedUser);
-        if (primaryEmail == null) {
-            LOGGER.log(Level.WARNING, "No primary email found!");
-            return new ResponseEntity<>("{\"error\":\"No primary email found!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        StringBuilder activateURL = new StringBuilder(passwordlostLinkPrefix);
-        activateURL.append("userId=").append(parsedUser.getId());
-        activateURL.append("&oneTimePassword=").append(oneTimePassword);
-
-        Map<String, String> vars = new HashMap<>();
-        vars.put("$PASSWORDLOSTURL", activateURL.toString());
-
-        InputStream mailContentStream =
-                mailSender.getEmailContentAsStream("/WEB-INF/registration/passwordlostmail-content.txt",
-                        pathToEmailContent, context);
-
-        if (mailContentStream == null) {
-            LOGGER.log(Level.SEVERE, "Cant open registermail-content.txt on classpath! Please configure!");
-            return new ResponseEntity<>("{\"error\":\"Cant open registermail-content.txt on classpath! Please configure!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        mailSender.sendMail(passwordlostMailFrom, primaryEmail, passwordlostMailSubject, mailContentStream, vars);
-
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
@@ -185,18 +145,18 @@ public class LostPasswordController {
             return new ResponseEntity<>("{\"error\":\"The submitted one time password is invalid!\"}", HttpStatus.UNAUTHORIZED);
         }
 
-        String uri = httpScheme + "://" + serverHost + ":" + serverPort + RESOURCE_SERVER_URI + "/" + userId;
+        String uri = resourceServerUriBuilder.buildUriWithUserId(userId);
 
         //get user by id
-        HttpClientRequestResult result = httpClient.executeHttpGet(uri, AUTHORIZATION, authorization);
-        if (result.getStatusCode() != HTTP_STATUS_CODE_OK) {
+        HttpClientRequestResult result = httpClient.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authorization);
+        if (result.getStatusCode() != HttpStatus.OK.value()) {
             LOGGER.log(Level.WARNING, "Problems retrieving user by ID!");
             return new ResponseEntity<>("{\"error\":\"Problems retrieving user by ID!\"}", HttpStatus.valueOf(result.getStatusCode()));
         }
         User user = mapper.readValue(result.getBody(), User.class);
 
         //validate the oneTimePassword with the saved one from DB
-        Extension extension = user.getExtension(internalScimExtensionUrn);
+        Extension extension = user.getExtension(registrationExtensionUrnProvider.getExtensionUrn());
         String savedOTP = extension.getField(this.oneTimePassword);
 
         if (!savedOTP.equals(oneTimePassword)) {
@@ -204,22 +164,70 @@ public class LostPasswordController {
             return new ResponseEntity<>("{\"error\":\"The submitted one time password is invalid!\"}", HttpStatus.FORBIDDEN);
         }
 
-        //delete the oneTimePassword from user entity
-        extension.setField(this.oneTimePassword, "");
+        String updateUser = getUserWithUpdatedExtensionsAsString(extension, user, newPassword);
 
-        //set new password for the user
-        User updateUser = new User.Builder(user).setPassword(newPassword).build();
-        String updateUserAsString = mapper.writeValueAsString(updateUser);
+        //update the user
+        HttpClientRequestResult savedResult = httpClient.executeHttpPatch(uri, updateUser, HttpHeader.AUTHORIZATION, authorization);
 
-        //update the user with PATCH
-        HttpClientRequestResult savedResult = httpClient.executeHttpPatch(uri, updateUserAsString, AUTHORIZATION, authorization);
-
-        if (savedResult.getStatusCode() != HTTP_STATUS_CODE_OK) {
+        if (savedResult.getStatusCode() != HttpStatus.OK.value()) {
             LOGGER.log(Level.WARNING, "Problems updating the user with extensions!");
             return new ResponseEntity<>("{\"error\":\"Problems updating the user with extensions!\"}", HttpStatus.valueOf(savedResult.getStatusCode()));
         }
 
         //return saved user with corresponding status code
         return new ResponseEntity<>(savedResult.getBody(), HttpStatus.OK);
+    }
+
+
+    /*---- Private methods for lost endpoint ----*/
+
+    private User buildUserForUpdate(User user, String oneTimePassword) {
+        Map<String,String> fields = new HashMap<>();
+        fields.put(this.oneTimePassword, oneTimePassword);
+
+        return new User.Builder(user).
+                addExtension(registrationExtensionUrnProvider.getExtensionUrn(),
+                        new Extension(registrationExtensionUrnProvider.getExtensionUrn(), fields)).build();
+    }
+
+    private ResponseEntity<String> sendPasswordLostMail(User parsedUser, String oneTimePassword) throws MessagingException, IOException {
+
+        String primaryEmail = mailSender.extractPrimaryEmail(parsedUser);
+        if (primaryEmail == null) {
+            LOGGER.log(Level.WARNING, "No primary email found!");
+            return new ResponseEntity<>("{\"error\":\"No primary email found!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        StringBuilder activateURL = new StringBuilder(passwordlostLinkPrefix);
+        activateURL.append("userId=").append(parsedUser.getId());
+        activateURL.append("&oneTimePassword=").append(oneTimePassword);
+
+        Map<String, String> vars = new HashMap<>();
+        vars.put("$PASSWORDLOSTURL", activateURL.toString());
+
+        InputStream mailContentStream =
+                mailSender.getEmailContentAsStream("/WEB-INF/registration/passwordlostmail-content.txt",
+                        pathToEmailContent, context);
+
+        if (mailContentStream == null) {
+            LOGGER.log(Level.SEVERE, "Cant open registermail-content.txt on classpath! Please configure!");
+            return new ResponseEntity<>("{\"error\":\"Cant open registermail-content.txt on classpath! Please configure!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        mailSender.sendMail(passwordlostMailFrom, primaryEmail, passwordlostMailSubject, mailContentStream, vars);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
+    /*---- Private methods for change endpoint ----*/
+
+    private String getUserWithUpdatedExtensionsAsString(Extension extension, User user, String newPassword) throws JsonProcessingException {
+        //delete the oneTimePassword from user entity
+        extension.setField(this.oneTimePassword, "");
+
+        //set new password for the user
+        User updateUser = new User.Builder(user).setPassword(newPassword).build();
+        return mapper.writeValueAsString(updateUser);
     }
 }

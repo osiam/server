@@ -9,7 +9,10 @@ import org.osiam.resources.helper.UserDeserializer
 import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.User
+import org.osiam.web.util.HttpHeader
 import org.osiam.web.util.MailSender
+import org.osiam.web.util.RegistrationExtensionUrnProvider
+import org.osiam.web.util.ResourceServerUriBuilder
 import org.springframework.http.HttpStatus
 import spock.lang.Shared
 import spock.lang.Specification
@@ -21,14 +24,14 @@ import javax.servlet.http.HttpServletResponse
 class RegisterControllerTest extends Specification {
 
     @Shared def mapper
-    def httpClientMock = Mock(HttpClientHelper)
 
+    def registrationExtensionUrnProvider = Mock(RegistrationExtensionUrnProvider)
+    def resourceServerUriBuilder = Mock(ResourceServerUriBuilder)
+    def httpClientMock = Mock(HttpClientHelper)
     def contextMock = Mock(ServletContext)
 
-    def serverPort = 8080
-    def serverHost = "localhost"
-    def httpScheme = "http"
-    def internalScimExtensionUrn = "urn:scim:schemas:osiam:1.0:Registration"
+    def urn = "urn:scim:schemas:osiam:1.0:Registration"
+
     def activationTokenField = "activationToken"
     def clientRegistrationUri = "http://someStuff.de/"
 
@@ -38,11 +41,11 @@ class RegisterControllerTest extends Specification {
 
     def mailSenderMock = Mock(MailSender)
 
-    def registerController = new RegisterController(context: contextMock, httpClient: httpClientMock, serverPort: serverPort,
-            serverHost: serverHost, httpScheme: httpScheme, clientRegistrationUri: clientRegistrationUri,
-            internalScimExtensionUrn: internalScimExtensionUrn, activationTokenField: activationTokenField,
+    def registerController = new RegisterController(context: contextMock, httpClient: httpClientMock,
+            clientRegistrationUri: clientRegistrationUri, activationTokenField: activationTokenField,
             mailSender: mailSenderMock, registermailFrom: registermailFrom, registermailSubject: registermailSubject,
-            registermailLinkPrefix: registermailLinkPrefix)
+            registermailLinkPrefix: registermailLinkPrefix, registrationExtensionUrnProvider: registrationExtensionUrnProvider,
+            resourceServerUriBuilder: resourceServerUriBuilder)
 
     def setupSpec() {
         mapper = new ObjectMapper()
@@ -70,7 +73,7 @@ class RegisterControllerTest extends Specification {
         given:
         def userId = UUID.randomUUID().toString()
         def activationToken = UUID.randomUUID().toString()
-        def uri = "http://localhost:8080/osiam-resource-server/Users/"
+        def uri = "http://localhost:8080/osiam-resource-server/Users/" + userId
         def requestResultMock = Mock(HttpClientRequestResult)
         def userString = getUserAsStringWithExtension(activationToken)
 
@@ -78,10 +81,12 @@ class RegisterControllerTest extends Specification {
         def response = registerController.activate("Bearer ACCESS_TOKEN", userId, activationToken)
 
         then:
-        1 * httpClientMock.executeHttpGet(uri + userId, "Authorization", "Bearer ACCESS_TOKEN") >> requestResultMock
+        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, "Bearer ACCESS_TOKEN") >> requestResultMock
         1 * requestResultMock.getStatusCode() >> 200
         1 * requestResultMock.getBody() >> userString
-        1 * httpClientMock.executeHttpPut(uri + userId, _, "Authorization", "Bearer ACCESS_TOKEN") >> requestResultMock
+        1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
+        1 * httpClientMock.executeHttpPut(uri, _, HttpHeader.AUTHORIZATION, "Bearer ACCESS_TOKEN") >> requestResultMock
         1 * requestResultMock.getStatusCode() >> 200
         response.getStatusCode() == HttpStatus.OK
     }
@@ -90,6 +95,7 @@ class RegisterControllerTest extends Specification {
         given:
         def userId = UUID.randomUUID().toString()
         def activationToken = UUID.randomUUID().toString()
+        def uri = "http://localhost:8080/osiam-resource-server/Users/" + userId
 
         def requestResultMock = Mock(HttpClientRequestResult)
 
@@ -97,7 +103,8 @@ class RegisterControllerTest extends Specification {
         def response = registerController.activate("Bearer ACCESS_TOKEN", userId, activationToken)
 
         then:
-        1 * httpClientMock.executeHttpGet("http://localhost:8080/osiam-resource-server/Users/" + userId, "Authorization", "Bearer ACCESS_TOKEN") >> requestResultMock
+        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, "Bearer ACCESS_TOKEN") >> requestResultMock
         2 * requestResultMock.getStatusCode() >> 400
         response.getStatusCode() == HttpStatus.BAD_REQUEST
     }
@@ -106,7 +113,8 @@ class RegisterControllerTest extends Specification {
         given:
         def userId = UUID.randomUUID().toString()
         def activationToken = UUID.randomUUID().toString()
-        def uri = "http://localhost:8080/osiam-resource-server/Users/"
+        def uri = "http://localhost:8080/osiam-resource-server/Users/" + userId
+
         def requestResultGetMock = Mock(HttpClientRequestResult)
         def requestResultPutMock = Mock(HttpClientRequestResult)
         def userString = getUserAsStringWithExtension(activationToken)
@@ -115,10 +123,12 @@ class RegisterControllerTest extends Specification {
         def response = registerController.activate("Bearer ACCESS_TOKEN", userId, activationToken)
 
         then:
-        1 * httpClientMock.executeHttpGet(uri + userId, "Authorization", "Bearer ACCESS_TOKEN") >> requestResultGetMock
+        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, "Bearer ACCESS_TOKEN") >> requestResultGetMock
         1 * requestResultGetMock.getStatusCode() >> 200
         1 * requestResultGetMock.getBody() >> userString
-        1 * httpClientMock.executeHttpPut(uri + userId, _, "Authorization", "Bearer ACCESS_TOKEN") >> requestResultPutMock
+        1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
+        1 * httpClientMock.executeHttpPut(uri, _, HttpHeader.AUTHORIZATION, "Bearer ACCESS_TOKEN") >> requestResultPutMock
         2 * requestResultPutMock.getStatusCode() >> 400
         response.getStatusCode() == HttpStatus.BAD_REQUEST
     }
@@ -127,7 +137,7 @@ class RegisterControllerTest extends Specification {
         given:
         def userId = UUID.randomUUID().toString()
         def activationToken = UUID.randomUUID().toString()
-        def uri = "http://localhost:8080/osiam-resource-server/Users/"
+        def uri = "http://localhost:8080/osiam-resource-server/Users/" + userId
         def requestResultMock = Mock(HttpClientRequestResult)
         def userString = getUserAsStringWithExtension(activationToken)
 
@@ -135,14 +145,18 @@ class RegisterControllerTest extends Specification {
         def response = registerController.activate("Bearer ACCESS_TOKEN", userId, UUID.randomUUID().toString())
 
         then:
-        1 * httpClientMock.executeHttpGet(uri + userId, "Authorization", "Bearer ACCESS_TOKEN") >> requestResultMock
+        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, "Bearer ACCESS_TOKEN") >> requestResultMock
         1 * requestResultMock.getStatusCode() >> 200
         1 * requestResultMock.getBody() >> userString
+        1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
         response.getStatusCode() == HttpStatus.UNAUTHORIZED
     }
 
     def "The registration controller should send a register-mail"() {
         given:
+        def uri = "http://localhost:8080/osiam-resource-server/Users/"
+
         def registerMailContent = new ByteArrayInputStream("Hallo \$REGISTERLINK Tschuess".bytes)
         def auth = "BEARER ABC=="
         def body = getUserAsStringWithExtension("")
@@ -151,6 +165,8 @@ class RegisterControllerTest extends Specification {
         def response = registerController.create(auth, body)
 
         then:
+        2 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
+        1 * resourceServerUriBuilder.buildUriWithUserId("") >> uri
         1 * httpClientMock.executeHttpPost(_, _, _, _) >> new HttpClientRequestResult('{"id":"1234","schemas":["urn"]}', 201)
         1 * mailSenderMock.getEmailContentAsStream("/WEB-INF/registration/registermail-content.txt", _, contextMock) >> registerMailContent
         1 * mailSenderMock.sendMail("noreply@example.org", "toemail@example.org", "Ihre Registrierung", registerMailContent, _)
@@ -173,6 +189,8 @@ class RegisterControllerTest extends Specification {
 
     def "there should be an failure if the user could not be updated with activation token"() {
         given:
+        def uri = "http://localhost:8080/osiam-resource-server/Users/"
+
         def auth = "BEARER ABC=="
         def body = getUserAsStringWithExtension("")
 
@@ -181,12 +199,16 @@ class RegisterControllerTest extends Specification {
 
         then:
         1 * mailSenderMock.extractPrimaryEmail(_) >> "primary@mail.com"
+        2 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
+        1 * resourceServerUriBuilder.buildUriWithUserId("") >> uri
         1 * httpClientMock.executeHttpPost(_, _, _, _) >> new HttpClientRequestResult('', 400)
         response.getStatusCode() == HttpStatus.BAD_REQUEST
     }
 
     def "there should be an failure if the email content for confirmation mail was not found"() {
         given:
+        def uri = "http://localhost:8080/osiam-resource-server/Users/"
+
         def auth = "BEARER ABC=="
         def body = getUserAsStringWithExtension("")
 
@@ -195,6 +217,8 @@ class RegisterControllerTest extends Specification {
 
         then:
         1 * mailSenderMock.extractPrimaryEmail(_) >> "primary@mail.com"
+        2 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
+        1 * resourceServerUriBuilder.buildUriWithUserId("") >> uri
         1 * httpClientMock.executeHttpPost(_, _, _, _) >> new HttpClientRequestResult('{"id":"1234","schemas":["urn"]}', 201)
         1 * mailSenderMock.getEmailContentAsStream("/WEB-INF/registration/registermail-content.txt", _, contextMock) >> null
         response.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR
@@ -209,7 +233,6 @@ class RegisterControllerTest extends Specification {
     }
 
     def getUserAsStringWithExtension(String token) {
-        def urn = "urn:scim:schemas:osiam:1.0:Registration"
         def extensionData = ["activationToken":token]
 
         def emails = new MultiValuedAttribute(primary: true, value: "email@example.org")
