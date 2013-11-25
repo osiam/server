@@ -28,10 +28,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPatch;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
@@ -41,6 +38,7 @@ import javax.inject.Named;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,98 +68,73 @@ public class HttpClientHelper {
             int statusCode = response.getStatusLine().getStatusCode();
             result = new HttpClientRequestResult(responseBody, statusCode);
         } catch (IOException e) {
-            throw new RuntimeException(e); //NOSONAR : Need only wrapping to a runtime exception
+            throw new RuntimeException(e); //NOSONAR : Wrapping to a non checked exception
         }
         return result;
     }
 
     public HttpClientRequestResult executeHttpPut(String url, String parameterName, String parameterValue, String headerName, String headerValue) {
-        HttpClientRequestResult result;
-        final HttpPut request = new HttpPut(url);
-
-        if (headerName != null && headerValue != null) {
-            request.addHeader(headerName, headerValue);
-        }
+        HttpPut request = new HttpPut(url);
+        request = (HttpPut) addHeaderToRequest(headerName, headerValue, request);
 
         List<NameValuePair> formParams = new ArrayList<>();
         formParams.add(new BasicNameValuePair(parameterName, parameterValue));
 
-        try {
-            UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(formParams, ENCODING);
-            request.setEntity(formEntity);
-            HttpResponse response = client.execute(request);
-            String responseBody = getResponseBody(response);
-            int statusCode = response.getStatusLine().getStatusCode();
-            result = new HttpClientRequestResult(responseBody, statusCode);
-        } catch (IOException e) {
-            throw new RuntimeException(e); //NOSONAR : Need only wrapping to a runtime exception
-        }
-        return result;
+        return executeHttpRequest(request, null, formParams);
     }
 
     public HttpClientRequestResult executeHttpPut(String url, String body, String headerName, String headerValue) {
-        HttpClientRequestResult result;
-        final HttpPut request = new HttpPut(url);
+        HttpPut request = new HttpPut(url);
+        request = (HttpPut) addHeaderToRequest(headerName, headerValue, request);
 
-        if (headerName != null && headerValue != null) {
-            request.addHeader(headerName, headerValue);
-        }
-
-        try {
-            StringEntity entity = new StringEntity(body, ENCODING);
-            request.setEntity(entity);
-            HttpResponse response = client.execute(request);
-            String responseBody = getResponseBody(response);
-            int statusCode = response.getStatusLine().getStatusCode();
-            result = new HttpClientRequestResult(responseBody, statusCode);
-        } catch (IOException e) {
-            throw new RuntimeException(e); //NOSONAR : Need only wrapping to a runtime exception
-        }
-        return result;
+        return executeHttpRequest(request, body, null);
     }
 
     public HttpClientRequestResult executeHttpPost(String url, String body, String headerName, String headerValue){
-        HttpClientRequestResult result;
-        final HttpPost request = new HttpPost(url);
+        HttpPost request = new HttpPost(url);
+        request = (HttpPost) addHeaderToRequest(headerName, headerValue, request);
 
-        if (headerName != null && headerValue != null) {
-            request.addHeader(headerName, headerValue);
-        }
-
-        try {
-            StringEntity entity = new StringEntity(body, ENCODING);
-            request.setEntity(entity);
-            HttpResponse response = client.execute(request);
-            String responseBody = getResponseBody(response);
-            int statusCode = response.getStatusLine().getStatusCode();
-            result = new HttpClientRequestResult(responseBody, statusCode);
-        } catch (IOException e) {
-            throw new RuntimeException(e); //NOSONAR : Need only wrapping to a runtime exception
-        }
-
-        return result;
+        return executeHttpRequest(request, body, null);
     }
 
     public HttpClientRequestResult executeHttpPatch(String url, String body, String headerName, String headerValue) {
-        HttpClientRequestResult result;
-        final HttpPatch request = new HttpPatch(url);
+        HttpPatch request = new HttpPatch(url);
+        request = (HttpPatch) addHeaderToRequest(headerName, headerValue, request);
 
+        return executeHttpRequest(request, body, null);
+    }
+
+
+
+    private HttpEntityEnclosingRequestBase addHeaderToRequest(String headerName, String headerValue, HttpEntityEnclosingRequestBase request) {
         if (headerName != null && headerValue != null) {
             request.addHeader(headerName, headerValue);
         }
+        return request;
+    }
 
+    private HttpClientRequestResult executeHttpRequest(HttpEntityEnclosingRequestBase request, String body, List<NameValuePair> formParams) {
         try {
-            StringEntity stringEntity = new StringEntity(body, ENCODING);
-            request.setEntity(stringEntity);
+            request = addEntityToRequest(request, body, formParams);
             HttpResponse response = client.execute(request);
             String responseBody = getResponseBody(response);
             int statusCode = response.getStatusLine().getStatusCode();
-            result = new HttpClientRequestResult(responseBody, statusCode);
-        } catch (IOException e) {
-            throw new RuntimeException(e); //NOSONAR : Need only wrapping to a runtime exception
-        }
 
-        return result;
+            return new HttpClientRequestResult(responseBody, statusCode);
+        } catch (IOException e) {
+            throw new RuntimeException(e); //NOSONAR : Wrapping to a non checked exception
+        }
+    }
+
+    private HttpEntityEnclosingRequestBase addEntityToRequest(HttpEntityEnclosingRequestBase request, String body, List<NameValuePair> formParams) throws UnsupportedEncodingException {
+        if (body == null && formParams != null) {
+            UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(formParams, ENCODING);
+            request.setEntity(formEntity);
+        } else if (formParams == null && body != null){
+            StringEntity entity = new StringEntity(body, ENCODING);
+            request.setEntity(entity);
+        }
+        return request;
     }
 
     private String getResponseBody(HttpResponse response) throws IOException {
