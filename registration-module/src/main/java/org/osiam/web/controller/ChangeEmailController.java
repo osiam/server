@@ -45,11 +45,16 @@ public class ChangeEmailController {
 
     private static final Logger LOGGER = Logger.getLogger(ChangeEmailController.class.getName());
 
-    private RegistrationExtensionUrnProvider registrationExtensionUrnProvider;
-    private HttpClientHelper httpClient;
-    private ResourceServerUriBuilder resourceServerUriBuilder;
-    private MailSender mailSender;
     private ObjectMapper mapper;
+
+    @Inject
+    private RegistrationExtensionUrnProvider registrationExtensionUrnProvider;
+    @Inject
+    private HttpClientHelper httpClient;
+    @Inject
+    private ResourceServerUriBuilder resourceServerUriBuilder;
+    @Inject
+    private MailSender mailSender;
 
     @Inject
     private ServletContext context;
@@ -82,11 +87,6 @@ public class ChangeEmailController {
         SimpleModule userDeserializerModule = new SimpleModule("userDeserializerModule", new Version(1, 0, 0, null, null, null))
                 .addDeserializer(User.class, new UserDeserializer(User.class));
         mapper.registerModule(userDeserializerModule);
-
-        httpClient = new HttpClientHelper();
-        resourceServerUriBuilder = new ResourceServerUriBuilder();
-        mailSender = new MailSender();
-        registrationExtensionUrnProvider = new RegistrationExtensionUrnProvider();
     }
 
     /**

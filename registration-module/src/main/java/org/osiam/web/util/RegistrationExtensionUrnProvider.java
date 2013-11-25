@@ -1,6 +1,7 @@
 package org.osiam.web.util;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 /**
  * Class to provide the registration extension urn.
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
  * Time: 12:33
  * Created: with Intellij IDEA
  */
+@Component
 public class RegistrationExtensionUrnProvider {
 
     @Value("${osiam.internal.scim.extension.urn}")

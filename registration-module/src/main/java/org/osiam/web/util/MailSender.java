@@ -3,6 +3,7 @@ package org.osiam.web.util;
 import org.apache.commons.io.IOUtils;
 import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.resources.scim.User;
+import org.springframework.stereotype.Component;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -22,6 +23,7 @@ import java.util.Map;
  * Date: 12.11.13
  * Time: 10:59
  */
+@Component
 public class MailSender {
 
     void transportMail(MimeMessage msg ) throws MessagingException {

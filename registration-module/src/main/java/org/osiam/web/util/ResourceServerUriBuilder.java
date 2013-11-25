@@ -1,6 +1,7 @@
 package org.osiam.web.util;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 /**
  * Class to build the uri for the resource server.
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
  * Time: 11:46
  * Created: with Intellij IDEA
  */
+@Component
 public class ResourceServerUriBuilder {
 
     @Value("${osiam.server.port}")
