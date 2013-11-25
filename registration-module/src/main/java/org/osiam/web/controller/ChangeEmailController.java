@@ -43,6 +43,8 @@ public class ChangeEmailController {
 
     private static final String AUTHORIZATION = "Authorization";
 
+    private static final int HTTP_STATUS_CODE_OK = 200;
+
     private HttpClientHelper httpClient = new HttpClientHelper();
     private ObjectMapper mapper;
 
@@ -82,7 +84,7 @@ public class ChangeEmailController {
     private String pathToEmailInfoContent;
 
     @Inject
-    ServletContext context;
+    private ServletContext context;
 
     public ChangeEmailController() {
         mapper = new ObjectMapper();
@@ -108,7 +110,7 @@ public class ChangeEmailController {
 
         //get user by user id
         HttpClientRequestResult result = httpClient.executeHttpGet(uri, AUTHORIZATION, authorization);
-        if (result.getStatusCode() != 200) {
+        if (result.getStatusCode() != HTTP_STATUS_CODE_OK) {
             LOGGER.log(Level.WARNING, "Problems retrieving user by ID!");
             return new ResponseEntity<>("{\"error\":\"Problems retrieving user by ID!\"}", HttpStatus.valueOf(result.getStatusCode()));
         }
@@ -122,7 +124,7 @@ public class ChangeEmailController {
         //update the user
         String updateUserAsString = mapper.writeValueAsString(updateUser);
         HttpClientRequestResult updateUserResult = httpClient.executeHttpPatch(uri, updateUserAsString, AUTHORIZATION, authorization);
-        if (updateUserResult.getStatusCode() != 200) {
+        if (updateUserResult.getStatusCode() != HTTP_STATUS_CODE_OK) {
             LOGGER.log(Level.WARNING, "Problems updating user with extensions!");
             return new ResponseEntity<>("{\"error\":\"Problems updating user with extensions!\"}", HttpStatus.valueOf(result.getStatusCode()));
         }
@@ -199,7 +201,7 @@ public class ChangeEmailController {
 
         //get user by user id
         HttpClientRequestResult result = httpClient.executeHttpGet(uri, AUTHORIZATION, authorization);
-        if (result.getStatusCode() != 200) {
+        if (result.getStatusCode() != HTTP_STATUS_CODE_OK) {
             LOGGER.log(Level.WARNING, "Problems retrieving user by ID!");
             return new ResponseEntity<>("{\"error\":\"Problems retrieving user by ID!\"}", HttpStatus.valueOf(result.getStatusCode()));
         }
@@ -232,7 +234,7 @@ public class ChangeEmailController {
         //update the user
         String updateUserAsString = mapper.writeValueAsString(updateUser);
         HttpClientRequestResult updateUserResult = httpClient.executeHttpPatch(uri, updateUserAsString, AUTHORIZATION, authorization);
-        if (updateUserResult.getStatusCode() != 200) {
+        if (updateUserResult.getStatusCode() != HTTP_STATUS_CODE_OK) {
             LOGGER.log(Level.WARNING, "Problems updating user with extensions!");
             return new ResponseEntity<>("{\"error\":\"Problems updating user with extensions!\"}", HttpStatus.valueOf(updateUserResult.getStatusCode()));
         }

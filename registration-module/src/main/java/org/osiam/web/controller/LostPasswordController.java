@@ -41,6 +41,8 @@ public class LostPasswordController {
 
     private static final String AUTHORIZATION = "Authorization";
 
+    private static final int HTTP_STATUS_CODE_OK = 200;
+
     private HttpClientHelper httpClient = new HttpClientHelper();
     private ObjectMapper mapper;
 
@@ -60,7 +62,7 @@ public class LostPasswordController {
     private String oneTimePassword;
 
     @Inject
-    ServletContext context;
+    private ServletContext context;
 
     private MailSender mailSender = new MailSender();
 
@@ -96,25 +98,25 @@ public class LostPasswordController {
         //get user by his id
         HttpClientRequestResult getResult = httpClient.executeHttpGet(uri, AUTHORIZATION, authorization);
 
-        if (getResult.getStatusCode() != 200) {
+        if (getResult.getStatusCode() != HTTP_STATUS_CODE_OK) {
             LOGGER.log(Level.WARNING, "Problems getting user by id!");
             return new ResponseEntity<>("{\"error\":\"Problems getting user by id!\"}", HttpStatus.valueOf(getResult.getStatusCode()));
         }
 
         //generate one time password
-        String oneTimePassword = UUID.randomUUID().toString();
-        User userForUpdate = buildUserForUpdate(mapper.readValue(getResult.getBody(), User.class), oneTimePassword);
+        String otp = UUID.randomUUID().toString();
+        User userForUpdate = buildUserForUpdate(mapper.readValue(getResult.getBody(), User.class), otp);
 
         //update user
         String userAsString = mapper.writeValueAsString(userForUpdate);
         HttpClientRequestResult saveUserResponse = httpClient.executeHttpPatch(uri, userAsString, AUTHORIZATION, authorization);
 
-        if (saveUserResponse.getStatusCode() != 200) {
+        if (saveUserResponse.getStatusCode() != HTTP_STATUS_CODE_OK) {
             LOGGER.log(Level.WARNING, "Problems updating the user with extensions!");
             return new ResponseEntity<>("{\"error\":\"Problems updating the user with extensions!\"}", HttpStatus.valueOf(saveUserResponse.getStatusCode()));
         }
 
-        return sendPasswordLostMail(userForUpdate, oneTimePassword);
+        return sendPasswordLostMail(userForUpdate, otp);
     }
 
     private User buildUserForUpdate(User user, String oneTimePassword) {
@@ -187,7 +189,7 @@ public class LostPasswordController {
 
         //get user by id
         HttpClientRequestResult result = httpClient.executeHttpGet(uri, AUTHORIZATION, authorization);
-        if (result.getStatusCode() != 200) {
+        if (result.getStatusCode() != HTTP_STATUS_CODE_OK) {
             LOGGER.log(Level.WARNING, "Problems retrieving user by ID!");
             return new ResponseEntity<>("{\"error\":\"Problems retrieving user by ID!\"}", HttpStatus.valueOf(result.getStatusCode()));
         }
@@ -212,7 +214,7 @@ public class LostPasswordController {
         //update the user with PATCH
         HttpClientRequestResult savedResult = httpClient.executeHttpPatch(uri, updateUserAsString, AUTHORIZATION, authorization);
 
-        if (savedResult.getStatusCode() != 200) {
+        if (savedResult.getStatusCode() != HTTP_STATUS_CODE_OK) {
             LOGGER.log(Level.WARNING, "Problems updating the user with extensions!");
             return new ResponseEntity<>("{\"error\":\"Problems updating the user with extensions!\"}", HttpStatus.valueOf(savedResult.getStatusCode()));
         }

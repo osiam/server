@@ -38,6 +38,9 @@ public class RegisterController {
 
     private static final String AUTHORIZATION = "Authorization";
 
+    private static final int HTTP_STATUS_CODE_OK = 200;
+    private static final int HTTP_STATUS_CODE_CREATED = 201;
+
     private HttpClientHelper httpClient;
     private ObjectMapper mapper;
 
@@ -70,7 +73,7 @@ public class RegisterController {
 
 
     @Inject
-    ServletContext context;
+    private ServletContext context;
 
     private MailSender mailSender = new MailSender();
 
@@ -125,7 +128,7 @@ public class RegisterController {
 
         // Save user
         HttpClientRequestResult saveUserResponse = saveUser(parsedUser, authorization);
-        if (saveUserResponse.getStatusCode() != 201) {
+        if (saveUserResponse.getStatusCode() != HTTP_STATUS_CODE_CREATED) {
             LOGGER.log(Level.WARNING, "Problems creating user for registration");
             return new ResponseEntity<>("{\"error\":\"Problems creating user for registration\"}", HttpStatus.valueOf(saveUserResponse.getStatusCode()));
         }
@@ -206,7 +209,7 @@ public class RegisterController {
         //get user by his id
         HttpClientRequestResult result = httpClient.executeHttpGet(uri, AUTHORIZATION, authorization);
 
-        if (result.getStatusCode() != 200) {
+        if (result.getStatusCode() != HTTP_STATUS_CODE_OK) {
             LOGGER.log(Level.WARNING, "Problems retrieving user by his ID!");
             return new ResponseEntity<>("{\"error\":\"Problems retrieving user by his ID!\"}", HttpStatus.valueOf(result.getStatusCode()));
         }
@@ -229,7 +232,7 @@ public class RegisterController {
         HttpClientRequestResult requestResult = httpClient.executeHttpPut(uri,
                 mapper.writeValueAsString(updateUser), AUTHORIZATION, authorization);
 
-        if (requestResult.getStatusCode() != 200) {
+        if (requestResult.getStatusCode() != HTTP_STATUS_CODE_OK) {
             LOGGER.log(Level.WARNING, "Updating user with extensions failed!");
             return new ResponseEntity<>("{\"error\":\"Updating user with extensions failed!\"}", HttpStatus.valueOf(requestResult.getStatusCode()));
         }

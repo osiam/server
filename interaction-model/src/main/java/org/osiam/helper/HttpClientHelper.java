@@ -49,6 +49,8 @@ public class HttpClientHelper {
 
     private HttpClient client; //NOSONAR : need to mock therefore the final identifier was removed
 
+    private static final String ENCODING = "UTF-8";
+
     public HttpClientHelper() {
         PoolingClientConnectionManager poolingClientConnectionManager = new PoolingClientConnectionManager();
         client = new DefaultHttpClient(poolingClientConnectionManager);
@@ -85,7 +87,7 @@ public class HttpClientHelper {
         formParams.add(new BasicNameValuePair(parameterName, parameterValue));
 
         try {
-            UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(formParams, "UTF-8");
+            UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(formParams, ENCODING);
             request.setEntity(formEntity);
             HttpResponse response = client.execute(request);
             String responseBody = getResponseBody(response);
@@ -106,7 +108,7 @@ public class HttpClientHelper {
         }
 
         try {
-            StringEntity entity = new StringEntity(body, "UTF-8");
+            StringEntity entity = new StringEntity(body, ENCODING);
             request.setEntity(entity);
             HttpResponse response = client.execute(request);
             String responseBody = getResponseBody(response);
@@ -127,7 +129,7 @@ public class HttpClientHelper {
         }
 
         try {
-            StringEntity entity = new StringEntity(body, "UTF-8");
+            StringEntity entity = new StringEntity(body, ENCODING);
             request.setEntity(entity);
             HttpResponse response = client.execute(request);
             String responseBody = getResponseBody(response);
@@ -149,7 +151,7 @@ public class HttpClientHelper {
         }
 
         try {
-            StringEntity stringEntity = new StringEntity(body, "UTF-8");
+            StringEntity stringEntity = new StringEntity(body, ENCODING);
             request.setEntity(stringEntity);
             HttpResponse response = client.execute(request);
             String responseBody = getResponseBody(response);
@@ -167,7 +169,7 @@ public class HttpClientHelper {
         final StringBuffer stringBuffer = new StringBuffer("");
 
         try {
-            rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+            rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), ENCODING));
             String line;
             while ((line = rd.readLine()) != null) {
                 stringBuffer.append(line);
