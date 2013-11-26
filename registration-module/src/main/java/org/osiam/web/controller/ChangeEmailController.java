@@ -48,11 +48,11 @@ public class ChangeEmailController {
     private ObjectMapper mapper;
 
     @Inject
-    private RegistrationExtensionUrnProvider registrationExtensionUrnProvider;
-    @Inject
     private HttpClientHelper httpClient;
     @Inject
     private ResourceServerUriBuilder resourceServerUriBuilder;
+    @Inject
+    private RegistrationExtensionUrnProvider registrationExtensionUrnProvider;
     @Inject
     private MailSender mailSender;
 
@@ -60,20 +60,20 @@ public class ChangeEmailController {
     private ServletContext context;
 
     /* Extension configuration */
-    @Value("${osiam.confirm.email.token.field}")
-    private String confirmationTokenField;
     @Value("${osiam.temp.email.field}")
     private String tempEmail;
+    @Value("${osiam.confirm.email.token.field}")
+    private String confirmationTokenField;
 
     /* Change email configuration */
-    @Value("${osiam.web.emailchange.linkprefix}")
-    private String emailChangeLinkPrefix;
-    @Value("${osiam.web.emailchange.from}")
-    private String emailChangeMailFrom;
     @Value("${osiam.web.emailchange.subject}")
     private String emailChangeMailSubject;
     @Value("${osiam.web.emailchange.content.path}")
     private String pathToEmailContent;
+    @Value("${osiam.web.emailchange.linkprefix}")
+    private String emailChangeLinkPrefix;
+    @Value("${osiam.web.emailchange.from}")
+    private String emailChangeMailFrom;
 
     /* Info mail configuration */
     @Value("${osiam.web.emailchange-info.subject}")

@@ -43,35 +43,34 @@ public class RegisterController {
     private ObjectMapper mapper;
 
     @Inject
-    private RegistrationExtensionUrnProvider registrationExtensionUrnProvider;
-    @Inject
-    private HttpClientHelper httpClient;
-    @Inject
     private ResourceServerUriBuilder resourceServerUriBuilder;
     @Inject
+    private RegistrationExtensionUrnProvider registrationExtensionUrnProvider;
+    @Inject
     private MailSender mailSender;
+    @Inject
+    private HttpClientHelper httpClient;
 
     @Inject
     private ServletContext context;
 
     /* Registration email configuration */
+    @Value("${osiam.web.registermail.content.path}")
+    private String pathToContentFile;
+    @Value("${osiam.web.registermail.linkprefix}")
+    private String registermailLinkPrefix;
     @Value("${osiam.web.registermail.from}")
     private String registermailFrom;
     @Value("${osiam.web.registermail.subject}")
     private String registermailSubject;
-    @Value("${osiam.web.registermail.linkprefix}")
-    private String registermailLinkPrefix;
-    @Value("${osiam.web.registermail.content.path}")
-    private String pathToContentFile;
-
-    /* URI for the registration call from JavaScript */
-    @Value("${osiam.web.register.url}")
-    private String clientRegistrationUri;
 
     /* Registration extension configuration */
     @Value("${osiam.activation.token.field}")
     private String activationTokenField;
 
+    /* URI for the registration call from JavaScript */
+    @Value("${osiam.web.register.url}")
+    private String clientRegistrationUri;
 
     public RegisterController() {
         httpClient = new HttpClientHelper();
