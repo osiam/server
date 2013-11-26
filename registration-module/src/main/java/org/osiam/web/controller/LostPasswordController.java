@@ -96,7 +96,7 @@ public class LostPasswordController {
     @RequestMapping(value = "/lost/{userId}", method = RequestMethod.POST, produces = "application/json")
     public ResponseEntity<String> lost(@RequestHeader final String authorization, @PathVariable final String userId) throws IOException, MessagingException {
 
-        String uri = resourceServerUriBuilder.buildUriWithUserId(userId);
+        String uri = resourceServerUriBuilder.buildUsersUriWithUserId(userId);
 
         //get user by his id
         HttpClientRequestResult getResult = httpClient.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authorization);
@@ -167,7 +167,7 @@ public class LostPasswordController {
             return new ResponseEntity<>("{\"error\":\"The submitted one time password is invalid!\"}", HttpStatus.UNAUTHORIZED);
         }
 
-        String uri = resourceServerUriBuilder.buildUriWithUserId(userId);
+        String uri = resourceServerUriBuilder.buildUsersUriWithUserId(userId);
 
         //get user by id
         HttpClientRequestResult result = httpClient.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authorization);

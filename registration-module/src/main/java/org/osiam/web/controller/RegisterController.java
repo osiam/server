@@ -152,7 +152,7 @@ public class RegisterController {
             return new ResponseEntity<>("{\"error\":\"Activation token miss match!\"}", HttpStatus.UNAUTHORIZED);
         }
 
-        String uri = resourceServerUriBuilder.buildUriWithUserId(userId);
+        String uri = resourceServerUriBuilder.buildUsersUriWithUserId(userId);
 
         //get user by his id
         HttpClientRequestResult result = httpClient.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authorization);
@@ -240,7 +240,7 @@ public class RegisterController {
 
     private HttpClientRequestResult saveUser(User userToSave, String authorization) throws IOException {
         String userAsString = mapper.writeValueAsString(userToSave);
-        String createUserUri = resourceServerUriBuilder.buildUriWithUserId("");
+        String createUserUri = resourceServerUriBuilder.buildUsersUriWithUserId("");
         return httpClient.executeHttpPost(createUserUri, userAsString, HttpHeader.AUTHORIZATION, authorization);
     }
 }

@@ -74,7 +74,7 @@ class ChangeEmailControllerTest extends Specification {
 
         then:
         1 * accessTokenInformationProvider.getUserIdFromToken(authZHeader) >> userId
-        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
         1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         2 * resultMock.getStatusCode() >> 400
         result.getStatusCode() == HttpStatus.BAD_REQUEST
@@ -94,7 +94,7 @@ class ChangeEmailControllerTest extends Specification {
 
         then:
         1 * accessTokenInformationProvider.getUserIdFromToken(authZHeader) >> userId
-        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
         1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
         1 * resultMock.getBody() >> user
@@ -118,7 +118,7 @@ class ChangeEmailControllerTest extends Specification {
 
         then:
         1 * accessTokenInformationProvider.getUserIdFromToken(authZHeader) >> userId
-        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
         1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
         2 * resultMock.getBody() >> user
@@ -146,7 +146,7 @@ class ChangeEmailControllerTest extends Specification {
 
         then:
         1 * accessTokenInformationProvider.getUserIdFromToken(authZHeader) >> userId
-        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
         1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
         2 * resultMock.getBody() >> user
@@ -185,7 +185,7 @@ class ChangeEmailControllerTest extends Specification {
         def result = changeEmailController.confirm(authZHeader, userId, confirmToken)
 
         then:
-        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> url
+        1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> url
         1 * httpClientMock.executeHttpGet(url, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         2 * resultMock.getStatusCode() >> 200
         2 * resultMock.getBody() >> user
@@ -211,7 +211,7 @@ class ChangeEmailControllerTest extends Specification {
         def response = changeEmailController.confirm(authZHeader, userId, confirmToken)
 
         then:
-        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> url
+        1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> url
         1 * httpClientMock.executeHttpGet(url, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         2 * resultMock.getStatusCode() >> 400
         response.getStatusCode() == HttpStatus.BAD_REQUEST
@@ -230,7 +230,7 @@ class ChangeEmailControllerTest extends Specification {
         def response = changeEmailController.confirm(authZHeader, userId, confirmToken)
 
         then:
-        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> url
+        1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> url
         1 * httpClientMock.executeHttpGet(url, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
         1 * resultMock.getBody() >> user
@@ -251,7 +251,7 @@ class ChangeEmailControllerTest extends Specification {
         def response = changeEmailController.confirm(authZHeader, userId, confirmToken)
 
         then:
-        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> url
+        1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> url
         1 * httpClientMock.executeHttpGet(url, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
         1 * resultMock.getBody() >> user
@@ -274,7 +274,7 @@ class ChangeEmailControllerTest extends Specification {
         def response = changeEmailController.confirm(authZHeader, userId, confirmToken)
 
         then:
-        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> url
+        1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> url
         1 * httpClientMock.executeHttpGet(url, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
         2 * resultMock.getBody() >> user

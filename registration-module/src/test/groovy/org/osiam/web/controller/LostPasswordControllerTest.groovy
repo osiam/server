@@ -77,7 +77,7 @@ class LostPasswordControllerTest extends Specification {
         def result = lostPasswordController.lost(authZHeader, userId)
 
         then:
-        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
         2 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
         1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> requestResultMock
         1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> new HttpClientRequestResult("body", 200);
@@ -102,7 +102,7 @@ class LostPasswordControllerTest extends Specification {
         def response = lostPasswordController.lost(authZHeader, userId)
 
         then:
-        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
         1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> new HttpClientRequestResult('', 400)
         response.getStatusCode() == HttpStatus.BAD_REQUEST
     }
@@ -118,7 +118,7 @@ class LostPasswordControllerTest extends Specification {
         def response = lostPasswordController.lost(authZHeader, userId)
 
         then:
-        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
         1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> requestResultMock
         1 * requestResultMock.getStatusCode() >> 200
         1 * requestResultMock.getBody() >> userString
@@ -138,7 +138,7 @@ class LostPasswordControllerTest extends Specification {
         def response = lostPasswordController.lost(authZHeader, userId)
 
         then:
-        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
         1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> requestResultMock
         1 * requestResultMock.getStatusCode() >> 200
         1 * requestResultMock.getBody() >> userString
@@ -160,7 +160,7 @@ class LostPasswordControllerTest extends Specification {
         def response = lostPasswordController.lost(authZHeader, userId)
 
         then:
-        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
         1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> requestResultMock
         1 * requestResultMock.getStatusCode() >> 200
         1 * requestResultMock.getBody() >> userString
@@ -186,7 +186,7 @@ class LostPasswordControllerTest extends Specification {
         def result = lostPasswordController.change(authZHeader, otp, userId, newPassword)
 
         then:
-        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
         1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> requestResultMock
         1 * requestResultMock.getStatusCode() >> 200
         1 * requestResultMock.getBody() >> userById
@@ -211,7 +211,7 @@ class LostPasswordControllerTest extends Specification {
         def result = lostPasswordController.change(authZHeader, otp, userId, newPassword)
 
         then:
-        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
         1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> requestResultMock
         2 * requestResultMock.getStatusCode() >> 400
 
@@ -232,7 +232,7 @@ class LostPasswordControllerTest extends Specification {
         def result = lostPasswordController.change(authZHeader, otp, userId, newPassword)
 
         then:
-        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
         1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> requestResultMock
         1 * requestResultMock.getStatusCode() >> 200
         1 * requestResultMock.getBody() >> userById
@@ -254,7 +254,7 @@ class LostPasswordControllerTest extends Specification {
         def result = lostPasswordController.change(authZHeader, otp, userId, newPassword)
 
         then:
-        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
         1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> requestResultMock
         1 * requestResultMock.getStatusCode() >> 200
         1 * requestResultMock.getBody() >> userById

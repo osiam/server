@@ -26,7 +26,7 @@ public class ResourceServerUriBuilder {
      * @param userId the user id to be appended to the resource server uri
      * @return the resource server uri including the user id
      */
-    public String buildUriWithUserId(String userId){
+    public String buildUsersUriWithUserId(String userId){
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder
                 .append(httpScheme)

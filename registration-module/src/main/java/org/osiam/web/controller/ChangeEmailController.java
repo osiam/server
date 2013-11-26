@@ -102,7 +102,7 @@ public class ChangeEmailController {
 
         String userId = accessTokenInformationProvider.getUserIdFromToken(authorization);
 
-        String uri = resourceServerUriBuilder.buildUriWithUserId(userId);
+        String uri = resourceServerUriBuilder.buildUsersUriWithUserId(userId);
 
         //get user by user id
         HttpClientRequestResult result = httpClient.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authorization);
@@ -146,7 +146,7 @@ public class ChangeEmailController {
             return new ResponseEntity<>("{\"error\":\"No ongoing email change!\"}", HttpStatus.UNAUTHORIZED);
         }
 
-        String uri = resourceServerUriBuilder.buildUriWithUserId(userId);
+        String uri = resourceServerUriBuilder.buildUsersUriWithUserId(userId);
 
         //get user by user id
         HttpClientRequestResult result = httpClient.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authorization);

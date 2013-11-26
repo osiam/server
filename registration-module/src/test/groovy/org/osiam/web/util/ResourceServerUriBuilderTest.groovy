@@ -20,7 +20,7 @@ class ResourceServerUriBuilderTest extends Specification {
 
     def "should return the resource server uri with appended user id"(){
         when:
-        def uri = resourceServerUriBuilder.buildUriWithUserId("theUserId")
+        def uri = resourceServerUriBuilder.buildUsersUriWithUserId("theUserId")
 
         then:
         uri == "http://localhost:8080/osiam-resource-server/Users/theUserId"
@@ -28,7 +28,7 @@ class ResourceServerUriBuilderTest extends Specification {
 
     def "should not throw an exception and append an empty string for user id if it is null"() {
         when:
-        def uri = resourceServerUriBuilder.buildUriWithUserId(null)
+        def uri = resourceServerUriBuilder.buildUsersUriWithUserId(null)
 
         then:
         uri == "http://localhost:8080/osiam-resource-server/Users/"

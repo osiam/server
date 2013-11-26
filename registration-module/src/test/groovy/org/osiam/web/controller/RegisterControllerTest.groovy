@@ -81,7 +81,7 @@ class RegisterControllerTest extends Specification {
         def response = registerController.activate("Bearer ACCESS_TOKEN", userId, activationToken)
 
         then:
-        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
         1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, "Bearer ACCESS_TOKEN") >> requestResultMock
         1 * requestResultMock.getStatusCode() >> 200
         1 * requestResultMock.getBody() >> userString
@@ -103,7 +103,7 @@ class RegisterControllerTest extends Specification {
         def response = registerController.activate("Bearer ACCESS_TOKEN", userId, activationToken)
 
         then:
-        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
         1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, "Bearer ACCESS_TOKEN") >> requestResultMock
         2 * requestResultMock.getStatusCode() >> 400
         response.getStatusCode() == HttpStatus.BAD_REQUEST
@@ -123,7 +123,7 @@ class RegisterControllerTest extends Specification {
         def response = registerController.activate("Bearer ACCESS_TOKEN", userId, activationToken)
 
         then:
-        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
         1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, "Bearer ACCESS_TOKEN") >> requestResultGetMock
         1 * requestResultGetMock.getStatusCode() >> 200
         1 * requestResultGetMock.getBody() >> userString
@@ -145,7 +145,7 @@ class RegisterControllerTest extends Specification {
         def response = registerController.activate("Bearer ACCESS_TOKEN", userId, UUID.randomUUID().toString())
 
         then:
-        1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
+        1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
         1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, "Bearer ACCESS_TOKEN") >> requestResultMock
         1 * requestResultMock.getStatusCode() >> 200
         1 * requestResultMock.getBody() >> userString
@@ -166,7 +166,7 @@ class RegisterControllerTest extends Specification {
 
         then:
         2 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
-        1 * resourceServerUriBuilder.buildUriWithUserId("") >> uri
+        1 * resourceServerUriBuilder.buildUsersUriWithUserId("") >> uri
         1 * httpClientMock.executeHttpPost(_, _, _, _) >> new HttpClientRequestResult('{"id":"1234","schemas":["urn"]}', 201)
         1 * mailSenderMock.getEmailContentAsStream("/WEB-INF/registration/registermail-content.txt", _, contextMock) >> registerMailContent
         1 * mailSenderMock.sendMail("noreply@example.org", "toemail@example.org", "Ihre Registrierung", registerMailContent, _)
@@ -200,7 +200,7 @@ class RegisterControllerTest extends Specification {
         then:
         1 * mailSenderMock.extractPrimaryEmail(_) >> "primary@mail.com"
         2 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
-        1 * resourceServerUriBuilder.buildUriWithUserId("") >> uri
+        1 * resourceServerUriBuilder.buildUsersUriWithUserId("") >> uri
         1 * httpClientMock.executeHttpPost(_, _, _, _) >> new HttpClientRequestResult('', 400)
         response.getStatusCode() == HttpStatus.BAD_REQUEST
     }
@@ -218,7 +218,7 @@ class RegisterControllerTest extends Specification {
         then:
         1 * mailSenderMock.extractPrimaryEmail(_) >> "primary@mail.com"
         2 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
-        1 * resourceServerUriBuilder.buildUriWithUserId("") >> uri
+        1 * resourceServerUriBuilder.buildUsersUriWithUserId("") >> uri
         1 * httpClientMock.executeHttpPost(_, _, _, _) >> new HttpClientRequestResult('{"id":"1234","schemas":["urn"]}', 201)
         1 * mailSenderMock.getEmailContentAsStream("/WEB-INF/registration/registermail-content.txt", _, contextMock) >> null
         response.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR
