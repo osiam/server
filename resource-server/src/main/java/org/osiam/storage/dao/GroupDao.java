@@ -23,23 +23,29 @@
 
 package org.osiam.storage.dao;
 
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.sql.JoinType;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
+import org.osiam.resources.helper.FilterParser;
+import org.osiam.resources.helper.GroupFilterParser;
 import org.osiam.resources.scim.Constants;
-import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.storage.entities.GroupEntity;
+import org.osiam.storage.entities.GroupEntity_;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 import java.util.logging.Level;
 
+import javax.inject.Inject;
+import javax.persistence.metamodel.SingularAttribute;
+
 
 @Repository
 @Transactional
-public class GroupDao extends InternalIdSkeletonDao implements GenericDao<GroupEntity> {
+public class GroupDao extends ResourceDao<GroupEntity> implements GenericDao<GroupEntity> {
 
+    @Inject
+    private GroupFilterParser filterParser;
+    
     @Override
     public void create(GroupEntity group) {
         em.persist(group);
@@ -69,18 +75,27 @@ public class GroupDao extends InternalIdSkeletonDao implements GenericDao<GroupE
     }
 
     @Override
-    public SCIMSearchResult<GroupEntity> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
+    public SearchResult<GroupEntity> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
         return search(GroupEntity.class, filter, count, startIndex, sortBy, sortOrder);
     }
 
     @Override
-    protected void createAliasesForCriteria(DetachedCriteria criteria) {
-        criteria.createAlias("meta", "meta", JoinType.INNER_JOIN);
+    protected FilterParser<GroupEntity> getFilterParser() {
+        return filterParser;
     }
-    
+
     @Override
     protected String getCoreSchema() {
         return Constants.GROUP_CORE_SCHEMA;
     }
 
+    @Override
+    protected Class<GroupEntity> getResourceClass() {
+        return GroupEntity.class;
+    }
+
+    @Override
+    protected SingularAttribute<? super GroupEntity, ?> getDefaultSortByField() {
+        return GroupEntity_.displayName;
+    }
 }
