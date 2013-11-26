@@ -11,16 +11,17 @@
             $scope.password_validate = '';
 
             $scope.submitRegistration = function() {
-                $http({method: 'POST', url: '$REGISTERLINK',
-                    data: $scope.registration, headers: {'Content-Type': 'application/json'}}).
-                        success(function(data, status, headers, config) {
-                            $scope.status = status;
-                            $scope.data = data;
-                        }).
-                        error(function(data, status, headers, config) {
-                            $scope.status = status;
-                            $scope.data = data;
-                        });
+                $http({method: 'POST', url: '$REGISTERLINK', headers: {'Content-Type': 'application/json'},
+                    data: $scope.registration
+                }).
+                success(function(data, status, headers, config) {
+                    $scope.status = status;
+                    $scope.data = data;
+                }).
+                error(function(data, status, headers, config) {
+                    $scope.status = status;
+                    $scope.data = data;
+                });
             };
         });
         app.directive('match', function($parse) {
