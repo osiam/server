@@ -1,13 +1,10 @@
 package org.osiam.web.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.Version;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.apache.commons.io.IOUtils;
 import org.osiam.helper.HttpClientHelper;
 import org.osiam.helper.HttpClientRequestResult;
-import org.osiam.resources.helper.UserDeserializer;
+import org.osiam.helper.ObjectMapperWithExtensionConfig;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.resources.scim.User;
@@ -40,8 +37,8 @@ public class RegisterController {
 
     private static final Logger LOGGER = Logger.getLogger(RegisterController.class.getName());
 
-    private ObjectMapper mapper;
-
+    @Inject
+    private ObjectMapperWithExtensionConfig mapper;
     @Inject
     private ResourceServerUriBuilder resourceServerUriBuilder;
     @Inject
@@ -72,14 +69,7 @@ public class RegisterController {
     @Value("${osiam.web.register.url}")
     private String clientRegistrationUri;
 
-    public RegisterController() {
-        httpClient = new HttpClientHelper();
 
-        mapper = new ObjectMapper();
-        SimpleModule userDeserializerModule = new SimpleModule("userDeserializerModule", new Version(1, 0, 0, null, null, null))
-                .addDeserializer(User.class, new UserDeserializer(User.class));
-        mapper.registerModule(userDeserializerModule);
-    }
 
     /**
      * Generates a HTTP form with the fields for registration purpose.

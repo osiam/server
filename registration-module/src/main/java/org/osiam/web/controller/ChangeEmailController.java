@@ -1,12 +1,9 @@
 package org.osiam.web.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.Version;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.osiam.helper.HttpClientHelper;
 import org.osiam.helper.HttpClientRequestResult;
-import org.osiam.resources.helper.UserDeserializer;
+import org.osiam.helper.ObjectMapperWithExtensionConfig;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.resources.scim.User;
@@ -42,14 +39,14 @@ public class ChangeEmailController {
 
     private static final Logger LOGGER = Logger.getLogger(ChangeEmailController.class.getName());
 
-    private ObjectMapper mapper;
-
     @Inject
     private HttpClientHelper httpClient;
     @Inject
     private ResourceServerUriBuilder resourceServerUriBuilder;
     @Inject
     private RegistrationExtensionUrnProvider registrationExtensionUrnProvider;
+    @Inject
+    private ObjectMapperWithExtensionConfig mapper;
     @Inject
     private MailSender mailSender;
     @Inject
@@ -81,12 +78,6 @@ public class ChangeEmailController {
     private String pathToEmailInfoContent;
 
 
-    public ChangeEmailController() {
-        mapper = new ObjectMapper();
-        SimpleModule userDeserializerModule = new SimpleModule("userDeserializerModule", new Version(1, 0, 0, null, null, null))
-                .addDeserializer(User.class, new UserDeserializer(User.class));
-        mapper.registerModule(userDeserializerModule);
-    }
 
     /**
      * Saving the new E-Mail temporary, generating confirmation token and sending an E-Mail to the old registered address.
