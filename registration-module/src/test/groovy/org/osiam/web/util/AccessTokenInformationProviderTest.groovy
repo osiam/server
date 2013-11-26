@@ -1,5 +1,9 @@
 package org.osiam.web.util
 
+import org.osiam.helper.HttpClientHelper
+import org.osiam.helper.HttpClientRequestResult
+import org.osiam.helper.ObjectMapperWithExtensionConfig
+import org.osiam.web.resource.MeUserRepresentation
 import spock.lang.Specification
 
 /**
@@ -11,16 +15,33 @@ import spock.lang.Specification
  */
 class AccessTokenInformationProviderTest extends Specification {
 
-    def accessTokenInformationProvider = new AccessTokenInformationProvider()
+    def resourceServerUriBuilder = Mock(ResourceServerUriBuilder)
+    def httpClientHelper = Mock(HttpClientHelper)
+    def mapper = Mock(ObjectMapperWithExtensionConfig)
+
+    def accessTokenInformationProvider = new AccessTokenInformationProvider(resourceServerUriBuilder: resourceServerUriBuilder,
+        httpClientHelper: httpClientHelper, mapper: mapper)
 
     def "the user id should be provided by retrieving information from the access token"() {
         given:
         def accessToken = "theToken"
+        def uri = "/me"
+        def requestResult = Mock(HttpClientRequestResult)
+
+        def jsonUserValues = "{some json stuff}"
+        def meUserMock = Mock(MeUserRepresentation)
+
+        def meUserId ="1234"
 
         when:
         def userId = accessTokenInformationProvider.getUserIdFromToken(accessToken)
 
         then:
-        userId == null
+        1 * resourceServerUriBuilder.buildMeEndpointUri() >> uri
+        1 * httpClientHelper.executeHttpGet(uri, HttpHeader.AUTHORIZATION, accessToken) >> requestResult
+        1 * requestResult.getBody() >> jsonUserValues
+        1 * mapper.readValue(jsonUserValues, MeUserRepresentation) >> meUserMock
+        1 * meUserMock.getId() >> meUserId
+        userId == meUserId
     }
 }

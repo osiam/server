@@ -91,6 +91,11 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>org.osiam</groupId>
+            <artifactId>scim-schema</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <!-- Spring Security -->
         <dependency>
             <groupId>org.springframework.security.oauth</groupId>

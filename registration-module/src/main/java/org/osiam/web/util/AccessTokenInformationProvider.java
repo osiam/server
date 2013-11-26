@@ -1,6 +1,13 @@
 package org.osiam.web.util;
 
+import org.osiam.helper.HttpClientHelper;
+import org.osiam.helper.HttpClientRequestResult;
+import org.osiam.helper.ObjectMapperWithExtensionConfig;
+import org.osiam.web.resource.MeUserRepresentation;
 import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
+import java.io.IOException;
 
 /**
  * This class using the /me endpoint to get information about the provided access token
@@ -12,7 +19,28 @@ import org.springframework.stereotype.Component;
 @Component
 public class AccessTokenInformationProvider {
 
-    public String getUserIdFromToken(String token) {
-        return null;
+    @Inject
+    private ResourceServerUriBuilder resourceServerUriBuilder;
+    @Inject
+    private HttpClientHelper httpClientHelper;
+    @Inject
+    private ObjectMapperWithExtensionConfig mapper;
+
+    /**
+     * Calling resource server /me endpoint for access token information.
+     * @param token the valid access token
+     * @return the user id from token information
+     */
+    public String getUserIdFromToken(String token) throws IOException {
+        //get the resource server uri
+        String uri = resourceServerUriBuilder.buildMeEndpointUri();
+
+        //calling the /me endpoint
+        HttpClientRequestResult result = httpClientHelper.executeHttpGet(uri, HttpHeader.AUTHORIZATION, token);
+
+        //serialize the json response to a class
+        MeUserRepresentation meUserRepresentation = mapper.readValue(result.getBody(), MeUserRepresentation.class);
+
+        return meUserRepresentation.getId();
     }
 }
