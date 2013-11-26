@@ -18,7 +18,7 @@ class ResourceServerUriBuilderTest extends Specification {
     def resourceServerUriBuilder = new ResourceServerUriBuilder(httpScheme: httpScheme, serverHost: serverHost,
             serverPort: serverPort)
 
-    def "should return the resource server uri with appended user id"(){
+    def "should return the resource server uri to /Users with appended user id"(){
         when:
         def uri = resourceServerUriBuilder.buildUsersUriWithUserId("theUserId")
 
@@ -32,5 +32,13 @@ class ResourceServerUriBuilderTest extends Specification {
 
         then:
         uri == "http://localhost:8080/osiam-resource-server/Users/"
+    }
+
+    def "should return the /me uri"(){
+        when:
+        def uri = resourceServerUriBuilder.buildMeEndpointUri()
+
+        then:
+        uri == "http://localhost:8080/osiam-resource-server/me"
     }
 }

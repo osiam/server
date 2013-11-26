@@ -27,6 +27,24 @@ public class ResourceServerUriBuilder {
      * @return the resource server uri including the user id
      */
     public String buildUsersUriWithUserId(String userId){
+        StringBuilder stringBuilder = buildResourceServerBaseUri();
+        stringBuilder.append("/Users/")
+                .append(userId != null ? userId : "");
+
+        return stringBuilder.toString();
+    }
+
+    /**
+     * Method to build the resource server uri for /me endpoint
+     * @return the resource server uri
+     */
+    public String buildMeEndpointUri() {
+        StringBuilder stringBuilder = buildResourceServerBaseUri();
+        stringBuilder.append("/me");
+        return stringBuilder.toString();
+    }
+
+    private StringBuilder buildResourceServerBaseUri() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder
                 .append(httpScheme)
@@ -34,9 +52,8 @@ public class ResourceServerUriBuilder {
                 .append(serverHost)
                 .append(":")
                 .append(serverPort)
-                .append("/osiam-resource-server/Users/")
-                .append(userId != null ? userId : "");
+                .append("/osiam-resource-server");
 
-        return stringBuilder.toString();
+        return stringBuilder;
     }
 }
