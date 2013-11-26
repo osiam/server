@@ -10,10 +10,7 @@ import org.osiam.resources.helper.UserDeserializer;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.resources.scim.User;
-import org.osiam.web.util.HttpHeader;
-import org.osiam.web.util.MailSender;
-import org.osiam.web.util.RegistrationExtensionUrnProvider;
-import org.osiam.web.util.ResourceServerUriBuilder;
+import org.osiam.web.util.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +52,8 @@ public class ChangeEmailController {
     private RegistrationExtensionUrnProvider registrationExtensionUrnProvider;
     @Inject
     private MailSender mailSender;
+    @Inject
+    private AccessTokenInformationProvider accessTokenInformationProvider;
 
     @Inject
     private ServletContext context;
@@ -92,15 +91,16 @@ public class ChangeEmailController {
     /**
      * Saving the new E-Mail temporary, generating confirmation token and sending an E-Mail to the old registered address.
      * @param authorization Authorization header with HTTP Bearer authorization and a valid access token
-     * @param userId The user id for the user whom email address should be changed
      * @param newEmailValue The new email address value
      * @return The HTTP status code
      * @throws IOException
      * @throws MessagingException
      */
     @RequestMapping(method = RequestMethod.POST, value = "/change", produces = "application/json")
-    public ResponseEntity<String> change(@RequestHeader final String authorization, @RequestParam final String userId,
-                                         @RequestParam final String newEmailValue) throws IOException, MessagingException {
+    public ResponseEntity<String> change(@RequestHeader final String authorization,
+                                     @RequestParam final String newEmailValue) throws IOException, MessagingException {
+
+        String userId = accessTokenInformationProvider.getUserIdFromToken(authorization);
 
         String uri = resourceServerUriBuilder.buildUriWithUserId(userId);
 

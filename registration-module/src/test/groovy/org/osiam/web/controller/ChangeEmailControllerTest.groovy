@@ -9,6 +9,7 @@ import org.osiam.resources.helper.UserDeserializer
 import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.User
+import org.osiam.web.util.AccessTokenInformationProvider
 import org.osiam.web.util.HttpHeader
 import org.osiam.web.util.MailSender
 import org.osiam.web.util.RegistrationExtensionUrnProvider
@@ -34,6 +35,7 @@ class ChangeEmailControllerTest extends Specification {
     def resultMock = Mock(HttpClientRequestResult)
     def registrationExtensionUrnProvider = Mock(RegistrationExtensionUrnProvider)
     def resourceServerUriBuilder = Mock(ResourceServerUriBuilder)
+    def accessTokenInformationProvider = Mock(AccessTokenInformationProvider)
 
     def urn = "urn:scim:schemas:osiam:1.0:Registration"
 
@@ -51,7 +53,7 @@ class ChangeEmailControllerTest extends Specification {
             tempEmail: tempMailField, mailSender: mailSender, context: context, emailChangeLinkPrefix: emailChangeLinkPrefix,
             emailChangeMailFrom: emailChangeMailFrom, emailChangeMailSubject: emailChangeMailSubject,
             emailChangeInfoMailSubject: emailChangeInfoMailSubject, registrationExtensionUrnProvider: registrationExtensionUrnProvider,
-            resourceServerUriBuilder: resourceServerUriBuilder)
+            resourceServerUriBuilder: resourceServerUriBuilder, accessTokenInformationProvider: accessTokenInformationProvider)
 
     def setupSpec() {
         mapper = new ObjectMapper()
@@ -68,9 +70,10 @@ class ChangeEmailControllerTest extends Specification {
         def uri = "http://localhost:8080/osiam-resource-server/Users/" + userId
 
         when:
-        def result = changeEmailController.change(authZHeader, userId, newEmailValue)
+        def result = changeEmailController.change(authZHeader, newEmailValue)
 
         then:
+        1 * accessTokenInformationProvider.getUserIdFromToken(authZHeader) >> userId
         1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
         1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         2 * resultMock.getStatusCode() >> 400
@@ -87,9 +90,10 @@ class ChangeEmailControllerTest extends Specification {
         def user = getUserAsString()
 
         when:
-        def result = changeEmailController.change(authZHeader, userId, newEmailValue)
+        def result = changeEmailController.change(authZHeader, newEmailValue)
 
         then:
+        1 * accessTokenInformationProvider.getUserIdFromToken(authZHeader) >> userId
         1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
         1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
@@ -110,9 +114,10 @@ class ChangeEmailControllerTest extends Specification {
         def user = getUserAsString()
 
         when:
-        def result = changeEmailController.change(authZHeader, userId, newEmailValue)
+        def result = changeEmailController.change(authZHeader, newEmailValue)
 
         then:
+        1 * accessTokenInformationProvider.getUserIdFromToken(authZHeader) >> userId
         1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
         1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
@@ -137,9 +142,10 @@ class ChangeEmailControllerTest extends Specification {
         def inputStream = new ByteArrayInputStream('nine bytes and one placeholder $EMAILCHANGEURL'.bytes)
 
         when:
-        def result = changeEmailController.change(authZHeader, userId, newEmailValue)
+        def result = changeEmailController.change(authZHeader, newEmailValue)
 
         then:
+        1 * accessTokenInformationProvider.getUserIdFromToken(authZHeader) >> userId
         1 * resourceServerUriBuilder.buildUriWithUserId(userId) >> uri
         1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
