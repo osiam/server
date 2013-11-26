@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import org.apache.commons.io.IOUtils;
 import org.osiam.helper.HttpClientHelper;
 import org.osiam.helper.HttpClientRequestResult;
 import org.osiam.resources.helper.UserDeserializer;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
 import javax.mail.MessagingException;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -71,6 +73,10 @@ public class LostPasswordController {
     @Value("${osiam.web.passwordlostmail.content.path}")
     private String pathToEmailContent;
 
+    /* URI for the registration call from JavaScript */
+    @Value("${osiam.web.password.url}")
+    private String clientPasswordChangeUri;
+
 
     public LostPasswordController() {
         mapper = new ObjectMapper();
@@ -117,14 +123,30 @@ public class LostPasswordController {
     }
 
     /**
-     * Method to get an HTML form with the appropriate input fields for changing the password
+     * Method to get an HTML form with the appropriate input fields for changing the password.
+     * Form includes the already known values for userId and otp.
      * @param oneTimePassword the one time password from confirmation email
      * @param userId the user id for whom the password change should be
-     * @return HTML form with hidden fields for userId and otp
      */
-    @RequestMapping(value = "/lostForm", method = RequestMethod.GET, produces = "text/html")
-    public ResponseEntity<String> lostFrom(@RequestParam String oneTimePassword, @RequestParam String userId) {
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    @RequestMapping(value = "/lostForm", method = RequestMethod.GET)
+    public void lostFrom(@RequestParam String oneTimePassword, @RequestParam String userId,
+                                           HttpServletResponse response) throws IOException {
+
+        // load the html file as stream and convert to String for replacement
+        InputStream inputStream = context.getResourceAsStream("/WEB-INF/registration/change_password.html");
+        String htmlContent = IOUtils.toString(inputStream, "UTF-8");
+
+        // replace all placeholders with appropriate value
+        String replacedUri = htmlContent.replace("$CHANGELINK", clientPasswordChangeUri);
+        String replacedOtp = replacedUri.replace("$OTP", oneTimePassword);
+        String replacedAll = replacedOtp.replace("$USERID", userId);
+
+        // convert the String to stream
+        InputStream in = IOUtils.toInputStream(replacedAll);
+
+        // set content type and copy html stream content to response output stream
+        response.setContentType("text/html");
+        IOUtils.copy(in, response.getOutputStream());
     }
 
     /**

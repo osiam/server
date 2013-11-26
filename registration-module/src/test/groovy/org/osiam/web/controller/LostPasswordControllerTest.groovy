@@ -18,6 +18,8 @@ import spock.lang.Shared
 import spock.lang.Specification
 
 import javax.servlet.ServletContext
+import javax.servlet.ServletOutputStream
+import javax.servlet.http.HttpServletResponse
 
 /**
  * Test for LostPasswordController
@@ -45,10 +47,13 @@ class LostPasswordControllerTest extends Specification {
     def passwordlostMailFrom = "noreply@example.org"
     def passwordlostMailSubject = "Subject"
 
+    def clientPasswordChangeUri = "http://localhost:8080"
+
     def lostPasswordController = new LostPasswordController(httpClient: httpClientMock, oneTimePassword: oneTimePasswordField,
             context: contextMock, mailSender: mailSenderMock, passwordlostLinkPrefix: passwordlostLinkPrefix,
             passwordlostMailFrom: passwordlostMailFrom, passwordlostMailSubject: passwordlostMailSubject,
-            registrationExtensionUrnProvider: registrationExtensionUrnProvider, resourceServerUriBuilder: resourceServerUriBuilder)
+            registrationExtensionUrnProvider: registrationExtensionUrnProvider, resourceServerUriBuilder: resourceServerUriBuilder,
+            clientPasswordChangeUri: clientPasswordChangeUri)
 
     def setupSpec() {
         mapper = new ObjectMapper()
@@ -167,18 +172,6 @@ class LostPasswordControllerTest extends Specification {
         response.getBody() != null
     }
 
-    def "The controller should serve a html form to enable the user to submit the his new password"() {
-        given:
-        def otp = "someOTP"
-        def userId = "someId"
-
-        when:
-        def result = lostPasswordController.lostFrom(otp, userId)
-
-        then:
-        result.getStatusCode() == HttpStatus.NOT_IMPLEMENTED
-    }
-
     def "The controller should verify the user and change its password"() {
         given:
         def otp = "someOTP"
@@ -278,6 +271,23 @@ class LostPasswordControllerTest extends Specification {
 
         then:
         result.getStatusCode() == HttpStatus.UNAUTHORIZED
+    }
+
+    def "The controller should provide a html form for entering the new password with already known values like otp and user id"(){
+        given:
+        def servletResponseMock = Mock(HttpServletResponse)
+        def servletResponseOutputStream = Mock(ServletOutputStream)
+        def otp = "otp"
+        def userId = "userID"
+
+        def inputStream = new ByteArrayInputStream("some html with placeholder \$CHANGELINK, \$OTP, \$USERID".bytes)
+
+        when:
+        lostPasswordController.lostFrom(otp, userId, servletResponseMock)
+
+        then:
+        1 * contextMock.getResourceAsStream("/WEB-INF/registration/change_password.html") >> inputStream
+        1 * servletResponseMock.getOutputStream() >> servletResponseOutputStream
     }
 
     def getUserAsStringWithExtension(String otp) {
