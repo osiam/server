@@ -6,6 +6,7 @@ import org.osiam.helper.HttpClientHelper;
 import org.osiam.helper.HttpClientRequestResult;
 import org.osiam.helper.ObjectMapperWithExtensionConfig;
 import org.osiam.resources.scim.Extension;
+import org.osiam.resources.scim.ExtensionFieldType;
 import org.osiam.resources.scim.User;
 import org.osiam.web.util.HttpHeader;
 import org.osiam.web.util.MailSender;
@@ -170,7 +171,7 @@ public class LostPasswordController {
 
         //validate the oneTimePassword with the saved one from DB
         Extension extension = user.getExtension(registrationExtensionUrnProvider.getExtensionUrn());
-        String savedOTP = extension.getField(this.oneTimePassword);
+        String savedOTP = extension.getField(this.oneTimePassword, ExtensionFieldType.STRING);
 
         if (!savedOTP.equals(oneTimePassword)) {
             LOGGER.log(Level.SEVERE, "The submitted one time password is invalid!");
@@ -195,12 +196,10 @@ public class LostPasswordController {
     /*---- Private methods for lost endpoint ----*/
 
     private User buildUserForUpdate(User user, String oneTimePassword) {
-        Map<String,String> fields = new HashMap<>();
-        fields.put(this.oneTimePassword, oneTimePassword);
-
+        Extension extension = new Extension(registrationExtensionUrnProvider.getExtensionUrn());
+        extension.addOrUpdateField(this.oneTimePassword, oneTimePassword);
         return new User.Builder(user).
-                addExtension(registrationExtensionUrnProvider.getExtensionUrn(),
-                        new Extension(registrationExtensionUrnProvider.getExtensionUrn(), fields)).build();
+                addExtension(registrationExtensionUrnProvider.getExtensionUrn(),extension).build();
     }
 
     private ResponseEntity<String> sendPasswordLostMail(User parsedUser, String oneTimePassword) throws MessagingException, IOException {

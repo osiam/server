@@ -223,11 +223,11 @@ class RegisterControllerTest extends Specification {
     }
 
     def getUserAsStringWithExtension(String token) {
-        def extensionData = ["activationToken":token]
-
         def emails = new MultiValuedAttribute(primary: true, value: "email@example.org")
 
-        Extension extension = new Extension(urn, extensionData)
+        Extension extension = new Extension(urn)
+        extension.addOrUpdateField("activationToken", token)
+
         def user = new User.Builder("George")
                 .setPassword("password")
                 .setEmails([emails])

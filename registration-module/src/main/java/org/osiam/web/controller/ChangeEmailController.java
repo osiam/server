@@ -5,6 +5,7 @@ import org.osiam.helper.HttpClientHelper;
 import org.osiam.helper.HttpClientRequestResult;
 import org.osiam.helper.ObjectMapperWithExtensionConfig;
 import org.osiam.resources.scim.Extension;
+import org.osiam.resources.scim.ExtensionFieldType;
 import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.resources.scim.User;
 import org.osiam.web.util.*;
@@ -150,7 +151,7 @@ public class ChangeEmailController {
 
         // get user extensions for validation purpose
         Extension extension = user.getExtension(registrationExtensionUrnProvider.getExtensionUrn());
-        String existingConfirmToken = extension.getField(this.confirmationTokenField);
+        String existingConfirmToken = extension.getField(this.confirmationTokenField, ExtensionFieldType.STRING);
 
         if (!existingConfirmToken.equals(confirmToken)) {
             LOGGER.log(Level.WARNING, "Confirmation token miss match!");
@@ -158,7 +159,7 @@ public class ChangeEmailController {
         }
 
         // get new email
-        String newEmail = extension.getField(this.tempEmail);
+        String newEmail = extension.getField(this.tempEmail, ExtensionFieldType.STRING);
 
         // get old email address
         String oldEmail = mailSender.extractPrimaryEmail(user);
@@ -184,17 +185,10 @@ public class ChangeEmailController {
 
     private String buildUserForUpdateAsString(String newEmailValue, HttpClientRequestResult result, String confirmationToken) throws IOException {
 
-        //create extension Map
-        Map<String, String> extMap = new HashMap<>();
-
-        //add the confirmation token to extension field
-        extMap.put(confirmationTokenField, confirmationToken);
-
-        //add the new email value to the tempMail extension field
-        extMap.put(tempEmail, newEmailValue);
-
-        //Add extension Map to Extensions
-        Extension extension = new Extension(registrationExtensionUrnProvider.getExtensionUrn(), extMap);
+        //add the confirmation token to the extension and add the new email value to the tempMail extension field
+        Extension extension = new Extension(registrationExtensionUrnProvider.getExtensionUrn());
+        extension.addOrUpdateField(confirmationTokenField, confirmationToken);
+        extension.addOrUpdateField(tempEmail, newEmailValue);
 
         User user = mapper.readValue(result.getBody(), User.class);
 

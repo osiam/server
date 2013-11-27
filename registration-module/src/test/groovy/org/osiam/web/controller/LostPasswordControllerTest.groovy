@@ -280,11 +280,11 @@ class LostPasswordControllerTest extends Specification {
     }
 
     def getUserAsStringWithExtension(String otp) {
-        def extensionData = ["oneTimePassword":otp]
-
         def emails = new MultiValuedAttribute(primary: true, value: "email@example.org")
 
-        Extension extension = new Extension(urn, extensionData)
+        Extension extension = new Extension(urn)
+        extension.addOrUpdateField("oneTimePassword", otp)
+
         def user = new User.Builder("George")
                 .setPassword("password")
                 .setEmails([emails])

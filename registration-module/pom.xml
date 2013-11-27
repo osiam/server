@@ -192,7 +192,6 @@
         <dependency>
             <groupId>org.osiam</groupId>
             <artifactId>scim-schema</artifactId>
-            <version>0.30</version>
         </dependency>
     </dependencies>
 </project>

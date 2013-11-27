@@ -6,6 +6,7 @@ import org.osiam.helper.HttpClientHelper;
 import org.osiam.helper.HttpClientRequestResult;
 import org.osiam.helper.ObjectMapperWithExtensionConfig;
 import org.osiam.resources.scim.Extension;
+import org.osiam.resources.scim.ExtensionFieldType;
 import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.resources.scim.User;
 import org.osiam.web.util.HttpHeader;
@@ -154,7 +155,7 @@ public class RegisterController {
         //get extension field to check activation token validity
         User userForActivation = mapper.readValue(result.getBody(), User.class);
         Extension extension = userForActivation.getExtension(registrationExtensionUrnProvider.getExtensionUrn());
-        String activationTokenFieldValue = extension.getField(activationTokenField);
+        String activationTokenFieldValue = extension.getField(activationTokenField, ExtensionFieldType.STRING);
 
         if (!activationTokenFieldValue.equals(activationToken)) {
             LOGGER.log(Level.WARNING, "Activation token miss match!");
@@ -187,7 +188,6 @@ public class RegisterController {
     /*---- Private methods for create endpoint ----*/
 
     private User createUserForRegistration(User parsedUser, String activationToken) {
-
         // Add Extension with the token to the user and set active to false
         User.Builder builder = new User.Builder(parsedUser);
         builder.setActive(false);
@@ -197,10 +197,9 @@ public class RegisterController {
         roles.add(new MultiValuedAttribute.Builder().setValue("USER").build());
         builder.setRoles(roles);
 
-        Map<String,String> fields = new HashMap<>();
-        fields.put("activationToken", activationToken);
-        builder.addExtension(registrationExtensionUrnProvider.getExtensionUrn(),
-                new Extension(registrationExtensionUrnProvider.getExtensionUrn(), fields));
+        Extension extension = new Extension(registrationExtensionUrnProvider.getExtensionUrn());
+        extension.addOrUpdateField(activationTokenField, activationToken);
+        builder.addExtension(registrationExtensionUrnProvider.getExtensionUrn(),extension);
 
         return builder.build();
     }

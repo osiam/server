@@ -284,10 +284,9 @@ class ChangeEmailControllerTest extends Specification {
         def primary = new MultiValuedAttribute(primary: true, value: "email@example.org")
         def email = new MultiValuedAttribute(primary: false, value: "nonPrimary@example.org")
 
-        def fields = [:]
-        fields.put(confirmTokenField, confToken)
-        fields.put(tempMailField, "newemail@example.org")
-        def extension = new Extension(urn, fields);
+        def extension = new Extension(urn);
+        extension.addOrUpdateField(confirmTokenField, confToken)
+        extension.addOrUpdateField(tempMailField, "newemail@example.org")
 
         def user = new User.Builder("Boy George")
                 .setPassword("password")
