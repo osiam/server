@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import org.osiam.helper.HttpClientHelper
 import org.osiam.helper.HttpClientRequestResult
+import org.osiam.helper.ObjectMapperWithExtensionConfig
 import org.osiam.resources.helper.UserDeserializer
 import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.MultiValuedAttribute
@@ -45,7 +46,7 @@ class RegisterControllerTest extends Specification {
             clientRegistrationUri: clientRegistrationUri, activationTokenField: activationTokenField,
             mailSender: mailSenderMock, registermailFrom: registermailFrom, registermailSubject: registermailSubject,
             registermailLinkPrefix: registermailLinkPrefix, registrationExtensionUrnProvider: registrationExtensionUrnProvider,
-            resourceServerUriBuilder: resourceServerUriBuilder)
+            resourceServerUriBuilder: resourceServerUriBuilder, mapper: new ObjectMapperWithExtensionConfig())
 
     def setupSpec() {
         mapper = new ObjectMapper()

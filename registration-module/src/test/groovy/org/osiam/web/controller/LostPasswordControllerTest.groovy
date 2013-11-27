@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import org.osiam.helper.HttpClientHelper
 import org.osiam.helper.HttpClientRequestResult
+import org.osiam.helper.ObjectMapperWithExtensionConfig
 import org.osiam.resources.helper.UserDeserializer
 import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.MultiValuedAttribute
@@ -53,7 +54,7 @@ class LostPasswordControllerTest extends Specification {
             context: contextMock, mailSender: mailSenderMock, passwordlostLinkPrefix: passwordlostLinkPrefix,
             passwordlostMailFrom: passwordlostMailFrom, passwordlostMailSubject: passwordlostMailSubject,
             registrationExtensionUrnProvider: registrationExtensionUrnProvider, resourceServerUriBuilder: resourceServerUriBuilder,
-            clientPasswordChangeUri: clientPasswordChangeUri)
+            clientPasswordChangeUri: clientPasswordChangeUri, mapper: new ObjectMapperWithExtensionConfig())
 
     def setupSpec() {
         mapper = new ObjectMapper()
