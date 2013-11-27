@@ -1,12 +1,8 @@
 package org.osiam.web.controller
 
-import com.fasterxml.jackson.core.Version
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.module.SimpleModule
 import org.osiam.helper.HttpClientHelper
 import org.osiam.helper.HttpClientRequestResult
 import org.osiam.helper.ObjectMapperWithExtensionConfig
-import org.osiam.resources.helper.UserDeserializer
 import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.User
@@ -15,7 +11,6 @@ import org.osiam.web.util.MailSender
 import org.osiam.web.util.RegistrationExtensionUrnProvider
 import org.osiam.web.util.ResourceServerUriBuilder
 import org.springframework.http.HttpStatus
-import spock.lang.Shared
 import spock.lang.Specification
 
 import javax.servlet.ServletContext
@@ -31,7 +26,7 @@ import javax.servlet.http.HttpServletResponse
  */
 class LostPasswordControllerTest extends Specification {
 
-    @Shared def mapper
+    def mapper = new ObjectMapperWithExtensionConfig()
     def httpClientMock = Mock(HttpClientHelper)
     def requestResultMock = Mock(HttpClientRequestResult)
     def contextMock = Mock(ServletContext)
@@ -54,14 +49,7 @@ class LostPasswordControllerTest extends Specification {
             context: contextMock, mailSender: mailSenderMock, passwordlostLinkPrefix: passwordlostLinkPrefix,
             passwordlostMailFrom: passwordlostMailFrom, passwordlostMailSubject: passwordlostMailSubject,
             registrationExtensionUrnProvider: registrationExtensionUrnProvider, resourceServerUriBuilder: resourceServerUriBuilder,
-            clientPasswordChangeUri: clientPasswordChangeUri, mapper: new ObjectMapperWithExtensionConfig())
-
-    def setupSpec() {
-        mapper = new ObjectMapper()
-        def userDeserializerModule = new SimpleModule("userDeserializerModule", new Version(1, 0, 0, null))
-                .addDeserializer(User.class, new UserDeserializer(User.class))
-        mapper.registerModule(userDeserializerModule)
-    }
+            clientPasswordChangeUri: clientPasswordChangeUri, mapper: mapper)
 
 
     def "The controller should start the flow by generating a one time password and send an email to the user"() {

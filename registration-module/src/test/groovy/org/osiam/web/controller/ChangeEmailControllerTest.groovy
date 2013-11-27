@@ -1,22 +1,13 @@
 package org.osiam.web.controller
 
-import com.fasterxml.jackson.core.Version
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.module.SimpleModule
 import org.osiam.helper.HttpClientHelper
 import org.osiam.helper.HttpClientRequestResult
 import org.osiam.helper.ObjectMapperWithExtensionConfig
-import org.osiam.resources.helper.UserDeserializer
 import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.User
-import org.osiam.web.util.AccessTokenInformationProvider
-import org.osiam.web.util.HttpHeader
-import org.osiam.web.util.MailSender
-import org.osiam.web.util.RegistrationExtensionUrnProvider
-import org.osiam.web.util.ResourceServerUriBuilder
+import org.osiam.web.util.*
 import org.springframework.http.HttpStatus
-import spock.lang.Shared
 import spock.lang.Specification
 
 import javax.servlet.ServletContext
@@ -30,7 +21,7 @@ import javax.servlet.ServletContext
  */
 class ChangeEmailControllerTest extends Specification {
 
-    @Shared def mapper
+    def mapper = new ObjectMapperWithExtensionConfig()
 
     def httpClientMock = Mock(HttpClientHelper)
     def resultMock = Mock(HttpClientRequestResult)
@@ -55,14 +46,8 @@ class ChangeEmailControllerTest extends Specification {
             emailChangeMailFrom: emailChangeMailFrom, emailChangeMailSubject: emailChangeMailSubject,
             emailChangeInfoMailSubject: emailChangeInfoMailSubject, registrationExtensionUrnProvider: registrationExtensionUrnProvider,
             resourceServerUriBuilder: resourceServerUriBuilder, accessTokenInformationProvider: accessTokenInformationProvider,
-            mapper: new ObjectMapperWithExtensionConfig())
+            mapper: mapper)
 
-    def setupSpec() {
-        mapper = new ObjectMapper()
-        def userDeserializerModule = new SimpleModule("userDeserializerModule", new Version(1, 0, 0, null))
-                .addDeserializer(User.class, new UserDeserializer(User.class))
-        mapper.registerModule(userDeserializerModule)
-    }
 
     def "there should be an failure in change email if update user with extensions failed"() {
         given:

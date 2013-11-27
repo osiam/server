@@ -1,6 +1,7 @@
 package org.osiam.web.resource;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
@@ -16,8 +17,8 @@ public class MeUserRepresentation {
 
     private String id;
     private String name;
-    private String first_name;
-    private String last_name;
+    private String firstName;
+    private String lastName;
     private String link;
     private String userName;
     private String gender;
@@ -25,7 +26,7 @@ public class MeUserRepresentation {
     private int timezone;
     private String locale;
     private boolean verified;
-    private String updated_time;
+    private String updatedTime;
 
 
     public String getId() {
@@ -44,20 +45,24 @@ public class MeUserRepresentation {
         this.name = name;
     }
 
-    public String getFirst_name() {
-        return first_name;
+    @JsonProperty("first_name")
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFirst_name(String first_name) {
-        this.first_name = first_name;
+    @JsonProperty("first_name")
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public String getLast_name() {
-        return last_name;
+    @JsonProperty("last_name")
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setLast_name(String last_name) {
-        this.last_name = last_name;
+    @JsonProperty("last_name")
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getLink() {
@@ -116,11 +121,13 @@ public class MeUserRepresentation {
         this.verified = verified;
     }
 
-    public String getUpdated_time() {
-        return updated_time;
+    @JsonProperty("updated_time")
+    public String getUpdatedTime() {
+        return updatedTime;
     }
 
-    public void setUpdated_time(String updated_time) {
-        this.updated_time = updated_time;
+    @JsonProperty("updated_time")
+    public void setUpdatedTime(String updatedTime) {
+        this.updatedTime = updatedTime;
     }
 }

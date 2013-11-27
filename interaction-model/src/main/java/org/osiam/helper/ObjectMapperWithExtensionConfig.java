@@ -17,6 +17,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class ObjectMapperWithExtensionConfig extends ObjectMapper {
 
+    private static final long serialVersionUID = -1206817582445889248L;
+
     /**
      * Building jackson's object mapper and register a module with a default deserializer for scim user with extensions.
      */

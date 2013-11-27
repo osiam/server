@@ -34,8 +34,8 @@ class MeUserRepresentationTest extends Specification {
 
         then:
         result.getEmail() == "mari@ssa.ma"
-        result.getFirst_name() == "Issa"
-        result.getLast_name() == "Mar"
+        result.getFirstName() == "Issa"
+        result.getLastName() == "Mar"
         result.getGender() == "female"
         result.getId() == "cef9452e-00a9-4cec-a086-d171374ffbef"
         result.getLink() == "not supported."
@@ -44,7 +44,7 @@ class MeUserRepresentationTest extends Specification {
         result.getTimezone() == 2
         result.getUserName() == "marissa"
         result.isVerified()
-        result.getUpdated_time() == "2011-10-10T00:00:00.000+02:00"
+        result.getUpdatedTime() == "2011-10-10T00:00:00.000+02:00"
     }
 
     def "should be serializable"() {
@@ -53,8 +53,8 @@ class MeUserRepresentationTest extends Specification {
 
         def user = new MeUserRepresentation()
         user.setEmail("mari@ssa.ma")
-        user.setFirst_name("Issa")
-        user.setLast_name("Mar")
+        user.setFirstName("Issa")
+        user.setLastName("Mar")
         user.setGender("female")
         user.setId("cef9452e-00a9-4cec-a086-d171374ffbef")
         user.setLink("not supported.")
@@ -63,23 +63,24 @@ class MeUserRepresentationTest extends Specification {
         user.setTimezone(2)
         user.setUserName("marissa")
         user.setVerified(true)
-        user.setUpdated_time("2011-10-10T00:00:00.000+02:00")
+        user.setUpdatedTime("2011-10-10T00:00:00.000+02:00")
 
         when:
         def result = mapper.writeValueAsString(user)
 
         then:
-        result == "{\"id\":\"cef9452e-00a9-4cec-a086-d171374ffbef\"," +
-                "\"name\":\"Mar Issa\"," +
-                "\"first_name\":\"Issa\"," +
-                "\"last_name\":\"Mar\"," +
-                "\"link\":\"not supported.\"," +
-                "\"userName\":\"marissa\"," +
-                "\"gender\":\"female\"," +
-                "\"email\":\"mari@ssa.ma\"," +
-                "\"timezone\":2," +
-                "\"locale\":null," +
-                "\"verified\":true," +
-                "\"updated_time\":\"2011-10-10T00:00:00.000+02:00\"}"
+        println(result)
+        result.contains("\"id\":\"cef9452e-00a9-4cec-a086-d171374ffbef\"")
+        result.contains("\"name\":\"Mar Issa\"")
+        result.contains("\"first_name\":\"Issa\"")
+        result.contains("\"last_name\":\"Mar\"")
+        result.contains("\"link\":\"not supported.\"")
+        result.contains("\"userName\":\"marissa\"")
+        result.contains("\"gender\":\"female\"")
+        result.contains("\"email\":\"mari@ssa.ma\"")
+        result.contains("\"timezone\":2")
+        result.contains("\"locale\":null")
+        result.contains("\"verified\":true")
+        result.contains("\"updated_time\":\"2011-10-10T00:00:00.000+02:00\"")
     }
 }
