@@ -4,6 +4,7 @@ import org.osiam.helper.HttpClientHelper
 import org.osiam.helper.HttpClientRequestResult
 import org.osiam.helper.ObjectMapperWithExtensionConfig
 import org.osiam.web.resource.MeUserRepresentation
+import org.springframework.http.HttpStatus
 import spock.lang.Specification
 
 /**
@@ -39,9 +40,25 @@ class AccessTokenInformationProviderTest extends Specification {
         then:
         1 * resourceServerUriBuilder.buildMeEndpointUri() >> uri
         1 * httpClientHelper.executeHttpGet(uri, HttpHeader.AUTHORIZATION, accessToken) >> requestResult
-        1 * requestResult.getBody() >> jsonUserValues
+        2 * requestResult.getBody() >> jsonUserValues
         1 * mapper.readValue(jsonUserValues, MeUserRepresentation) >> meUserMock
         1 * meUserMock.getId() >> meUserId
         userId == meUserId
+    }
+
+    def "should throw IllegalArgumentException and append the error message if it was impossible to get token information"() {
+        given:
+        def accessToken = "invalidToken"
+        def uri = "/me"
+        def requestResult = new HttpClientRequestResult("{\"error\":\"unauthorized\"}", HttpStatus.UNAUTHORIZED.value())
+
+        when:
+        accessTokenInformationProvider.getUserIdFromToken(accessToken)
+
+        then:
+        1 * resourceServerUriBuilder.buildMeEndpointUri() >> uri
+        1 * httpClientHelper.executeHttpGet(uri, HttpHeader.AUTHORIZATION, accessToken) >> requestResult
+        def exception = thrown(IllegalArgumentException)
+        exception.getMessage() == "{\"error\":\"unauthorized\"}"
     }
 }

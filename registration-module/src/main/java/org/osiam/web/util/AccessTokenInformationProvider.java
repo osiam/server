@@ -38,6 +38,11 @@ public class AccessTokenInformationProvider {
         //calling the /me endpoint
         HttpClientRequestResult result = httpClientHelper.executeHttpGet(uri, HttpHeader.AUTHORIZATION, token);
 
+        //Check if the result has an error, possible that access token is invalid
+        if (result.getBody().contains("error")) {
+            throw new IllegalArgumentException(result.getBody());
+        }
+
         //serialize the json response to a class
         MeUserRepresentation meUserRepresentation = mapper.readValue(result.getBody(), MeUserRepresentation.class);
 

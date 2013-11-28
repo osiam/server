@@ -71,7 +71,7 @@ public class LostPasswordController {
     @Value("${osiam.web.passwordlostmail.content.path}")
     private String pathToEmailContent;
 
-    /* URI for the registration call from JavaScript */
+    /* URI for the change password call from JavaScript */
     @Value("${osiam.web.password.url}")
     private String clientPasswordChangeUri;
 
@@ -121,8 +121,8 @@ public class LostPasswordController {
      * @param userId the user id for whom the password change should be
      */
     @RequestMapping(value = "/lostForm", method = RequestMethod.GET)
-    public void lostFrom(@RequestParam String oneTimePassword, @RequestParam String userId,
-                                           HttpServletResponse response) throws IOException {
+    public void lostForm(@RequestParam String oneTimePassword, @RequestParam String userId,
+                         HttpServletResponse response) throws IOException {
 
         // load the html file as stream and convert to String for replacement
         InputStream inputStream = context.getResourceAsStream("/WEB-INF/registration/change_password.html");

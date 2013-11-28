@@ -1,0 +1,84 @@
+<div ng-app="email" ng-controller="changeController">
+    <script src="http://code.angularjs.org/1.2.0-rc.3/angular.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script>
+        var app = angular.module('email', []);
+        app.controller('changeController', function($scope, $http){
+
+            $scope.email_validate = '';
+            $scope.email = '';
+
+            $scope.submitEmailChange = function() {
+                $http({method: 'POST', url: '$CHANGELINK',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    // using jQuery to url encode the data, angular does not provide this functionality
+                    data: $.param({newEmailValue: $scope.email})
+                }).
+                        success(function(data, status, headers, config) {
+                            $scope.status = status;
+                            $scope.data = data;
+                        }).
+                        error(function(data, status, headers, config) {
+                            $scope.status = status;
+                            $scope.data = data;
+                        });
+            };
+        });
+        app.directive('match', function($parse) {
+            return {
+                require: 'ngModel',
+                link: function(scope, elem, attrs, ctrl) {
+                    scope.$watch(function() {
+                        //$parse(attrs.match) defines a method. the parameter 'scope' will be searched for the 'attrs.match' value
+                        return $parse(attrs.match)(scope) === ctrl.$modelValue;
+                    }, function(currentValue) {
+                        ctrl.$setValidity('mismatch', currentValue);
+                    });
+                }
+            }
+        });
+    </script>
+    <h1>E-Mail Adresse ersetzen</h1>
+    <hr>
+    <form name="form" class="css-form" novalidate>
+        <table>
+            <tr>
+                <td>
+                    <label>E-Mail Adresse*</label>
+                </td>
+                <td>
+                    <input type="email" name="email" ng-model="email" required/>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>E-Mail Adresse wiederholen*</label>
+                </td>
+                <td>
+                    <input type="email" name="email2" ng-model="email_validate" match="email" required/>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                <td>
+                    <button name="absendenBtn" ng-click='submitEmailChange()' ng-disabled="form.$invalid" >Absenden</button>
+                </td>
+            </tr>
+        </table>
+        <hr>
+    </form>
+    <style type="text/css">
+        .css-form input.ng-invalid.ng-dirty {
+            background-color: #FA787E;
+        }
+        .css-form input.ng-valid.ng-dirty {
+            background-color: #78FA89;
+        }
+        input {
+            margin-left: 30%;
+        }
+        button {
+            margin-left: 30%;
+        }
+    </style>
+</div>

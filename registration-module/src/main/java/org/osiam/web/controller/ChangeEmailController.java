@@ -1,6 +1,7 @@
 package org.osiam.web.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.apache.commons.io.IOUtils;
 import org.osiam.helper.HttpClientHelper;
 import org.osiam.helper.HttpClientRequestResult;
 import org.osiam.helper.ObjectMapperWithExtensionConfig;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.inject.Inject;
 import javax.mail.MessagingException;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -78,7 +80,27 @@ public class ChangeEmailController {
     @Value("${osiam.web.emailchange-info.content.path}")
     private String pathToEmailInfoContent;
 
+    /* URI for the change email call from JavaScript */
+    @Value("${osiam.web.email.url}")
+    private String clientEmailChangeUri;
 
+
+
+    /**
+     * Generates a HTTP form with the fields for change email purpose.
+     */
+    @RequestMapping(method = RequestMethod.GET)
+    public void index(HttpServletResponse response) throws IOException {
+        //load the html file as stream
+        InputStream inputStream = context.getResourceAsStream("/WEB-INF/registration/change_email.html");
+        String htmlContent = IOUtils.toString(inputStream);
+        //replacing the url
+        String replacedAll = htmlContent.replace("$CHANGELINK", clientEmailChangeUri);
+        InputStream in = IOUtils.toInputStream(replacedAll);
+        //set the content type
+        response.setContentType("text/html");
+        IOUtils.copy(in, response.getOutputStream());
+    }
 
     /**
      * Saving the new E-Mail temporary, generating confirmation token and sending an E-Mail to the old registered address.
@@ -91,8 +113,14 @@ public class ChangeEmailController {
     @RequestMapping(method = RequestMethod.POST, value = "/change", produces = "application/json")
     public ResponseEntity<String> change(@RequestHeader final String authorization,
                                      @RequestParam final String newEmailValue) throws IOException, MessagingException {
+        String userId;
 
-        String userId = accessTokenInformationProvider.getUserIdFromToken(authorization);
+        // catch exception due to problems getting information from the access token, possible that the token was invalid
+        try {
+            userId = accessTokenInformationProvider.getUserIdFromToken(authorization);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
 
         String uri = resourceServerUriBuilder.buildUsersUriWithUserId(userId);
 
@@ -195,9 +223,7 @@ public class ChangeEmailController {
         //add extensions to user
         User updateUser = new User.Builder(user).addExtension(registrationExtensionUrnProvider.getExtensionUrn(), extension).build();
 
-        String updateUserAsString = mapper.writeValueAsString(updateUser);
-
-        return updateUserAsString;
+        return mapper.writeValueAsString(updateUser);
     }
 
     private ResponseEntity<String> sendingConfirmationMailToNewAddress(String newEmailAddress, String confirmationToken, User user) throws IOException, MessagingException {

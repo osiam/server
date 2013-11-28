@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus
 import spock.lang.Specification
 
 import javax.servlet.ServletContext
+import javax.servlet.ServletOutputStream
+import javax.servlet.http.HttpServletResponse
 
 /**
  * Unit test for change email controller.
@@ -39,6 +41,7 @@ class ChangeEmailControllerTest extends Specification {
     def emailChangeMailFrom = "bugs@bunny.com"
     def emailChangeMailSubject = "email change"
     def emailChangeInfoMailSubject = "email change done"
+    def clientEmailChangeUri = "http://test"
     def context = Mock(ServletContext)
 
     def changeEmailController = new ChangeEmailController(httpClient: httpClientMock, confirmationTokenField: confirmTokenField,
@@ -46,7 +49,7 @@ class ChangeEmailControllerTest extends Specification {
             emailChangeMailFrom: emailChangeMailFrom, emailChangeMailSubject: emailChangeMailSubject,
             emailChangeInfoMailSubject: emailChangeInfoMailSubject, registrationExtensionUrnProvider: registrationExtensionUrnProvider,
             resourceServerUriBuilder: resourceServerUriBuilder, accessTokenInformationProvider: accessTokenInformationProvider,
-            mapper: mapper)
+            mapper: mapper, clientEmailChangeUri: clientEmailChangeUri)
 
 
     def "there should be an failure in change email if update user with extensions failed"() {
@@ -143,6 +146,18 @@ class ChangeEmailControllerTest extends Specification {
         1 * mailSender.getEmailContentAsStream("/WEB-INF/registration/emailchange-content.txt", _, context) >> inputStream
         1 * mailSender.sendMail(emailChangeMailFrom, newEmailValue, emailChangeMailSubject, inputStream, _)
         result.getStatusCode() == HttpStatus.OK
+    }
+
+    def "should catch IllegalArgumentException and returning response with error message"(){
+        given:
+        def authZ = "invalid access token"
+
+        when:
+        def result = changeEmailController.change(authZ, "some@email.de")
+
+        then:
+        1 * accessTokenInformationProvider.getUserIdFromToken(authZ) >> {throw new IllegalArgumentException("{\"error\":\"unauthorized\"}")}
+        result.getBody() == "{\"error\":\"unauthorized\"}"
     }
 
     def getUserAsString() {
@@ -278,6 +293,20 @@ class ChangeEmailControllerTest extends Specification {
 
         then:
         result.getStatusCode() == HttpStatus.UNAUTHORIZED
+    }
+
+    def "the controller should provide a html form for entering the new email address"() {
+        given:
+        def servletResponseMock = Mock(HttpServletResponse)
+        def servletOutputStream = Mock(ServletOutputStream)
+        def inputStream = new ByteArrayInputStream("some html stuff with \$CHANGELINK placeholder".bytes)
+
+        when:
+        changeEmailController.index(servletResponseMock)
+
+        then:
+        1 * context.getResourceAsStream("/WEB-INF/registration/change_email.html") >> inputStream
+        1 * servletResponseMock.getOutputStream() >> servletOutputStream
     }
 
     def getUserWithTempEmailAsString(confToken) {

@@ -272,7 +272,7 @@ class LostPasswordControllerTest extends Specification {
         def inputStream = new ByteArrayInputStream("some html with placeholder \$CHANGELINK, \$OTP, \$USERID".bytes)
 
         when:
-        lostPasswordController.lostFrom(otp, userId, servletResponseMock)
+        lostPasswordController.lostForm(otp, userId, servletResponseMock)
 
         then:
         1 * contextMock.getResourceAsStream("/WEB-INF/registration/change_password.html") >> inputStream
