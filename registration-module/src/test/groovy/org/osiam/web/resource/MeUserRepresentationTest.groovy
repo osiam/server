@@ -69,7 +69,6 @@ class MeUserRepresentationTest extends Specification {
         def result = mapper.writeValueAsString(user)
 
         then:
-        println(result)
         result.contains("\"id\":\"cef9452e-00a9-4cec-a086-d171374ffbef\"")
         result.contains("\"name\":\"Mar Issa\"")
         result.contains("\"first_name\":\"Issa\"")
