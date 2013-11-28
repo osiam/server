@@ -21,13 +21,14 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.storage.filter;
+package org.osiam.storage.query;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
@@ -42,12 +43,17 @@ import org.osiam.storage.entities.InternalIdSkeleton;
 import org.osiam.storage.entities.InternalIdSkeleton_;
 import org.osiam.storage.entities.MetaEntity_;
 
-enum GroupFilterField implements FilterField<GroupEntity> {
+public enum GroupQueryField implements QueryField<GroupEntity> {
     EXTERNALID("externalid") {
         @Override
         public Predicate addFilter(Root<GroupEntity> root,
                 FilterConstraint constraint, String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(root.get(GroupEntity_.externalId), value, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<GroupEntity> root, CriteriaBuilder cb) {
+            return root.get(GroupEntity_.externalId);
         }
     },
     META_CREATED("meta.created") {
@@ -57,6 +63,11 @@ enum GroupFilterField implements FilterField<GroupEntity> {
             Date date = ISODateTimeFormat.dateTimeParser().parseDateTime(value).toDate();
             return constraint.createPredicateForDateField(root.get(GroupEntity_.meta).get(MetaEntity_.created),
                     date, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<GroupEntity> root, CriteriaBuilder cb) {
+            return root.get(GroupEntity_.meta).get(MetaEntity_.created);
         }
     },
     META_LASTMODIFIED("meta.lastmodified") {
@@ -68,6 +79,11 @@ enum GroupFilterField implements FilterField<GroupEntity> {
                     root.get(GroupEntity_.meta).get(MetaEntity_.lastModified),
                     date, cb);
         }
+
+        @Override
+        public Expression<?> createSortByField(Root<GroupEntity> root, CriteriaBuilder cb) {
+            return root.get(GroupEntity_.meta).get(MetaEntity_.lastModified);
+        }
     },
     META_LOCATION("meta.location") {
         @Override
@@ -76,12 +92,22 @@ enum GroupFilterField implements FilterField<GroupEntity> {
             return constraint.createPredicateForStringField(root.get(GroupEntity_.meta)
                     .get(MetaEntity_.location), value, cb);
         }
+
+        @Override
+        public Expression<?> createSortByField(Root<GroupEntity> root, CriteriaBuilder cb) {
+            return root.get(GroupEntity_.meta).get(MetaEntity_.location);
+        }
     },
     DISPLAYNAME("displayname") {
         @Override
         public Predicate addFilter(Root<GroupEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(root.get(GroupEntity_.displayName), value, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<GroupEntity> root, CriteriaBuilder cb) {
+            return root.get(GroupEntity_.displayName);
         }
     },
     MEMBERS("members") {
@@ -92,6 +118,11 @@ enum GroupFilterField implements FilterField<GroupEntity> {
                     GroupEntity_.members);
             return constraint.createPredicateForStringField(join.get(InternalIdSkeleton_.id), value, cb);
         }
+
+        @Override
+        public Expression<?> createSortByField(Root<GroupEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
+        }
     },
     MEMBERS_VALUE("members.value") {
 
@@ -101,19 +132,24 @@ enum GroupFilterField implements FilterField<GroupEntity> {
                     GroupEntity_.members);
             return constraint.createPredicateForStringField(join.get(InternalIdSkeleton_.id), value, cb);
         }
+
+        @Override
+        public Expression<?> createSortByField(Root<GroupEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
+        }
     };
 
-    private static final Map<String, GroupFilterField> stringToEnum = new HashMap<>();
+    private static final Map<String, GroupQueryField> stringToEnum = new HashMap<>();
 
     static {
-        for (GroupFilterField filterField : values()) {
+        for (GroupQueryField filterField : values()) {
             stringToEnum.put(filterField.toString(), filterField);
         }
     }
 
     private final String name;
 
-    private GroupFilterField(String name) {
+    private GroupQueryField(String name) {
         this.name = name;
     }
 
@@ -122,8 +158,12 @@ enum GroupFilterField implements FilterField<GroupEntity> {
         return name;
     }
 
-    public static GroupFilterField fromString(String name) {
+    public static GroupQueryField fromString(String name) {
         return stringToEnum.get(name);
+    }
+
+    protected RuntimeException handleSortByFieldNotSupported(String fieldName) {
+        throw new RuntimeException("Sorting by " + fieldName + " is not supported yet");
     }
 
     @SuppressWarnings("unchecked")

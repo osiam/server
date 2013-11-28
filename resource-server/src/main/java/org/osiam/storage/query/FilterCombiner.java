@@ -21,12 +21,12 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.storage.filter;
+package org.osiam.storage.query;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 
-public enum Combiner {
+public enum FilterCombiner {
     AND {
         @Override
         public Predicate addFilter(CriteriaBuilder cb, Predicate leftTerm, Predicate rightTerm) {
