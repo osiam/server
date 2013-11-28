@@ -89,11 +89,11 @@ public class ChangeEmailController {
     /**
      * Generates a HTTP form with the fields for change email purpose.
      */
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(method=RequestMethod.GET)
     public void index(HttpServletResponse response) throws IOException {
         //load the html file as stream
         InputStream inputStream = context.getResourceAsStream("/WEB-INF/registration/change_email.html");
-        String htmlContent = IOUtils.toString(inputStream);
+        String htmlContent = IOUtils.toString(inputStream, "UTF-8");
         //replacing the url
         String replacedAll = htmlContent.replace("$CHANGELINK", clientEmailChangeUri);
         InputStream in = IOUtils.toInputStream(replacedAll);
