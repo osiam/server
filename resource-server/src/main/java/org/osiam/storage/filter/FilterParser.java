@@ -1,6 +1,7 @@
 package org.osiam.storage.filter;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,15 +30,14 @@ public abstract class FilterParser<T extends InternalIdSkeleton> {
             sb.append(constraint.toString());
         }
         return sb.toString();
-
     }
 
     @PersistenceContext
     protected EntityManager entityManager;
 
     public Predicate createPredicateAndJoin(String filterString, Root<T> root) {
-        ArrayList<String> filterFragments = new ArrayList<>();
-        ArrayList<Predicate> predicates = new ArrayList<>();
+        List<String> filterFragments = new LinkedList<>();
+        List<Predicate> predicates = new LinkedList<>();
 
         push(filterString, filterFragments);
 
@@ -57,7 +57,7 @@ public abstract class FilterParser<T extends InternalIdSkeleton> {
             if (matcherCombined.matches()) {
                 String leftTerm = matcherCombined.group(1); // NOSONAR - no need to make constant for number
                 String combinedWith = matcherCombined.group(2).toUpperCase(Locale.ENGLISH); // NOSONAR - no need to make
-                                                                                            // constant for number
+                // constant for number
                 String rightTerm = matcherCombined.group(3); // NOSONAR - no need to make constant for number
 
                 push(combinedWith, filterFragments);
@@ -85,11 +85,11 @@ public abstract class FilterParser<T extends InternalIdSkeleton> {
 
     protected abstract FilterChain<T> createFilterChain(String filter);
 
-    protected <E> void push(E o, ArrayList<E> stack) {
+    protected <E> void push(E o, List<E> stack) {
         stack.add(o);
     }
 
-    protected <E> E pop(ArrayList<E> stack) {
+    protected <E> E pop(List<E> stack) {
         return stack.remove(stack.size() - 1);
     }
 }
