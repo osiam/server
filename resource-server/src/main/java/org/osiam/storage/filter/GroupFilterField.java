@@ -1,3 +1,26 @@
+/*
+ * Copyright (C) 2013 tarent AG
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package org.osiam.storage.filter;
 
 import java.util.Date;
@@ -5,12 +28,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.SetJoin;
+import javax.persistence.metamodel.SetAttribute;
 
 import org.joda.time.format.ISODateTimeFormat;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.GroupEntity_;
+import org.osiam.storage.entities.InternalIdSkeleton;
+import org.osiam.storage.entities.InternalIdSkeleton_;
 import org.osiam.storage.entities.MetaEntity_;
 
 enum GroupFilterField implements FilterField<GroupEntity> {
@@ -55,7 +84,24 @@ enum GroupFilterField implements FilterField<GroupEntity> {
             return constraint.createPredicateForStringField(root.get(GroupEntity_.displayName), value, cb);
         }
     },
-    ;
+    MEMBERS("members") {
+
+        @Override
+        public Predicate addFilter(Root<GroupEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
+            SetJoin<GroupEntity, InternalIdSkeleton> join = createOrGetJoin("members", root,
+                    GroupEntity_.members);
+            return constraint.createPredicateForStringField(join.get(InternalIdSkeleton_.id), value, cb);
+        }
+    },
+    MEMBERS_VALUE("members.value") {
+
+        @Override
+        public Predicate addFilter(Root<GroupEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
+            SetJoin<GroupEntity, InternalIdSkeleton> join = createOrGetJoin("members", root,
+                    GroupEntity_.members);
+            return constraint.createPredicateForStringField(join.get(InternalIdSkeleton_.id), value, cb);
+        }
+    };
 
     private static final Map<String, GroupFilterField> stringToEnum = new HashMap<>();
 
@@ -78,6 +124,22 @@ enum GroupFilterField implements FilterField<GroupEntity> {
 
     public static GroupFilterField fromString(String name) {
         return stringToEnum.get(name);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <T> SetJoin<GroupEntity, T> createOrGetJoin(String alias, Root<GroupEntity> root,
+            SetAttribute<GroupEntity, T> attribute) {
+
+        for (Join<GroupEntity, ?> currentJoin : root.getJoins()) {
+            if (currentJoin.getAlias().equals(alias)) {
+                return (SetJoin<GroupEntity, T>) currentJoin;
+            }
+        }
+
+        final SetJoin<GroupEntity, T> join = root.join(attribute, JoinType.LEFT);
+        join.alias(alias);
+
+        return join;
     }
 
 }
