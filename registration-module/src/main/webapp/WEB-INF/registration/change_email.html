@@ -1,4 +1,5 @@
-<div ng-app="email" ng-controller="changeController">
+<div class="container" ng-app="email" ng-controller="changeController">
+    <link href="http://getbootstrap.com/dist/css/bootstrap.css" rel="stylesheet">
     <script src="http://code.angularjs.org/1.2.0-rc.3/angular.min.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
     <script>
@@ -38,47 +39,40 @@
             }
         });
     </script>
-    <h1>E-Mail Adresse ersetzen</h1>
-    <hr>
     <form name="form" class="css-form" novalidate>
-        <table>
-            <tr>
-                <td>
-                    <label>E-Mail Adresse*</label>
-                </td>
-                <td>
-                    <input type="email" name="email" ng-model="email" required/>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <label>E-Mail Adresse wiederholen*</label>
-                </td>
-                <td>
-                    <input type="email" name="email2" ng-model="email_validate" match="email" required/>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                <td>
-                    <button name="absendenBtn" ng-click='submitEmailChange()' ng-disabled="form.$invalid" >Absenden</button>
-                </td>
-            </tr>
-        </table>
-        <hr>
+        <h2 class="css-form-heading">E-Mail Adresse ersetzen</h2>
+        <input class="form-control" type="email" placeholder="E-Mail Adresse*" ng-model="email" required autofocus/>
+        <input class="form-control" type="email" placeholder="E-Mail Adresse wiederholen*" ng-model="email_validate" match="email" required/>
+        <button class="btn btn-primary btn-block form-button" ng-click='submitEmailChange()' ng-disabled="form.$invalid" >Absenden</button>
     </form>
     <style type="text/css">
+        body {
+            padding-top: 40px;
+            padding-bottom: 40px;
+            background-color: #eee;
+        }
+        .css-form-heading {
+            padding-bottom: 20px;
+        }
+        .css-form {
+            max-width: 400px;
+            padding: 15px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+        .form-button {
+            margin-top: 20px;
+            padding: 15px;
+        }
+        .form-control {
+            margin-top: 1px;
+            padding: 20px;
+        }
         .css-form input.ng-invalid.ng-dirty {
-            background-color: #FA787E;
+            border-color: #FA787E;
         }
         .css-form input.ng-valid.ng-dirty {
-            background-color: #78FA89;
-        }
-        input {
-            margin-left: 30%;
-        }
-        button {
-            margin-left: 30%;
+            border-color: #78FA89;
         }
     </style>
 </div>
