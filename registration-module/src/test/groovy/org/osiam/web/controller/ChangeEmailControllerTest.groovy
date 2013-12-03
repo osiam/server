@@ -88,7 +88,7 @@ class ChangeEmailControllerTest extends Specification {
         1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
         1 * resultMock.getBody() >> user
-        2 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
+        1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
         1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         2 * resultMock.getStatusCode() >> 400
         result.getStatusCode() == HttpStatus.BAD_REQUEST
@@ -112,7 +112,7 @@ class ChangeEmailControllerTest extends Specification {
         1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
         2 * resultMock.getBody() >> user
-        2 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
+        1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
         1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
         1 * mailSender.getEmailContentAsStream("/WEB-INF/registration/emailchange-content.txt", _, context) >> null
@@ -140,7 +140,7 @@ class ChangeEmailControllerTest extends Specification {
         1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
         2 * resultMock.getBody() >> user
-        2 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
+        1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
         1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
         1 * mailSender.getEmailContentAsStream("/WEB-INF/registration/emailchange-content.txt", _, context) >> inputStream
@@ -191,7 +191,7 @@ class ChangeEmailControllerTest extends Specification {
         1 * httpClientMock.executeHttpGet(url, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         2 * resultMock.getStatusCode() >> 200
         2 * resultMock.getBody() >> user
-        2 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
+        1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
         1 * httpClientMock.executeHttpPatch(url, _, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * mailSender.extractPrimaryEmail(_) >> "email@example.org"
         1 * mailSender.getEmailContentAsStream("/WEB-INF/registration/emailchange-info.txt", _, context) >> inputStream
@@ -257,7 +257,7 @@ class ChangeEmailControllerTest extends Specification {
         1 * httpClientMock.executeHttpGet(url, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
         1 * resultMock.getBody() >> user
-        2 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
+        1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
         1 * httpClientMock.executeHttpPatch(url, _,HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         2 * resultMock.getStatusCode() >> 400
         response.getStatusCode() == HttpStatus.BAD_REQUEST
@@ -280,7 +280,7 @@ class ChangeEmailControllerTest extends Specification {
         1 * httpClientMock.executeHttpGet(url, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
         2 * resultMock.getBody() >> user
-        2 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
+        1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
         1 * httpClientMock.executeHttpPatch(url, _,HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
         1 * mailSender.getEmailContentAsStream("/WEB-INF/registration/emailchange-info.txt", _, context) >> null
@@ -321,7 +321,7 @@ class ChangeEmailControllerTest extends Specification {
                 .setPassword("password")
                 .setEmails([primary, email] as List)
                 .setActive(false)
-                .addExtension(urn, extension)
+                .addExtension(extension)
                 .build()
 
         return mapper.writeValueAsString(user)

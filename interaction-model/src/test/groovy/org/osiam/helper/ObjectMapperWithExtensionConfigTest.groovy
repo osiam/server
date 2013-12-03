@@ -18,7 +18,7 @@ class ObjectMapperWithExtensionConfigTest extends Specification {
         given:
         Extension extension = new Extension("urn")
         extension.addOrUpdateField("field1", "value1")
-        User user = new User.Builder("userName").addExtensions(["urn":extension]as Map).build()
+        User user = new User.Builder("userName").addExtensions([extension]as Set).build()
 
         def mapper = new ObjectMapperWithExtensionConfig()
 

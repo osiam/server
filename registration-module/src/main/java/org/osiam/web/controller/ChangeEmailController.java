@@ -221,7 +221,7 @@ public class ChangeEmailController {
         User user = mapper.readValue(result.getBody(), User.class);
 
         //add extensions to user
-        User updateUser = new User.Builder(user).addExtension(registrationExtensionUrnProvider.getExtensionUrn(), extension).build();
+        User updateUser = new User.Builder(user).addExtension(extension).build();
 
         return mapper.writeValueAsString(updateUser);
     }
@@ -261,8 +261,7 @@ public class ChangeEmailController {
         extension.setField(this.tempEmail, "");
 
         //add mails and extensions to user
-        User updateUser = new User.Builder(user).setEmails(emails).addExtension(registrationExtensionUrnProvider.
-                getExtensionUrn(), extension).build();
+        User updateUser = new User.Builder(user).setEmails(emails).addExtension(extension).build();
 
         return mapper.writeValueAsString(updateUser);
     }

@@ -155,7 +155,7 @@ class RegisterControllerTest extends Specification {
         def response = registerController.create(auth, body)
 
         then:
-        2 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
+        1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
         1 * resourceServerUriBuilder.buildUsersUriWithUserId("") >> uri
         1 * httpClientMock.executeHttpPost(_, _, _, _) >> new HttpClientRequestResult('{"id":"1234","schemas":["urn"]}', 201)
         1 * mailSenderMock.getEmailContentAsStream("/WEB-INF/registration/registermail-content.txt", _, contextMock) >> registerMailContent
@@ -189,7 +189,7 @@ class RegisterControllerTest extends Specification {
 
         then:
         1 * mailSenderMock.extractPrimaryEmail(_) >> "primary@mail.com"
-        2 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
+        1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
         1 * resourceServerUriBuilder.buildUsersUriWithUserId("") >> uri
         1 * httpClientMock.executeHttpPost(_, _, _, _) >> new HttpClientRequestResult('', 400)
         response.getStatusCode() == HttpStatus.BAD_REQUEST
@@ -207,7 +207,7 @@ class RegisterControllerTest extends Specification {
 
         then:
         1 * mailSenderMock.extractPrimaryEmail(_) >> "primary@mail.com"
-        2 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
+        1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
         1 * resourceServerUriBuilder.buildUsersUriWithUserId("") >> uri
         1 * httpClientMock.executeHttpPost(_, _, _, _) >> new HttpClientRequestResult('{"id":"1234","schemas":["urn"]}', 201)
         1 * mailSenderMock.getEmailContentAsStream("/WEB-INF/registration/registermail-content.txt", _, contextMock) >> null
@@ -231,7 +231,7 @@ class RegisterControllerTest extends Specification {
         def user = new User.Builder("George")
                 .setPassword("password")
                 .setEmails([emails])
-                .addExtension(urn, extension)
+                .addExtension(extension)
                 .setActive(false)
                 .build()
 

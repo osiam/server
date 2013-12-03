@@ -199,7 +199,7 @@ public class LostPasswordController {
         Extension extension = new Extension(registrationExtensionUrnProvider.getExtensionUrn());
         extension.addOrUpdateField(this.oneTimePassword, oneTimePassword);
         return new User.Builder(user).
-                addExtension(registrationExtensionUrnProvider.getExtensionUrn(),extension).build();
+                addExtension(extension).build();
     }
 
     private ResponseEntity<String> sendPasswordLostMail(User parsedUser, String oneTimePassword) throws MessagingException, IOException {

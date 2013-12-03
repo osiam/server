@@ -199,7 +199,7 @@ public class RegisterController {
 
         Extension extension = new Extension(registrationExtensionUrnProvider.getExtensionUrn());
         extension.addOrUpdateField(activationTokenField, activationToken);
-        builder.addExtension(registrationExtensionUrnProvider.getExtensionUrn(),extension);
+        builder.addExtension(extension);
 
         return builder.build();
     }

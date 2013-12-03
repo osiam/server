@@ -34,7 +34,7 @@
 
     <modules>
         <module>interaction-model</module>
-	<module>registration-module</module>
+	    <module>registration-module</module>
         <module>auth-server</module>
         <module>resource-server</module>
     </modules>
