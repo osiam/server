@@ -279,7 +279,10 @@ public class ChangeEmailController {
 
         //add only non primary mails to new list and remove all primary entries
         for (MultiValuedAttribute mail : emails) {
-            if (!mail.isPrimary()) {
+            if (mail.isPrimary()) {
+                updatedEmailList.add(new MultiValuedAttribute.Builder().setType(mail.getType()).setPrimary(mail.isPrimary())
+                        .setValue(mail.getValue()).setOperation("delete").build());
+            } else {
                 updatedEmailList.add(mail);
             }
         }
