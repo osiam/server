@@ -159,7 +159,7 @@
         <dependency>
             <groupId>org.osiam</groupId>
             <artifactId>osiam-interaction-model</artifactId>
-            <version>0.12-SNAPSHOT</version>
+            <version>0.14-SNAPSHOT</version>
         </dependency>
 
         <dependency>
