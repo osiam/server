@@ -168,10 +168,10 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
         }
 
         userEntity.touch();
-
-        User result = removePassword(userConverter.toScim(userEntity));
-
-        return result;
+        UserEntity updatedUser = userDao.update(userEntity);
+        User res = userConverter.toScim(updatedUser);
+        return removePassword(res);
+        
     }
 
     private void updateExtension(Entry<String, Extension> extensionEntry, UserEntity userEntity) {

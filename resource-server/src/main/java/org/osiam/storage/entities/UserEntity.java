@@ -524,8 +524,8 @@ public class UserEntity extends InternalIdSkeleton {
     @Override
     public String toString() {
         return "UserEntity{" +
-                "UUID='" + getId() + "\', " +
-                "userName='" + userName + '\'' +
-                '}';
+            "UUID='" + getId() + "\', " +
+            "userName='" + userName + '\'' +
+            '}';
     }
 }

@@ -28,8 +28,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.*;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
@@ -38,6 +38,7 @@ import javax.inject.Named;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,14 +47,20 @@ public class HttpClientHelper {
 
     private HttpClient client; //NOSONAR : need to mock therefore the final identifier was removed
 
+    private static final String ENCODING = "UTF-8";
+
     public HttpClientHelper() {
         PoolingClientConnectionManager poolingClientConnectionManager = new PoolingClientConnectionManager();
         client = new DefaultHttpClient(poolingClientConnectionManager);
     }
 
-    public HttpClientRequestResult executeHttpGet(String url) {
+    public HttpClientRequestResult executeHttpGet(String url, String headerName, String headerValue) {
         HttpClientRequestResult result;
         final HttpGet request = new HttpGet(url);
+
+        if (headerName != null && headerValue != null) {
+            request.addHeader(headerName, headerValue);
+        }
 
         try {
             HttpResponse response = client.execute(request);
@@ -61,28 +68,73 @@ public class HttpClientHelper {
             int statusCode = response.getStatusLine().getStatusCode();
             result = new HttpClientRequestResult(responseBody, statusCode);
         } catch (IOException e) {
-            throw new RuntimeException(e); //NOSONAR : Need only wrapping to a runtime exception
+            throw new RuntimeException(e); //NOSONAR : Wrapping to a non checked exception
         }
         return result;
     }
 
-    public HttpClientRequestResult executeHttpPut(String url, String parameterName, String parameterValue) {
-        HttpClientRequestResult result;
-        final HttpPut request = new HttpPut(url);
+    public HttpClientRequestResult executeHttpPut(String url, String parameterName, String parameterValue, String headerName, String headerValue) {
+        HttpPut request = new HttpPut(url);
+        request = (HttpPut) addHeaderToRequest(headerName, headerValue, request);
+
         List<NameValuePair> formParams = new ArrayList<>();
         formParams.add(new BasicNameValuePair(parameterName, parameterValue));
 
+        return executeHttpRequest(request, null, formParams);
+    }
+
+    public HttpClientRequestResult executeHttpPut(String url, String body, String headerName, String headerValue) {
+        HttpPut request = new HttpPut(url);
+        request = (HttpPut) addHeaderToRequest(headerName, headerValue, request);
+
+        return executeHttpRequest(request, body, null);
+    }
+
+    public HttpClientRequestResult executeHttpPost(String url, String body, String headerName, String headerValue){
+        HttpPost request = new HttpPost(url);
+        request = (HttpPost) addHeaderToRequest(headerName, headerValue, request);
+
+        return executeHttpRequest(request, body, null);
+    }
+
+    public HttpClientRequestResult executeHttpPatch(String url, String body, String headerName, String headerValue) {
+        HttpPatch request = new HttpPatch(url);
+        request = (HttpPatch) addHeaderToRequest(headerName, headerValue, request);
+
+        return executeHttpRequest(request, body, null);
+    }
+
+
+
+    private HttpEntityEnclosingRequestBase addHeaderToRequest(String headerName, String headerValue, HttpEntityEnclosingRequestBase request) {
+        if (headerName != null && headerValue != null) {
+            request.addHeader(headerName, headerValue);
+        }
+        return request;
+    }
+
+    private HttpClientRequestResult executeHttpRequest(HttpEntityEnclosingRequestBase request, String body, List<NameValuePair> formParams) {
         try {
-            UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(formParams, "UTF-8");
-            request.setEntity(formEntity);
-            HttpResponse response = client.execute(request);
+            HttpEntityEnclosingRequestBase requestWithEntity = addEntityToRequest(request, body, formParams);
+            HttpResponse response = client.execute(requestWithEntity);
             String responseBody = getResponseBody(response);
             int statusCode = response.getStatusLine().getStatusCode();
-            result = new HttpClientRequestResult(responseBody, statusCode);
+
+            return new HttpClientRequestResult(responseBody, statusCode);
         } catch (IOException e) {
-            throw new RuntimeException(e); //NOSONAR : Need only wrapping to a runtime exception
+            throw new RuntimeException(e); //NOSONAR : Wrapping to a non checked exception
         }
-        return result;
+    }
+
+    private HttpEntityEnclosingRequestBase addEntityToRequest(HttpEntityEnclosingRequestBase request, String body, List<NameValuePair> formParams) throws UnsupportedEncodingException {
+        if (body == null && formParams != null) {
+            UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(formParams, ENCODING);
+            request.setEntity(formEntity);
+        } else if (formParams == null && body != null){
+            StringEntity entity = new StringEntity(body, ENCODING);
+            request.setEntity(entity);
+        }
+        return request;
     }
 
     private String getResponseBody(HttpResponse response) throws IOException {
@@ -90,7 +142,7 @@ public class HttpClientHelper {
         final StringBuffer stringBuffer = new StringBuffer("");
 
         try {
-            rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+            rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), ENCODING));
             String line;
             while ((line = rd.readLine()) != null) {
                 stringBuffer.append(line);

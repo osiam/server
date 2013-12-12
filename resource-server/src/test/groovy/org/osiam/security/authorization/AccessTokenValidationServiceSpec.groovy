@@ -62,7 +62,7 @@ class AccessTokenValidationServiceSpec extends Specification {
         def result = accessTokenValidationService.loadAuthentication(ACCESS_TOKEN)
 
         then:
-        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/validate/accessToken") >> response
+        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/validate/accessToken", null, null) >> response
         1 * jacksonMapperMock.readValue(response.body, OAuth2AuthenticationSpring.class) >> oAuth2AuthenticationSpringMock
         1 * oAuth2AuthenticationSpringMock.getAuthenticationSpring() >> Mock(AuthenticationSpring)
         1 * oAuth2AuthenticationSpringMock.getAuthorizationRequestSpring() >> Mock(AuthorizationRequestSpring)
@@ -78,7 +78,7 @@ class AccessTokenValidationServiceSpec extends Specification {
         accessTokenValidationService.loadAuthentication(ACCESS_TOKEN)
 
         then:
-        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/validate/accessToken") >> response
+        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/validate/accessToken", null, null) >> response
         1 * jacksonMapperMock.readValue(response.body, OAuth2AuthenticationSpring.class) >> { throw new IOException() }
         thrown(RuntimeException)
     }
@@ -91,7 +91,7 @@ class AccessTokenValidationServiceSpec extends Specification {
         when:
         accessTokenValidationService.loadAuthentication(ACCESS_TOKEN)
         then:
-        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/validate/$ACCESS_TOKEN") >> response
+        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/validate/$ACCESS_TOKEN", null, null) >> response
         thrown(InvalidTokenException)
     }
 
@@ -105,7 +105,7 @@ class AccessTokenValidationServiceSpec extends Specification {
         def result = accessTokenValidationService.readAccessToken(ACCESS_TOKEN)
 
         then:
-        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/$ACCESS_TOKEN") >> response
+        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/$ACCESS_TOKEN", null, null) >> response
         1 * jacksonMapperMock.readValue(response.body, OAuth2AccessToken.class) >> oAuth2AccessTokenMock
         result instanceof OAuth2AccessToken
     }
@@ -119,7 +119,7 @@ class AccessTokenValidationServiceSpec extends Specification {
         accessTokenValidationService.readAccessToken(ACCESS_TOKEN)
 
         then:
-        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/$ACCESS_TOKEN") >> response
+        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/$ACCESS_TOKEN", null, null) >> response
         1 * jacksonMapperMock.readValue(response.body, OAuth2AccessToken.class) >> { throw new IOException() }
         thrown(RuntimeException)
     }
@@ -132,7 +132,7 @@ class AccessTokenValidationServiceSpec extends Specification {
         when:
         accessTokenValidationService.readAccessToken(ACCESS_TOKEN)
         then:
-        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/$ACCESS_TOKEN") >> response
+        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/$ACCESS_TOKEN", null, null) >> response
         thrown(InvalidTokenException)
     }
 }
