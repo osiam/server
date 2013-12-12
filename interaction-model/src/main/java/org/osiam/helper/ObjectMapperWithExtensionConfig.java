@@ -24,7 +24,7 @@ public class ObjectMapperWithExtensionConfig extends ObjectMapper {
      */
     public ObjectMapperWithExtensionConfig() {
         super();
-        SimpleModule userDeserializerModule = new SimpleModule("userDeserializerModule", new Version(1, 0, 0, null, null, null))
+        SimpleModule userDeserializerModule = new SimpleModule("userDeserializerModule", Version.unknownVersion())
                 .addDeserializer(User.class, new UserDeserializer(User.class));
         registerModule(userDeserializerModule);
     }
