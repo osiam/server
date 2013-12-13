@@ -179,7 +179,7 @@ public class RegisterController {
 
     private String getUserForActivationAsString(Extension extension, User user) throws JsonProcessingException {
         //validation successful -> delete token and activate user
-        extension.setField(activationTokenField, "");
+        extension.addOrUpdateField(activationTokenField, "");
         User updateUser = new User.Builder(user).setActive(true).build();
         return mapper.writeValueAsString(updateUser);
     }

@@ -257,8 +257,8 @@ public class ChangeEmailController {
 
     private String getUserAsStringWithUpdatedExtensionsAndEmails(Extension extension, User user, List<MultiValuedAttribute> emails) throws JsonProcessingException {
         // remove extension values after already successful validation.
-        extension.setField(this.confirmationTokenField, "");
-        extension.setField(this.tempEmail, "");
+        extension.addOrUpdateField(this.confirmationTokenField, "");
+        extension.addOrUpdateField(this.tempEmail, "");
 
         //add mails and extensions to user
         User updateUser = new User.Builder(user).setEmails(emails).addExtension(extension).build();

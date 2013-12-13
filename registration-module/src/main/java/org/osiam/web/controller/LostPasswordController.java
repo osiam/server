@@ -236,7 +236,7 @@ public class LostPasswordController {
 
     private String getUserWithUpdatedExtensionsAsString(Extension extension, User user, String newPassword) throws JsonProcessingException {
         //delete the oneTimePassword from user entity
-        extension.setField(this.oneTimePassword, "");
+        extension.addOrUpdateField(this.oneTimePassword, "");
 
         //set new password for the user
         User updateUser = new User.Builder(user).setPassword(newPassword).build();
