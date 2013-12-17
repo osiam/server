@@ -29,6 +29,7 @@ class MailSenderTest extends Specification {
         mailSender.sendMail("donald.duck@example.org", "uncle.scroogle@example.org", "need money", content, contentVars);
 
         then:
+        1 * mailSender.getMailServerProperties() >> new Properties()
         1 * mailSender.transportMail(_) >> { MimeMessage message ->
             Assert.that(message.getFrom()[0].toString().equals("donald.duck@example.org"), "from dont match!" )
             Assert.that(message.getRecipients(Message.RecipientType.TO)[0].toString().equals("uncle.scroogle@example.org"), "to dont match!" )

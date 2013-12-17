@@ -83,7 +83,7 @@ public class MailSender {
         return msg;
     }
 
-    private Properties getMailServerProperties() {
+    Properties getMailServerProperties() {
         Properties properties = new Properties();
         properties.put("mail.smtp.port", smtpPort);
         properties.put("mail.smtp.host", mailServerHost);
