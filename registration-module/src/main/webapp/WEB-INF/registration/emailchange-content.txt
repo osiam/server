@@ -1,8 +1,8 @@
-Sehr geehrter Kunde,
+Dear customer,
 
-um ihre E-Mail Adresse zu ändern, klicken Sie bitte folgenden Link:
+To change your e-mail address, please click the link below:
 
 $EMAILCHANGEURL
 
-Mit freundlichen Grüßen,
-Ihr OSIAM-Team
+Sincerely,
+Your OSIAM team
