@@ -40,10 +40,10 @@
         });
     </script>
     <form name="form" class="css-form" novalidate>
-        <h2 class="css-form-heading">E-Mail Adresse ersetzen</h2>
-        <input class="form-control" type="email" placeholder="E-Mail Adresse*" ng-model="email" required autofocus/>
-        <input class="form-control" type="email" placeholder="E-Mail Adresse wiederholen*" ng-model="email_validate" match="email" required/>
-        <button class="btn btn-primary btn-block form-button" ng-click='submitEmailChange()' ng-disabled="form.$invalid" >Absenden</button>
+        <h2 class="css-form-heading">Change E-Mail Address</h2>
+        <input class="form-control" type="email" placeholder="E-Mail address*" ng-model="email" required autofocus/>
+        <input class="form-control" type="email" placeholder="Repeat E-Mail address*" ng-model="email_validate" match="email" required/>
+        <button class="btn btn-primary btn-block form-button" ng-click='submitEmailChange()' ng-disabled="form.$invalid" >Submit</button>
     </form>
     <style type="text/css">
         body {

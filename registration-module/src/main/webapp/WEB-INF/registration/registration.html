@@ -41,16 +41,16 @@
         });
     </script>
     <form name="form" class="css-form" novalidate>
-        <h2 class="css-form-heading">Registrierung</h2>
-        <input class="form-control" type="text" placeholder="Benutzername* (min. 3 Zeichen)" ng-model="registration.userName" ng-minlength=3 required autofocus/>
-        <input class="form-control" type="email" placeholder="E-Mail Adresse*" ng-model="registration.emails.value" required/>
-        <input class="form-control" type="email" placeholder="E-Mail Adresse wiederholen*" ng-model="email_validate" match="registration.emails.value" required/>
-        <input class="form-control" type="text" placeholder="Anrede" ng-model="registration.name.honorificPrefix">
-        <input class="form-control" type="text" placeholder="Vorname" ng-model="registration.name.givenName">
-        <input class="form-control" type="text" placeholder="Nachname" ng-model="registration.name.familyName">
-        <input class="form-control" type="password" placeholder="Passwort* (min. 8 Zeichen)" ng-model="registration.password" ng-minlength=8 required>
-        <input class="form-control" type="password" placeholder="Passwort wiederholen*" ng-model="password_validate" match="registration.password" required>
-        <button class="btn btn-primary btn-block form-button" ng-click='submitRegistration()' ng-disabled="form.$invalid" >Speichern</button>
+        <h2 class="css-form-heading">Registration</h2>
+        <input class="form-control" type="text" placeholder="User name* (at least 3 Characters)" ng-model="registration.userName" ng-minlength=3 required autofocus/>
+        <input class="form-control" type="email" placeholder="E-Mail address*" ng-model="registration.emails.value" required/>
+        <input class="form-control" type="email" placeholder="Repeat E-Mail address*" ng-model="email_validate" match="registration.emails.value" required/>
+        <input class="form-control" type="text" placeholder="Salutation" ng-model="registration.name.honorificPrefix">
+        <input class="form-control" type="text" placeholder="First name" ng-model="registration.name.givenName">
+        <input class="form-control" type="text" placeholder="Last name" ng-model="registration.name.familyName">
+        <input class="form-control" type="password" placeholder="Password* (at least 8 Characters)" ng-model="registration.password" ng-minlength=8 required>
+        <input class="form-control" type="password" placeholder="Repeat password*" ng-model="password_validate" match="registration.password" required>
+        <button class="btn btn-primary btn-block form-button" ng-click='submitRegistration()' ng-disabled="form.$invalid" >Save</button>
     </form>
     <style type="text/css">
         body {
