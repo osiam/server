@@ -13,7 +13,7 @@ This project gets build with maven, the module structure is
 * resource-server -- contains the source for the OSIAM Resource Server -> [Wiki](https://github.com/osiam/server/wiki)
 * auth-server -- contains the source for the OSIAM Auth Server -> [Wiki](https://github.com/osiam/server/wiki)
 * interaction-model -- contains the source for the OSIAM Interaction Model
-* registration-module -- contains the source for the OSIAM Registration Module -> [Readme](https://github.com/osiam/server/tree/wibesa/registration-module)
+* registration-module -- contains the source for the OSIAM Registration Module -> [Wiki](https://github.com/osiam/server/wiki/OSIAM-Registration-Module)
 
 
 # Requirements
