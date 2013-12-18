@@ -26,20 +26,19 @@ package org.osiam.web.util;
 import org.apache.commons.io.IOUtils;
 import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.resources.scim.User;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Component;
 
-import javax.mail.Message;
+import javax.inject.Inject;
 import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeUtility;
 import javax.servlet.ServletContext;
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Date;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Class for sending mails.
@@ -47,47 +46,37 @@ import java.util.Properties;
  * @author Igor, Jochen Todea
  */
 @Component
-public class MailSender {
+public class MailSenderBean {
 
-    @Value("${osiam.mailServer.smtp.port}")
-    private int smtpPort;
-
-    @Value("${osiam.mailServer.host.name}")
-    private String mailServerHost;
-
-    void transportMail(MimeMessage msg ) throws MessagingException {
-        Transport.send(msg);
-    }
+    @Inject
+    private MailSender mailSender;
 
     public void sendMail(String fromAddress, String toAddress, String subject, InputStream mailContent,
                          Map<String, String> mailContentReplacements) throws MessagingException, IOException {
 
+        String strMailContent = getMailContentWithReplacementsAsString(mailContent, mailContentReplacements);
+        SimpleMailMessage message = getMessage(fromAddress, toAddress, subject, strMailContent);
+        mailSender.send(message);
+    }
+
+    private String getMailContentWithReplacementsAsString(InputStream mailContent, Map<String, String> mailContentReplacements) throws IOException {
         String strMailContent = IOUtils.toString(mailContent, "UTF-8");
         if (mailContentReplacements != null) {
             for (Map.Entry<String, String> entry : mailContentReplacements.entrySet()) {
                 strMailContent = strMailContent.replace(entry.getKey(), entry.getValue());
             }
         }
-
-        MimeMessage msg = getMimeMessage(fromAddress, InternetAddress.parse(toAddress)[0], subject, strMailContent);
-        transportMail(msg);
+        return strMailContent;
     }
 
-    private MimeMessage getMimeMessage(String fromAddress, InternetAddress address, String subject,
-                                       String strMailContent) throws MessagingException, UnsupportedEncodingException {
-        MimeMessage msg = new MimeMessage(Session.getDefaultInstance(getMailServerProperties()));
-        msg.addFrom(InternetAddress.parse(fromAddress));
-        msg.addRecipient(Message.RecipientType.TO, address);
-        msg.addHeader("Subject", MimeUtility.encodeText(subject));
-        msg.setContent(strMailContent, "text/plain");
-        return msg;
-    }
-
-    Properties getMailServerProperties() {
-        Properties properties = new Properties();
-        properties.put("mail.smtp.port", smtpPort);
-        properties.put("mail.smtp.host", mailServerHost);
-        return properties;
+    private SimpleMailMessage getMessage(String fromAddress, String toAddress, String subject, String mailContent) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(fromAddress);
+        message.setTo(toAddress);
+        message.setSubject(subject);
+        message.setText(mailContent);
+        message.setSentDate(new Date(System.currentTimeMillis()));
+        return message;
     }
 
     public String extractPrimaryEmail(User user) {
@@ -106,7 +95,6 @@ public class MailSender {
             // Mail content with placeholders, default file from deployment
             return context.getResourceAsStream(defaultPath);
         }
-
         // Mail content with placeholders, user defined
         return new FileInputStream(pathToContentFile);
     }
