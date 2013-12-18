@@ -167,6 +167,10 @@
             <artifactId>spring-webmvc</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+        </dependency>
 
         <!-- Servlet -->
         <dependency>
@@ -179,16 +183,7 @@
             <artifactId>mail</artifactId>
             <version>1.4.3</version>
         </dependency>
-        <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
-            <version>1.4.3</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
-            <version>1.4.3</version>
-        </dependency>
+
         <dependency>
             <groupId>org.osiam</groupId>
             <artifactId>scim-schema</artifactId>
