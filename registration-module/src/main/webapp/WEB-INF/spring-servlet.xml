@@ -32,7 +32,6 @@
 
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-
     <mvc:annotation-driven/>
 
     <mvc:default-servlet-handler/>
@@ -41,4 +40,17 @@
 
     <context:component-scan base-package="org.osiam"/>
     <context:annotation-config/>
+
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="host" value="${osiam.mailServer.host.name}"/>
+        <property name="port" value="${osiam.mailServer.smtp.port}"/>
+        <property name="javaMailProperties">
+            <props>
+                <prop key="mail.transport.protocol">smtp</prop>
+                <prop key="mail.smtp.auth">false</prop>
+                <prop key="mail.smtp.starttls.enable">false</prop>
+                <prop key="mail.debug">false</prop>
+            </props>
+        </property>
+    </bean>
 </beans>
