@@ -9,6 +9,9 @@ The functionality consists of three parts which will be:
 
 # Deployment and configuration
 
+## Preconditions
+This module needs a pre-installed mail server on the current System. The configuration is up to the operator, apart from the important parts for this module. These are the SMTP-port and the hostname. More information on the configuration in the following chapters.
+
 ## The operating system
 We recommend to choose the latest OSIAM release version.
  * Release Repository: http://maven-repo.evolvis.org/releases/org/osiam/
@@ -81,6 +84,10 @@ with content based on this example:
     osiam.one.time.password.field=oneTimePassword
     osiam.confirm.email.token.field=emailConfirmToken
     osiam.temp.email.field=tempMail
+    
+    #The mail server configuration with defaults
+    osiam.mailServer.smtp.port=25
+    osiam.mailServer.host.name=localhost
 
 ### Configuration values explanation
 
