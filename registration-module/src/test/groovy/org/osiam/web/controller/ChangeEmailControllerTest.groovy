@@ -36,7 +36,7 @@ class ChangeEmailControllerTest extends Specification {
     def confirmTokenField = "emailConfirmToken"
     def tempMailField = "tempMail"
 
-    def mailSender = Mock(MailSender)
+    def mailSender = Mock(MailSenderBean)
     def emailChangeLinkPrefix = "http://localhost:8080/stuff"
     def emailChangeMailFrom = "bugs@bunny.com"
     def emailChangeMailSubject = "email change"

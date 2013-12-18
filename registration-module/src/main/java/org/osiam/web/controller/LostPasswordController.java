@@ -32,7 +32,7 @@ import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.ExtensionFieldType;
 import org.osiam.resources.scim.User;
 import org.osiam.web.util.HttpHeader;
-import org.osiam.web.util.MailSender;
+import org.osiam.web.util.MailSenderBean;
 import org.osiam.web.util.RegistrationExtensionUrnProvider;
 import org.osiam.web.util.ResourceServerUriBuilder;
 import org.springframework.beans.factory.annotation.Value;
@@ -70,7 +70,7 @@ public class LostPasswordController {
     @Inject
     private ResourceServerUriBuilder resourceServerUriBuilder;
     @Inject
-    private MailSender mailSender;
+    private MailSenderBean mailSender;
     @Inject
     private ObjectMapperWithExtensionConfig mapper;
 

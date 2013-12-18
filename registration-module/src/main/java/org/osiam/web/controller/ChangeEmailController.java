@@ -71,7 +71,7 @@ public class ChangeEmailController {
     @Inject
     private ObjectMapperWithExtensionConfig mapper;
     @Inject
-    private MailSender mailSender;
+    private MailSenderBean mailSender;
     @Inject
     private AccessTokenInformationProvider accessTokenInformationProvider;
 

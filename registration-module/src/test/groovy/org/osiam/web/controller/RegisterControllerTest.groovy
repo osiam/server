@@ -7,7 +7,7 @@ import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.User
 import org.osiam.web.util.HttpHeader
-import org.osiam.web.util.MailSender
+import org.osiam.web.util.MailSenderBean
 import org.osiam.web.util.RegistrationExtensionUrnProvider
 import org.osiam.web.util.ResourceServerUriBuilder
 import org.springframework.http.HttpStatus
@@ -35,7 +35,7 @@ class RegisterControllerTest extends Specification {
     def registermailSubject = "Ihre Registrierung"
     def registermailLinkPrefix = "https://example.org/register?"
 
-    def mailSenderMock = Mock(MailSender)
+    def mailSenderMock = Mock(MailSenderBean)
 
     def registerController = new RegisterController(context: contextMock, httpClient: httpClientMock,
             clientRegistrationUri: clientRegistrationUri, activationTokenField: activationTokenField,
