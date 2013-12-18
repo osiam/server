@@ -1,9 +1,9 @@
-Sehr geehrter Kunde,
+Dear customer,
 
-für Sie wurde ein Benutzerkonto angelegt.
-Um Ihre Registrierung zu bestätigen rufen Sie bitte folgenden Link auf:
+your account has been created.
+To confirm your registration, please call the following link:
 
 $REGISTERLINK
 
-Mit freundlichen Grüßen,
-Ihr OSIAM-Team
+Sincerely,
+Your OSIAM team

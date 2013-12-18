@@ -7,7 +7,7 @@ import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.User
 import org.osiam.web.util.HttpHeader
-import org.osiam.web.util.MailSender
+import org.osiam.web.util.MailSenderBean
 import org.osiam.web.util.RegistrationExtensionUrnProvider
 import org.osiam.web.util.ResourceServerUriBuilder
 import org.springframework.http.HttpStatus
@@ -38,7 +38,7 @@ class LostPasswordControllerTest extends Specification {
 
     def oneTimePasswordField = "oneTimePassword"
 
-    def mailSenderMock = Mock(MailSender)
+    def mailSenderMock = Mock(MailSenderBean)
     def passwordlostLinkPrefix = "http://localhost:8080"
     def passwordlostMailFrom = "noreply@example.org"
     def passwordlostMailSubject = "Subject"
