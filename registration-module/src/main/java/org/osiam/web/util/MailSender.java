@@ -44,7 +44,7 @@ import java.util.Properties;
 /**
  * Class for sending mails.
  * Also getting primary email from users email list and loads the mail content as stream.
- * @author Igor
+ * @author Igor, Jochen Todea
  */
 @Component
 public class MailSender {
@@ -106,7 +106,7 @@ public class MailSender {
             // Mail content with placeholders, default file from deployment
             return context.getResourceAsStream(defaultPath);
         }
-        //TODO charset UTF8
+
         // Mail content with placeholders, user defined
         return new FileInputStream(pathToContentFile);
     }
