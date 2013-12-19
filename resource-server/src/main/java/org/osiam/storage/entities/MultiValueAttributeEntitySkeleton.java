@@ -23,7 +23,13 @@
 
 package org.osiam.storage.entities;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 
 
 @Entity
@@ -85,6 +91,13 @@ public abstract class MultiValueAttributeEntitySkeleton implements ChildOfMultiV
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("MultiValueAttributeEntitySkeleton [value=").append(value).append("]");
+        return builder.toString();
     }
 
 }

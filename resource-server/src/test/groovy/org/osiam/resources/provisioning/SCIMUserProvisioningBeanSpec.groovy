@@ -34,13 +34,13 @@ import org.springframework.security.authentication.encoding.PasswordEncoder
 
 import spock.lang.Specification
 
-class ScimUserProvisioningBeanSpec extends Specification {
+class SCIMUserProvisioningBeanSpec extends Specification {
 
     PasswordEncoder passwordEncoder = Mock()
     UserDao userDao = Mock()
     UserConverter userConverter = Mock()
 
-    SCIMUserProvisioningBean scimUserProvisioningBean = new SCIMUserProvisioningBean(userDao: userDao,
+    SCIMUserProvisioning scimUserProvisioningBean = new SCIMUserProvisioning(userDao: userDao,
             userConverter: userConverter, passwordEncoder: passwordEncoder)
 
     def 'should be possible to get a user by his id'() {
@@ -243,18 +243,6 @@ class ScimUserProvisioningBeanSpec extends Specification {
 
         then:
         user.password == null
-    }
-
-    def 'should wrap IllegalAccessException to an IllegalState'() {
-        given:
-        GenericSCIMToEntityWrapper setUserFields = Mock(GenericSCIMToEntityWrapper)
-
-        when:
-        scimUserProvisioningBean.setFieldsWrapException(setUserFields)
-        then:
-        1 * setUserFields.setFields() >> { throw new IllegalAccessException('irrelevant') }
-        def e = thrown(IllegalStateException)
-        e.message == 'This should not happen.'
     }
 
     def 'should call dao delete on delete'() {

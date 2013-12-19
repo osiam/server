@@ -23,8 +23,6 @@
 
 package org.osiam.storage.entities;
 
-import org.hibernate.annotations.Type;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -32,11 +30,15 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.Type;
 
 /**
  * Defines a value of a field of a scim-extension. It's user-dependent!
  */
-@Entity(name = "scim_extension_field_value")
+@Entity
+@Table(name = "scim_extension_field_value")
 public class ExtensionFieldValueEntity {
 
     @Id
@@ -47,9 +49,6 @@ public class ExtensionFieldValueEntity {
     @ManyToOne(optional = false)
     @JoinColumn(name = "extension_field_internal_id")
     private ExtensionFieldEntity extensionField;
-
-    @ManyToOne(optional = false)
-    private UserEntity user;
 
     @Lob
     @Type(type="org.hibernate.type.StringClobType")
@@ -70,14 +69,6 @@ public class ExtensionFieldValueEntity {
 
     public void setExtensionField(ExtensionFieldEntity extensionField) {
         this.extensionField = extensionField;
-    }
-
-    public UserEntity getUser() {
-        return user;
-    }
-
-    public void setUser(UserEntity user) {
-        this.user = user;
     }
 
     public String getValue() {
@@ -116,6 +107,14 @@ public class ExtensionFieldValueEntity {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("ExtensionFieldValueEntity [extensionField=").append(extensionField).append(", value=")
+                .append(value).append("]");
+        return builder.toString();
     }
 
 }

@@ -24,6 +24,7 @@ package org.osiam.storage.entities;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
+
 import org.junit.Test;
 
 /*
@@ -70,8 +71,7 @@ public class EqualsValidatorTest {
     @Test
     public void groupEntity_honors_equals_contract() {
         EqualsVerifier.forClass(GroupEntity.class)
-                //TODO: remove Warning.IDENTICAL_COPY after fixing the update problem for group membership
-                .suppress(Warning.NULL_FIELDS, Warning.IDENTICAL_COPY)
+                .suppress(Warning.NULL_FIELDS)
                 .usingGetClass()
                 .verify();
     }

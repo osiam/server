@@ -31,11 +31,13 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 /**
  * Defines a SCIM-Extension.
  */
-@Entity(name = "scim_extension")
+@Entity
+@Table(name = "scim_extension")
 public class ExtensionEntity {
 
     @Id
@@ -129,6 +131,13 @@ public class ExtensionEntity {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("ExtensionEntity [urn=").append(urn).append("]");
+        return builder.toString();
     }
 
 }

@@ -23,19 +23,31 @@
 
 package org.osiam.storage.entities;
 
-import com.google.common.collect.ImmutableSet;
-import org.osiam.resources.scim.MultiValuedAttribute;
-
-import javax.persistence.*;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-@Entity(name = "scim_id")
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.osiam.resources.scim.MultiValuedAttribute;
+
+import com.google.common.collect.ImmutableSet;
+
+@Entity
+@Table(name = "scim_id")
 @Inheritance(strategy = InheritanceType.JOINED)
-@NamedQueries({@NamedQuery(name = "getById", query = "SELECT i FROM scim_id i WHERE i.id= :id")})
-public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute {
+public abstract class ResourceEntity implements ChildOfMultiValueAttribute {
 
     @Column(unique = true, nullable = false)
     private String id;
@@ -134,6 +146,41 @@ public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute {
 
     public void setMeta(MetaEntity meta) {
         this.meta = meta;
+    }
+
+    @Override
+    public String toString() {
+        return "ResourceEntity [id=" + id + ", internalId=" + internalId + ", getClass()=" + getClass() + "]";
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ResourceEntity other = (ResourceEntity) obj;
+        if (id == null) {
+            if (other.id != null) {
+                return false;
+            }
+        } else if (!id.equals(other.id)) {
+            return false;
+        }
+        return true;
     }
 
 }
