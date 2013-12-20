@@ -42,6 +42,11 @@ class ChangeEmailControllerTest extends Specification {
     def emailChangeMailSubject = "email change"
     def emailChangeInfoMailSubject = "email change done"
     def clientEmailChangeUri = "http://test"
+
+    def bootStrapLib = 'http://bootstrap'
+    def angularLib = 'http://angular'
+    def jqueryLib = 'http://jquery'
+
     def context = Mock(ServletContext)
 
     def changeEmailController = new ChangeEmailController(httpClient: httpClientMock, confirmationTokenField: confirmTokenField,
@@ -49,7 +54,8 @@ class ChangeEmailControllerTest extends Specification {
             emailChangeMailFrom: emailChangeMailFrom, emailChangeMailSubject: emailChangeMailSubject,
             emailChangeInfoMailSubject: emailChangeInfoMailSubject, registrationExtensionUrnProvider: registrationExtensionUrnProvider,
             resourceServerUriBuilder: resourceServerUriBuilder, accessTokenInformationProvider: accessTokenInformationProvider,
-            mapper: mapper, clientEmailChangeUri: clientEmailChangeUri)
+            mapper: mapper, clientEmailChangeUri: clientEmailChangeUri, bootStrapLib: bootStrapLib, angularLib: angularLib,
+            jqueryLib: jqueryLib)
 
 
     def "there should be an failure in change email if update user with extensions failed"() {
@@ -129,7 +135,7 @@ class ChangeEmailControllerTest extends Specification {
 
         def user = getUserAsString()
 
-        def inputStream = new ByteArrayInputStream('nine bytes and one placeholder $EMAILCHANGEURL'.bytes)
+        def inputStream = new ByteArrayInputStream('nine bytes and one placeholder $EMAILCHANGEURL and $BOOTSTRAP and $ANGULAR and $JQUERY'.bytes)
 
         when:
         def result = changeEmailController.change(authZHeader, newEmailValue)

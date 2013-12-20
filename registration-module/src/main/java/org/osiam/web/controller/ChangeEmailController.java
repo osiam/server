@@ -104,6 +104,13 @@ public class ChangeEmailController {
     @Value("${osiam.web.email.url}")
     private String clientEmailChangeUri;
 
+    // css and js libs
+    @Value("${osiam.html.dependencies.bootstrap}")
+    private String bootStrapLib;
+    @Value("${osiam.html.dependencies.angular}")
+    private String angularLib;
+    @Value("${osiam.html.dependencies.jquery}")
+    private String jqueryLib;
 
 
     /**
@@ -116,6 +123,12 @@ public class ChangeEmailController {
         String htmlContent = IOUtils.toString(inputStream, "UTF-8");
         //replacing the url
         String replacedAll = htmlContent.replace("$CHANGELINK", clientEmailChangeUri);
+
+        //replace all lib links
+        replacedAll = replacedAll.replace("$BOOTSTRAP", bootStrapLib);
+        replacedAll = replacedAll.replace("$ANGULAR", angularLib);
+        replacedAll = replacedAll.replace("$JQUERY", jqueryLib);
+
         InputStream in = IOUtils.toInputStream(replacedAll);
         //set the content type
         response.setContentType("text/html");

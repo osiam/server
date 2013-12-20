@@ -1,6 +1,6 @@
-<div class="container" ng-app="registration" ng-controller="regController">
-    <link href="http://getbootstrap.com/dist/css/bootstrap.css" rel="stylesheet">
-    <script src="http://code.angularjs.org/1.2.0-rc.3/angular.min.js"></script>
+<div class="container registrationBody" ng-app="registration" ng-controller="regController">
+    <link href='$BOOTSTRAP' rel="stylesheet">
+    <script src='$ANGULAR'></script>
     <script>
         var app = angular.module('registration', []);
         app.controller('regController', function($scope, $http){
@@ -40,45 +40,46 @@
             }
         });
     </script>
-    <form name="form" class="css-form" novalidate>
-        <h2 class="css-form-heading">Registration</h2>
-        <input class="form-control" type="text" placeholder="User name* (at least 3 Characters)" ng-model="registration.userName" ng-minlength=3 required autofocus/>
-        <input class="form-control" type="email" placeholder="E-Mail address*" ng-model="registration.emails.value" required/>
-        <input class="form-control" type="email" placeholder="Repeat E-Mail address*" ng-model="email_validate" match="registration.emails.value" required/>
-        <input class="form-control" type="text" placeholder="Salutation" ng-model="registration.name.honorificPrefix">
-        <input class="form-control" type="text" placeholder="First name" ng-model="registration.name.givenName">
-        <input class="form-control" type="text" placeholder="Last name" ng-model="registration.name.familyName">
-        <input class="form-control" type="password" placeholder="Password* (at least 8 Characters)" ng-model="registration.password" ng-minlength=8 required>
-        <input class="form-control" type="password" placeholder="Repeat password*" ng-model="password_validate" match="registration.password" required>
-        <button class="btn btn-primary btn-block form-button" ng-click='submitRegistration()' ng-disabled="form.$invalid" >Save</button>
+    <form name="form" class="registrationForm" novalidate>
+        <h2 class="registrationHeading">Registration</h2>
+        <input class="form-control registrationInput" type="text" placeholder="User name* (at least 3 Characters)" ng-model="registration.userName" ng-minlength=3 required autofocus/>
+        <input class="form-control registrationInput" type="email" placeholder="E-Mail address*" ng-model="registration.emails.value" required/>
+        <input class="form-control registrationInput" type="email" placeholder="Repeat E-Mail address*" ng-model="email_validate" match="registration.emails.value" required/>
+        <input class="form-control registrationInput" type="text" placeholder="Salutation" ng-model="registration.name.honorificPrefix">
+        <input class="form-control registrationInput" type="text" placeholder="First name" ng-model="registration.name.givenName">
+        <input class="form-control registrationInput" type="text" placeholder="Last name" ng-model="registration.name.familyName">
+        <input class="form-control registrationInput" type="password" placeholder="Password* (at least 8 Characters)" ng-model="registration.password" ng-minlength=8 required>
+        <input class="form-control registrationInput" type="password" placeholder="Repeat password*" ng-model="password_validate" match="registration.password" required>
+        <button class="btn btn-primary btn-block registrationButton" ng-click='submitRegistration()' ng-disabled="form.$invalid" >Save</button>
     </form>
     <style type="text/css">
-        body {
+        .registrationBody {
             padding-top: 40px;
             padding-bottom: 40px;
+            width: 600px;
             background-color: #eee;
         }
-        .css-form-heading {
+        .registrationHeading {
             padding-bottom: 20px;
         }
-        .css-form {
+        .registrationForm {
             max-width: 400px;
             padding: 15px;
             margin: 0 auto;
             background-color: #ffffff;
         }
-        .form-button {
+        .registrationButton {
             margin-top: 20px;
             padding: 15px;
         }
-        .form-control {
+        .registrationInput {
             margin-top: 1px;
             padding: 20px;
         }
-        .css-form input.ng-invalid.ng-dirty {
+        .registrationInput.ng-invalid.ng-dirty {
             border-color: #FA787E;
         }
-        .css-form input.ng-valid.ng-dirty {
+        .registrationInput.ng-valid.ng-dirty {
             border-color: #78FA89;
         }
     </style>

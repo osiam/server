@@ -45,11 +45,16 @@ class LostPasswordControllerTest extends Specification {
 
     def clientPasswordChangeUri = "http://localhost:8080"
 
+    def bootStrapLib = 'http://bootstrap'
+    def angularLib = 'http://angular'
+    def jqueryLib = 'http://jquery'
+
     def lostPasswordController = new LostPasswordController(httpClient: httpClientMock, oneTimePassword: oneTimePasswordField,
             context: contextMock, mailSender: mailSenderMock, passwordlostLinkPrefix: passwordlostLinkPrefix,
             passwordlostMailFrom: passwordlostMailFrom, passwordlostMailSubject: passwordlostMailSubject,
             registrationExtensionUrnProvider: registrationExtensionUrnProvider, resourceServerUriBuilder: resourceServerUriBuilder,
-            clientPasswordChangeUri: clientPasswordChangeUri, mapper: mapper)
+            clientPasswordChangeUri: clientPasswordChangeUri, mapper: mapper, bootStrapLib: bootStrapLib, angularLib: angularLib,
+            jqueryLib: jqueryLib)
 
 
     def "The controller should start the flow by generating a one time password and send an email to the user"() {
@@ -60,7 +65,7 @@ class LostPasswordControllerTest extends Specification {
         def uri = "http://localhost:8080/osiam-resource-server/Users/"+ userId
         def userString = getUserAsStringWithExtension("token")
 
-        def inputStream = new ByteArrayInputStream('nine bytes and one placeholder $PASSWORDLOSTURL'.bytes)
+        def inputStream = new ByteArrayInputStream('nine bytes and one placeholder $PASSWORDLOSTURL and $BOOTSTRAP and $ANGULAR and $JQUERY'.bytes)
 
         when:
         def result = lostPasswordController.lost(authZHeader, userId)

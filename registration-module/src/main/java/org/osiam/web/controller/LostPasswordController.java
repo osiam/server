@@ -95,6 +95,13 @@ public class LostPasswordController {
     @Value("${osiam.web.password.url}")
     private String clientPasswordChangeUri;
 
+    // css and js libs
+    @Value("${osiam.html.dependencies.bootstrap}")
+    private String bootStrapLib;
+    @Value("${osiam.html.dependencies.angular}")
+    private String angularLib;
+    @Value("${osiam.html.dependencies.jquery}")
+    private String jqueryLib;
 
 
     /**
@@ -152,6 +159,11 @@ public class LostPasswordController {
         String replacedUri = htmlContent.replace("$CHANGELINK", clientPasswordChangeUri);
         String replacedOtp = replacedUri.replace("$OTP", oneTimePassword);
         String replacedAll = replacedOtp.replace("$USERID", userId);
+
+        // replace all lib links
+        replacedAll = replacedAll.replace("$BOOTSTRAP", bootStrapLib);
+        replacedAll = replacedAll.replace("$ANGULAR", angularLib);
+        replacedAll = replacedAll.replace("$JQUERY", jqueryLib);
 
         // convert the String to stream
         InputStream in = IOUtils.toInputStream(replacedAll);
