@@ -5,7 +5,7 @@
     <parent>
         <artifactId>osiam-server-parent</artifactId>
         <groupId>org.osiam</groupId>
-        <version>0.13</version>
+        <version>0.14</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -91,6 +91,10 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>org.osiam</groupId>
+            <artifactId>scim-schema</artifactId>
+        </dependency>
         <!-- Spring Security -->
         <dependency>
             <groupId>org.springframework.security.oauth</groupId>

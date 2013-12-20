@@ -1,0 +1,78 @@
+<div class="container" ng-app="email" ng-controller="changeController">
+    <link href="http://getbootstrap.com/dist/css/bootstrap.css" rel="stylesheet">
+    <script src="http://code.angularjs.org/1.2.0-rc.3/angular.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script>
+        var app = angular.module('email', []);
+        app.controller('changeController', function($scope, $http){
+
+            $scope.email_validate = '';
+            $scope.email = '';
+
+            $scope.submitEmailChange = function() {
+                $http({method: 'POST', url: '$CHANGELINK',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    // using jQuery to url encode the data, angular does not provide this functionality
+                    data: $.param({newEmailValue: $scope.email})
+                }).
+                        success(function(data, status, headers, config) {
+                            $scope.status = status;
+                            $scope.data = data;
+                        }).
+                        error(function(data, status, headers, config) {
+                            $scope.status = status;
+                            $scope.data = data;
+                        });
+            };
+        });
+        app.directive('match', function($parse) {
+            return {
+                require: 'ngModel',
+                link: function(scope, elem, attrs, ctrl) {
+                    scope.$watch(function() {
+                        //$parse(attrs.match) defines a method. the parameter 'scope' will be searched for the 'attrs.match' value
+                        return $parse(attrs.match)(scope) === ctrl.$modelValue;
+                    }, function(currentValue) {
+                        ctrl.$setValidity('mismatch', currentValue);
+                    });
+                }
+            }
+        });
+    </script>
+    <form name="form" class="css-form" novalidate>
+        <h2 class="css-form-heading">Change E-Mail Address</h2>
+        <input class="form-control" type="email" placeholder="E-Mail address*" ng-model="email" required autofocus/>
+        <input class="form-control" type="email" placeholder="Repeat E-Mail address*" ng-model="email_validate" match="email" required/>
+        <button class="btn btn-primary btn-block form-button" ng-click='submitEmailChange()' ng-disabled="form.$invalid" >Submit</button>
+    </form>
+    <style type="text/css">
+        body {
+            padding-top: 40px;
+            padding-bottom: 40px;
+            background-color: #eee;
+        }
+        .css-form-heading {
+            padding-bottom: 20px;
+        }
+        .css-form {
+            max-width: 400px;
+            padding: 15px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+        .form-button {
+            margin-top: 20px;
+            padding: 15px;
+        }
+        .form-control {
+            margin-top: 1px;
+            padding: 20px;
+        }
+        .css-form input.ng-invalid.ng-dirty {
+            border-color: #FA787E;
+        }
+        .css-form input.ng-valid.ng-dirty {
+            border-color: #78FA89;
+        }
+    </style>
+</div>

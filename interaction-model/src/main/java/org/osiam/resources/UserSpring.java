@@ -127,6 +127,9 @@ public class UserSpring implements UserDetails {
         return true;
     }
 
+    public String getUserName() {
+        return userName;
+    }
 
     public boolean isActive() {
         return active;

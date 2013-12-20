@@ -1,0 +1,9 @@
+Dear customer,
+
+your account has been created.
+To confirm your registration, please call the following link:
+
+$REGISTERLINK
+
+Sincerely,
+Your OSIAM team
