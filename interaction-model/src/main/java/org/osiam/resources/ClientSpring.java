@@ -48,6 +48,7 @@ public class ClientSpring implements ClientDetails {
     private Set<String> grants;
     private String redirectUri;
     private Integer accessTokenValiditySeconds;
+    private Integer refreshTokenValiditySeconds;
     private Date expiry;
     private boolean implicit;
     private long validityInSeconds;
@@ -122,7 +123,7 @@ public class ClientSpring implements ClientDetails {
      */
     @Override
     public Integer getRefreshTokenValiditySeconds() {
-        return accessTokenValiditySeconds;
+        return refreshTokenValiditySeconds;
     }
 
     @Override
@@ -165,6 +166,10 @@ public class ClientSpring implements ClientDetails {
 
     public void setAccessTokenValiditySeconds(Integer accessTokenValiditySeconds) {
         this.accessTokenValiditySeconds = accessTokenValiditySeconds;
+    }
+
+    public void setRefreshTokenValiditySeconds(Integer refreshTokenValiditySeconds) {
+        this.refreshTokenValiditySeconds = refreshTokenValiditySeconds;
     }
 
     public Date getExpiry() {
