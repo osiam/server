@@ -94,6 +94,11 @@ public class RegisterController {
     @Value("${osiam.web.register.url}")
     private String clientRegistrationUri;
 
+    // css and js libs
+    @Value("${osiam.html.dependencies.bootstrap}")
+    private String bootStrapLib;
+    @Value("${osiam.html.dependencies.angular}")
+    private String angularLib;
 
 
     /**
@@ -105,8 +110,14 @@ public class RegisterController {
 
         InputStream inputStream = context.getResourceAsStream("/WEB-INF/registration/registration.html");
 
+        // replace registration link
         String htmlContent = IOUtils.toString(inputStream, "UTF-8");
         String replacedHtmlContent = htmlContent.replace("$REGISTERLINK", clientRegistrationUri);
+
+        // replace all libs
+        replacedHtmlContent = replacedHtmlContent.replace("$BOOTSTRAP", bootStrapLib);
+        replacedHtmlContent = replacedHtmlContent.replace("$ANGULAR", angularLib);
+
         InputStream in = IOUtils.toInputStream(replacedHtmlContent);
 
         IOUtils.copy(in, response.getOutputStream());

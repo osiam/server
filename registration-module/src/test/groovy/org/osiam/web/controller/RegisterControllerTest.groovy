@@ -35,19 +35,22 @@ class RegisterControllerTest extends Specification {
     def registermailSubject = "Ihre Registrierung"
     def registermailLinkPrefix = "https://example.org/register?"
 
+    def bootStrapLib = 'http://bootstrap'
+    def angularLib = 'http://angular'
+
     def mailSenderMock = Mock(MailSenderBean)
 
     def registerController = new RegisterController(context: contextMock, httpClient: httpClientMock,
             clientRegistrationUri: clientRegistrationUri, activationTokenField: activationTokenField,
             mailSender: mailSenderMock, registermailFrom: registermailFrom, registermailSubject: registermailSubject,
             registermailLinkPrefix: registermailLinkPrefix, registrationExtensionUrnProvider: registrationExtensionUrnProvider,
-            resourceServerUriBuilder: resourceServerUriBuilder, mapper: mapper)
+            resourceServerUriBuilder: resourceServerUriBuilder, mapper: mapper, bootStrapLib: bootStrapLib, angularLib: angularLib)
 
 
     def "The registration controller should return a HTML file as stream"() {
         given:
         def httpServletResponseMock = Mock(HttpServletResponse)
-        def inputStream = new ByteArrayInputStream('nine bytes and one placeholder $REGISTERLINK'.bytes)
+        def inputStream = new ByteArrayInputStream('nine bytes and one placeholder $REGISTERLINK and $BOOTSTRAP and $ANGULAR'.bytes)
         def outputStreamMock = Mock(ServletOutputStream)
 
         when:
