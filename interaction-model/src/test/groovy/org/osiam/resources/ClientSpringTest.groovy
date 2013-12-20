@@ -153,7 +153,7 @@ class ClientSpringTest extends Specification {
         def validitySeconds = 99
 
         when:
-        clientSpring.setAccessTokenValiditySeconds(validitySeconds)
+        clientSpring.setRefreshTokenValiditySeconds(validitySeconds)
 
         then:
         clientSpring.getRefreshTokenValiditySeconds() == validitySeconds
