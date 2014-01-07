@@ -23,21 +23,40 @@
 
 package org.osiam.storage.entities;
 
-/**
- * Means that an Entity is expressed by an MultiValuedAttribute in SCIM.
- * <p/>
- * It must have at least the methods get- and setValue
- */
-public interface ChildOfMultiValueAttributeWithId extends ChildOfMultiValueAttribute {
-    /**
-     * Returns the database id of a multi value attribute
-     * @return the id of a multi value attribute
-     */
-    long getMultiValueId();
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 
-    /**
-     * Sets the id of a multi value attribute
-     * @param id the id of a multi value attribute
-     */
-    void setMultiValueId(long id);
+@MappedSuperclass
+public abstract class BaseMultiValuedAttributeEntity {
+
+    @Id
+    @GeneratedValue
+    @Column(name = "multi_value_id")
+    private long multiValueId;
+
+    @Column(name = "is_primary")
+    private Boolean primary;
+
+    public void setMultiValueId(long id) {
+        this.multiValueId = id;
+    }
+
+    public long getMultiValueId() {
+        return multiValueId;
+    }
+
+    public boolean isPrimary() {
+        if(primary == null) {
+            return false;
+        }
+        return primary;
+    }
+
+    public void setPrimary(boolean primary) {
+        this.primary = primary;
+    }
+
+
 }

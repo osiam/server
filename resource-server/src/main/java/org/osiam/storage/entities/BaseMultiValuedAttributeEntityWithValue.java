@@ -23,21 +23,50 @@
 
 package org.osiam.storage.entities;
 
-/**
- * Means that an Entity is expressed by an MultiValuedAttribute in SCIM and has also a type.
- */
-public interface ChildOfMultiValueAttributeWithIdAndType extends ChildOfMultiValueAttributeWithId {
-    /**
-     * The type of a multi value attribute (e.q. home, work)
-     *
-     * @return String containing the value of the type or null if not set
-     */
-    String getType();
+import javax.persistence.MappedSuperclass;
 
-    /**
-     * Sets the type of a multi value attribute (e.q. home, work)
-     */
-    void setType(String type);
+@MappedSuperclass
+public abstract class BaseMultiValuedAttributeEntityWithValue extends BaseMultiValuedAttributeEntity{
+
+    private String value;
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((value == null) ? 0 : value.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        BaseMultiValuedAttributeEntityWithValue other = (BaseMultiValuedAttributeEntityWithValue) obj;
+        if (value == null) {
+            if (other.value != null) {
+                return false;
+            }
+        } else if (!value.equals(other.value)) {
+            return false;
+        }
+        return true;
+    }
 
 
 }

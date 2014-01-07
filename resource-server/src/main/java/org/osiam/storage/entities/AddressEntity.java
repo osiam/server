@@ -27,8 +27,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
@@ -36,52 +34,22 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "scim_address")
-public class AddressEntity {
+public class AddressEntity extends BaseMultiValuedAttributeEntity{
 
-    @Id
-    @GeneratedValue
-    private long id;
-
-    @Column
     @Enumerated(EnumType.STRING)
     private CanonicalAddressTypes type;
 
-    @Column
     private String formatted;
 
-    @Column
     private String streetAddress;
 
-    @Column
     private String locality;
 
-    @Column
     private String region;
 
-    @Column
     private String postalCode;
 
-    @Column
     private String country;
-
-    @Column(name = "postgresql_does_not_like_primary")
-    private Boolean primary;
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public boolean isPrimary() {
-        return primary;
-    }
-
-    public void setPrimary(boolean primary) {
-        this.primary = primary;
-    }
 
     public String getType() {
         if (type != null) {
@@ -224,7 +192,7 @@ public class AddressEntity {
         builder.append("AddressEntity [type=").append(type).append(", formatted=").append(formatted)
                 .append(", streetAddress=").append(streetAddress).append(", locality=").append(locality)
                 .append(", region=").append(region).append(", postalCode=").append(postalCode).append(", country=")
-                .append(country).append(", primary=").append(primary).append("]");
+                .append(country).append(", primary=").append(isPrimary()).append("]");
         return builder.toString();
     }
 

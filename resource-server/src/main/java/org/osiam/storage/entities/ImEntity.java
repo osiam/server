@@ -34,13 +34,11 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "scim_im")
-public class ImEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithIdAndType {
+public class ImEntity extends BaseMultiValuedAttributeEntityWithValue {
 
-    @Column
     @Enumerated(EnumType.STRING)
     private CanonicalImTypes type;
 
-    @Override
     public String getType() {
         if (type != null) {
             return type.toString();
@@ -48,7 +46,6 @@ public class ImEntity extends MultiValueAttributeEntitySkeleton implements Child
         return null;
     }
 
-    @Override
     public void setType(String type) {
         if (type != null) {
             this.type = CanonicalImTypes.valueOf(type);
@@ -83,9 +80,7 @@ public class ImEntity extends MultiValueAttributeEntitySkeleton implements Child
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("ImEntity [type=").append(type).append(", getValue()=").append(getValue()).append("]");
-        return builder.toString();
+        return "ImEntity [type=" + type + ", value=" + getValue() + ", primary=" + isPrimary() + "]";
     }
 
     public enum CanonicalImTypes {

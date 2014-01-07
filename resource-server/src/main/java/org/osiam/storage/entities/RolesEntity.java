@@ -31,13 +31,11 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "scim_roles")
-public class RolesEntity extends MultiValueAttributeEntitySkeleton {
+public class RolesEntity extends BaseMultiValuedAttributeEntityWithValue {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("RolesEntity [getValue()=").append(getValue()).append("]");
-        return builder.toString();
+        return "RolesEntity [value=" + getValue() + ", primary=" + isPrimary() + "]";
     }
 
 }
