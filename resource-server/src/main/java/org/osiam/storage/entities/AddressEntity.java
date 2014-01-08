@@ -23,26 +23,36 @@
 
 package org.osiam.storage.entities;
 
+import javax.persistence.Basic;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
+import org.osiam.resources.scim.Address;
+import org.osiam.storage.entities.jpa_converters.AddressTypeConverter;
 
 /**
  * Address Entity
  */
 @Entity
 @Table(name = "scim_address")
-public class AddressEntity extends BaseMultiValuedAttributeEntity{
+public class AddressEntity extends BaseMultiValuedAttributeEntity {
 
-    @Enumerated(EnumType.STRING)
-    private CanonicalAddressTypes type;
+    /**
+     * <p>
+     * The type of this Address.
+     * </p>
+     *
+     * <p>
+     * Custom type mapping is provided by {@link AddressTypeConverter}.
+     * </p>
+     */
+    @Basic
+    private Address.Type type;  // @Basic is needed for JPA meta model generator
 
     @Lob
-    @Type(type="org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.StringClobType")
     private String formatted;
 
     private String streetAddress;
@@ -55,17 +65,12 @@ public class AddressEntity extends BaseMultiValuedAttributeEntity{
 
     private String country;
 
-    public String getType() {
-        if (type != null) {
-            return type.toString();
-        }
-        return null;
+    public Address.Type getType() {
+        return type;
     }
 
-    public void setType(String type) {
-        if (type != null) {
-            this.type = CanonicalAddressTypes.valueOf(type);
-        }
+    public void setType(Address.Type type) {
+        this.type = type;
     }
 
     public String getFormatted() {
@@ -184,7 +189,11 @@ public class AddressEntity extends BaseMultiValuedAttributeEntity{
         } else if (!streetAddress.equals(other.streetAddress)) {
             return false;
         }
-        if (type != other.type) {
+        if (type == null) {
+            if (other.type != null) {
+                return false;
+            }
+        } else if (!type.equals(other.type)) {
             return false;
         }
         return true;
@@ -200,7 +209,4 @@ public class AddressEntity extends BaseMultiValuedAttributeEntity{
         return builder.toString();
     }
 
-    public enum CanonicalAddressTypes {
-        work, home, other
-    }
 }

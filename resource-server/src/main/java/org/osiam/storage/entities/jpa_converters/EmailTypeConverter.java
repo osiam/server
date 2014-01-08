@@ -20,55 +20,34 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+package org.osiam.storage.entities.jpa_converters;
 
-package org.osiam.storage.entities;
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 
-import java.util.UUID;
+import org.osiam.resources.scim.Email;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import com.google.common.base.Strings;
 
-import org.osiam.resources.scim.Manager;
+@Converter(autoApply=true)
+public class EmailTypeConverter implements AttributeConverter<Email.Type, String> {
 
-@Entity
-@Table(name = "scim_manager")
-public class ManagerEntity {
+    @Override
+    public String convertToDatabaseColumn(Email.Type attribute) {
+        if(attribute == null || Strings.isNullOrEmpty(attribute.getValue())) {
+            return null;
+        }
 
-    @Id
-    @GeneratedValue
-    private long id;
-
-    private UUID managerId;
-
-    private String displayName;
-
-    public long getId() {
-        return id;
+        return attribute.getValue();
     }
 
-    public void setId(long id) {
-        this.id = id;
+    @Override
+    public Email.Type convertToEntityAttribute(String dbData) {
+        if(Strings.isNullOrEmpty(dbData)) {
+            return null;
+        }
+
+        return new Email.Type(dbData);
     }
 
-    public UUID getManagerId() {
-        return managerId;
-    }
-
-    public void setManagerId(UUID managerId) {
-        this.managerId = managerId;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
-
-    public Manager toScim() {
-        return new Manager(getManagerId() != null ? getManagerId().toString() : null, getDisplayName());
-    }
 }
