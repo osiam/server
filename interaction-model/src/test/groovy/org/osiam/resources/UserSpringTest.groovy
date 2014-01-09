@@ -1,6 +1,7 @@
 package org.osiam.resources
 
 import org.springframework.security.core.userdetails.UserDetails
+
 import spock.lang.Specification
 
 /**
@@ -43,14 +44,6 @@ class UserSpringTest extends Specification {
 
         then:
         userSpring.getRoles() == roles
-    }
-
-    def "should be able to set users userName"() {
-        when:
-        userSpring.setUsername("userName")
-
-        then:
-        userSpring.getUserName() == "userName"
     }
 
     def "should be able to set users id"() {
