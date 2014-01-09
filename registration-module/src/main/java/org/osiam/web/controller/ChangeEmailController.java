@@ -23,7 +23,21 @@
 
 package org.osiam.web.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.inject.Inject;
+import javax.mail.MessagingException;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.io.IOUtils;
 import org.osiam.helper.HttpClientHelper;
 import org.osiam.helper.HttpClientRequestResult;
@@ -32,7 +46,11 @@ import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.ExtensionFieldType;
 import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.resources.scim.User;
-import org.osiam.web.util.*;
+import org.osiam.web.util.AccessTokenInformationProvider;
+import org.osiam.web.util.HttpHeader;
+import org.osiam.web.util.MailSenderBean;
+import org.osiam.web.util.RegistrationExtensionUrnProvider;
+import org.osiam.web.util.ResourceServerUriBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,15 +60,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.inject.Inject;
-import javax.mail.MessagingException;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * Controller for change E-Mail purpose.
@@ -174,7 +184,8 @@ public class ChangeEmailController {
         HttpClientRequestResult updateUserResult = httpClient.executeHttpPatch(uri, updateUser, HttpHeader.AUTHORIZATION, authorization);
         if (updateUserResult.getStatusCode() != HttpStatus.OK.value()) {
             LOGGER.log(Level.WARNING, "Problems updating user with extensions!");
-            return new ResponseEntity<>("{\"error\":\"Problems updating user with extensions!\"}", HttpStatus.valueOf(result.getStatusCode()));
+            return new ResponseEntity<>("{\"error\":\"Problems updating user with extensions!\"}",
+                    HttpStatus.valueOf(updateUserResult.getStatusCode()));
         }
 
         //send email to the new address with confirmation token and user id
@@ -212,7 +223,7 @@ public class ChangeEmailController {
 
         // get user extensions for validation purpose
         Extension extension = user.getExtension(registrationExtensionUrnProvider.getExtensionUrn());
-        String existingConfirmToken = extension.getField(this.confirmationTokenField, ExtensionFieldType.STRING);
+        String existingConfirmToken = extension.getField(confirmationTokenField, ExtensionFieldType.STRING);
 
         if (!existingConfirmToken.equals(confirmToken)) {
             LOGGER.log(Level.WARNING, "Confirmation token miss match!");
@@ -220,7 +231,7 @@ public class ChangeEmailController {
         }
 
         // get new email
-        String newEmail = extension.getField(this.tempEmail, ExtensionFieldType.STRING);
+        String newEmail = extension.getField(tempEmail, ExtensionFieldType.STRING);
 
         // get old email address
         String oldEmail = mailSender.extractPrimaryEmail(user);
@@ -290,8 +301,8 @@ public class ChangeEmailController {
 
     private String getUserAsStringWithUpdatedExtensionsAndEmails(Extension extension, User user, List<MultiValuedAttribute> emails) throws JsonProcessingException {
         // remove extension values after already successful validation.
-        extension.addOrUpdateField(this.confirmationTokenField, "");
-        extension.addOrUpdateField(this.tempEmail, "");
+        extension.addOrUpdateField(confirmationTokenField, "");
+        extension.addOrUpdateField(tempEmail, "");
 
         //add mails and extensions to user
         User updateUser = new User.Builder(user).setEmails(emails).addExtension(extension).build();
