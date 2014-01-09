@@ -1,7 +1,5 @@
 package org.osiam.resources
 
-import org.springframework.security.core.userdetails.UserDetails
-
 import spock.lang.Specification
 
 /**
@@ -25,7 +23,6 @@ class UserSpringTest extends Specification {
         userSpring.setActive(true)
 
         then:
-        userSpring instanceof UserDetails
         userSpring.getAuthorities() == roles
         userSpring.getPassword() == "thePassword"
         userSpring.getUsername() == "username"
