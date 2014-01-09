@@ -63,7 +63,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
- * Controller to handel the registration purpose
+ * Controller to handle the registration process
  *
  * @author Jochen Todea
  */
@@ -186,7 +186,7 @@ public class RegisterController {
      * @return HTTP status, HTTP.OK (200) for a valid activation
      */
     @RequestMapping(value = "/activate", method = RequestMethod.POST, produces = "application/json")
-    public ResponseEntity activate(@RequestHeader final String authorization,
+    public ResponseEntity<String> activate(@RequestHeader final String authorization,
             @RequestParam final String userId, @RequestParam final String activationToken) throws IOException {
 
         if (activationToken.equals("")) {
@@ -225,10 +225,8 @@ public class RegisterController {
                     HttpStatus.valueOf(requestResult.getStatusCode()));
         }
 
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<String>(HttpStatus.OK);
     }
-
-    /*---- Private methods for activate endpoint ----*/
 
     private String getUserForActivationAsString(Extension extension, User user) throws JsonProcessingException {
         // validation successful -> delete token and activate user
@@ -236,8 +234,6 @@ public class RegisterController {
         User updateUser = new User.Builder(user).setActive(true).build();
         return mapper.writeValueAsString(updateUser);
     }
-
-    /*---- Private methods for create endpoint ----*/
 
     private User createUserForRegistration(User parsedUser, String activationToken) {
         // Add Extension with the token to the user and set active to false

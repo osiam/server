@@ -63,7 +63,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
- * Controller for change E-Mail purpose.
+ * Controller for change E-Mail process.
  *
  * @author Jochen Todea
  */
@@ -267,8 +267,6 @@ public class ChangeEmailController {
         return sendingInfoMailToOldAddress(oldEmail, updateUserResult.getBody());
     }
 
-    /*---- private methods for change endpoint ----*/
-
     private String buildUserForUpdateAsString(String newEmailValue, HttpClientRequestResult result,
             String confirmationToken) throws IOException {
 
@@ -314,8 +312,6 @@ public class ChangeEmailController {
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
-    /*---- private methods for confirm endpoint ----*/
 
     private String getUserAsStringWithUpdatedExtensionsAndEmails(Extension extension, User user,
             List<MultiValuedAttribute> emails) throws JsonProcessingException {

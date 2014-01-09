@@ -60,7 +60,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
- * Controller to handel the lost password flow
+ * Controller to handle the lost password flow
  *
  * @author Jochen Todea
  */
@@ -252,8 +252,6 @@ public class LostPasswordController {
         return new ResponseEntity<>(savedResult.getBody(), HttpStatus.OK);
     }
 
-    /*---- Private methods for lost endpoint ----*/
-
     private User buildUserForUpdate(User user, String oneTimePassword) {
         Extension extension = new Extension(registrationExtensionUrnProvider.getExtensionUrn());
         extension.addOrUpdateField(this.oneTimePassword, oneTimePassword);
@@ -292,8 +290,6 @@ public class LostPasswordController {
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
-    /*---- Private methods for change endpoint ----*/
 
     private String getUserWithUpdatedExtensionsAsString(Extension extension, User user, String newPassword)
             throws JsonProcessingException {
