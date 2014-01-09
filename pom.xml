@@ -77,57 +77,6 @@
         </snapshotRepository>
     </distributionManagement>
 
-    <repositories>
-        <repository>
-            <id>osiam releases repo</id>
-            <url>https://maven-repo.evolvis.org/releases</url>
-        </repository>
-        <repository>
-            <id>osiam snapshots repo</id>
-            <url>https://maven-repo.evolvis.org/snapshots</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>java.net2</id>
-            <name>Repository hosting the jee6 artifacts</name>
-            <url>http://download.java.net/maven/2</url>
-        </repository>
-        <repository>
-            <id>sonatype-oss-repository</id>
-            <url>https://oss.sonatype.org/content/groups/public/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>JBoss-maven-repository</id>
-            <url>http://repository.jboss.org/nexus/content/groups/public-jboss/</url>
-        </repository>
-
-        <repository>
-            <id>spring-milestone</id>
-            <name>Spring Framework Milestone Repository</name>
-            <url>http://maven.springframework.org/milestone</url>
-        </repository>
-        <repository>
-            <id>spring-release</id>
-            <name>Spring Framework Release Repository</name>
-            <url>http://maven.springframework.org/release</url>
-        </repository>
-        <repository>
-            <id>java.net</id>
-            <url>http://download.java.net/maven/2</url>
-        </repository>
-    </repositories>
-
     <build>
         <pluginManagement>
             <plugins>
