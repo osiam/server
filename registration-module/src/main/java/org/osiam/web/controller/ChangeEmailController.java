@@ -173,23 +173,16 @@ public class ChangeEmailController {
 
         String uri = resourceServerUriBuilder.buildUsersUriWithUserId(userId);
 
-        // get user by user id
-        HttpClientRequestResult result = httpClient.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authorization);
-        if (result.getStatusCode() != HttpStatus.OK.value()) {
-            LOGGER.log(Level.WARNING, "Problems retrieving user by ID!");
-            return new ResponseEntity<>("{\"error\":\"Problems retrieving user by ID!\"}", HttpStatus.valueOf(result
-                    .getStatusCode()));
-        }
-
         // generate confirmation token
         String confirmationToken = UUID.randomUUID().toString();
 
         // building the user for update with confirm token and temp email as extensions
-        String updateUser = buildUserForUpdateAsString(newEmailValue, result, confirmationToken);
+        String updateUser = buildUserForUpdateAsString(newEmailValue, confirmationToken);
 
         // update the user
         HttpClientRequestResult updateUserResult = httpClient.executeHttpPatch(uri, updateUser,
                 HttpHeader.AUTHORIZATION, authorization);
+
         if (updateUserResult.getStatusCode() != HttpStatus.OK.value()) {
             LOGGER.log(Level.WARNING, "Problems updating user with extensions!");
             return new ResponseEntity<>("{\"error\":\"Problems updating user with extensions!\"}",
@@ -267,18 +260,15 @@ public class ChangeEmailController {
         return sendingInfoMailToOldAddress(oldEmail, updateUserResult.getBody());
     }
 
-    private String buildUserForUpdateAsString(String newEmailValue, HttpClientRequestResult result,
-            String confirmationToken) throws IOException {
+    private String buildUserForUpdateAsString(String newEmailValue, String confirmationToken) throws IOException {
 
         // add the confirmation token to the extension and add the new email value to the tempMail extension field
         Extension extension = new Extension(registrationExtensionUrnProvider.getExtensionUrn());
         extension.addOrUpdateField(confirmationTokenField, confirmationToken);
         extension.addOrUpdateField(tempEmail, newEmailValue);
 
-        User user = mapper.readValue(result.getBody(), User.class);
-
         // add extensions to user
-        User updateUser = new User.Builder(user).addExtension(extension).build();
+        User updateUser = new User.Builder().addExtension(extension).build();
 
         return mapper.writeValueAsString(updateUser);
     }
