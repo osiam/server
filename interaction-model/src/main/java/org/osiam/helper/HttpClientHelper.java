@@ -23,24 +23,29 @@
 
 package org.osiam.helper;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.*;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
-import org.apache.http.message.BasicNameValuePair;
-
-import javax.inject.Named;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Named;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPatch;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
+import org.apache.http.message.BasicNameValuePair;
 
 @Named("httpClientHelper")
 public class HttpClientHelper {
@@ -75,7 +80,7 @@ public class HttpClientHelper {
 
     public HttpClientRequestResult executeHttpPut(String url, String parameterName, String parameterValue, String headerName, String headerValue) {
         HttpPut request = new HttpPut(url);
-        request = (HttpPut) addHeaderToRequest(headerName, headerValue, request);
+        request = addHeaderToRequest(headerName, headerValue, request);
 
         List<NameValuePair> formParams = new ArrayList<>();
         formParams.add(new BasicNameValuePair(parameterName, parameterValue));
@@ -85,28 +90,26 @@ public class HttpClientHelper {
 
     public HttpClientRequestResult executeHttpPut(String url, String body, String headerName, String headerValue) {
         HttpPut request = new HttpPut(url);
-        request = (HttpPut) addHeaderToRequest(headerName, headerValue, request);
+        request = addHeaderToRequest(headerName, headerValue, request);
 
         return executeHttpRequest(request, body, null);
     }
 
     public HttpClientRequestResult executeHttpPost(String url, String body, String headerName, String headerValue){
         HttpPost request = new HttpPost(url);
-        request = (HttpPost) addHeaderToRequest(headerName, headerValue, request);
+        request = addHeaderToRequest(headerName, headerValue, request);
 
         return executeHttpRequest(request, body, null);
     }
 
     public HttpClientRequestResult executeHttpPatch(String url, String body, String headerName, String headerValue) {
         HttpPatch request = new HttpPatch(url);
-        request = (HttpPatch) addHeaderToRequest(headerName, headerValue, request);
+        request = addHeaderToRequest(headerName, headerValue, request);
 
         return executeHttpRequest(request, body, null);
     }
 
-
-
-    private HttpEntityEnclosingRequestBase addHeaderToRequest(String headerName, String headerValue, HttpEntityEnclosingRequestBase request) {
+    private <T extends HttpEntityEnclosingRequestBase> T addHeaderToRequest(String headerName, String headerValue, T request) {
         if (headerName != null && headerValue != null) {
             request.addHeader(headerName, headerValue);
         }

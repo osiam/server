@@ -1,5 +1,9 @@
 package org.osiam.web.controller
 
+import javax.servlet.ServletContext
+import javax.servlet.ServletOutputStream
+import javax.servlet.http.HttpServletResponse
+
 import org.osiam.helper.HttpClientHelper
 import org.osiam.helper.HttpClientRequestResult
 import org.osiam.helper.ObjectMapperWithExtensionConfig
@@ -8,11 +12,8 @@ import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.User
 import org.osiam.web.util.*
 import org.springframework.http.HttpStatus
-import spock.lang.Specification
 
-import javax.servlet.ServletContext
-import javax.servlet.ServletOutputStream
-import javax.servlet.http.HttpServletResponse
+import spock.lang.Specification
 
 /**
  * Unit test for change email controller.
@@ -58,48 +59,6 @@ class ChangeEmailControllerTest extends Specification {
             jqueryLib: jqueryLib)
 
 
-    def "there should be an failure in change email if update user with extensions failed"() {
-        given:
-        def authZHeader = "Bearer ACCESSTOKEN"
-        def userId = "theUserId"
-        def newEmailValue = "bam@boom.com"
-        def uri = "http://localhost:8080/osiam-resource-server/Users/" + userId
-
-        when:
-        def result = changeEmailController.change(authZHeader, newEmailValue)
-
-        then:
-        1 * accessTokenInformationProvider.getUserIdFromToken(authZHeader) >> userId
-        1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
-        1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
-        2 * resultMock.getStatusCode() >> 400
-        result.getStatusCode() == HttpStatus.BAD_REQUEST
-    }
-
-    def "there should be an failure in change email if get user by id failed"() {
-        given:
-        def authZHeader = "Bearer ACCESSTOKEN"
-        def userId = "theUserId"
-        def newEmailValue = "bam@boom.com"
-        def uri = "http://localhost:8080/osiam-resource-server/Users/" + userId
-
-        def user = getUserAsString()
-
-        when:
-        def result = changeEmailController.change(authZHeader, newEmailValue)
-
-        then:
-        1 * accessTokenInformationProvider.getUserIdFromToken(authZHeader) >> userId
-        1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
-        1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
-        1 * resultMock.getStatusCode() >> 200
-        1 * resultMock.getBody() >> user
-        1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
-        1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
-        2 * resultMock.getStatusCode() >> 400
-        result.getStatusCode() == HttpStatus.BAD_REQUEST
-    }
-
     def "there should be an failure in change email if email content was not found"(){
         given:
         def authZHeader = "Bearer ACCESSTOKEN"
@@ -115,12 +74,10 @@ class ChangeEmailControllerTest extends Specification {
         then:
         1 * accessTokenInformationProvider.getUserIdFromToken(authZHeader) >> userId
         1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
-        1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
-        2 * resultMock.getBody() >> user
+        1 * resultMock.getBody() >> user
         1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
         1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
-        1 * resultMock.getStatusCode() >> 200
         1 * mailSender.getEmailContentAsStream("/WEB-INF/registration/emailchange-content.txt", _, context) >> null
         result.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR
         result.getBody() != null
@@ -143,12 +100,10 @@ class ChangeEmailControllerTest extends Specification {
         then:
         1 * accessTokenInformationProvider.getUserIdFromToken(authZHeader) >> userId
         1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
-        1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
         1 * resultMock.getStatusCode() >> 200
-        2 * resultMock.getBody() >> user
+        1 * resultMock.getBody() >> user
         1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
         1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
-        1 * resultMock.getStatusCode() >> 200
         1 * mailSender.getEmailContentAsStream("/WEB-INF/registration/emailchange-content.txt", _, context) >> inputStream
         1 * mailSender.sendMail(emailChangeMailFrom, newEmailValue, emailChangeMailSubject, inputStream, _)
         result.getStatusCode() == HttpStatus.OK
@@ -183,7 +138,7 @@ class ChangeEmailControllerTest extends Specification {
         def authZHeader = "abc"
         def userId = "userId"
         def confirmToken = "confToken"
-        def url = "http://localhost:8080/osiam-resource-server/Users/" + userId;
+        def url = "http://localhost:8080/osiam-resource-server/Users/" + userId
 
         def user = getUserWithTempEmailAsString("confToken")
 
@@ -213,7 +168,7 @@ class ChangeEmailControllerTest extends Specification {
         def authZHeader = "abc"
         def userId = "userId"
         def confirmToken = "confToken"
-        def url = "http://localhost:8080/osiam-resource-server/Users/" + userId;
+        def url = "http://localhost:8080/osiam-resource-server/Users/" + userId
 
         when:
         def response = changeEmailController.confirm(authZHeader, userId, confirmToken)
@@ -230,7 +185,7 @@ class ChangeEmailControllerTest extends Specification {
         def authZHeader = "abc"
         def userId = "userId"
         def confirmToken = "confToken"
-        def url = "http://localhost:8080/osiam-resource-server/Users/" + userId;
+        def url = "http://localhost:8080/osiam-resource-server/Users/" + userId
 
         def user = getUserWithTempEmailAsString("bullShit")
 
@@ -251,7 +206,7 @@ class ChangeEmailControllerTest extends Specification {
         def authZHeader = "abc"
         def userId = "userId"
         def confirmToken = "confToken"
-        def url = "http://localhost:8080/osiam-resource-server/Users/" + userId;
+        def url = "http://localhost:8080/osiam-resource-server/Users/" + userId
 
         def user = getUserWithTempEmailAsString("confToken")
 
@@ -274,7 +229,7 @@ class ChangeEmailControllerTest extends Specification {
         def authZHeader = "abc"
         def userId = "userId"
         def confirmToken = "confToken"
-        def url = "http://localhost:8080/osiam-resource-server/Users/" + userId;
+        def url = "http://localhost:8080/osiam-resource-server/Users/" + userId
 
         def user = getUserWithTempEmailAsString("confToken")
 
@@ -319,7 +274,7 @@ class ChangeEmailControllerTest extends Specification {
         def primary = new MultiValuedAttribute(primary: true, value: "email@example.org")
         def email = new MultiValuedAttribute(primary: false, value: "nonPrimary@example.org")
 
-        def extension = new Extension(urn);
+        def extension = new Extension(urn)
         extension.addOrUpdateField(confirmTokenField, confToken)
         extension.addOrUpdateField(tempMailField, "newemail@example.org")
 
