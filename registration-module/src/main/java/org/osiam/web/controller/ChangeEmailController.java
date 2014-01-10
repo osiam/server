@@ -217,7 +217,6 @@ public class ChangeEmailController {
 
         String uri = resourceServerUriBuilder.buildUsersUriWithUserId(userId);
 
-        // get user by user id
         HttpClientRequestResult result = httpClient.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authorization);
         if (result.getStatusCode() != HttpStatus.OK.value()) {
             LOGGER.log(Level.WARNING, "Problems retrieving user by ID!");
@@ -227,29 +226,25 @@ public class ChangeEmailController {
 
         User user = mapper.readValue(result.getBody(), User.class);
 
-        // get user extensions for validation purpose
         Extension extension = user.getExtension(registrationExtensionUrnProvider.getExtensionUrn());
         String existingConfirmToken = extension.getField(confirmationTokenField, ExtensionFieldType.STRING);
 
         if (!existingConfirmToken.equals(confirmToken)) {
-            LOGGER.log(Level.WARNING, "Confirmation token miss match!");
+            LOGGER.log(Level.WARNING, "Confirmation token mismatch!");
             return new ResponseEntity<>("{\"error\":\"No ongoing email change!\"}", HttpStatus.FORBIDDEN);
         }
 
-        // get new email
         String newEmail = extension.getField(tempEmail, ExtensionFieldType.STRING);
-
-        // get old email address
         String oldEmail = mailSender.extractPrimaryEmail(user);
 
-        // replacing only the old primary, non primary are still valid
         List<MultiValuedAttribute> emails = replaceOldPrimaryMail(newEmail, user.getEmails());
 
-        String updateUserAsString = getUserAsStringWithUpdatedExtensionsAndEmails(extension, user, emails);
+        String updateUserAsString = getUserAsStringWithUpdatedExtensionsAndEmails(extension, emails);
 
         // update the user
         HttpClientRequestResult updateUserResult = httpClient.executeHttpPatch(uri, updateUserAsString,
                 HttpHeader.AUTHORIZATION, authorization);
+
         if (updateUserResult.getStatusCode() != HttpStatus.OK.value()) {
             LOGGER.log(Level.WARNING, "Problems updating user with extensions!");
             return new ResponseEntity<>("{\"error\":\"Problems updating user with extensions!\"}",
@@ -303,14 +298,13 @@ public class ChangeEmailController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    private String getUserAsStringWithUpdatedExtensionsAndEmails(Extension extension, User user,
-            List<MultiValuedAttribute> emails) throws JsonProcessingException {
+    private String getUserAsStringWithUpdatedExtensionsAndEmails(Extension extension, List<MultiValuedAttribute> emails) throws JsonProcessingException {
         // remove extension values after already successful validation.
         extension.addOrUpdateField(confirmationTokenField, "");
         extension.addOrUpdateField(tempEmail, "");
 
         // add mails and extensions to user
-        User updateUser = new User.Builder(user).setEmails(emails).addExtension(extension).build();
+        User updateUser = new User.Builder().setEmails(emails).addExtension(extension).build();
 
         return mapper.writeValueAsString(updateUser);
     }
@@ -320,10 +314,10 @@ public class ChangeEmailController {
         List<MultiValuedAttribute> updatedEmailList = new ArrayList<>();
 
         // add new primary email address
-        updatedEmailList.add(new MultiValuedAttribute.Builder().
-                setValue(newEmail).
-                setPrimary(true).
-                build());
+        updatedEmailList.add(new MultiValuedAttribute.Builder()
+                .setValue(newEmail)
+                .setPrimary(true)
+                .build());
 
         // add only non primary mails to new list and remove all primary entries
         for (MultiValuedAttribute mail : emails) {
