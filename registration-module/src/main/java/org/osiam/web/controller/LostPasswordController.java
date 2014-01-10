@@ -128,18 +128,9 @@ public class LostPasswordController {
 
         String uri = resourceServerUriBuilder.buildUsersUriWithUserId(userId);
 
-        // get user by his id
-        HttpClientRequestResult getResult = httpClient.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authorization);
-
-        if (getResult.getStatusCode() != HttpStatus.OK.value()) {
-            LOGGER.log(Level.WARNING, "Problems getting user by id!");
-            return new ResponseEntity<>("{\"error\":\"Problems getting user by id!\"}", HttpStatus.valueOf(getResult
-                    .getStatusCode()));
-        }
-
         // generate one time password
         String otp = UUID.randomUUID().toString();
-        User userForUpdate = buildUserForUpdate(mapper.readValue(getResult.getBody(), User.class), otp);
+        User userForUpdate = buildUserForUpdate(otp);
 
         String userAsString = mapper.writeValueAsString(userForUpdate);
         // update the user
@@ -147,12 +138,14 @@ public class LostPasswordController {
                 HttpHeader.AUTHORIZATION, authorization);
 
         if (saveUserResponse.getStatusCode() != HttpStatus.OK.value()) {
-            LOGGER.log(Level.WARNING, "Problems updating the user with extensions!");
+            LOGGER.warning("Problems updating the user with extensions!");
             return new ResponseEntity<>("{\"error\":\"Problems updating the user with extensions!\"}",
                     HttpStatus.valueOf(saveUserResponse.getStatusCode()));
         }
 
-        return sendPasswordLostMail(userForUpdate, otp);
+        User updatedUser = mapper.readValue(saveUserResponse.getBody(), User.class);
+
+        return sendPasswordLostMail(updatedUser, otp);
     }
 
     /**
@@ -236,7 +229,7 @@ public class LostPasswordController {
                     HttpStatus.FORBIDDEN);
         }
 
-        String updateUser = getUserWithUpdatedExtensionsAsString(extension, user, newPassword);
+        String updateUser = getUserWithUpdatedExtensionsAsString(extension, newPassword);
 
         // update the user
         HttpClientRequestResult savedResult = httpClient.executeHttpPatch(uri, updateUser, HttpHeader.AUTHORIZATION,
@@ -252,11 +245,10 @@ public class LostPasswordController {
         return new ResponseEntity<>(savedResult.getBody(), HttpStatus.OK);
     }
 
-    private User buildUserForUpdate(User user, String oneTimePassword) {
+    private User buildUserForUpdate(String oneTimePassword) {
         Extension extension = new Extension(registrationExtensionUrnProvider.getExtensionUrn());
         extension.addOrUpdateField(this.oneTimePassword, oneTimePassword);
-        return new User.Builder(user).
-                addExtension(extension).build();
+        return new User.Builder().addExtension(extension).build();
     }
 
     private ResponseEntity<String> sendPasswordLostMail(User parsedUser, String oneTimePassword)
@@ -291,13 +283,13 @@ public class LostPasswordController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    private String getUserWithUpdatedExtensionsAsString(Extension extension, User user, String newPassword)
+    private String getUserWithUpdatedExtensionsAsString(Extension extension, String newPassword)
             throws JsonProcessingException {
         // delete the oneTimePassword from user entity
         extension.addOrUpdateField(oneTimePassword, "");
 
         // set new password for the user
-        User updateUser = new User.Builder(user).setPassword(newPassword).build();
+        User updateUser = new User.Builder().setPassword(newPassword).addExtension(extension).build();
         return mapper.writeValueAsString(updateUser);
     }
 }
