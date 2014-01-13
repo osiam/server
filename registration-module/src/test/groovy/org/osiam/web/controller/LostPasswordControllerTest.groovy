@@ -1,5 +1,9 @@
 package org.osiam.web.controller
 
+import javax.servlet.ServletContext
+import javax.servlet.ServletOutputStream
+import javax.servlet.http.HttpServletResponse
+
 import org.osiam.helper.HttpClientHelper
 import org.osiam.helper.HttpClientRequestResult
 import org.osiam.helper.ObjectMapperWithExtensionConfig
@@ -11,11 +15,8 @@ import org.osiam.web.util.MailSenderBean
 import org.osiam.web.util.RegistrationExtensionUrnProvider
 import org.osiam.web.util.ResourceServerUriBuilder
 import org.springframework.http.HttpStatus
-import spock.lang.Specification
 
-import javax.servlet.ServletContext
-import javax.servlet.ServletOutputStream
-import javax.servlet.http.HttpServletResponse
+import spock.lang.Specification
 
 /**
  * Test for LostPasswordController
@@ -45,11 +46,16 @@ class LostPasswordControllerTest extends Specification {
 
     def clientPasswordChangeUri = "http://localhost:8080"
 
+    def bootStrapLib = 'http://bootstrap'
+    def angularLib = 'http://angular'
+    def jqueryLib = 'http://jquery'
+
     def lostPasswordController = new LostPasswordController(httpClient: httpClientMock, oneTimePassword: oneTimePasswordField,
             context: contextMock, mailSender: mailSenderMock, passwordlostLinkPrefix: passwordlostLinkPrefix,
             passwordlostMailFrom: passwordlostMailFrom, passwordlostMailSubject: passwordlostMailSubject,
             registrationExtensionUrnProvider: registrationExtensionUrnProvider, resourceServerUriBuilder: resourceServerUriBuilder,
-            clientPasswordChangeUri: clientPasswordChangeUri, mapper: mapper)
+            clientPasswordChangeUri: clientPasswordChangeUri, mapper: mapper, bootStrapLib: bootStrapLib, angularLib: angularLib,
+            jqueryLib: jqueryLib)
 
 
     def "The controller should start the flow by generating a one time password and send an email to the user"() {
@@ -60,7 +66,7 @@ class LostPasswordControllerTest extends Specification {
         def uri = "http://localhost:8080/osiam-resource-server/Users/"+ userId
         def userString = getUserAsStringWithExtension("token")
 
-        def inputStream = new ByteArrayInputStream('nine bytes and one placeholder $PASSWORDLOSTURL'.bytes)
+        def inputStream = new ByteArrayInputStream('nine bytes and one placeholder $PASSWORDLOSTURL and $BOOTSTRAP and $ANGULAR and $JQUERY'.bytes)
 
         when:
         def result = lostPasswordController.lost(authZHeader, userId)
@@ -68,32 +74,13 @@ class LostPasswordControllerTest extends Specification {
         then:
         1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
         1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
-        1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> requestResultMock
-        1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> new HttpClientRequestResult("body", 200);
-
-        1 * requestResultMock.getStatusCode() >> 200
-        1 * requestResultMock.getBody() >> userString
+        1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> new HttpClientRequestResult(userString, 200)
 
         1 * mailSenderMock.getEmailContentAsStream("/WEB-INF/registration/passwordlostmail-content.txt", _, contextMock) >> inputStream
         1 * mailSenderMock.sendMail("noreply@example.org", "toemail@example.org", "Subject", inputStream, _)
         1 * mailSenderMock.extractPrimaryEmail(_) >> "toemail@example.org"
 
         result.getStatusCode() == HttpStatus.OK
-    }
-
-    def "there should be an failure if retrieving the user by his id failed"(){
-        given:
-        def userId = "someId"
-        def authZHeader = "Bearer ACCESSTOKEN"
-        def uri = "http://localhost:8080/osiam-resource-server/Users/" + userId
-
-        when:
-        def response = lostPasswordController.lost(authZHeader, userId)
-
-        then:
-        1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
-        1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> new HttpClientRequestResult('', 400)
-        response.getStatusCode() == HttpStatus.BAD_REQUEST
     }
 
     def "there should be an failure if the user could not be updated with one time password"(){
@@ -108,11 +95,8 @@ class LostPasswordControllerTest extends Specification {
 
         then:
         1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
-        1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> requestResultMock
-        1 * requestResultMock.getStatusCode() >> 200
-        1 * requestResultMock.getBody() >> userString
         1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
-        1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> new HttpClientRequestResult("body", 400);
+        1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> new HttpClientRequestResult("body", 400)
         response.getStatusCode() == HttpStatus.BAD_REQUEST
     }
 
@@ -128,11 +112,8 @@ class LostPasswordControllerTest extends Specification {
 
         then:
         1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
-        1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> requestResultMock
-        1 * requestResultMock.getStatusCode() >> 200
-        1 * requestResultMock.getBody() >> userString
         1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
-        1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> new HttpClientRequestResult("body", 200);
+        1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> new HttpClientRequestResult(userString, 200)
         1 * mailSenderMock.extractPrimaryEmail(_) >> null
         response.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR
         response.getBody() != null
@@ -150,11 +131,8 @@ class LostPasswordControllerTest extends Specification {
 
         then:
         1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
-        1 * httpClientMock.executeHttpGet(uri, HttpHeader.AUTHORIZATION, authZHeader) >> requestResultMock
-        1 * requestResultMock.getStatusCode() >> 200
-        1 * requestResultMock.getBody() >> userString
         1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
-        1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> new HttpClientRequestResult("body", 200);
+        1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> new HttpClientRequestResult(userString, 200)
         1 * mailSenderMock.extractPrimaryEmail(_) >> "primary@mail.com"
         1 * mailSenderMock.getEmailContentAsStream("/WEB-INF/registration/passwordlostmail-content.txt", _, contextMock) >> null
         response.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR

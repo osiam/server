@@ -1,7 +1,7 @@
-<div class="container" ng-app="email" ng-controller="changeController">
-    <link href="http://getbootstrap.com/dist/css/bootstrap.css" rel="stylesheet">
-    <script src="http://code.angularjs.org/1.2.0-rc.3/angular.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<div class="container emailBody" ng-app="email" ng-controller="changeController">
+    <link href='$BOOTSTRAP' rel="stylesheet">
+    <script src='$ANGULAR'></script>
+    <script src='$JQUERY'></script>
     <script>
         var app = angular.module('email', []);
         app.controller('changeController', function($scope, $http){
@@ -39,39 +39,40 @@
             }
         });
     </script>
-    <form name="form" class="css-form" novalidate>
-        <h2 class="css-form-heading">Change E-Mail Address</h2>
-        <input class="form-control" type="email" placeholder="E-Mail address*" ng-model="email" required autofocus/>
-        <input class="form-control" type="email" placeholder="Repeat E-Mail address*" ng-model="email_validate" match="email" required/>
-        <button class="btn btn-primary btn-block form-button" ng-click='submitEmailChange()' ng-disabled="form.$invalid" >Submit</button>
+    <form name="form" class="emailForm" novalidate>
+        <h2 class="emailHeading">Change E-Mail Address</h2>
+        <input class="form-control emailInput" type="email" placeholder="E-Mail address*" ng-model="email" required autofocus/>
+        <input class="form-control emailInput" type="email" placeholder="Repeat E-Mail address*" ng-model="email_validate" match="email" required/>
+        <button class="btn btn-primary btn-block emailButton" ng-click='submitEmailChange()' ng-disabled="form.$invalid" >Submit</button>
     </form>
     <style type="text/css">
-        body {
+        .emailBody {
             padding-top: 40px;
             padding-bottom: 40px;
+            width: 600px;
             background-color: #eee;
         }
-        .css-form-heading {
+        .emailHeading {
             padding-bottom: 20px;
         }
-        .css-form {
+        .emailForm {
             max-width: 400px;
             padding: 15px;
             margin: 0 auto;
             background-color: #ffffff;
         }
-        .form-button {
+        .emailButton {
             margin-top: 20px;
             padding: 15px;
         }
-        .form-control {
+        .emailInput {
             margin-top: 1px;
             padding: 20px;
         }
-        .css-form input.ng-invalid.ng-dirty {
+        .emailInput.ng-invalid.ng-dirty {
             border-color: #FA787E;
         }
-        .css-form input.ng-valid.ng-dirty {
+        .emailInput.ng-valid.ng-dirty {
             border-color: #78FA89;
         }
     </style>
