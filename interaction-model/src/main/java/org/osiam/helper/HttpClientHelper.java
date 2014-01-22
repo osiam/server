@@ -42,6 +42,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
@@ -61,11 +63,10 @@ public class HttpClientHelper {
 
     public HttpClientRequestResult executeHttpGet(String url, String headerName, String headerValue) {
         HttpClientRequestResult result;
-        final HttpGet request = new HttpGet(url);
+        HttpGet request = new HttpGet(url);
 
-        if (headerName != null && headerValue != null) {
-            request.addHeader(headerName, headerValue);
-        }
+        request = addHeaderToRequest(headerName, headerValue, request);
+        request = addDefaultHeaderToRequest(request);
 
         try {
             HttpResponse response = client.execute(request);
@@ -81,6 +82,7 @@ public class HttpClientHelper {
     public HttpClientRequestResult executeHttpPut(String url, String parameterName, String parameterValue, String headerName, String headerValue) {
         HttpPut request = new HttpPut(url);
         request = addHeaderToRequest(headerName, headerValue, request);
+        request = addDefaultHeaderToRequest(request);
 
         List<NameValuePair> formParams = new ArrayList<>();
         formParams.add(new BasicNameValuePair(parameterName, parameterValue));
@@ -91,6 +93,7 @@ public class HttpClientHelper {
     public HttpClientRequestResult executeHttpPut(String url, String body, String headerName, String headerValue) {
         HttpPut request = new HttpPut(url);
         request = addHeaderToRequest(headerName, headerValue, request);
+        request = addDefaultHeaderToRequest(request);
 
         return executeHttpRequest(request, body, null);
     }
@@ -98,6 +101,7 @@ public class HttpClientHelper {
     public HttpClientRequestResult executeHttpPost(String url, String body, String headerName, String headerValue){
         HttpPost request = new HttpPost(url);
         request = addHeaderToRequest(headerName, headerValue, request);
+        request = addDefaultHeaderToRequest(request);
 
         return executeHttpRequest(request, body, null);
     }
@@ -105,14 +109,20 @@ public class HttpClientHelper {
     public HttpClientRequestResult executeHttpPatch(String url, String body, String headerName, String headerValue) {
         HttpPatch request = new HttpPatch(url);
         request = addHeaderToRequest(headerName, headerValue, request);
+        request = addDefaultHeaderToRequest(request);
 
         return executeHttpRequest(request, body, null);
     }
 
-    private <T extends HttpEntityEnclosingRequestBase> T addHeaderToRequest(String headerName, String headerValue, T request) {
+    private <T extends HttpRequestBase> T addHeaderToRequest(String headerName, String headerValue, T request) {
         if (headerName != null && headerValue != null) {
             request.addHeader(headerName, headerValue);
         }
+        return request;
+    }
+    
+    private <T extends HttpRequestBase> T addDefaultHeaderToRequest(T request) {
+        request.addHeader("accept", ContentType.APPLICATION_JSON.getMimeType());
         return request;
     }
 
