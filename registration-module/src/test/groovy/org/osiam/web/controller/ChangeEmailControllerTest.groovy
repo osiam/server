@@ -7,8 +7,8 @@ import javax.servlet.http.HttpServletResponse
 import org.osiam.helper.HttpClientHelper
 import org.osiam.helper.HttpClientRequestResult
 import org.osiam.helper.ObjectMapperWithExtensionConfig
+import org.osiam.resources.scim.Email
 import org.osiam.resources.scim.Extension
-import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.User
 import org.osiam.web.util.*
 import org.springframework.http.HttpStatus
@@ -16,11 +16,7 @@ import org.springframework.http.HttpStatus
 import spock.lang.Specification
 
 /**
- * Unit test for change email controller.
  * User: Jochen Todea
- * Date: 20.11.13
- * Time: 13:35
- * Created: with Intellij IDEA
  */
 class ChangeEmailControllerTest extends Specification {
 
@@ -122,7 +118,7 @@ class ChangeEmailControllerTest extends Specification {
     }
 
     def getUserAsString() {
-        def emails = new MultiValuedAttribute(primary: true, value: "email@example.org")
+        def emails = new Email.Builder().setPrimary(true).setValue('email@example.org').build() 
 
         def user = new User.Builder("Boy George")
                 .setPassword("password")
@@ -271,8 +267,9 @@ class ChangeEmailControllerTest extends Specification {
     }
 
     def getUserWithTempEmailAsString(confToken) {
-        def primary = new MultiValuedAttribute(primary: true, value: "email@example.org")
-        def email = new MultiValuedAttribute(primary: false, value: "nonPrimary@example.org")
+        def primary = new Email.Builder().setPrimary(true).setValue('email@example.org').build()
+        def email = new Email.Builder().setPrimary(true).setValue('nonPrimary@example.org').build()
+        
 
         def extension = new Extension(urn)
         extension.addOrUpdateField(confirmTokenField, confToken)

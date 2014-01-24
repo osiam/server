@@ -7,8 +7,8 @@ import javax.servlet.http.HttpServletResponse
 import org.osiam.helper.HttpClientHelper
 import org.osiam.helper.HttpClientRequestResult
 import org.osiam.helper.ObjectMapperWithExtensionConfig
+import org.osiam.resources.scim.Email
 import org.osiam.resources.scim.Extension
-import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.User
 import org.osiam.web.util.HttpHeader
 import org.osiam.web.util.MailSenderBean
@@ -258,7 +258,7 @@ class LostPasswordControllerTest extends Specification {
     }
 
     def getUserAsStringWithExtension(String otp) {
-        def emails = new MultiValuedAttribute(primary: true, value: "email@example.org")
+        def emails = new Email.Builder().setPrimary(true).setValue('email@example.org')
 
         Extension extension = new Extension(urn)
         extension.addOrUpdateField("oneTimePassword", otp)

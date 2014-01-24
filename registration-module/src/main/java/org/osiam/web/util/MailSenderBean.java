@@ -23,22 +23,23 @@
 
 package org.osiam.web.util;
 
-import org.apache.commons.io.IOUtils;
-import org.osiam.resources.scim.MultiValuedAttribute;
-import org.osiam.resources.scim.User;
-import org.springframework.mail.MailSender;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.stereotype.Component;
-
-import javax.inject.Inject;
-import javax.mail.MessagingException;
-import javax.servlet.ServletContext;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.Map;
+
+import javax.inject.Inject;
+import javax.mail.MessagingException;
+import javax.servlet.ServletContext;
+
+import org.apache.commons.io.IOUtils;
+import org.osiam.resources.scim.Email;
+import org.osiam.resources.scim.User;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.stereotype.Component;
 
 /**
  * Class for sending mails.
@@ -81,7 +82,7 @@ public class MailSenderBean {
 
     public String extractPrimaryEmail(User user) {
         String foundEmail = null;
-        for (MultiValuedAttribute email : user.getEmails()) {
+        for (Email email : user.getEmails()) {
             if (email.isPrimary()) {
                 foundEmail = email.getValue();
             }
