@@ -203,6 +203,19 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- OSIAM Dependencies -->
+            <dependency>
+                <groupId>org.osiam</groupId>
+                <artifactId>scim-schema</artifactId>
+                <version>${org.osiam.scim-schema.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.osiam</groupId>
+                <artifactId>osiam-interaction-model</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        
             <!-- Used to convert ISO DateTime Strings to Date and vice versa (APACHE 2 License)-->
             <dependency>
                 <groupId>joda-time</groupId>
@@ -396,12 +409,6 @@
                 <groupId>postgresql</groupId>
                 <artifactId>postgresql</artifactId>
                 <version>9.1-901.jdbc4</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.osiam</groupId>
-                <artifactId>scim-schema</artifactId>
-                <version>${org.osiam.scim-schema.version}</version>
             </dependency>
 
             <dependency>
