@@ -5,7 +5,7 @@
     <parent>
         <artifactId>osiam-server-parent</artifactId>
         <groupId>org.osiam</groupId>
-        <version>0.15.5</version>
+        <version>0.15.6</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -159,7 +159,6 @@
         <dependency>
             <groupId>org.osiam</groupId>
             <artifactId>osiam-interaction-model</artifactId>
-            <version>0.15.5</version>
         </dependency>
 
         <dependency>
