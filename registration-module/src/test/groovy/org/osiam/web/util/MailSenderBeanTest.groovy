@@ -1,12 +1,14 @@
 package org.osiam.web.util
 
+import javax.servlet.ServletContext
+
+import org.osiam.resources.scim.Email
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.User
 import org.springframework.mail.MailSender
 import org.springframework.mail.SimpleMailMessage
-import spock.lang.Specification
 
-import javax.servlet.ServletContext
+import spock.lang.Specification
 
 /**
  * Test for MailSender class.
@@ -62,7 +64,7 @@ class MailSenderBeanTest extends Specification {
         given:
         def thePrimaryMail = "primary@mail.com"
 
-        def theEmail = new MultiValuedAttribute.Builder().setPrimary(true).setValue(thePrimaryMail).build()
+        def theEmail = new Email.Builder().setPrimary(true).setValue(thePrimaryMail).build()
         def user = new User.Builder("theMan").setEmails([theEmail] as List).build()
 
         when:
@@ -76,7 +78,7 @@ class MailSenderBeanTest extends Specification {
         given:
         def thePrimaryMail = "primary@mail.com"
 
-        def theEmail = new MultiValuedAttribute.Builder().setPrimary(false).setValue(thePrimaryMail).build()
+        def theEmail = new Email.Builder().setPrimary(false).setValue(thePrimaryMail).build()
         def user = new User.Builder("theMan").setEmails([theEmail] as List).build()
 
         when:

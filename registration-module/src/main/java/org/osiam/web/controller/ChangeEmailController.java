@@ -42,6 +42,7 @@ import org.apache.commons.io.IOUtils;
 import org.osiam.helper.HttpClientHelper;
 import org.osiam.helper.HttpClientRequestResult;
 import org.osiam.helper.ObjectMapperWithExtensionConfig;
+import org.osiam.resources.scim.Email;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.ExtensionFieldType;
 import org.osiam.resources.scim.MultiValuedAttribute;
@@ -237,7 +238,7 @@ public class ChangeEmailController {
         String newEmail = extension.getField(tempEmail, ExtensionFieldType.STRING);
         String oldEmail = mailSender.extractPrimaryEmail(user);
 
-        List<MultiValuedAttribute> emails = replaceOldPrimaryMail(newEmail, user.getEmails());
+        List<Email> emails = replaceOldPrimaryMail(newEmail, user.getEmails());
 
         String updateUserAsString = getUserAsStringWithUpdatedExtensionsAndEmails(extension, emails);
 
@@ -298,7 +299,7 @@ public class ChangeEmailController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    private String getUserAsStringWithUpdatedExtensionsAndEmails(Extension extension, List<MultiValuedAttribute> emails) throws JsonProcessingException {
+    private String getUserAsStringWithUpdatedExtensionsAndEmails(Extension extension, List<Email> emails) throws JsonProcessingException {
         // remove extension values after already successful validation.
         extension.addOrUpdateField(confirmationTokenField, "");
         extension.addOrUpdateField(tempEmail, "");
@@ -309,20 +310,20 @@ public class ChangeEmailController {
         return mapper.writeValueAsString(updateUser);
     }
 
-    private List<MultiValuedAttribute> replaceOldPrimaryMail(String newEmail, List<MultiValuedAttribute> emails) {
+    private List<Email> replaceOldPrimaryMail(String newEmail, List<Email> emails) {
 
-        List<MultiValuedAttribute> updatedEmailList = new ArrayList<>();
+        List<Email> updatedEmailList = new ArrayList<>();
 
         // add new primary email address
-        updatedEmailList.add(new MultiValuedAttribute.Builder()
+        updatedEmailList.add(new Email.Builder()
                 .setValue(newEmail)
                 .setPrimary(true)
                 .build());
 
         // add only non primary mails to new list and remove all primary entries
-        for (MultiValuedAttribute mail : emails) {
+        for (Email mail : emails) {
             if (mail.isPrimary()) {
-                updatedEmailList.add(new MultiValuedAttribute.Builder().setType(mail.getType())
+                updatedEmailList.add(new Email.Builder().setType(mail.getType())
                         .setPrimary(mail.isPrimary())
                         .setValue(mail.getValue()).setOperation("delete").build());
             } else {
