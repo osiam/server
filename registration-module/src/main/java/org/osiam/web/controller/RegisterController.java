@@ -214,10 +214,10 @@ public class RegisterController {
             return new ResponseEntity<>("{\"error\":\"Activation token miss match!\"}", HttpStatus.UNAUTHORIZED);
         }
 
-        String updateUser = getUserForActivationAsString(extension, userForActivation);
+        String updateUser = getUserForActivationAsString(extension);
 
         // update user
-        HttpClientRequestResult requestResult = httpClient.executeHttpPut(uri, updateUser, HttpHeader.AUTHORIZATION,
+        HttpClientRequestResult requestResult = httpClient.executeHttpPatch(uri, updateUser, HttpHeader.AUTHORIZATION,
                 authorization);
         if (requestResult.getStatusCode() != HttpStatus.OK.value()) {
             LOGGER.log(Level.WARNING, "Updating user with extensions failed!");
@@ -228,10 +228,10 @@ public class RegisterController {
         return new ResponseEntity<String>(HttpStatus.OK);
     }
 
-    private String getUserForActivationAsString(Extension extension, User user) throws JsonProcessingException {
+    private String getUserForActivationAsString(Extension extension) throws JsonProcessingException {
         // validation successful -> delete token and activate user
         extension.addOrUpdateField(activationTokenField, "");
-        User updateUser = new User.Builder(user).setActive(true).build();
+        User updateUser = new User.Builder().setActive(true).addExtension(extension).build();
         return mapper.writeValueAsString(updateUser);
     }
 

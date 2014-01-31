@@ -80,7 +80,7 @@ class RegisterControllerTest extends Specification {
         1 * requestResultMock.getStatusCode() >> 200
         1 * requestResultMock.getBody() >> userString
         1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
-        1 * httpClientMock.executeHttpPut(uri, _, HttpHeader.AUTHORIZATION, "Bearer ACCESS_TOKEN") >> requestResultMock
+        1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, "Bearer ACCESS_TOKEN") >> requestResultMock
         1 * requestResultMock.getStatusCode() >> 200
         response.getStatusCode() == HttpStatus.OK
     }
@@ -122,7 +122,7 @@ class RegisterControllerTest extends Specification {
         1 * requestResultGetMock.getStatusCode() >> 200
         1 * requestResultGetMock.getBody() >> userString
         1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
-        1 * httpClientMock.executeHttpPut(uri, _, HttpHeader.AUTHORIZATION, "Bearer ACCESS_TOKEN") >> requestResultPutMock
+        1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, "Bearer ACCESS_TOKEN") >> requestResultPutMock
         2 * requestResultPutMock.getStatusCode() >> 400
         response.getStatusCode() == HttpStatus.BAD_REQUEST
     }
