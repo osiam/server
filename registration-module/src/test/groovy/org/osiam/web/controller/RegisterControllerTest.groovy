@@ -1,21 +1,22 @@
 package org.osiam.web.controller
 
+import javax.servlet.ServletContext
+import javax.servlet.ServletOutputStream
+import javax.servlet.http.HttpServletResponse
+
 import org.osiam.helper.HttpClientHelper
 import org.osiam.helper.HttpClientRequestResult
 import org.osiam.helper.ObjectMapperWithExtensionConfig
+import org.osiam.resources.scim.Email
 import org.osiam.resources.scim.Extension
-import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.User
 import org.osiam.web.util.HttpHeader
 import org.osiam.web.util.MailSenderBean
 import org.osiam.web.util.RegistrationExtensionUrnProvider
 import org.osiam.web.util.ResourceServerUriBuilder
 import org.springframework.http.HttpStatus
-import spock.lang.Specification
 
-import javax.servlet.ServletContext
-import javax.servlet.ServletOutputStream
-import javax.servlet.http.HttpServletResponse
+import spock.lang.Specification
 
 class RegisterControllerTest extends Specification {
 
@@ -226,7 +227,7 @@ class RegisterControllerTest extends Specification {
     }
 
     def getUserAsStringWithExtension(String token) {
-        def emails = new MultiValuedAttribute(primary: true, value: "email@example.org")
+        def emails = new Email.Builder().setPrimary(true).setValue('email@example.org').build()
 
         Extension extension = new Extension(urn)
         extension.addOrUpdateField("activationToken", token)

@@ -44,7 +44,7 @@ import org.osiam.helper.HttpClientRequestResult;
 import org.osiam.helper.ObjectMapperWithExtensionConfig;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.ExtensionFieldType;
-import org.osiam.resources.scim.MultiValuedAttribute;
+import org.osiam.resources.scim.Role;
 import org.osiam.resources.scim.User;
 import org.osiam.web.util.HttpHeader;
 import org.osiam.web.util.MailSenderBean;
@@ -241,8 +241,8 @@ public class RegisterController {
         builder.setActive(false);
 
         // Add user to role 'USER' to be able to login afterwards
-        List<MultiValuedAttribute> roles = new ArrayList<>();
-        roles.add(new MultiValuedAttribute.Builder().setValue("USER").build());
+        List<Role> roles = new ArrayList<>();
+        roles.add(new Role.Builder().setValue("USER").build());
         builder.setRoles(roles);
 
         Extension extension = new Extension(registrationExtensionUrnProvider.getExtensionUrn());
