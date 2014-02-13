@@ -65,7 +65,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 /**
  * Controller to handle the registration process
  *
- * @author Jochen Todea
  */
 @Controller
 @RequestMapping(value = "/register")

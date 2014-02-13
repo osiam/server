@@ -62,7 +62,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 /**
  * Controller to handle the lost password flow
  *
- * @author Jochen Todea
  */
 @Controller
 @RequestMapping(value = "/password")

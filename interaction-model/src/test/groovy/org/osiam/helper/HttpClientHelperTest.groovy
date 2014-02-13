@@ -32,8 +32,6 @@ import spock.lang.Specification
 /**
  *  Tests for HttpClientHelper.
  *
- * @author: Andreas Grau, tarent solutions GmbH, 30.09.13
- * @version: 1.0
  */
 class HttpClientHelperTest extends Specification {
 

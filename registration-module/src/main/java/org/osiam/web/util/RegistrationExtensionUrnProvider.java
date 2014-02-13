@@ -28,7 +28,6 @@ import org.springframework.stereotype.Component;
 
 /**
  * Class to provide the registration extension urn.
- * @author Jochen Todea
  */
 @Component
 public class RegistrationExtensionUrnProvider {
