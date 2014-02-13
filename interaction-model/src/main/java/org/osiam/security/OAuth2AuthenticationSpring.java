@@ -23,7 +23,6 @@
 
 package org.osiam.security;
 
-
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)

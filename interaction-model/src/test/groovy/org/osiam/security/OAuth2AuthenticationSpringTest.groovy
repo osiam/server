@@ -25,13 +25,6 @@ package org.osiam.security
 
 import spock.lang.Specification
 
-/**
- * Created with IntelliJ IDEA.
- * User: jochen
- * Date: 14.10.13
- * Time: 13:14
- * To change this template use File | Settings | File Templates.
- */
 class OAuth2AuthenticationSpringTest extends Specification {
 
     def oAuth2AuthenticationSpring = new OAuth2AuthenticationSpring()

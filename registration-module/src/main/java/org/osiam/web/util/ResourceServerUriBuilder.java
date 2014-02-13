@@ -28,7 +28,6 @@ import org.springframework.stereotype.Component;
 
 /**
  * Class to build the uri for the resource server.
- * @author Jochen Todea
  */
 @Component
 public class ResourceServerUriBuilder {
@@ -39,7 +38,6 @@ public class ResourceServerUriBuilder {
     private String serverHost;
     @Value("${osiam.server.http.scheme}")
     private String httpScheme;
-
 
     /**
      * Method to build the resource server uri and appending the user id if it is not null or empty.

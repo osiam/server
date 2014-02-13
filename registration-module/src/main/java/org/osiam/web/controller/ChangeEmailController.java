@@ -66,7 +66,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 /**
  * Controller for change E-Mail process.
  *
- * @author Jochen Todea
  */
 @Controller
 @RequestMapping(value = "/email")
@@ -123,7 +122,6 @@ public class ChangeEmailController {
     private String angularLib;
     @Value("${osiam.html.dependencies.jquery}")
     private String jqueryLib;
-
 
     /**
      * Generates a HTTP form with the fields for change email purpose.
