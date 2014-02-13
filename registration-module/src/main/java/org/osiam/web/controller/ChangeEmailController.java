@@ -27,8 +27,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,7 +47,7 @@ import org.osiam.helper.ObjectMapperWithExtensionConfig;
 import org.osiam.resources.scim.Email;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.ExtensionFieldType;
-import org.osiam.resources.scim.MultiValuedAttribute;
+import org.osiam.resources.scim.Meta;
 import org.osiam.resources.scim.User;
 import org.osiam.web.util.AccessTokenInformationProvider;
 import org.osiam.web.util.HttpHeader;
@@ -65,7 +67,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * Controller for change E-Mail process.
- *
  */
 @Controller
 @RequestMapping(value = "/email")
@@ -134,7 +135,7 @@ public class ChangeEmailController {
         // replacing the url
         String replacedAll = htmlContent.replace("$CHANGELINK", clientEmailChangeUri);
 
-        //replace all lib links
+        // replace all lib links
         replacedAll = replacedAll.replace("$BOOTSTRAP", bootStrapLib);
         replacedAll = replacedAll.replace("$ANGULAR", angularLib);
         replacedAll = replacedAll.replace("$JQUERY", jqueryLib);
@@ -148,11 +149,11 @@ public class ChangeEmailController {
     /**
      * Saving the new E-Mail temporary, generating confirmation token and sending an E-Mail to the old registered
      * address.
-     *
+     * 
      * @param authorization
-     *            Authorization header with HTTP Bearer authorization and a valid access token
+     *        Authorization header with HTTP Bearer authorization and a valid access token
      * @param newEmailValue
-     *            The new email address value
+     *        The new email address value
      * @return The HTTP status code
      * @throws IOException
      * @throws MessagingException
@@ -196,13 +197,13 @@ public class ChangeEmailController {
 
     /**
      * Validating the confirm token and saving the new email value as primary email if the validation was successful.
-     *
+     * 
      * @param authorization
-     *            Authorization header with HTTP Bearer authorization and a valid access token
+     *        Authorization header with HTTP Bearer authorization and a valid access token
      * @param userId
-     *            The user id for the user whom email address should be changed
+     *        The user id for the user whom email address should be changed
      * @param confirmToken
-     *            The previously generated confirmation token from the confirmation email
+     *        The previously generated confirmation token from the confirmation email
      * @return The HTTP status code and the updated user if successful
      */
     @RequestMapping(method = RequestMethod.POST, value = "/confirm", produces = "application/json")
@@ -297,13 +298,15 @@ public class ChangeEmailController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    private String getUserAsStringWithUpdatedExtensionsAndEmails(Extension extension, List<Email> emails) throws JsonProcessingException {
+    private String getUserAsStringWithUpdatedExtensionsAndEmails(Extension extension, List<Email> emails)
+            throws JsonProcessingException {
         // remove extension values after already successful validation.
-        extension.addOrUpdateField(confirmationTokenField, "");
-        extension.addOrUpdateField(tempEmail, "");
-
+        Set<String> deletionSet = new HashSet<String>();
+        deletionSet.add(extension.getUrn() + "." + confirmationTokenField);
+        deletionSet.add(extension.getUrn() + "." + tempEmail);
+        Meta meta = new Meta.Builder().setAttributes(deletionSet).build();
         // add mails and extensions to user
-        User updateUser = new User.Builder().setEmails(emails).addExtension(extension).build();
+        User updateUser = new User.Builder().setEmails(emails).setMeta(meta).build();
 
         return mapper.writeValueAsString(updateUser);
     }

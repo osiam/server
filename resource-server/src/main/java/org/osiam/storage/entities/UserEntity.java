@@ -349,7 +349,60 @@ public class UserEntity extends ResourceEntity {
     public void setExtensionFieldValues(Set<ExtensionFieldValueEntity> extensionFieldValues) {
         this.extensionFieldValues = extensionFieldValues;
     }
+    
+    /**
+     * Adds a new extensionFieldValue to this user
+     * 
+     * @param extensionFieldValue
+     *            the extensionFieldValue to add
+     */
+    public void addExtensionFieldValue(ExtensionFieldValueEntity extensionFieldValue) {
+        extensionFieldValues.add(extensionFieldValue);
+    }
+    
+    /**
+     * Removes the given extensionFieldValue from this user
+     * 
+     * @param extensionFieldValue
+     *            the extensionFieldValue to remove
+     */
+    public void removeExtensionFieldValue(ExtensionFieldValueEntity extensionFieldValue) {
+        extensionFieldValues.remove(extensionFieldValue);
+    }
+    
+    /**
+     * Removes all extensionFieldValues from this user
+     */
+    public void removeAllExtensionFieldValues(String urn) {
+        ImmutableSet<ExtensionFieldValueEntity> fields = ImmutableSet.copyOf(extensionFieldValues);
+        for (ExtensionFieldValueEntity extensionFieldValue : fields) {
+            if(extensionFieldValue.getExtensionField().getExtension().getUrn().equals(urn)) {
+                extensionFieldValues.remove(extensionFieldValue);
+            }
+        }
+    }
 
+    /**
+     * Adds or updates an extension field value for this User. When updating, the old value of the extension field is
+     * removed from this user and the new one will be added.
+     * 
+     * @param extensionValue
+     *            The extension field value to add or update
+     */
+    public void addOrUpdateExtensionValue(ExtensionFieldValueEntity extensionValue) {
+        if (extensionValue == null) {
+            throw new IllegalArgumentException("extensionValue must not be null");
+        }
+        
+        if (extensionFieldValues.contains(extensionValue)) {
+            extensionFieldValues.remove(extensionValue);
+        }
+        
+        extensionFieldValues.add(extensionValue);
+    }
+    
+    
+    
     /**
      * @return the phone numbers entity
      */
@@ -588,24 +641,6 @@ public class UserEntity extends ResourceEntity {
         x509Certificates.clear();
     }
 
-    /**
-     * Adds or updates an extension field value for this User. When updating, the old value of the extension field is
-     * removed from this user and the new one will be added.
-     * 
-     * @param extensionValue
-     *            The extension field value to add or update
-     */
-    public void addOrUpdateExtensionValue(ExtensionFieldValueEntity extensionValue) {
-        if (extensionValue == null) {
-            throw new IllegalArgumentException("extensionValue must not be null");
-        }
-
-        if (extensionFieldValues.contains(extensionValue)) {
-            extensionFieldValues.remove(extensionValue);
-        }
-
-        extensionFieldValues.add(extensionValue);
-    }
 
     @Override
     public String toString() {

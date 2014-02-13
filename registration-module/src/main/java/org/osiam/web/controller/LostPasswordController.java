@@ -26,7 +26,9 @@ package org.osiam.web.controller;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,6 +44,7 @@ import org.osiam.helper.HttpClientRequestResult;
 import org.osiam.helper.ObjectMapperWithExtensionConfig;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.ExtensionFieldType;
+import org.osiam.resources.scim.Meta;
 import org.osiam.resources.scim.User;
 import org.osiam.web.util.HttpHeader;
 import org.osiam.web.util.MailSenderBean;
@@ -61,7 +64,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * Controller to handle the lost password flow
- *
  */
 @Controller
 @RequestMapping(value = "/password")
@@ -112,11 +114,11 @@ public class LostPasswordController {
     /**
      * This endpoint generates an one time password and send an confirmation email including the one time password to
      * users primary email
-     *
+     * 
      * @param authorization
-     *            authZ header with valid access token
+     *        authZ header with valid access token
      * @param userId
-     *            the user id for whom you want to change the password
+     *        the user id for whom you want to change the password
      * @return the HTTP status code
      * @throws IOException
      * @throws MessagingException
@@ -150,11 +152,11 @@ public class LostPasswordController {
     /**
      * Method to get an HTML form with the appropriate input fields for changing the password. Form includes the already
      * known values for userId and otp.
-     *
+     * 
      * @param oneTimePassword
-     *            the one time password from confirmation email
+     *        the one time password from confirmation email
      * @param userId
-     *            the user id for whom the password change should be
+     *        the user id for whom the password change should be
      */
     @RequestMapping(value = "/lostForm", method = RequestMethod.GET)
     public void lostForm(@RequestParam String oneTimePassword, @RequestParam String userId,
@@ -184,15 +186,15 @@ public class LostPasswordController {
 
     /**
      * Method to change the users password if the preconditions are satisfied.
-     *
+     * 
      * @param authorization
-     *            authZ header with valid access token
+     *        authZ header with valid access token
      * @param oneTimePassword
-     *            the previously generated one time password
+     *        the previously generated one time password
      * @param userId
-     *            the user id for whom you want to change the password
+     *        the user id for whom you want to change the password
      * @param newPassword
-     *            the new user password
+     *        the new user password
      * @return the response with status code and the updated user if successfully
      * @throws IOException
      */
@@ -285,10 +287,11 @@ public class LostPasswordController {
     private String getUserWithUpdatedExtensionsAsString(Extension extension, String newPassword)
             throws JsonProcessingException {
         // delete the oneTimePassword from user entity
-        extension.addOrUpdateField(oneTimePassword, "");
-
+        Set<String> deletionSet = new HashSet<String>();
+        deletionSet.add(extension.getUrn() + "." + oneTimePassword);
+        Meta meta = new Meta.Builder().setAttributes(deletionSet).build();
         // set new password for the user
-        User updateUser = new User.Builder().setPassword(newPassword).addExtension(extension).build();
+        User updateUser = new User.Builder().setPassword(newPassword).setMeta(meta).build();
         return mapper.writeValueAsString(updateUser);
     }
 }
