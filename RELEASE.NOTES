@@ -3,6 +3,6 @@
 ## 0.17 - 2014-02-17
 - [fix] BT-36 - Query with NOT clause on extension fields returns wrong results
 - [feature] OSNG-215 - Develop PATCH "Delete" support on extensions
-  For migration see: https://github.com/osiam/scim-schema/wiki/Migration#wiki-from-release-037-to-038, https://github.com/osiam/connector4java/wiki/Migration#wiki-from-012-to-013 and https://github.com/osiam/server/wiki/Migration#wiki-from-016-to-017
+  For migration see: https://github.com/osiam/server/wiki/Migration#wiki-from-016-to-017
 - [enhancement] OSNG-323 - Optimize Performance
   For migration see: https://github.com/osiam/server/wiki/Migration#wiki-from-016-to-017
