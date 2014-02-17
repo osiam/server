@@ -1,6 +1,6 @@
 # OSIAM Server
 
-## 0.17 - 2014-02-17
+## 0.17.1 - 2014-02-17
 - [fix] BT-36 - Query with NOT clause on extension fields returns wrong results
 - [feature] OSNG-215 - Develop PATCH "Delete" support on extensions
   For migration see: https://github.com/osiam/server/wiki/Migration#wiki-from-016-to-017
