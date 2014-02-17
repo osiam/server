@@ -28,7 +28,7 @@
 
     <groupId>org.osiam</groupId>
     <artifactId>osiam-server-parent</artifactId>
-    <version>0.17</version>
+    <version>0.17.1</version>
     <packaging>pom</packaging>
 
     <name>OSIAM Server Parent</name>
@@ -57,7 +57,7 @@
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <!-- set path for unit tests reports -->
 
-        <org.osiam.scim-schema.version>0.37</org.osiam.scim-schema.version>
+        <org.osiam.scim-schema.version>0.38</org.osiam.scim-schema.version>
     </properties>
 
     <scm>
