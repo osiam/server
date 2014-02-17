@@ -26,13 +26,6 @@ package org.osiam.security
 import org.osiam.resources.RoleSpring
 import spock.lang.Specification
 
-/**
- * Created with IntelliJ IDEA.
- * User: jochen
- * Date: 14.10.13
- * Time: 13:01
- * To change this template use File | Settings | File Templates.
- */
 class AuthorizationRequestSpringTest extends Specification {
 
     def authorizationRequestSpring = new AuthorizationRequestSpring()

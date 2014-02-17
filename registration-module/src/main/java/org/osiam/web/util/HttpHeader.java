@@ -23,10 +23,6 @@
 
 package org.osiam.web.util;
 
-/**
- * CHANGE THIS TEXT TO SOMETHING USEFUL, DESCRIBING THE CLASS.
- * @author Jochen Todea
- */
 public interface HttpHeader {
 
     String AUTHORIZATION = "Authorization";

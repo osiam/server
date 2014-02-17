@@ -29,8 +29,6 @@ import spock.lang.Specification
 /**
  * Unit-Tests for {@link ClientSpring}.
  *
- * @author: Andreas Grau, tarent solutions GmbH, 27.09.13
- * @version: 1.0
  */
 class ClientSpringTest extends Specification {
 
@@ -42,7 +40,6 @@ class ClientSpringTest extends Specification {
         then:
         ids.empty
     }
-
 
     def "isSecretRequired should be true"() {
         when:
@@ -73,7 +70,6 @@ class ClientSpringTest extends Specification {
         then:
         result.empty
     }
-
 
     def "getAdditionalInformation should be empty"() {
         when:

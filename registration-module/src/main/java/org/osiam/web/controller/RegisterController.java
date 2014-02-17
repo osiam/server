@@ -27,8 +27,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,6 +46,7 @@ import org.osiam.helper.HttpClientRequestResult;
 import org.osiam.helper.ObjectMapperWithExtensionConfig;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.ExtensionFieldType;
+import org.osiam.resources.scim.Meta;
 import org.osiam.resources.scim.Role;
 import org.osiam.resources.scim.User;
 import org.osiam.web.util.HttpHeader;
@@ -65,7 +68,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 /**
  * Controller to handle the registration process
  *
- * @author Jochen Todea
  */
 @Controller
 @RequestMapping(value = "/register")
@@ -230,8 +232,10 @@ public class RegisterController {
 
     private String getUserForActivationAsString(Extension extension) throws JsonProcessingException {
         // validation successful -> delete token and activate user
-        extension.addOrUpdateField(activationTokenField, "");
-        User updateUser = new User.Builder().setActive(true).addExtension(extension).build();
+        Set<String> deletionSet = new HashSet<String>();
+        deletionSet.add(extension.getUrn() + "." + activationTokenField);
+        Meta meta = new Meta.Builder().setAttributes(deletionSet).build();
+        User updateUser = new User.Builder().setActive(true).setMeta(meta).build();
         return mapper.writeValueAsString(updateUser);
     }
 

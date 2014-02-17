@@ -29,7 +29,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Class for /me user representation.
- * @author Jochen Todea
  */
 @JsonSerialize(include = JsonSerialize.Inclusion.ALWAYS)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -47,7 +46,6 @@ public class MeUserRepresentation {
     private String locale;
     private boolean verified;
     private String updatedTime;
-
 
     public String getId() {
         return id;

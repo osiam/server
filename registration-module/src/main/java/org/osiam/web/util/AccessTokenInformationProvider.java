@@ -34,7 +34,6 @@ import java.io.IOException;
 
 /**
  * This class using the /me endpoint to get information about the provided access token
- * @author Jochen Todea
  */
 @Component
 public class AccessTokenInformationProvider {

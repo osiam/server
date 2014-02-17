@@ -33,8 +33,6 @@ import java.util.*;
 /**
  * Serializable {@link ClientDetails} implementation.
  *
- * @author: Andreas Grau, tarent solutions GmbH, 27.09.13
- * @version: 1.0
  */
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -52,7 +50,6 @@ public class ClientSpring implements ClientDetails {
     private Date expiry;
     private boolean implicit;
     private long validityInSeconds;
-
 
     @Override
     public String getClientId() {
