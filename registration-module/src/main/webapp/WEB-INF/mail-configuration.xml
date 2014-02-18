@@ -27,19 +27,36 @@
     xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
-
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-
-    <mvc:annotation-driven />
-
-    <mvc:default-servlet-handler />
-
-    <context:property-placeholder location="classpath:osiam.properties, classpath:osiam-registration.properties" />
-
-    <context:component-scan base-package="org.osiam" />
-    <context:annotation-config />
     
-    <!-- Import configuration for mail -->
-    <import resource="mail-configuration.xml"/>
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="host" value="${osiam.mailServer.host.name}" />
+        <property name="port" value="${osiam.mailServer.smtp.port}" />
+        <property name="javaMailProperties">
+            <props>
+                <prop key="mail.transport.protocol">smtp</prop>
+                <prop key="mail.smtp.auth">false</prop>
+                <prop key="mail.smtp.starttls.enable">false</prop>
+                <prop key="mail.debug">false</prop>
+            </props>
+        </property>
+    </bean>
 
+    <!-- THYMELEAF: Template Resolver for email templates -->
+    <bean id="emailTemplateResolver" class="org.thymeleaf.templateresolver.ClassLoaderTemplateResolver">
+        <property name="prefix" value="mail/" />
+        <property name="templateMode" value="HTML5" />
+        <property name="characterEncoding" value="UTF-8" />
+        <property name="order" value="1" />
+    </bean>
+
+    <!-- THYMELEAF: Template Engine (Spring4-specific version) -->
+    <bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+        <property name="templateResolvers">
+            <set>
+                <ref bean="emailTemplateResolver" />
+            </set>
+        </property>
+    </bean>
+    
 </beans>
