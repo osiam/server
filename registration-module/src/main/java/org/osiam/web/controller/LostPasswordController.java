@@ -49,6 +49,7 @@ import org.osiam.resources.scim.User;
 import org.osiam.web.util.HttpHeader;
 import org.osiam.web.util.MailSenderBean;
 import org.osiam.web.util.RegistrationExtensionUrnProvider;
+import org.osiam.web.util.RegistrationHelper;
 import org.osiam.web.util.ResourceServerUriBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -61,6 +62,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.base.Optional;
 
 /**
  * Controller to handle the lost password flow
@@ -255,10 +257,10 @@ public class LostPasswordController {
     private ResponseEntity<String> sendPasswordLostMail(User parsedUser, String oneTimePassword)
             throws MessagingException, IOException {
 
-        String primaryEmail = mailSender.extractPrimaryEmail(parsedUser);
-        if (primaryEmail == null) {
+        Optional<String> email = RegistrationHelper.extractSendToEmail(parsedUser);
+        if (!email.isPresent()) {
             LOGGER.log(Level.WARNING, "No primary email found!");
-            return new ResponseEntity<>("{\"error\":\"No primary email found!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("{\"error\":\"No primary email found!\"}", HttpStatus.BAD_REQUEST);
         }
 
         StringBuilder activateURL = new StringBuilder(passwordlostLinkPrefix);
@@ -279,7 +281,7 @@ public class LostPasswordController {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        mailSender.sendMail(passwordlostMailFrom, primaryEmail, passwordlostMailSubject, mailContentStream, vars);
+        mailSender.sendMail(passwordlostMailFrom, email.get(), passwordlostMailSubject, mailContentStream, vars);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

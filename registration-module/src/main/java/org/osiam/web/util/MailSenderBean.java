@@ -35,8 +35,6 @@ import javax.mail.MessagingException;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.io.IOUtils;
-import org.osiam.resources.scim.Email;
-import org.osiam.resources.scim.User;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Component;
@@ -77,16 +75,6 @@ public class MailSenderBean {
         message.setText(mailContent);
         message.setSentDate(new Date(System.currentTimeMillis()));
         return message;
-    }
-
-    public String extractPrimaryEmail(User user) {
-        String foundEmail = null;
-        for (Email email : user.getEmails()) {
-            if (email.isPrimary()) {
-                foundEmail = email.getValue();
-            }
-        }
-        return foundEmail;
     }
 
     public InputStream getEmailContentAsStream(String defaultPath, String pathToContentFile, ServletContext context) throws FileNotFoundException {

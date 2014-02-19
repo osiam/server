@@ -23,6 +23,8 @@
 
 package org.osiam.web.controller
 
+import groovy.sql.Sql.ExtractIndexAndSql;
+
 import javax.servlet.ServletContext
 import javax.servlet.ServletOutputStream
 import javax.servlet.http.HttpServletResponse
@@ -66,7 +68,7 @@ class ChangeEmailControllerTest extends Specification {
 
     def context = Mock(ServletContext)
 
-    def changeEmailController = new ChangeEmailController(httpClient: httpClientMock, confirmationTokenField: confirmTokenField,
+    ChangeEmailController changeEmailController = new ChangeEmailController(httpClient: httpClientMock, confirmationTokenField: confirmTokenField,
             tempEmail: tempMailField, mailSender: mailSender, context: context, emailChangeLinkPrefix: emailChangeLinkPrefix,
             emailChangeMailFrom: emailChangeMailFrom, emailChangeMailSubject: emailChangeMailSubject,
             emailChangeInfoMailSubject: emailChangeInfoMailSubject, registrationExtensionUrnProvider: registrationExtensionUrnProvider,
@@ -169,7 +171,6 @@ class ChangeEmailControllerTest extends Specification {
         2 * resultMock.getBody() >> user
         1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
         1 * httpClientMock.executeHttpPatch(url, _, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
-        1 * mailSender.extractPrimaryEmail(_) >> "email@example.org"
         1 * mailSender.getEmailContentAsStream("/WEB-INF/registration/emailchange-info.txt", _, context) >> inputStream
         1 * mailSender.sendMail(emailChangeMailFrom, "email@example.org", emailChangeInfoMailSubject, inputStream, _)
 

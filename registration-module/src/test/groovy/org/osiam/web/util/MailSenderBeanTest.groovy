@@ -31,6 +31,8 @@ import org.osiam.resources.scim.User
 import org.springframework.mail.MailSender
 import org.springframework.mail.SimpleMailMessage
 
+import com.google.common.base.Optional;
+
 import spock.lang.Specification
 
 /**
@@ -90,13 +92,14 @@ class MailSenderBeanTest extends Specification {
         def user = new User.Builder("theMan").setEmails([theEmail] as List).build()
 
         when:
-        def email = mailSenderBean.extractPrimaryEmail(user)
+        Optional<String> email = RegistrationHelper.extractSendToEmail(user)
 
         then:
-        email == thePrimaryMail
+        email.isPresent()
+        email.get() == thePrimaryMail
     }
 
-    def "should return null if no primary email was found"() {
+    def "should return not null if no primary email was found"() {
         given:
         def thePrimaryMail = "primary@mail.com"
 
@@ -104,10 +107,11 @@ class MailSenderBeanTest extends Specification {
         def user = new User.Builder("theMan").setEmails([theEmail] as List).build()
 
         when:
-        def email = mailSenderBean.extractPrimaryEmail(user)
+        Optional<String> email = RegistrationHelper.extractSendToEmail(user)
 
         then:
-        email == null
+        email.isPresent()
+        email.get() == "primary@mail.com"
     }
 
     def "should not throw exception if users emails are not present"() {
@@ -115,10 +119,10 @@ class MailSenderBeanTest extends Specification {
         def user = new User.Builder("theMan").build()
 
         when:
-        def email = mailSenderBean.extractPrimaryEmail(user)
+        Optional<String> email = RegistrationHelper.extractSendToEmail(user)
 
         then:
-        email == null
+        !email.isPresent()
     }
 
     def "should read the email content from default path if user defined path is null"() {

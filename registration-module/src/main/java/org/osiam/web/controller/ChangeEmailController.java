@@ -53,6 +53,7 @@ import org.osiam.web.util.AccessTokenInformationProvider;
 import org.osiam.web.util.HttpHeader;
 import org.osiam.web.util.MailSenderBean;
 import org.osiam.web.util.RegistrationExtensionUrnProvider;
+import org.osiam.web.util.RegistrationHelper;
 import org.osiam.web.util.ResourceServerUriBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -64,6 +65,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.base.Optional;
 
 /**
  * Controller for change E-Mail process.
@@ -235,7 +237,7 @@ public class ChangeEmailController {
         }
 
         String newEmail = extension.getField(tempEmail, ExtensionFieldType.STRING);
-        String oldEmail = mailSender.extractPrimaryEmail(user);
+        Optional<String> oldEmail = RegistrationHelper.extractSendToEmail(user);
 
         List<Email> emails = replaceOldPrimaryMail(newEmail, user.getEmails());
 
@@ -252,7 +254,7 @@ public class ChangeEmailController {
         }
 
         // Send info mail
-        return sendingInfoMailToOldAddress(oldEmail, updateUserResult.getBody());
+        return sendingInfoMailToOldAddress(oldEmail.get(), updateUserResult.getBody());
     }
 
     private String buildUserForUpdateAsString(String newEmailValue, String confirmationToken) throws IOException {
