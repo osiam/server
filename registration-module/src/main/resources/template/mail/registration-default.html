@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title th:remove="all">Template for HTML email with inline image</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    </head>
+    <body>
+        <p>Hallo <span th:text="${user.userName}"></span>,<br />
+        <br />
+        ihr Account wurde erstellt.<br />
+        Um ihre Registrierung erfolgreich abzuschließen, klicken Sie bitte auf diesen Link:</p>
+        <a th:href="${registerlink}">REGISTERLINK</a><br />
+        <p>
+            Viele Grüße, <br />
+            <em>Dein OSIAM Team</em>
+        </p>
+    </body>
+</html>

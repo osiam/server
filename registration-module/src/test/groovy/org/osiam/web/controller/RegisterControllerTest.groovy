@@ -33,6 +33,9 @@ import org.osiam.helper.ObjectMapperWithExtensionConfig
 import org.osiam.resources.scim.Email
 import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.User
+import org.osiam.web.exception.OsiamException;
+import org.osiam.web.service.SendMail;
+import org.osiam.web.service.EmailTemplateRenderer;
 import org.osiam.web.util.HttpHeader
 import org.osiam.web.util.MailSenderBean
 import org.osiam.web.util.RegistrationExtensionUrnProvider
@@ -63,12 +66,17 @@ class RegisterControllerTest extends Specification {
     def angularLib = 'http://angular'
 
     def mailSenderMock = Mock(MailSenderBean)
+    
+    def sendMailService = Mock(SendMail)
+    
+    EmailTemplateRenderer templateRendererService = Mock()
 
     def registerController = new RegisterController(context: contextMock, httpClient: httpClientMock,
             clientRegistrationUri: clientRegistrationUri, activationTokenField: activationTokenField,
-            mailSender: mailSenderMock, registermailFrom: registermailFrom, registermailSubject: registermailSubject,
+            registermailFrom: registermailFrom, registermailSubject: registermailSubject,
             registermailLinkPrefix: registermailLinkPrefix, registrationExtensionUrnProvider: registrationExtensionUrnProvider,
-            resourceServerUriBuilder: resourceServerUriBuilder, mapper: mapper, bootStrapLib: bootStrapLib, angularLib: angularLib)
+            resourceServerUriBuilder: resourceServerUriBuilder, mapper: mapper, bootStrapLib: bootStrapLib, angularLib: angularLib,
+            sendMailService: sendMailService, templateRendererService: templateRendererService)
 
     def "The registration controller should return a HTML file as stream"() {
         given:
@@ -169,11 +177,11 @@ class RegisterControllerTest extends Specification {
         response.getStatusCode() == HttpStatus.UNAUTHORIZED
     }
 
-    def "The registration controller should send a register-mail"() {
+    def "The registration controller should send a html register-mail"() {
         given:
         def uri = "http://localhost:8080/osiam-resource-server/Users/"
 
-        def registerMailContent = new ByteArrayInputStream("Hallo \$REGISTERLINK Tschuess".bytes)
+        def registerMailContent = 'irrelevant'
         def auth = "BEARER ABC=="
         def body = getUserAsStringWithExtension("")
 
@@ -184,22 +192,20 @@ class RegisterControllerTest extends Specification {
         1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
         1 * resourceServerUriBuilder.buildUsersUriWithUserId("") >> uri
         1 * httpClientMock.executeHttpPost(_, _, _, _) >> new HttpClientRequestResult('{"id":"1234","schemas":["urn"]}', 201)
-        1 * mailSenderMock.getEmailContentAsStream("/WEB-INF/registration/registermail-content.txt", _, contextMock) >> registerMailContent
-        1 * mailSenderMock.sendMail("noreply@example.org", "toemail@example.org", "Ihre Registrierung", registerMailContent, _)
-        1 * mailSenderMock.extractPrimaryEmail(_) >> "toemail@example.org"
+        1 * templateRendererService.renderTemplate(_, _, _) >> registerMailContent
+        1 * sendMailService.sendHTMLMail("noreply@example.org", "email@example.org", "Ihre Registrierung", registerMailContent)
         response.statusCode == HttpStatus.OK
     }
 
     def "there should be an failure if no primary email was found"() {
         given:
         def auth = "BEARER ABC=="
-        def body = getUserAsStringWithExtension("")
+        def body = getUserAsStringWithExtensionAndWithoutEmail("")
 
         when:
         def response = registerController.create(auth, body)
 
         then:
-        1 * mailSenderMock.extractPrimaryEmail(_) >> null
         response.getStatusCode() == HttpStatus.BAD_REQUEST
     }
 
@@ -214,7 +220,6 @@ class RegisterControllerTest extends Specification {
         def response = registerController.create(auth, body)
 
         then:
-        1 * mailSenderMock.extractPrimaryEmail(_) >> "primary@mail.com"
         1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
         1 * resourceServerUriBuilder.buildUsersUriWithUserId("") >> uri
         1 * httpClientMock.executeHttpPost(_, _, _, _) >> new HttpClientRequestResult('', 400)
@@ -232,11 +237,10 @@ class RegisterControllerTest extends Specification {
         def response = registerController.create(auth, body)
 
         then:
-        1 * mailSenderMock.extractPrimaryEmail(_) >> "primary@mail.com"
         1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
         1 * resourceServerUriBuilder.buildUsersUriWithUserId("") >> uri
         1 * httpClientMock.executeHttpPost(_, _, _, _) >> new HttpClientRequestResult('{"id":"1234","schemas":["urn"]}', 201)
-        1 * mailSenderMock.getEmailContentAsStream("/WEB-INF/registration/registermail-content.txt", _, contextMock) >> null
+        1 * templateRendererService.renderTemplate(_, _, _) >> {throw new OsiamException()}
         response.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR
     }
 
@@ -257,6 +261,19 @@ class RegisterControllerTest extends Specification {
         def user = new User.Builder("George")
                 .setPassword("password")
                 .setEmails([emails])
+                .addExtension(extension)
+                .setActive(false)
+                .build()
+
+        return mapper.writeValueAsString(user)
+    }
+    
+    def getUserAsStringWithExtensionAndWithoutEmail(String token) {
+        Extension extension = new Extension(urn)
+        extension.addOrUpdateField("activationToken", token)
+
+        def user = new User.Builder("George")
+                .setPassword("password")
                 .addExtension(extension)
                 .setActive(false)
                 .build()

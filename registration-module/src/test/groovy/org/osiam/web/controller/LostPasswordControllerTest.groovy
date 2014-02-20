@@ -95,8 +95,7 @@ class LostPasswordControllerTest extends Specification {
         1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> new HttpClientRequestResult(userString, 200)
 
         1 * mailSenderMock.getEmailContentAsStream("/WEB-INF/registration/passwordlostmail-content.txt", _, contextMock) >> inputStream
-        1 * mailSenderMock.sendMail("noreply@example.org", "toemail@example.org", "Subject", inputStream, _)
-        1 * mailSenderMock.extractPrimaryEmail(_) >> "toemail@example.org"
+        1 * mailSenderMock.sendMail("noreply@example.org", "email@example.org", "Subject", inputStream, _)
 
         result.getStatusCode() == HttpStatus.OK
     }
@@ -123,7 +122,7 @@ class LostPasswordControllerTest extends Specification {
         def userId = "someId"
         def authZHeader = "Bearer ACCESSTOKEN"
         def uri = "http://localhost:8080/osiam-resource-server/Users/" + userId
-        def userString = getUserAsStringWithExtension("token")
+        def userString = getUserAsStringWithExtensionAndWithoutEmail("token")
 
         when:
         def response = lostPasswordController.lost(authZHeader, userId)
@@ -132,8 +131,7 @@ class LostPasswordControllerTest extends Specification {
         1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
         1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
         1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> new HttpClientRequestResult(userString, 200)
-        1 * mailSenderMock.extractPrimaryEmail(_) >> null
-        response.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR
+        response.getStatusCode() == HttpStatus.BAD_REQUEST
         response.getBody() != null
     }
 
@@ -151,7 +149,6 @@ class LostPasswordControllerTest extends Specification {
         1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
         1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
         1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> new HttpClientRequestResult(userString, 200)
-        1 * mailSenderMock.extractPrimaryEmail(_) >> "primary@mail.com"
         1 * mailSenderMock.getEmailContentAsStream("/WEB-INF/registration/passwordlostmail-content.txt", _, contextMock) >> null
         response.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR
         response.getBody() != null
@@ -284,6 +281,19 @@ class LostPasswordControllerTest extends Specification {
         def user = new User.Builder("George")
                 .setPassword("password")
                 .setEmails([emails])
+                .addExtension(extension)
+                .setActive(false)
+                .build()
+
+        return mapper.writeValueAsString(user)
+    }
+    
+    def getUserAsStringWithExtensionAndWithoutEmail(String token) {
+        Extension extension = new Extension(urn)
+        extension.addOrUpdateField("activationToken", token)
+
+        def user = new User.Builder("George")
+                .setPassword("password")
                 .addExtension(extension)
                 .setActive(false)
                 .build()

@@ -25,7 +25,6 @@ package org.osiam.web.controller;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -53,6 +52,7 @@ import org.osiam.web.util.AccessTokenInformationProvider;
 import org.osiam.web.util.HttpHeader;
 import org.osiam.web.util.MailSenderBean;
 import org.osiam.web.util.RegistrationExtensionUrnProvider;
+import org.osiam.web.util.RegistrationHelper;
 import org.osiam.web.util.ResourceServerUriBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -64,6 +64,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.base.Optional;
 
 /**
  * Controller for change E-Mail process.
@@ -235,9 +236,9 @@ public class ChangeEmailController {
         }
 
         String newEmail = extension.getField(tempEmail, ExtensionFieldType.STRING);
-        String oldEmail = mailSender.extractPrimaryEmail(user);
+        Optional<String> oldEmail = RegistrationHelper.extractSendToEmail(user);
 
-        List<Email> emails = replaceOldPrimaryMail(newEmail, user.getEmails());
+        List<Email> emails = RegistrationHelper.replaceOldPrimaryMail(newEmail, user.getEmails());
 
         String updateUserAsString = getUserAsStringWithUpdatedExtensionsAndEmails(extension, emails);
 
@@ -252,7 +253,7 @@ public class ChangeEmailController {
         }
 
         // Send info mail
-        return sendingInfoMailToOldAddress(oldEmail, updateUserResult.getBody());
+        return sendingInfoMailToOldAddress(oldEmail.get(), updateUserResult.getBody());
     }
 
     private String buildUserForUpdateAsString(String newEmailValue, String confirmationToken) throws IOException {
@@ -309,30 +310,6 @@ public class ChangeEmailController {
         User updateUser = new User.Builder().setEmails(emails).setMeta(meta).build();
 
         return mapper.writeValueAsString(updateUser);
-    }
-
-    private List<Email> replaceOldPrimaryMail(String newEmail, List<Email> emails) {
-
-        List<Email> updatedEmailList = new ArrayList<>();
-
-        // add new primary email address
-        updatedEmailList.add(new Email.Builder()
-                .setValue(newEmail)
-                .setPrimary(true)
-                .build());
-
-        // add only non primary mails to new list and remove all primary entries
-        for (Email mail : emails) {
-            if (mail.isPrimary()) {
-                updatedEmailList.add(new Email.Builder().setType(mail.getType())
-                        .setPrimary(mail.isPrimary())
-                        .setValue(mail.getValue()).setOperation("delete").build());
-            } else {
-                updatedEmailList.add(mail);
-            }
-        }
-
-        return updatedEmailList;
     }
 
     private ResponseEntity<String> sendingInfoMailToOldAddress(String oldEmailAddress, String user) throws IOException,
