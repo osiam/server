@@ -50,8 +50,8 @@ import org.osiam.resources.scim.Meta;
 import org.osiam.resources.scim.Role;
 import org.osiam.resources.scim.User;
 import org.osiam.web.exception.OsiamException;
+import org.osiam.web.service.EmailTemplateRenderer;
 import org.osiam.web.service.SendMail;
-import org.osiam.web.service.TemplateRenderer;
 import org.osiam.web.util.HttpHeader;
 import org.osiam.web.util.RegistrationExtensionUrnProvider;
 import org.osiam.web.util.RegistrationHelper;
@@ -98,7 +98,7 @@ public class RegisterController {
     private SendMail sendMailService;
 
     @Inject
-    private TemplateRenderer templateRendererService;
+    private EmailTemplateRenderer templateRendererService;
 
     /* Registration email configuration */
     @Value("${osiam.web.registermail.content.path}")
@@ -170,8 +170,8 @@ public class RegisterController {
 
         Optional<String> email = RegistrationHelper.extractSendToEmail(parsedUser);
         if (!email.isPresent()) {
-            LOGGER.log(Level.WARNING, "No primary email found!");
-            return new ResponseEntity<>("{\"error\":\"No primary email found!\"}", HttpStatus.BAD_REQUEST);
+            LOGGER.log(Level.WARNING, "Could not register user. No email of user " + parsedUser.getUserName() + " found!");
+            return new ResponseEntity<>("{\"error\":\"Could not register user. No email of user " + parsedUser.getUserName() + " found!\"}", HttpStatus.BAD_REQUEST);
         }
 
         // generate Activation Token
@@ -191,7 +191,7 @@ public class RegisterController {
         try {
             sendActivationMail(email.get(), createdUser, activationToken);
         } catch (OsiamException e) {
-            return new ResponseEntity<>("{\"error\":\"Problems creating user for registration\"}",
+            return new ResponseEntity<>("{\"error\":\"Problems creating user for registration: \"" + e.getMessage() + "}",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -257,16 +257,20 @@ public class RegisterController {
     
     private void sendActivationMail(String toAddress, User createdUser, String activationToken)
             throws MessagingException, IOException {
-        StringBuilder activateURL = new StringBuilder(registermailLinkPrefix);
-        activateURL.append("userId=").append(createdUser.getId());
-        activateURL.append("&activationToken=").append(activationToken);
-
+        String registrationLink = createRegistrationLink(createdUser.getId(), activationToken);
+        
         Map<String, String> mailVars = new HashMap<>();
-        mailVars.put("registerlink", activateURL.toString());
+        mailVars.put("registerlink", registrationLink);
 
         String mailContent = templateRendererService.renderTemplate("registration", createdUser, mailVars);
 
         sendMailService.sendHTMLMail(registermailFrom, toAddress, registermailSubject, mailContent);
+    }
+
+    private String createRegistrationLink(String userId, String activationToken) {
+        StringBuilder activateURL = new StringBuilder(registermailLinkPrefix);
+        activateURL.append("userId=").append(userId);
+        return activateURL.append("&activationToken=").append(activationToken).toString();
     }
 
     private String getUserForActivationAsString(Extension extension) throws JsonProcessingException {

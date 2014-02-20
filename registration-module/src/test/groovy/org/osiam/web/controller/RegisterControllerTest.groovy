@@ -35,7 +35,7 @@ import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.User
 import org.osiam.web.exception.OsiamException;
 import org.osiam.web.service.SendMail;
-import org.osiam.web.service.TemplateRenderer;
+import org.osiam.web.service.EmailTemplateRenderer;
 import org.osiam.web.util.HttpHeader
 import org.osiam.web.util.MailSenderBean
 import org.osiam.web.util.RegistrationExtensionUrnProvider
@@ -69,7 +69,7 @@ class RegisterControllerTest extends Specification {
     
     def sendMailService = Mock(SendMail)
     
-    TemplateRenderer templateRendererService = Mock()
+    EmailTemplateRenderer templateRendererService = Mock()
 
     def registerController = new RegisterController(context: contextMock, httpClient: httpClientMock,
             clientRegistrationUri: clientRegistrationUri, activationTokenField: activationTokenField,

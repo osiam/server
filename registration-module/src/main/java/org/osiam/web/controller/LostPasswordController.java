@@ -259,8 +259,8 @@ public class LostPasswordController {
 
         Optional<String> email = RegistrationHelper.extractSendToEmail(parsedUser);
         if (!email.isPresent()) {
-            LOGGER.log(Level.WARNING, "No primary email found!");
-            return new ResponseEntity<>("{\"error\":\"No primary email found!\"}", HttpStatus.BAD_REQUEST);
+            LOGGER.log(Level.WARNING, "Could not change password. No email of user " + parsedUser.getUserName() + " found!");
+            return new ResponseEntity<>("{\"error\":\"Could not change password. No email of user " + parsedUser.getUserName() + " found!\"}", HttpStatus.BAD_REQUEST);
         }
 
         StringBuilder activateURL = new StringBuilder(passwordlostLinkPrefix);

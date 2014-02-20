@@ -23,32 +23,51 @@
 
 package org.osiam.web.service
 
-import javax.servlet.ServletContext
-
+import org.apache.commons.io.IOUtils;
 import org.osiam.resources.scim.User
 import org.osiam.web.exception.OsiamException
-import org.springframework.web.context.support.ServletContextAttributeExporter;
-import org.thymeleaf.spring4.SpringTemplateEngine
-import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
 
 import spock.lang.Specification
 
-class TemplateRendererTest extends Specification {
+class OsiamTemplateResolverTest extends Specification {
 
-    ServletContext context = Mock();
-    
-    TemplateRenderer template = new TemplateRenderer(servletContext: context)
-    
     def 'could not find template by irrelevant name and throw exception'() {
         given:
-        User user = new User.Builder('username').build()
+        OsiamResourceResolver resourceResolver = new OsiamResourceResolver()
         def templateName = 'irrelevant'
+
+        when:
+        resourceResolver.getResourceAsStream(null, templateName)
+
+        then:
+        thrown(OsiamException)
+    }
+    
+    def 'could find default template by existing template and irrelevant locale'() {
+        given:
+        OsiamResourceResolver resourceResolver = new OsiamResourceResolver('irrelevant')
+        def templateName = 'template/mail/registration'
         
         when:
-        def content = template.renderTemplate(templateName, user, [:])
+        InputStream content = resourceResolver.getResourceAsStream(null, templateName)
         
         then:
-        context.getRealPath(_) >> 'irrelevant'
-        thrown(OsiamException)
+        content != null
+        String templateContent = IOUtils.toString(content, "UTF-8");
+        templateContent.contains('ihr Account wurde erstellt')
+    }
+    
+    def 'could find default template by existing template and en locale'() {
+        given:
+        OsiamResourceResolver resourceResolver = new OsiamResourceResolver('en')
+        def templateName = 'template/mail/registration'
+        
+        when:
+        InputStream content = resourceResolver.getResourceAsStream(null, templateName)
+        
+        then:
+        content != null
+        String templateContent = IOUtils.toString(content, "UTF-8");
+        templateContent.contains('your account has been created')
     }
 }
