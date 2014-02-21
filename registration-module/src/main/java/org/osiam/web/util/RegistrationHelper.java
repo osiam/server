@@ -46,4 +46,11 @@ public class RegistrationHelper {
 
         return updatedEmailList;
     }
+    
+    public static String createLinkForEmail(String linkPrefix, String userId, String parameterName, String parameter) {
+        StringBuilder link = new StringBuilder(linkPrefix);
+        link.append("userId=").append(userId);
+        link.append("&").append(parameterName).append("=");
+        return link.append(parameter).toString();
+    }
 }

@@ -98,7 +98,7 @@ public class RegisterController {
     private SendMail sendMailService;
 
     @Inject
-    private EmailTemplateRenderer templateRendererService;
+    private EmailTemplateRenderer emailTemplateRendererService;
 
     /* Registration email configuration */
     @Value("${osiam.web.registermail.content.path}")
@@ -170,8 +170,10 @@ public class RegisterController {
 
         Optional<String> email = RegistrationHelper.extractSendToEmail(parsedUser);
         if (!email.isPresent()) {
-            LOGGER.log(Level.WARNING, "Could not register user. No email of user " + parsedUser.getUserName() + " found!");
-            return new ResponseEntity<>("{\"error\":\"Could not register user. No email of user " + parsedUser.getUserName() + " found!\"}", HttpStatus.BAD_REQUEST);
+            LOGGER.log(Level.WARNING, "Could not register user. No email of user " + parsedUser.getUserName()
+                    + " found!");
+            return new ResponseEntity<>("{\"error\":\"Could not register user. No email of user "
+                    + parsedUser.getUserName() + " found!\"}", HttpStatus.BAD_REQUEST);
         }
 
         // generate Activation Token
@@ -188,10 +190,17 @@ public class RegisterController {
 
         User createdUser = mapper.readValue(saveUserResponse.getBody(), User.class);
 
+        String registrationLink = RegistrationHelper.createLinkForEmail(registermailLinkPrefix, createdUser.getId(),
+                "activationToken", activationToken);
+
+        Map<String, String> mailVars = new HashMap<>();
+        mailVars.put("registerlink", registrationLink);
+
         try {
-            sendActivationMail(email.get(), createdUser, activationToken);
+            sendActivationMail(email.get(), createdUser, mailVars);
         } catch (OsiamException e) {
-            return new ResponseEntity<>("{\"error\":\"Problems creating user for registration: \"" + e.getMessage() + "}",
+            return new ResponseEntity<>("{\"error\":\"Problems creating user for registration: \"" + e.getMessage()
+                    + "}",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -254,23 +263,12 @@ public class RegisterController {
 
         return new ResponseEntity<String>(HttpStatus.OK);
     }
-    
-    private void sendActivationMail(String toAddress, User createdUser, String activationToken)
-            throws MessagingException, IOException {
-        String registrationLink = createRegistrationLink(createdUser.getId(), activationToken);
-        
-        Map<String, String> mailVars = new HashMap<>();
-        mailVars.put("registerlink", registrationLink);
 
-        String mailContent = templateRendererService.renderTemplate("registration", createdUser, mailVars);
+    private void sendActivationMail(String toAddress, User createdUser, Map<String, String> mailVars)
+            throws MessagingException, IOException {
+        String mailContent = emailTemplateRendererService.renderTemplate("registration", createdUser, mailVars);
 
         sendMailService.sendHTMLMail(registermailFrom, toAddress, registermailSubject, mailContent);
-    }
-
-    private String createRegistrationLink(String userId, String activationToken) {
-        StringBuilder activateURL = new StringBuilder(registermailLinkPrefix);
-        activateURL.append("userId=").append(userId);
-        return activateURL.append("&activationToken=").append(activationToken).toString();
     }
 
     private String getUserForActivationAsString(Extension extension) throws JsonProcessingException {
