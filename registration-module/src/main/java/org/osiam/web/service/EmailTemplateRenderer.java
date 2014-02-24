@@ -37,10 +37,10 @@ import org.thymeleaf.spring4.SpringTemplateEngine;
 @Service
 public class EmailTemplateRenderer {
 
-    public String renderTemplate(String templateName, User user, Map<String, String> attributes) {
+    public String renderTemplate(String templateName, User user, Map<String, String> variables) {
         final Context ctx = new Context();
         ctx.setVariable("user", user);
-        ctx.setVariables(attributes);
+        ctx.setVariables(variables);
         OsiamTemplateResolver emailTemplateResolver = initializeTemplateResolver(user.getLocale());
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.setTemplateResolver(emailTemplateResolver);

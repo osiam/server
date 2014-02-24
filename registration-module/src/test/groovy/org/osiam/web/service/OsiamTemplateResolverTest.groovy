@@ -54,7 +54,7 @@ class OsiamTemplateResolverTest extends Specification {
         then:
         content != null
         String templateContent = IOUtils.toString(content, "UTF-8");
-        templateContent.contains('ihr Account wurde erstellt')
+        templateContent.contains('your account has been created.')
     }
     
     def 'could find default template by existing template and en locale'() {

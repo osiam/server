@@ -33,11 +33,10 @@ import org.osiam.helper.ObjectMapperWithExtensionConfig
 import org.osiam.resources.scim.Email
 import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.User
-import org.osiam.web.exception.OsiamException;
-import org.osiam.web.service.SendMail;
-import org.osiam.web.service.EmailTemplateRenderer;
+import org.osiam.web.exception.OsiamException
+import org.osiam.web.service.EmailTemplateRenderer
+import org.osiam.web.service.SendMail
 import org.osiam.web.util.HttpHeader
-import org.osiam.web.util.MailSenderBean
 import org.osiam.web.util.RegistrationExtensionUrnProvider
 import org.osiam.web.util.ResourceServerUriBuilder
 import org.springframework.http.HttpStatus
@@ -64,19 +63,17 @@ class RegisterControllerTest extends Specification {
 
     def bootStrapLib = 'http://bootstrap'
     def angularLib = 'http://angular'
-
-    def mailSenderMock = Mock(MailSenderBean)
     
     def sendMailService = Mock(SendMail)
     
-    EmailTemplateRenderer templateRendererService = Mock()
+    EmailTemplateRenderer emailTemplateRendererService = Mock()
 
     def registerController = new RegisterController(context: contextMock, httpClient: httpClientMock,
             clientRegistrationUri: clientRegistrationUri, activationTokenField: activationTokenField,
             registermailFrom: registermailFrom, registermailSubject: registermailSubject,
             registermailLinkPrefix: registermailLinkPrefix, registrationExtensionUrnProvider: registrationExtensionUrnProvider,
             resourceServerUriBuilder: resourceServerUriBuilder, mapper: mapper, bootStrapLib: bootStrapLib, angularLib: angularLib,
-            sendMailService: sendMailService, templateRendererService: templateRendererService)
+            sendMailService: sendMailService, emailTemplateRendererService: emailTemplateRendererService)
 
     def "The registration controller should return a HTML file as stream"() {
         given:
@@ -192,7 +189,7 @@ class RegisterControllerTest extends Specification {
         1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
         1 * resourceServerUriBuilder.buildUsersUriWithUserId("") >> uri
         1 * httpClientMock.executeHttpPost(_, _, _, _) >> new HttpClientRequestResult('{"id":"1234","schemas":["urn"]}', 201)
-        1 * templateRendererService.renderTemplate(_, _, _) >> registerMailContent
+        1 * emailTemplateRendererService.renderTemplate(_, _, _) >> registerMailContent
         1 * sendMailService.sendHTMLMail("noreply@example.org", "email@example.org", "Ihre Registrierung", registerMailContent)
         response.statusCode == HttpStatus.OK
     }
@@ -240,7 +237,7 @@ class RegisterControllerTest extends Specification {
         1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
         1 * resourceServerUriBuilder.buildUsersUriWithUserId("") >> uri
         1 * httpClientMock.executeHttpPost(_, _, _, _) >> new HttpClientRequestResult('{"id":"1234","schemas":["urn"]}', 201)
-        1 * templateRendererService.renderTemplate(_, _, _) >> {throw new OsiamException()}
+        1 * emailTemplateRendererService.renderTemplate(_, _, _) >> {throw new OsiamException()}
         response.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR
     }
 
