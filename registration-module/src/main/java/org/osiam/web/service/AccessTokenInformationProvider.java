@@ -21,21 +21,23 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.web.util;
+package org.osiam.web.service;
+
+import java.io.IOException;
+
+import javax.inject.Inject;
 
 import org.osiam.helper.HttpClientHelper;
 import org.osiam.helper.HttpClientRequestResult;
 import org.osiam.helper.ObjectMapperWithExtensionConfig;
 import org.osiam.web.resource.MeUserRepresentation;
-import org.springframework.stereotype.Component;
-
-import javax.inject.Inject;
-import java.io.IOException;
+import org.osiam.web.util.HttpHeader;
+import org.springframework.stereotype.Service;
 
 /**
  * This class using the /me endpoint to get information about the provided access token
  */
-@Component
+@Service
 public class AccessTokenInformationProvider {
 
     @Inject

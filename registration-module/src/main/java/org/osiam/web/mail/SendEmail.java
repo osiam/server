@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.web.service;
+package org.osiam.web.mail;
 
 import java.io.IOException;
 import java.util.Date;
@@ -36,11 +36,11 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 /**
- * Send mail service for sending an email
+ * Send email service for sending an email
  * 
  */
 @Service
-public class SendMail {
+public class SendEmail {
 
     @Inject
     private JavaMailSender mailSender;
@@ -73,6 +73,7 @@ public class SendMail {
         message.setTo(toAddress);
         message.setSubject(subject);
         message.setText(mailContent, true);
+        message.setSentDate(new Date(System.currentTimeMillis()));
         return mimeMessage;
     }
 }

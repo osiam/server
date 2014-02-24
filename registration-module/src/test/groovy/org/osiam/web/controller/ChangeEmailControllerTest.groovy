@@ -34,8 +34,12 @@ import org.osiam.resources.scim.Email
 import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.User
 import org.osiam.web.exception.OsiamException
-import org.osiam.web.service.EmailTemplateRenderer
-import org.osiam.web.service.SendMail
+import org.osiam.web.mail.SendEmail;
+import org.osiam.web.service.AccessTokenInformationProvider;
+import org.osiam.web.service.RegistrationExtensionUrnProvider;
+import org.osiam.web.service.ResourceServerUriBuilder;
+import org.osiam.web.template.EmailTemplateRenderer;
+import org.osiam.web.template.RenderAndSendEmail;
 import org.osiam.web.util.*
 import org.springframework.http.HttpStatus
 
@@ -50,14 +54,15 @@ class ChangeEmailControllerTest extends Specification {
     def registrationExtensionUrnProvider = Mock(RegistrationExtensionUrnProvider)
     def resourceServerUriBuilder = Mock(ResourceServerUriBuilder)
     def accessTokenInformationProvider = Mock(AccessTokenInformationProvider)
+    SendEmail sendMailService = Mock()
+    EmailTemplateRenderer emailTemplateRendererService = Mock()
+    RenderAndSendEmail renderAndSendEmailService = new RenderAndSendEmail(sendMailService: sendMailService, emailTemplateRendererService: emailTemplateRendererService);
 
     def urn = 'urn:scim:schemas:osiam:1.0:Registration'
 
     def confirmTokenField = 'emailConfirmToken'
     def tempMailField = 'tempMail'
 
-    SendMail sendMailService = Mock()
-    EmailTemplateRenderer emailTemplateRendererService = Mock()
     def emailChangeLinkPrefix = 'http://localhost:8080/stuff'
     def emailChangeMailFrom = 'bugs@bunny.com'
     def emailChangeMailSubject = 'email change'
@@ -71,12 +76,11 @@ class ChangeEmailControllerTest extends Specification {
     def context = Mock(ServletContext)
 
     ChangeEmailController changeEmailController = new ChangeEmailController(httpClient: httpClientMock, confirmationTokenField: confirmTokenField,
-            tempEmail: tempMailField, sendMailService: sendMailService, context: context, emailChangeLinkPrefix: emailChangeLinkPrefix,
-            emailChangeMailFrom: emailChangeMailFrom, emailChangeMailSubject: emailChangeMailSubject,
-            emailChangeInfoMailSubject: emailChangeInfoMailSubject, registrationExtensionUrnProvider: registrationExtensionUrnProvider,
-            resourceServerUriBuilder: resourceServerUriBuilder, accessTokenInformationProvider: accessTokenInformationProvider,
-            mapper: mapper, clientEmailChangeUri: clientEmailChangeUri, bootStrapLib: bootStrapLib, angularLib: angularLib,
-            jqueryLib: jqueryLib, emailTemplateRendererService: emailTemplateRendererService)
+    tempEmail: tempMailField, context: context, emailChangeLinkPrefix: emailChangeLinkPrefix,
+    fromAddress: emailChangeMailFrom, registrationExtensionUrnProvider: registrationExtensionUrnProvider,
+    resourceServerUriBuilder: resourceServerUriBuilder, accessTokenInformationProvider: accessTokenInformationProvider,
+    mapper: mapper, clientEmailChangeUri: clientEmailChangeUri, bootStrapLib: bootStrapLib, angularLib: angularLib,
+    jqueryLib: jqueryLib, renderAndSendEmailService: renderAndSendEmailService)
 
     def 'there should be an failure in change email if email template file was not found'() {
         given:
@@ -97,12 +101,62 @@ class ChangeEmailControllerTest extends Specification {
         1 * resultMock.getBody() >> user
         1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
         1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
-        1 * emailTemplateRendererService.renderTemplate(_, _, _) >> {throw new OsiamException()}
+        1 * emailTemplateRendererService.renderEmailSubject(_, _, _) >> 'subject'
+        1 * emailTemplateRendererService.renderEmailBody(_, _, _) >> {throw new OsiamException()}
         result.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR
         result.getBody() != null
     }
 
-    def 'Change email should generate a confirmation token, save the new email temporarily and send an email'() {
+    def 'there should be an failure in change email if email body not found'() {
+        given:
+        def authZHeader = 'Bearer ACCESSTOKEN'
+        def userId = 'theUserId'
+        def newEmailValue = 'bam@boom.com'
+        def uri = 'http://localhost:8080/osiam-resource-server/Users/' + userId
+
+        def user = getUserAsString()
+
+        when:
+        def result = changeEmailController.change(authZHeader, newEmailValue)
+
+        then:
+        1 * accessTokenInformationProvider.getUserIdFromToken(authZHeader) >> userId
+        1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
+        1 * resultMock.getStatusCode() >> 200
+        1 * resultMock.getBody() >> user
+        1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
+        1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
+        1 * emailTemplateRendererService.renderEmailSubject(_, _, _) >> 'subject'
+        1 * emailTemplateRendererService.renderEmailBody(_, _, _) >> {throw new OsiamException()}
+        result.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR
+        result.getBody() != null
+    }
+    
+    def 'there should be an failure in change email if email subject not found'() {
+        given:
+        def authZHeader = 'Bearer ACCESSTOKEN'
+        def userId = 'theUserId'
+        def newEmailValue = 'bam@boom.com'
+        def uri = 'http://localhost:8080/osiam-resource-server/Users/' + userId
+
+        def user = getUserAsString()
+
+        when:
+        def result = changeEmailController.change(authZHeader, newEmailValue)
+
+        then:
+        1 * accessTokenInformationProvider.getUserIdFromToken(authZHeader) >> userId
+        1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
+        1 * resultMock.getStatusCode() >> 200
+        1 * resultMock.getBody() >> user
+        1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
+        1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
+        1 * emailTemplateRendererService.renderEmailSubject(_, _, _) >> {throw new OsiamException()}
+        result.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR
+        result.getBody() != null
+    }
+
+    def 'change email should generate a confirmation token, save the new email temporarily and send an email'() {
         given:
         def authZHeader = 'Bearer ACCESSTOKEN'
         def userId = 'theUserId'
@@ -123,7 +177,8 @@ class ChangeEmailControllerTest extends Specification {
         2 * resultMock.getBody() >> user
         1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
         1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
-        1 * emailTemplateRendererService.renderTemplate(_, _, _) >> emailContent
+        1 * emailTemplateRendererService.renderEmailSubject(_, _, _) >> 'subject'
+        1 * emailTemplateRendererService.renderEmailBody(_, _, _) >> emailContent
         1 * sendMailService.sendHTMLMail(_, _, _, _)
         result.getStatusCode() == HttpStatus.OK
     }
@@ -140,19 +195,7 @@ class ChangeEmailControllerTest extends Specification {
         result.getBody() == '{\'error\':\'unauthorized\'}'
     }
 
-    def getUserAsString() {
-        def emails = new Email.Builder().setPrimary(true).setValue('email@example.org').build() 
-
-        def user = new User.Builder('Boy George')
-                .setPassword('password')
-                .setEmails([emails])
-                .setActive(false)
-                .build()
-
-        return mapper.writeValueAsString(user)
-    }
-
-    def 'Confirm email should validate the confirmation token and save the new email value as primary email and send an email'() {
+    def 'confirm email should validate the confirmation token and save the new email value as primary email and send an email'() {
         given:
         def authZHeader = 'abc'
         def userId = 'userId'
@@ -162,6 +205,7 @@ class ChangeEmailControllerTest extends Specification {
         def user = getUserWithTempEmailAsString('confToken')
         def upatedUser = getUpdatedUser()
 
+        def subjectContent = 'email change done'
         def emailContent = 'nine bytes and one placeholder'
 
         when:
@@ -175,13 +219,14 @@ class ChangeEmailControllerTest extends Specification {
         2 * resultMock.getBody() >> updatedUser
         1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
         1 * httpClientMock.executeHttpPatch(url, _, HttpHeader.AUTHORIZATION, authZHeader) >> resultMock
-        1 * emailTemplateRendererService.renderTemplate(_, _, _) >> emailContent
-        1 * sendMailService.sendHTMLMail(emailChangeMailFrom, 'email@example.org', emailChangeInfoMailSubject, emailContent)
+        1 * emailTemplateRendererService.renderEmailSubject(_, _, _) >> subjectContent
+        1 * emailTemplateRendererService.renderEmailBody(_, _, _) >> emailContent
+        1 * sendMailService.sendHTMLMail(emailChangeMailFrom, 'email@example.org', subjectContent, emailContent)
 
         result.getStatusCode() == HttpStatus.OK
         User savedUser = mapper.readValue(result.getBody(), User)
         savedUser.getEmails().size() == 2
-        !savedUser.emails.find { it.value == 'email@example.org'}
+        !savedUser.emails.find { it.value == 'email@example.org' }
     }
 
     def 'there should be an failure if retrieving user by id failed'() {
@@ -266,11 +311,23 @@ class ChangeEmailControllerTest extends Specification {
         1 * context.getResourceAsStream('/WEB-INF/registration/change_email.html') >> inputStream
         1 * servletResponseMock.getOutputStream() >> servletOutputStream
     }
+    
+    def getUserAsString() {
+        def emails = new Email.Builder().setPrimary(true).setValue('email@example.org').build()
+
+        def user = new User.Builder('Boy George')
+                .setPassword('password')
+                .setEmails([emails])
+                .setActive(false)
+                .build()
+
+        return mapper.writeValueAsString(user)
+    }
 
     def getUserWithTempEmailAsString(confToken) {
         def primary = new Email.Builder().setPrimary(true).setValue('email@example.org').build()
         def email = new Email.Builder().setPrimary(false).setValue('nonPrimary@example.org').build()
-        
+
 
         def extension = new Extension(urn)
         extension.addOrUpdateField(confirmTokenField, confToken)
@@ -285,7 +342,7 @@ class ChangeEmailControllerTest extends Specification {
 
         return mapper.writeValueAsString(user)
     }
-    
+
     def getUpdatedUser() {
         def primary = new Email.Builder().setPrimary(true).setValue('newemail@example.org').build()
         def email = new Email.Builder().setPrimary(false).setValue('nonPrimary@example.org').build()

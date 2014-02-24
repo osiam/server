@@ -23,16 +23,23 @@
 
 package org.osiam.web.service;
 
-import org.thymeleaf.templateresolver.TemplateResolver;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 /**
- * Osiam template resolver for thymeleaf template engine
- * 
+ * Class to provide the registration extension urn.
  */
-public class OsiamTemplateResolver extends TemplateResolver {
+@Component
+public class RegistrationExtensionUrnProvider {
 
-    public OsiamTemplateResolver(String locale) {
-        super();
-        super.setResourceResolver(new OsiamResourceResolver(locale));
+    @Value("${osiam.scim.extension.urn}")
+    private String internalScimExtensionUrn;
+
+    /**
+     * Returns the registration extension urn as String.
+     * @return the registration extension urn
+     */
+    public String getExtensionUrn() {
+        return internalScimExtensionUrn;
     }
 }

@@ -50,12 +50,11 @@ import org.osiam.resources.scim.Meta;
 import org.osiam.resources.scim.Role;
 import org.osiam.resources.scim.User;
 import org.osiam.web.exception.OsiamException;
-import org.osiam.web.service.EmailTemplateRenderer;
-import org.osiam.web.service.SendMail;
+import org.osiam.web.service.RegistrationExtensionUrnProvider;
+import org.osiam.web.service.ResourceServerUriBuilder;
+import org.osiam.web.template.RenderAndSendEmail;
 import org.osiam.web.util.HttpHeader;
-import org.osiam.web.util.RegistrationExtensionUrnProvider;
 import org.osiam.web.util.RegistrationHelper;
-import org.osiam.web.util.ResourceServerUriBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -95,27 +94,20 @@ public class RegisterController {
     private ServletContext context;
 
     @Inject
-    private SendMail sendMailService;
-
-    @Inject
-    private EmailTemplateRenderer emailTemplateRendererService;
+    private RenderAndSendEmail renderAndSendEmailService;
 
     /* Registration email configuration */
-    @Value("${osiam.web.registermail.content.path}")
-    private String pathToContentFile;
-    @Value("${osiam.web.registermail.linkprefix}")
+    @Value("${osiam.mail.register.linkprefix}")
     private String registermailLinkPrefix;
-    @Value("${osiam.web.registermail.from}")
-    private String registermailFrom;
-    @Value("${osiam.web.registermail.subject}")
-    private String registermailSubject;
+    @Value("${osiam.mail.from}")
+    private String fromAddress;
 
     /* Registration extension configuration */
-    @Value("${osiam.activation.token.field}")
+    @Value("${osiam.scim.extension.field.activationtoken}")
     private String activationTokenField;
 
     /* URI for the registration call from JavaScript */
-    @Value("${osiam.web.register.url}")
+    @Value("${osiam.html.register.url}")
     private String clientRegistrationUri;
 
     // css and js libs
@@ -184,7 +176,7 @@ public class RegisterController {
         HttpClientRequestResult saveUserResponse = saveUser(parsedUser, authorization);
         if (saveUserResponse.getStatusCode() != HttpStatus.CREATED.value()) {
             LOGGER.log(Level.WARNING, "Problems creating user for registration");
-            return new ResponseEntity<>("{\"error\":\"Problems creating user for registration\"}",
+            return new ResponseEntity<>("{\"error\":\"Problems creating user for registration. " + saveUserResponse.getBody() + "\"}",
                     HttpStatus.valueOf(saveUserResponse.getStatusCode()));
         }
 
@@ -193,15 +185,15 @@ public class RegisterController {
         String registrationLink = RegistrationHelper.createLinkForEmail(registermailLinkPrefix, createdUser.getId(),
                 "activationToken", activationToken);
 
-        Map<String, String> mailVars = new HashMap<>();
-        mailVars.put("registerlink", registrationLink);
+        Map<String, String> mailVariables = new HashMap<>();
+        mailVariables.put("registerlink", registrationLink);
 
         try {
-            sendActivationMail(email.get(), createdUser, mailVars);
+            renderAndSendEmailService.renderAndSendEmail("registration", fromAddress, email.get(), createdUser,
+                    mailVariables);
         } catch (OsiamException e) {
-            return new ResponseEntity<>("{\"error\":\"Problems creating user for registration: \"" + e.getMessage()
-                    + "}",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("{\"error\":\"Problems creating email for user registration: \""
+                    + e.getMessage() + "}", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return new ResponseEntity<>(saveUserResponse.getBody(), HttpStatus.OK);
@@ -262,13 +254,6 @@ public class RegisterController {
         }
 
         return new ResponseEntity<String>(HttpStatus.OK);
-    }
-
-    private void sendActivationMail(String toAddress, User createdUser, Map<String, String> mailVars)
-            throws MessagingException, IOException {
-        String mailContent = emailTemplateRendererService.renderTemplate("registration", createdUser, mailVars);
-
-        sendMailService.sendHTMLMail(registermailFrom, toAddress, registermailSubject, mailContent);
     }
 
     private String getUserForActivationAsString(Extension extension) throws JsonProcessingException {

@@ -49,13 +49,12 @@ import org.osiam.resources.scim.ExtensionFieldType;
 import org.osiam.resources.scim.Meta;
 import org.osiam.resources.scim.User;
 import org.osiam.web.exception.OsiamException;
-import org.osiam.web.service.EmailTemplateRenderer;
-import org.osiam.web.service.SendMail;
-import org.osiam.web.util.AccessTokenInformationProvider;
+import org.osiam.web.service.AccessTokenInformationProvider;
+import org.osiam.web.service.RegistrationExtensionUrnProvider;
+import org.osiam.web.service.ResourceServerUriBuilder;
+import org.osiam.web.template.RenderAndSendEmail;
 import org.osiam.web.util.HttpHeader;
-import org.osiam.web.util.RegistrationExtensionUrnProvider;
 import org.osiam.web.util.RegistrationHelper;
-import org.osiam.web.util.ResourceServerUriBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -79,52 +78,39 @@ public class ChangeEmailController {
 
     @Inject
     private HttpClientHelper httpClient;
-    
+
     @Inject
     private ResourceServerUriBuilder resourceServerUriBuilder;
-    
+
     @Inject
     private RegistrationExtensionUrnProvider registrationExtensionUrnProvider;
-    
+
     @Inject
     private ObjectMapperWithExtensionConfig mapper;
-    
+
     @Inject
     private AccessTokenInformationProvider accessTokenInformationProvider;
-    
+
     @Inject
-    private SendMail sendMailService;
-    
-    @Inject
-    private EmailTemplateRenderer emailTemplateRendererService;
+    private RenderAndSendEmail renderAndSendEmailService;
 
     @Inject
     private ServletContext context;
 
     /* Extension configuration */
-    @Value("${osiam.temp.email.field}")
+    @Value("${osiam.scim.extension.field.tempemail}")
     private String tempEmail;
-    @Value("${osiam.confirm.email.token.field}")
+    @Value("${osiam.scim.extension.field.emailconfirmtoken}")
     private String confirmationTokenField;
+    @Value("${osiam.mail.from}")
+    private String fromAddress;
 
     /* Change email configuration */
-    @Value("${osiam.web.emailchange.subject}")
-    private String emailChangeMailSubject;
-    @Value("${osiam.web.emailchange.content.path}")
-    private String pathToEmailContent;
-    @Value("${osiam.web.emailchange.linkprefix}")
+    @Value("${osiam.mail.emailchange.linkprefix}")
     private String emailChangeLinkPrefix;
-    @Value("${osiam.web.emailchange.from}")
-    private String emailChangeMailFrom;
-
-    /* Info mail configuration */
-    @Value("${osiam.web.emailchange-info.subject}")
-    private String emailChangeInfoMailSubject;
-    @Value("${osiam.web.emailchange-info.content.path}")
-    private String pathToEmailInfoContent;
 
     /* URI for the change email call from JavaScript */
-    @Value("${osiam.web.email.url}")
+    @Value("${osiam.html.emailchange.url}")
     private String clientEmailChangeUri;
 
     // css and js libs
@@ -162,9 +148,9 @@ public class ChangeEmailController {
      * address.
      * 
      * @param authorization
-     *        Authorization header with HTTP Bearer authorization and a valid access token
+     *            Authorization header with HTTP Bearer authorization and a valid access token
      * @param newEmailValue
-     *        The new email address value
+     *            The new email address value
      * @return The HTTP status code
      * @throws IOException
      * @throws MessagingException
@@ -203,31 +189,34 @@ public class ChangeEmailController {
         // send email to the new address with confirmation token and user id
         User savedUser = mapper.readValue(updateUserResult.getBody(), User.class);
 
-        String activateLink = RegistrationHelper.createLinkForEmail(emailChangeLinkPrefix, savedUser.getId(), "confirmToken", confirmationToken);
+        String activateLink = RegistrationHelper.createLinkForEmail(emailChangeLinkPrefix, savedUser.getId(),
+                "confirmToken", confirmationToken);
 
         // build the Map with the link for replacement
         Map<String, String> mailVariables = new HashMap<>();
         mailVariables.put("activatelink", activateLink);
-        
+
         try {
-            sendEmail("changeemail", newEmailValue, emailChangeMailSubject, savedUser, mailVariables);
+            renderAndSendEmailService.renderAndSendEmail("changeemail", fromAddress, newEmailValue, savedUser,
+                    mailVariables);
         } catch (OsiamException e) {
-            return new ResponseEntity<>("{\"error\":\"Problems confirming new user email: \"" + e.getMessage() + "}",
+            return new ResponseEntity<>("{\"error\":\"Problems creating email for confirming new user email: \""
+                    + e.getMessage() + "}",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        
-        return new ResponseEntity<>(updateUserResult.getBody(), HttpStatus.OK); 
+
+        return new ResponseEntity<>(updateUserResult.getBody(), HttpStatus.OK);
     }
 
     /**
      * Validating the confirm token and saving the new email value as primary email if the validation was successful.
      * 
      * @param authorization
-     *        Authorization header with HTTP Bearer authorization and a valid access token
+     *            Authorization header with HTTP Bearer authorization and a valid access token
      * @param userId
-     *        The user id for the user whom email address should be changed
+     *            The user id for the user whom email address should be changed
      * @param confirmToken
-     *        The previously generated confirmation token from the confirmation email
+     *            The previously generated confirmation token from the confirmation email
      * @return The HTTP status code and the updated user if successful
      */
     @RequestMapping(method = RequestMethod.POST, value = "/confirm", produces = "application/json")
@@ -274,13 +263,15 @@ public class ChangeEmailController {
             return new ResponseEntity<>("{\"error\":\"Problems updating user with extensions!\"}",
                     HttpStatus.valueOf(updateUserResult.getStatusCode()));
         }
-        
+
         User updatedUser = mapper.readValue(updateUserResult.getBody(), User.class);
-        
+
         try {
-            sendEmail("changeemailinfo", oldEmail.get(), emailChangeInfoMailSubject, updatedUser, new HashMap<String, String>());
+            renderAndSendEmailService.renderAndSendEmail("changeemailinfo", fromAddress, oldEmail.get(), updatedUser,
+                    new HashMap<String, String>());
         } catch (OsiamException e) {
-            return new ResponseEntity<>("{\"error\":\"Problems confirming new user email: \"" + e.getMessage() + "}",
+            return new ResponseEntity<>("{\"error\":\"Problems creating email for confirming new user: \""
+                    + e.getMessage() + "}",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -313,11 +304,4 @@ public class ChangeEmailController {
         return mapper.writeValueAsString(updateUser);
     }
 
-    private void sendEmail(String templateName, String oldEmailAddress, String subject, User user, Map<String, String> mailVariables) throws IOException,
-            MessagingException {
-        String mailContent = emailTemplateRendererService.renderTemplate(templateName, user, mailVariables);
-
-        sendMailService.sendHTMLMail(emailChangeMailFrom, oldEmailAddress, subject, mailContent);
-    }
-    
 }
