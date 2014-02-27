@@ -21,14 +21,18 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.web.service;
+package org.osiam.web.template;
 
 import java.util.Map;
 
 import org.osiam.resources.scim.User;
+import org.osiam.web.exception.OsiamException;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
+import org.thymeleaf.fragment.DOMSelectorFragmentSpec;
 import org.thymeleaf.spring4.SpringTemplateEngine;
+
+import com.google.common.base.Strings;
 
 /**
  * Email template renderer service for thymeleaf template engine
@@ -37,19 +41,41 @@ import org.thymeleaf.spring4.SpringTemplateEngine;
 @Service
 public class EmailTemplateRenderer {
 
-    public String renderTemplate(String templateName, User user, Map<String, String> variables) {
+    public String renderEmailSubject(String templateName, User user, Map<String, String> variables) {
+        String emailSubject = renderTemplate(templateName, "#mail-subject", user, variables);
+        if (Strings.isNullOrEmpty(emailSubject)) {
+            throw new OsiamException(
+                    "Could not find the mail subject in your template file '" + templateName
+                            + "'. Please provide an HTML element with the ID 'mail-subject'.");
+        }
+        return emailSubject;
+    }
+    
+    public String renderEmailBody(String templateName, User user, Map<String, String> variables) {
+        String emailBody = renderTemplate(templateName, "#mail-body", user, variables);
+        if (Strings.isNullOrEmpty(emailBody)) {
+            throw new OsiamException(
+                    "Could not find the mail body in your template file '" + templateName
+                            + "'. Please provide an HTML element with the ID 'mail-body'.");
+        }
+        return emailBody;
+    }
+    
+    private String renderTemplate(String templateName, String selectorExpression, User user, Map<String, String> variables) {
         final Context ctx = new Context();
         ctx.setVariable("user", user);
         ctx.setVariables(variables);
+        
         OsiamTemplateResolver emailTemplateResolver = initializeTemplateResolver(user.getLocale());
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.setTemplateResolver(emailTemplateResolver);
-        return templateEngine.process(templateName, ctx);
+        
+        return templateEngine.process(templateName, ctx, new DOMSelectorFragmentSpec(selectorExpression));
     }
     
     private OsiamTemplateResolver initializeTemplateResolver(String locale) {
         OsiamTemplateResolver emailTemplateResolver = new OsiamTemplateResolver(locale);
-        emailTemplateResolver.setPrefix("template/mail/");
+        emailTemplateResolver.setPrefix("registration-module/template/mail/");
         emailTemplateResolver.setTemplateMode("HTML5");
         emailTemplateResolver.setCharacterEncoding("UTF-8");
         emailTemplateResolver.setOrder(1);

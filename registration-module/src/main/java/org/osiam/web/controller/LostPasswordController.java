@@ -47,12 +47,11 @@ import org.osiam.resources.scim.ExtensionFieldType;
 import org.osiam.resources.scim.Meta;
 import org.osiam.resources.scim.User;
 import org.osiam.web.exception.OsiamException;
-import org.osiam.web.service.EmailTemplateRenderer;
-import org.osiam.web.service.SendMail;
+import org.osiam.web.service.RegistrationExtensionUrnProvider;
+import org.osiam.web.service.ResourceServerUriBuilder;
+import org.osiam.web.template.RenderAndSendEmail;
 import org.osiam.web.util.HttpHeader;
-import org.osiam.web.util.RegistrationExtensionUrnProvider;
 import org.osiam.web.util.RegistrationHelper;
-import org.osiam.web.util.ResourceServerUriBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -88,30 +87,23 @@ public class LostPasswordController {
     private ObjectMapperWithExtensionConfig mapper;
 
     @Inject
-    private SendMail sendMailService;
-
-    @Inject
-    private EmailTemplateRenderer emailTemplateRendererService;
+    private RenderAndSendEmail renderAndSendEmailService;
 
     @Inject
     private ServletContext context;
 
     /* Extension configuration */
-    @Value("${osiam.one.time.password.field}")
+    @Value("${osiam.scim.extension.field.onetimepassword}")
     private String oneTimePassword;
 
     /* Password lost email configuration */
-    @Value("${osiam.web.passwordlostmail.linkprefix}")
+    @Value("${osiam.mail.passwordlost.linkprefix}")
     private String passwordlostLinkPrefix;
-    @Value("${osiam.web.passwordlostmail.from}")
-    private String passwordlostMailFrom;
-    @Value("${osiam.web.passwordlostmail.subject}")
-    private String passwordlostMailSubject;
-    @Value("${osiam.web.passwordlostmail.content.path}")
-    private String pathToEmailContent;
+    @Value("${osiam.mail.from}")
+    private String fromAddress;
 
     /* URI for the change password call from JavaScript */
-    @Value("${osiam.web.password.url}")
+    @Value("${osiam.html.passwordlost.url}")
     private String clientPasswordChangeUri;
 
     // css and js libs
@@ -164,19 +156,22 @@ public class LostPasswordController {
             return new ResponseEntity<>("{\"error\":\"Could not change password. No email of user "
                     + updatedUser.getUserName() + " found!\"}", HttpStatus.BAD_REQUEST);
         }
-        
-        String passwordLostLink = RegistrationHelper.createLinkForEmail(passwordlostLinkPrefix, updatedUser.getId(), "oneTimePassword", oneTimePassword);
 
-        Map<String, String> vars = new HashMap<>();
-        vars.put("lostpasswordlink", passwordLostLink);
-        
+        String passwordLostLink = RegistrationHelper.createLinkForEmail(passwordlostLinkPrefix, updatedUser.getId(),
+                "oneTimePassword", oneTimePassword);
+
+        Map<String, String> mailVariables = new HashMap<>();
+        mailVariables.put("lostpasswordlink", passwordLostLink);
+
         try {
-            sendEmail(email.get(), updatedUser, vars);
+            renderAndSendEmailService.renderAndSendEmail("lostpassword", fromAddress, email.get(), updatedUser,
+                    mailVariables);
         } catch (OsiamException e) {
-            return new ResponseEntity<>("{\"error\":\"Problems creating email for lost password: \"" + e.getMessage() + "}",
+            return new ResponseEntity<>("{\"error\":\"Problems creating email for lost password: \"" + e.getMessage()
+                    + "}",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -281,13 +276,6 @@ public class LostPasswordController {
         Extension extension = new Extension(registrationExtensionUrnProvider.getExtensionUrn());
         extension.addOrUpdateField(this.oneTimePassword, oneTimePassword);
         return new User.Builder().addExtension(extension).build();
-    }
-
-    private void sendEmail(String toAdress, User user, Map<String, String> mailVariables) throws IOException,
-            MessagingException {
-        String mailContent = emailTemplateRendererService.renderTemplate("lostpassword", user, mailVariables);
-
-        sendMailService.sendHTMLMail(passwordlostMailFrom, toAdress, passwordlostMailSubject, mailContent);
     }
 
     private String getUserWithUpdatedExtensionsAsString(Extension extension, String newPassword)

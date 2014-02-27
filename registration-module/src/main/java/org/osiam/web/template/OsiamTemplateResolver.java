@@ -21,25 +21,18 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.web.util;
+package org.osiam.web.template;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.thymeleaf.templateresolver.TemplateResolver;
 
 /**
- * Class to provide the registration extension urn.
+ * Osiam template resolver for thymeleaf template engine
+ * 
  */
-@Component
-public class RegistrationExtensionUrnProvider {
+public class OsiamTemplateResolver extends TemplateResolver {
 
-    @Value("${osiam.internal.scim.extension.urn}")
-    private String internalScimExtensionUrn;
-
-    /**
-     * Returns the registration extension urn as String.
-     * @return the registration extension urn
-     */
-    public String getExtensionUrn() {
-        return internalScimExtensionUrn;
+    public OsiamTemplateResolver(String locale) {
+        super();
+        super.setResourceResolver(new OsiamResourceResolver(locale));
     }
 }

@@ -1,8 +1,0 @@
-Dear customer,
-
-To change your e-mail address, please click the link below:
-
-$EMAILCHANGEURL
-
-Sincerely,
-Your OSIAM team

@@ -30,13 +30,16 @@
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
     
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-        <property name="host" value="${osiam.mailServer.host.name}" />
-        <property name="port" value="${osiam.mailServer.smtp.port}" />
+        <property name="host" value="${osiam.mail.server.host.name}" />
+        <property name="port" value="${osiam.mail.server.smtp.port}" />
+        <property name="username" value="${osiam.mail.server.username}"/>
+        <property name="password" value="${osiam.mail.server.password}"/>
+        <property name="defaultEncoding" value="utf8" />
         <property name="javaMailProperties">
             <props>
-                <prop key="mail.transport.protocol">smtp</prop>
-                <prop key="mail.smtp.auth">false</prop>
-                <prop key="mail.smtp.starttls.enable">false</prop>
+                <prop key="mail.transport.protocol">${osiam.mail.server.transport.protocol}</prop>
+                <prop key="mail.smtp.auth">${osiam.mail.server.smtp.auth}</prop>
+                <prop key="mail.smtp.starttls.enable">${osiam.mail.server.smtp.starttls.enable}</prop>
                 <prop key="mail.debug">false</prop>
             </props>
         </property>

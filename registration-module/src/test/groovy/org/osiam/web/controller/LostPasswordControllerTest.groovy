@@ -34,11 +34,12 @@ import org.osiam.resources.scim.Email
 import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.User
 import org.osiam.web.exception.OsiamException
-import org.osiam.web.service.EmailTemplateRenderer
-import org.osiam.web.service.SendMail
+import org.osiam.web.mail.SendEmail;
+import org.osiam.web.service.RegistrationExtensionUrnProvider
+import org.osiam.web.service.ResourceServerUriBuilder
+import org.osiam.web.template.EmailTemplateRenderer;
+import org.osiam.web.template.RenderAndSendEmail;
 import org.osiam.web.util.HttpHeader
-import org.osiam.web.util.RegistrationExtensionUrnProvider
-import org.osiam.web.util.ResourceServerUriBuilder
 import org.springframework.http.HttpStatus
 
 import spock.lang.Specification
@@ -60,8 +61,10 @@ class LostPasswordControllerTest extends Specification {
 
     def oneTimePasswordField = 'oneTimePassword'
 
-    SendMail sendMailService = Mock()
+    SendEmail sendMailService = Mock()
     EmailTemplateRenderer emailTemplateRendererService = Mock()
+    RenderAndSendEmail renderAndSendEmailService = new RenderAndSendEmail(sendMailService: sendMailService, 
+        emailTemplateRendererService: emailTemplateRendererService);
     
     def passwordlostLinkPrefix = 'http://localhost:8080'
     def passwordlostMailFrom = 'noreply@example.org'
@@ -74,11 +77,11 @@ class LostPasswordControllerTest extends Specification {
     def jqueryLib = 'http://jquery'
 
     def lostPasswordController = new LostPasswordController(httpClient: httpClientMock, oneTimePassword: oneTimePasswordField,
-            context: contextMock, sendMailService: sendMailService, passwordlostLinkPrefix: passwordlostLinkPrefix,
-            passwordlostMailFrom: passwordlostMailFrom, passwordlostMailSubject: passwordlostMailSubject,
-            registrationExtensionUrnProvider: registrationExtensionUrnProvider, resourceServerUriBuilder: resourceServerUriBuilder,
+            context: contextMock, passwordlostLinkPrefix: passwordlostLinkPrefix,
+            fromAddress: passwordlostMailFrom, resourceServerUriBuilder: resourceServerUriBuilder,
+            registrationExtensionUrnProvider: registrationExtensionUrnProvider, 
             clientPasswordChangeUri: clientPasswordChangeUri, mapper: mapper, bootStrapLib: bootStrapLib, angularLib: angularLib,
-            jqueryLib: jqueryLib, emailTemplateRendererService: emailTemplateRendererService)
+            jqueryLib: jqueryLib, renderAndSendEmailService: renderAndSendEmailService)
 
     def 'The controller should start the flow by generating a one time password and send an email to the user'() {
         given:
@@ -97,8 +100,8 @@ class LostPasswordControllerTest extends Specification {
         1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
         1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
         1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> new HttpClientRequestResult(userString, 200)
-
-        1 * emailTemplateRendererService.renderTemplate(_, _, _) >> emailContent
+        1 * emailTemplateRendererService.renderEmailSubject(_, _, _) >> 'subject'
+        1 * emailTemplateRendererService.renderEmailBody(_, _, _) >> emailContent
         1 * sendMailService.sendHTMLMail(_, _, _, _)
 
         result.getStatusCode() == HttpStatus.OK
@@ -153,7 +156,8 @@ class LostPasswordControllerTest extends Specification {
         1 * resourceServerUriBuilder.buildUsersUriWithUserId(userId) >> uri
         1 * registrationExtensionUrnProvider.getExtensionUrn() >> urn
         1 * httpClientMock.executeHttpPatch(uri, _, HttpHeader.AUTHORIZATION, authZHeader) >> new HttpClientRequestResult(userString, 200)
-        1 * emailTemplateRendererService.renderTemplate(_, _, _) >> {throw new OsiamException()}
+        1 * emailTemplateRendererService.renderEmailSubject(_, _, _) >> 'subject'
+        1 * emailTemplateRendererService.renderEmailBody(_, _, _) >> {throw new OsiamException()}
         response.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR
         response.getBody() != null
     }

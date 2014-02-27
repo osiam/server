@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.web.service;
+package org.osiam.web.template;
 
 import java.io.InputStream;
 import java.util.Locale;

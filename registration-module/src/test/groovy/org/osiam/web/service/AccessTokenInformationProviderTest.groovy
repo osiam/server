@@ -21,13 +21,17 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.web.util
+package org.osiam.web.service
 
 import org.osiam.helper.HttpClientHelper
 import org.osiam.helper.HttpClientRequestResult
 import org.osiam.helper.ObjectMapperWithExtensionConfig
 import org.osiam.web.resource.MeUserRepresentation
+import org.osiam.web.service.AccessTokenInformationProvider;
+import org.osiam.web.service.ResourceServerUriBuilder;
+import org.osiam.web.util.HttpHeader;
 import org.springframework.http.HttpStatus
+
 import spock.lang.Specification
 
 /**

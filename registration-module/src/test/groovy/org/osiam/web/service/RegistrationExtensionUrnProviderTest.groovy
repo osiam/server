@@ -21,43 +21,27 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.web.util
+package org.osiam.web.service
+
+import org.osiam.web.service.RegistrationExtensionUrnProvider;
 
 import spock.lang.Specification
 
 /**
- * Resource server uri builder test.
+ * Registration extension urn provider test..
  */
-class ResourceServerUriBuilderTest extends Specification {
+class RegistrationExtensionUrnProviderTest extends Specification {
 
-    def httpScheme = "http"
-    def serverHost = "localhost"
-    def serverPort = 8080
+    def regExtUrn = "some:unr:stuff"
 
-    def resourceServerUriBuilder = new ResourceServerUriBuilder(httpScheme: httpScheme, serverHost: serverHost,
-            serverPort: serverPort)
+    RegistrationExtensionUrnProvider registrationExtensionUrnProvider =
+        new RegistrationExtensionUrnProvider(internalScimExtensionUrn: regExtUrn)
 
-    def "should return the resource server uri to /Users with appended user id"(){
+    def "should return the extension urn for registration purpose"() {
         when:
-        def uri = resourceServerUriBuilder.buildUsersUriWithUserId("theUserId")
+        def urn = registrationExtensionUrnProvider.getExtensionUrn()
 
         then:
-        uri == "http://localhost:8080/osiam-resource-server/Users/theUserId"
-    }
-
-    def "should not throw an exception and append an empty string for user id if it is null"() {
-        when:
-        def uri = resourceServerUriBuilder.buildUsersUriWithUserId(null)
-
-        then:
-        uri == "http://localhost:8080/osiam-resource-server/Users/"
-    }
-
-    def "should return the /me uri"(){
-        when:
-        def uri = resourceServerUriBuilder.buildMeEndpointUri()
-
-        then:
-        uri == "http://localhost:8080/osiam-resource-server/me"
+        urn == regExtUrn
     }
 }
