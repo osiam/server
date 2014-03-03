@@ -42,16 +42,14 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <org.hibernate-version>4.3.2-20140212.191346-19</org.hibernate-version>
+        <org.hibernate-version>4.3.4.Final</org.hibernate-version>
 
         <java.version>1.7</java.version>
-        <org.springframework-version>4.0.1.RELEASE</org.springframework-version>
+        <org.springframework-version>4.0.2.RELEASE</org.springframework-version>
         <org.thymeleaf-version>2.1.2.RELEASE</org.thymeleaf-version>
-        <org.springframework.security-version>3.2.0.RELEASE</org.springframework.security-version>
-        <org.aspectj-version>1.7.0</org.aspectj-version>
-        <org.slf4j-version>1.7.2</org.slf4j-version>
-        <ch.qos.logback-version>1.0.7</ch.qos.logback-version>
-        <org.apache.tiles-version>3.0.1</org.apache.tiles-version>
+        <org.springframework.security-version>3.2.1.RELEASE</org.springframework.security-version>
+        <org.aspectj-version>1.7.4</org.aspectj-version>
+        <org.slf4j-version>1.7.6</org.slf4j-version>
 
         <sonar.core.codeCoveragePlugin>cobertura</sonar.core.codeCoveragePlugin>
         <!-- force sonar to reuse reports generated during build cycle -->
@@ -92,8 +90,28 @@
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>1.3.1</version>
+                    <executions>
+                        <execution>
+                            <id>enforce-versions</id>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <requireMavenVersion>
+                                        <version>3.0.4</version>
+                                    </requireMavenVersion>
+                                </rules>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>2.5.1</version>
+                    <version>3.1</version>
                     <extensions>true</extensions>
                     <configuration>
                         <compilerId>groovy-eclipse-compiler</compilerId>
@@ -106,12 +124,12 @@
                         <dependency>
                             <groupId>org.codehaus.groovy</groupId>
                             <artifactId>groovy-eclipse-batch</artifactId>
-                            <version>2.0.6-01</version>
+                            <version>2.1.8-01</version>
                         </dependency>
                         <dependency>
                             <groupId>org.codehaus.groovy</groupId>
                             <artifactId>groovy-eclipse-compiler</artifactId>
-                            <version>2.7.0-01</version>
+                            <version>2.8.0-01</version>
                         </dependency>
                     </dependencies>
                 </plugin>
@@ -120,7 +138,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.13</version>
+                    <version>2.16</version>
                     <configuration>
                         <argLine>-XX:-UseSplitVerifier</argLine>
                         <parallel>classes</parallel>
@@ -154,22 +172,8 @@
 
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-dependency-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <id>install</id>
-                            <phase>install</phase>
-                            <goals>
-                                <goal>sources</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>2.5</version>
+                    <version>2.6</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
                     </configuration>
@@ -178,7 +182,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>2.1.2</version>
+                    <version>2.2.1</version>
                     <inherited>true</inherited>
                     <executions>
                         <execution>
@@ -199,12 +203,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.5</version>
+                <version>2.8.1</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.maven.wagon</groupId>
                         <artifactId>wagon-ssh</artifactId>
-                        <version>1.0-beta-7</version>
+                        <version>2.6</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -235,7 +239,7 @@
             <dependency>
                 <groupId>org.joda</groupId>
                 <artifactId>joda-convert</artifactId>
-                <version>1.3.1</version>
+                <version>1.6</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.security.oauth</groupId>
@@ -328,7 +332,7 @@
             <dependency>
                 <groupId>cglib</groupId>
                 <artifactId>cglib</artifactId>
-                <version>2.2</version>
+                <version>3.1</version>
             </dependency>
 
             <!-- Security -->
@@ -359,6 +363,7 @@
                 <artifactId>aspectjrt</artifactId>
                 <version>${org.aspectj-version}</version>
             </dependency>
+
             <!-- @Inject -->
             <dependency>
                 <groupId>javax.inject</groupId>
@@ -378,7 +383,7 @@
             <dependency>
                 <groupId>org.codehaus.groovy</groupId>
                 <artifactId>groovy-all</artifactId>
-                <version>2.1.1</version>
+                <version>2.2.2</version>
                 <scope>test</scope>
             </dependency>
 
@@ -402,7 +407,7 @@
             <dependency>
                 <groupId>nl.jqno.equalsverifier</groupId>
                 <artifactId>equalsverifier</artifactId>
-                <version>1.3.1</version>
+                <version>1.4</version>
                 <scope>test</scope>
             </dependency>
 
@@ -410,14 +415,14 @@
             <dependency>
                 <groupId>org.objenesis</groupId>
                 <artifactId>objenesis</artifactId>
-                <version>1.3</version>
+                <version>2.1</version>
                 <scope>test</scope>
             </dependency>
 
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-log4j12</artifactId>
-                <version>1.4.2</version>
+                <version>1.7.6</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -425,19 +430,19 @@
             <dependency>
                 <groupId>commons-logging</groupId>
                 <artifactId>commons-logging</artifactId>
-                <version>1.1.2</version>
+                <version>1.1.3</version>
             </dependency>
 
             <dependency>
-                <groupId>postgresql</groupId>
+                <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
-                <version>9.1-901.jdbc4</version>
+                <version>9.3-1101-jdbc41</version>
             </dependency>
 
             <dependency>
                 <groupId>org.aspectj</groupId>
                 <artifactId>aspectjweaver</artifactId>
-                <version>1.6.11</version>
+                <version>1.7.4</version>
             </dependency>
 
             <dependency>
@@ -477,8 +482,23 @@
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
-                <version>4.2</version>
+                <version>4.3.3</version>
             </dependency>
+
+            <!-- JSON -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>2.3.2</version>
+            </dependency>
+
+            <!-- IOUtils -->
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.4</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
     <profiles>
@@ -495,7 +515,7 @@
                         <plugin>
                             <groupId>org.codehaus.mojo</groupId>
                             <artifactId>cobertura-maven-plugin</artifactId>
-                            <version>2.5.2</version>
+                            <version>2.6</version>
                             <configuration>
                                 <formats>
                                     <format>xml</format>
