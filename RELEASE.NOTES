@@ -1,5 +1,12 @@
 # OSIAM Server
 
+## 0.18 -2014-03-04
+- [fix] BT-41 - Attribute filtering removes "schemas" attribute
+- [feature] OSNG-322 - Placeholder for registration emails
+  Added new template engine for emails, see how you could add your own email template files:
+  https://github.com/osiam/server/wiki/OSIAM-Registration-Module
+  For migration see: https://github.com/osiam/server/wiki/Migration#wiki-from-016-to-017
+
 ## 0.17 - 2014-02-17
 - [fix] BT-36 - Query with NOT clause on extension fields returns wrong results
 - [feature] OSNG-215 - Develop PATCH "Delete" support on extensions
