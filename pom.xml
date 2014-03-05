@@ -58,7 +58,7 @@
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <!-- set path for unit tests reports -->
 
-        <org.osiam.scim-schema.version>0.39-SNAPSHOT</org.osiam.scim-schema.version>
+        <org.osiam.scim-schema.version>0.39</org.osiam.scim-schema.version>
     </properties>
 
     <scm>
