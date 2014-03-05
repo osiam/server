@@ -27,7 +27,7 @@
     <parent>
         <artifactId>osiam-server-parent</artifactId>
         <groupId>org.osiam</groupId>
-        <version>0.18-SNAPSHOT</version>
+        <version>0.19-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
