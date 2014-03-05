@@ -46,10 +46,12 @@ import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.ExtensionFieldType;
 import org.osiam.resources.scim.Meta;
 import org.osiam.resources.scim.User;
+import org.osiam.web.exception.OsiamException;
+import org.osiam.web.service.RegistrationExtensionUrnProvider;
+import org.osiam.web.service.ResourceServerUriBuilder;
+import org.osiam.web.template.RenderAndSendEmail;
 import org.osiam.web.util.HttpHeader;
-import org.osiam.web.util.MailSenderBean;
-import org.osiam.web.util.RegistrationExtensionUrnProvider;
-import org.osiam.web.util.ResourceServerUriBuilder;
+import org.osiam.web.util.RegistrationHelper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,6 +63,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.base.Optional;
 
 /**
  * Controller to handle the lost password flow
@@ -73,34 +76,34 @@ public class LostPasswordController {
 
     @Inject
     private RegistrationExtensionUrnProvider registrationExtensionUrnProvider;
+
     @Inject
     private HttpClientHelper httpClient;
+
     @Inject
     private ResourceServerUriBuilder resourceServerUriBuilder;
-    @Inject
-    private MailSenderBean mailSender;
+
     @Inject
     private ObjectMapperWithExtensionConfig mapper;
+
+    @Inject
+    private RenderAndSendEmail renderAndSendEmailService;
 
     @Inject
     private ServletContext context;
 
     /* Extension configuration */
-    @Value("${osiam.one.time.password.field}")
+    @Value("${osiam.scim.extension.field.onetimepassword}")
     private String oneTimePassword;
 
     /* Password lost email configuration */
-    @Value("${osiam.web.passwordlostmail.linkprefix}")
+    @Value("${osiam.mail.passwordlost.linkprefix}")
     private String passwordlostLinkPrefix;
-    @Value("${osiam.web.passwordlostmail.from}")
-    private String passwordlostMailFrom;
-    @Value("${osiam.web.passwordlostmail.subject}")
-    private String passwordlostMailSubject;
-    @Value("${osiam.web.passwordlostmail.content.path}")
-    private String pathToEmailContent;
+    @Value("${osiam.mail.from}")
+    private String fromAddress;
 
     /* URI for the change password call from JavaScript */
-    @Value("${osiam.web.password.url}")
+    @Value("${osiam.html.passwordlost.url}")
     private String clientPasswordChangeUri;
 
     // css and js libs
@@ -116,9 +119,9 @@ public class LostPasswordController {
      * users primary email
      * 
      * @param authorization
-     *        authZ header with valid access token
+     *            authZ header with valid access token
      * @param userId
-     *        the user id for whom you want to change the password
+     *            the user id for whom you want to change the password
      * @return the HTTP status code
      * @throws IOException
      * @throws MessagingException
@@ -146,7 +149,30 @@ public class LostPasswordController {
 
         User updatedUser = mapper.readValue(saveUserResponse.getBody(), User.class);
 
-        return sendPasswordLostMail(updatedUser, otp);
+        Optional<String> email = RegistrationHelper.extractSendToEmail(updatedUser);
+        if (!email.isPresent()) {
+            LOGGER.log(Level.WARNING, "Could not change password. No email of user " + updatedUser.getUserName()
+                    + " found!");
+            return new ResponseEntity<>("{\"error\":\"Could not change password. No email of user "
+                    + updatedUser.getUserName() + " found!\"}", HttpStatus.BAD_REQUEST);
+        }
+
+        String passwordLostLink = RegistrationHelper.createLinkForEmail(passwordlostLinkPrefix, updatedUser.getId(),
+                "oneTimePassword", oneTimePassword);
+
+        Map<String, String> mailVariables = new HashMap<>();
+        mailVariables.put("lostpasswordlink", passwordLostLink);
+
+        try {
+            renderAndSendEmailService.renderAndSendEmail("lostpassword", fromAddress, email.get(), updatedUser,
+                    mailVariables);
+        } catch (OsiamException e) {
+            return new ResponseEntity<>("{\"error\":\"Problems creating email for lost password: \"" + e.getMessage()
+                    + "}",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
@@ -154,9 +180,9 @@ public class LostPasswordController {
      * known values for userId and otp.
      * 
      * @param oneTimePassword
-     *        the one time password from confirmation email
+     *            the one time password from confirmation email
      * @param userId
-     *        the user id for whom the password change should be
+     *            the user id for whom the password change should be
      */
     @RequestMapping(value = "/lostForm", method = RequestMethod.GET)
     public void lostForm(@RequestParam String oneTimePassword, @RequestParam String userId,
@@ -188,13 +214,13 @@ public class LostPasswordController {
      * Method to change the users password if the preconditions are satisfied.
      * 
      * @param authorization
-     *        authZ header with valid access token
+     *            authZ header with valid access token
      * @param oneTimePassword
-     *        the previously generated one time password
+     *            the previously generated one time password
      * @param userId
-     *        the user id for whom you want to change the password
+     *            the user id for whom you want to change the password
      * @param newPassword
-     *        the new user password
+     *            the new user password
      * @return the response with status code and the updated user if successfully
      * @throws IOException
      */
@@ -250,38 +276,6 @@ public class LostPasswordController {
         Extension extension = new Extension(registrationExtensionUrnProvider.getExtensionUrn());
         extension.addOrUpdateField(this.oneTimePassword, oneTimePassword);
         return new User.Builder().addExtension(extension).build();
-    }
-
-    private ResponseEntity<String> sendPasswordLostMail(User parsedUser, String oneTimePassword)
-            throws MessagingException, IOException {
-
-        String primaryEmail = mailSender.extractPrimaryEmail(parsedUser);
-        if (primaryEmail == null) {
-            LOGGER.log(Level.WARNING, "No primary email found!");
-            return new ResponseEntity<>("{\"error\":\"No primary email found!\"}", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        StringBuilder activateURL = new StringBuilder(passwordlostLinkPrefix);
-        activateURL.append("userId=").append(parsedUser.getId());
-        activateURL.append("&oneTimePassword=").append(oneTimePassword);
-
-        Map<String, String> vars = new HashMap<>();
-        vars.put("$PASSWORDLOSTURL", activateURL.toString());
-
-        InputStream mailContentStream =
-                mailSender.getEmailContentAsStream("/WEB-INF/registration/passwordlostmail-content.txt",
-                        pathToEmailContent, context);
-
-        if (mailContentStream == null) {
-            LOGGER.log(Level.SEVERE, "Cant open registermail-content.txt on classpath! Please configure!");
-            return new ResponseEntity<>(
-                    "{\"error\":\"Cant open registermail-content.txt on classpath! Please configure!\"}",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        mailSender.sendMail(passwordlostMailFrom, primaryEmail, passwordlostMailSubject, mailContentStream, vars);
-
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     private String getUserWithUpdatedExtensionsAsString(Extension extension, String newPassword)

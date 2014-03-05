@@ -21,25 +21,35 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.web.util
+package org.osiam.web.template;
 
-import spock.lang.Specification
+import java.io.IOException;
+import java.util.Map;
 
-/**
- * Registration extension urn provider test..
- */
-class RegistrationExtensionUrnProviderTest extends Specification {
+import javax.inject.Inject;
+import javax.mail.MessagingException;
 
-    def regExtUrn = "some:unr:stuff"
+import org.osiam.resources.scim.User;
+import org.osiam.web.mail.SendEmail;
+import org.springframework.stereotype.Component;
 
-    RegistrationExtensionUrnProvider registrationExtensionUrnProvider =
-        new RegistrationExtensionUrnProvider(internalScimExtensionUrn: regExtUrn)
+@Component
+public class RenderAndSendEmail {
 
-    def "should return the extension urn for registration purpose"() {
-        when:
-        def urn = registrationExtensionUrnProvider.getExtensionUrn()
+    @Inject
+    private SendEmail sendMailService;
 
-        then:
-        urn == regExtUrn
+    @Inject
+    private EmailTemplateRenderer emailTemplateRendererService;
+
+    public void renderAndSendEmail(String templateName, String fromAddress, String toAddress, User user,
+            Map<String, String> mailVariables) throws IOException,
+            MessagingException {
+
+        String emailSubject = emailTemplateRendererService.renderEmailSubject(templateName, user, mailVariables);
+
+        String emailBody = emailTemplateRendererService.renderEmailBody(templateName, user, mailVariables);
+
+        sendMailService.sendHTMLMail(fromAddress, toAddress, emailSubject, emailBody);
     }
 }

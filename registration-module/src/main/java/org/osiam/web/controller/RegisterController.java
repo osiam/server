@@ -49,10 +49,12 @@ import org.osiam.resources.scim.ExtensionFieldType;
 import org.osiam.resources.scim.Meta;
 import org.osiam.resources.scim.Role;
 import org.osiam.resources.scim.User;
+import org.osiam.web.exception.OsiamException;
+import org.osiam.web.service.RegistrationExtensionUrnProvider;
+import org.osiam.web.service.ResourceServerUriBuilder;
+import org.osiam.web.template.RenderAndSendEmail;
 import org.osiam.web.util.HttpHeader;
-import org.osiam.web.util.MailSenderBean;
-import org.osiam.web.util.RegistrationExtensionUrnProvider;
-import org.osiam.web.util.ResourceServerUriBuilder;
+import org.osiam.web.util.RegistrationHelper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -64,10 +66,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.base.Optional;
 
 /**
  * Controller to handle the registration process
- *
+ * 
  */
 @Controller
 @RequestMapping(value = "/register")
@@ -77,41 +80,45 @@ public class RegisterController {
 
     @Inject
     private ObjectMapperWithExtensionConfig mapper;
+
     @Inject
     private ResourceServerUriBuilder resourceServerUriBuilder;
+
     @Inject
     private RegistrationExtensionUrnProvider registrationExtensionUrnProvider;
-    @Inject
-    private MailSenderBean mailSender;
+
     @Inject
     private HttpClientHelper httpClient;
 
     @Inject
     private ServletContext context;
 
+    @Inject
+    private RenderAndSendEmail renderAndSendEmailService;
+
     /* Registration email configuration */
-    @Value("${osiam.web.registermail.content.path}")
-    private String pathToContentFile;
-    @Value("${osiam.web.registermail.linkprefix}")
+    @Value("${osiam.mail.register.linkprefix}")
     private String registermailLinkPrefix;
-    @Value("${osiam.web.registermail.from}")
-    private String registermailFrom;
-    @Value("${osiam.web.registermail.subject}")
-    private String registermailSubject;
+    @Value("${osiam.mail.from}")
+    private String fromAddress;
 
     /* Registration extension configuration */
-    @Value("${osiam.activation.token.field}")
+    @Value("${osiam.scim.extension.field.activationtoken}")
     private String activationTokenField;
 
     /* URI for the registration call from JavaScript */
-    @Value("${osiam.web.register.url}")
+    @Value("${osiam.html.register.url}")
     private String clientRegistrationUri;
 
     // css and js libs
     @Value("${osiam.html.dependencies.bootstrap}")
     private String bootStrapLib;
+
     @Value("${osiam.html.dependencies.angular}")
     private String angularLib;
+
+    @Value("${osiam.html.dependencies.jquery}")
+    private String jqueryLib;
 
     /**
      * Generates a HTTP form with the fields for registration purpose.
@@ -137,10 +144,10 @@ public class RegisterController {
 
     /**
      * Creates a new User.
-     *
+     * 
      * Needs all data given by the 'index'-form. Saves the user in an inactivate-state. Sends an activation-email to the
      * registered email-address.
-     *
+     * 
      * @param authorization
      *            a valid access token
      * @return the saved user and HTTP.OK (200) for successful creation, otherwise only the HTTP status
@@ -152,11 +159,15 @@ public class RegisterController {
             throws IOException, MessagingException {
 
         User parsedUser = mapper.readValue(user, User.class);
-        String primaryEmail = mailSender.extractPrimaryEmail(parsedUser);
-        if (primaryEmail == null) {
-            LOGGER.log(Level.WARNING, "No primary email found!");
-            return new ResponseEntity<>("{\"error\":\"No primary email found!\"}", HttpStatus.BAD_REQUEST);
+
+        Optional<String> email = RegistrationHelper.extractSendToEmail(parsedUser);
+        if (!email.isPresent()) {
+            LOGGER.log(Level.WARNING, "Could not register user. No email of user " + parsedUser.getUserName()
+                    + " found!");
+            return new ResponseEntity<>("{\"error\":\"Could not register user. No email of user "
+                    + parsedUser.getUserName() + " found!\"}", HttpStatus.BAD_REQUEST);
         }
+
         // generate Activation Token
         String activationToken = UUID.randomUUID().toString();
         parsedUser = createUserForRegistration(parsedUser, activationToken);
@@ -165,26 +176,41 @@ public class RegisterController {
         HttpClientRequestResult saveUserResponse = saveUser(parsedUser, authorization);
         if (saveUserResponse.getStatusCode() != HttpStatus.CREATED.value()) {
             LOGGER.log(Level.WARNING, "Problems creating user for registration");
-            return new ResponseEntity<>("{\"error\":\"Problems creating user for registration\"}",
+            return new ResponseEntity<>("{\"error\":\"Problems creating user for registration. " + saveUserResponse.getBody() + "\"}",
                     HttpStatus.valueOf(saveUserResponse.getStatusCode()));
         }
 
-        String savedUserId = mapper.readValue(saveUserResponse.getBody(), User.class).getId();
-        return sendActivationMail(primaryEmail, savedUserId, activationToken, saveUserResponse);
+        User createdUser = mapper.readValue(saveUserResponse.getBody(), User.class);
+
+        String registrationLink = RegistrationHelper.createLinkForEmail(registermailLinkPrefix, createdUser.getId(),
+                "activationToken", activationToken);
+
+        Map<String, String> mailVariables = new HashMap<>();
+        mailVariables.put("registerlink", registrationLink);
+
+        try {
+            renderAndSendEmailService.renderAndSendEmail("registration", fromAddress, email.get(), createdUser,
+                    mailVariables);
+        } catch (OsiamException e) {
+            return new ResponseEntity<>("{\"error\":\"Problems creating email for user registration: \""
+                    + e.getMessage() + "}", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<>(saveUserResponse.getBody(), HttpStatus.OK);
     }
 
     /**
      * Activates a previously registered user.
-     *
+     * 
      * After activation E-Mail arrived the activation link will point to this URI.
-     *
+     * 
      * @param authorization
      *            an valid OAuth2 token
      * @param userId
      *            the id of the registered user
      * @param activationToken
      *            the user's activation token, send by E-Mail
-     *
+     * 
      * @return HTTP status, HTTP.OK (200) for a valid activation
      */
     @RequestMapping(value = "/activate", method = RequestMethod.POST, produces = "application/json")
@@ -254,31 +280,6 @@ public class RegisterController {
         builder.addExtension(extension);
 
         return builder.build();
-    }
-
-    private ResponseEntity<String> sendActivationMail(String toAddress, String userId, String activationToken,
-            HttpClientRequestResult saveUserResponse) throws MessagingException, IOException {
-
-        InputStream registerMailContentStream =
-                mailSender.getEmailContentAsStream("/WEB-INF/registration/registermail-content.txt", pathToContentFile,
-                        context);
-
-        if (registerMailContentStream == null) {
-            LOGGER.log(Level.SEVERE, "Cant open registermail-content.txt on classpath! Please configure!");
-            return new ResponseEntity<>(
-                    "{\"error\":\"Cant open registermail-content.txt on classpath! Please configure!\"}",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        StringBuilder activateURL = new StringBuilder(registermailLinkPrefix);
-        activateURL.append("userId=").append(userId);
-        activateURL.append("&activationToken=").append(activationToken);
-
-        Map<String, String> mailVars = new HashMap<>();
-        mailVars.put("$REGISTERLINK", activateURL.toString());
-
-        mailSender.sendMail(registermailFrom, toAddress, registermailSubject, registerMailContentStream, mailVars);
-        return new ResponseEntity<>(saveUserResponse.getBody(), HttpStatus.OK);
     }
 
     private HttpClientRequestResult saveUser(User userToSave, String authorization) throws IOException {

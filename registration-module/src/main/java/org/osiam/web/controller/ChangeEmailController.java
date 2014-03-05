@@ -25,7 +25,6 @@ package org.osiam.web.controller;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -49,11 +48,13 @@ import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.ExtensionFieldType;
 import org.osiam.resources.scim.Meta;
 import org.osiam.resources.scim.User;
-import org.osiam.web.util.AccessTokenInformationProvider;
+import org.osiam.web.exception.OsiamException;
+import org.osiam.web.service.AccessTokenInformationProvider;
+import org.osiam.web.service.RegistrationExtensionUrnProvider;
+import org.osiam.web.service.ResourceServerUriBuilder;
+import org.osiam.web.template.RenderAndSendEmail;
 import org.osiam.web.util.HttpHeader;
-import org.osiam.web.util.MailSenderBean;
-import org.osiam.web.util.RegistrationExtensionUrnProvider;
-import org.osiam.web.util.ResourceServerUriBuilder;
+import org.osiam.web.util.RegistrationHelper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -64,6 +65,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.base.Optional;
 
 /**
  * Controller for change E-Mail process.
@@ -76,44 +78,39 @@ public class ChangeEmailController {
 
     @Inject
     private HttpClientHelper httpClient;
+
     @Inject
     private ResourceServerUriBuilder resourceServerUriBuilder;
+
     @Inject
     private RegistrationExtensionUrnProvider registrationExtensionUrnProvider;
+
     @Inject
     private ObjectMapperWithExtensionConfig mapper;
-    @Inject
-    private MailSenderBean mailSender;
+
     @Inject
     private AccessTokenInformationProvider accessTokenInformationProvider;
+
+    @Inject
+    private RenderAndSendEmail renderAndSendEmailService;
 
     @Inject
     private ServletContext context;
 
     /* Extension configuration */
-    @Value("${osiam.temp.email.field}")
+    @Value("${osiam.scim.extension.field.tempemail}")
     private String tempEmail;
-    @Value("${osiam.confirm.email.token.field}")
+    @Value("${osiam.scim.extension.field.emailconfirmtoken}")
     private String confirmationTokenField;
+    @Value("${osiam.mail.from}")
+    private String fromAddress;
 
     /* Change email configuration */
-    @Value("${osiam.web.emailchange.subject}")
-    private String emailChangeMailSubject;
-    @Value("${osiam.web.emailchange.content.path}")
-    private String pathToEmailContent;
-    @Value("${osiam.web.emailchange.linkprefix}")
+    @Value("${osiam.mail.emailchange.linkprefix}")
     private String emailChangeLinkPrefix;
-    @Value("${osiam.web.emailchange.from}")
-    private String emailChangeMailFrom;
-
-    /* Info mail configuration */
-    @Value("${osiam.web.emailchange-info.subject}")
-    private String emailChangeInfoMailSubject;
-    @Value("${osiam.web.emailchange-info.content.path}")
-    private String pathToEmailInfoContent;
 
     /* URI for the change email call from JavaScript */
-    @Value("${osiam.web.email.url}")
+    @Value("${osiam.html.emailchange.url}")
     private String clientEmailChangeUri;
 
     // css and js libs
@@ -151,9 +148,9 @@ public class ChangeEmailController {
      * address.
      * 
      * @param authorization
-     *        Authorization header with HTTP Bearer authorization and a valid access token
+     *            Authorization header with HTTP Bearer authorization and a valid access token
      * @param newEmailValue
-     *        The new email address value
+     *            The new email address value
      * @return The HTTP status code
      * @throws IOException
      * @throws MessagingException
@@ -192,18 +189,34 @@ public class ChangeEmailController {
         // send email to the new address with confirmation token and user id
         User savedUser = mapper.readValue(updateUserResult.getBody(), User.class);
 
-        return sendingConfirmationMailToNewAddress(newEmailValue, confirmationToken, savedUser);
+        String activateLink = RegistrationHelper.createLinkForEmail(emailChangeLinkPrefix, savedUser.getId(),
+                "confirmToken", confirmationToken);
+
+        // build the Map with the link for replacement
+        Map<String, String> mailVariables = new HashMap<>();
+        mailVariables.put("activatelink", activateLink);
+
+        try {
+            renderAndSendEmailService.renderAndSendEmail("changeemail", fromAddress, newEmailValue, savedUser,
+                    mailVariables);
+        } catch (OsiamException e) {
+            return new ResponseEntity<>("{\"error\":\"Problems creating email for confirming new user email: \""
+                    + e.getMessage() + "}",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<>(updateUserResult.getBody(), HttpStatus.OK);
     }
 
     /**
      * Validating the confirm token and saving the new email value as primary email if the validation was successful.
      * 
      * @param authorization
-     *        Authorization header with HTTP Bearer authorization and a valid access token
+     *            Authorization header with HTTP Bearer authorization and a valid access token
      * @param userId
-     *        The user id for the user whom email address should be changed
+     *            The user id for the user whom email address should be changed
      * @param confirmToken
-     *        The previously generated confirmation token from the confirmation email
+     *            The previously generated confirmation token from the confirmation email
      * @return The HTTP status code and the updated user if successful
      */
     @RequestMapping(method = RequestMethod.POST, value = "/confirm", produces = "application/json")
@@ -235,9 +248,9 @@ public class ChangeEmailController {
         }
 
         String newEmail = extension.getField(tempEmail, ExtensionFieldType.STRING);
-        String oldEmail = mailSender.extractPrimaryEmail(user);
+        Optional<String> oldEmail = RegistrationHelper.extractSendToEmail(user);
 
-        List<Email> emails = replaceOldPrimaryMail(newEmail, user.getEmails());
+        List<Email> emails = RegistrationHelper.replaceOldPrimaryMail(newEmail, user.getEmails());
 
         String updateUserAsString = getUserAsStringWithUpdatedExtensionsAndEmails(extension, emails);
 
@@ -251,8 +264,18 @@ public class ChangeEmailController {
                     HttpStatus.valueOf(updateUserResult.getStatusCode()));
         }
 
-        // Send info mail
-        return sendingInfoMailToOldAddress(oldEmail, updateUserResult.getBody());
+        User updatedUser = mapper.readValue(updateUserResult.getBody(), User.class);
+
+        try {
+            renderAndSendEmailService.renderAndSendEmail("changeemailinfo", fromAddress, oldEmail.get(), updatedUser,
+                    new HashMap<String, String>());
+        } catch (OsiamException e) {
+            return new ResponseEntity<>("{\"error\":\"Problems creating email for confirming new user: \""
+                    + e.getMessage() + "}",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<>(updateUserResult.getBody(), HttpStatus.OK);
     }
 
     private String buildUserForUpdateAsString(String newEmailValue, String confirmationToken) throws IOException {
@@ -268,36 +291,6 @@ public class ChangeEmailController {
         return mapper.writeValueAsString(updateUser);
     }
 
-    private ResponseEntity<String> sendingConfirmationMailToNewAddress(String newEmailAddress,
-            String confirmationToken, User user) throws IOException, MessagingException {
-
-        // build the string for confirmation link
-        StringBuilder activateURL = new StringBuilder(emailChangeLinkPrefix);
-        activateURL.append("userId=").append(user.getId());
-        activateURL.append("&confirmToken=").append(confirmationToken);
-
-        // build the Map with the link for replacement
-        Map<String, String> vars = new HashMap<>();
-        vars.put("$EMAILCHANGEURL", activateURL.toString());
-
-        // get mail content as stream and check failure if file is not present
-        InputStream mailContentStream =
-                mailSender.getEmailContentAsStream("/WEB-INF/registration/emailchange-content.txt", pathToEmailContent,
-                        context);
-
-        if (mailContentStream == null) {
-            LOGGER.log(Level.SEVERE, "Cant open registermail-content.txt on classpath! Please configure!");
-            return new ResponseEntity<>(
-                    "{\"error\":\"Cant open registermail-content.txt on classpath! Please configure!\"}",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        // send the mail
-        mailSender.sendMail(emailChangeMailFrom, newEmailAddress, emailChangeMailSubject, mailContentStream, vars);
-
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
     private String getUserAsStringWithUpdatedExtensionsAndEmails(Extension extension, List<Email> emails)
             throws JsonProcessingException {
         // remove extension values after already successful validation.
@@ -311,48 +304,4 @@ public class ChangeEmailController {
         return mapper.writeValueAsString(updateUser);
     }
 
-    private List<Email> replaceOldPrimaryMail(String newEmail, List<Email> emails) {
-
-        List<Email> updatedEmailList = new ArrayList<>();
-
-        // add new primary email address
-        updatedEmailList.add(new Email.Builder()
-                .setValue(newEmail)
-                .setPrimary(true)
-                .build());
-
-        // add only non primary mails to new list and remove all primary entries
-        for (Email mail : emails) {
-            if (mail.isPrimary()) {
-                updatedEmailList.add(new Email.Builder().setType(mail.getType())
-                        .setPrimary(mail.isPrimary())
-                        .setValue(mail.getValue()).setOperation("delete").build());
-            } else {
-                updatedEmailList.add(mail);
-            }
-        }
-
-        return updatedEmailList;
-    }
-
-    private ResponseEntity<String> sendingInfoMailToOldAddress(String oldEmailAddress, String user) throws IOException,
-            MessagingException {
-
-        // get mail content as stream and check failure if file is not present
-        InputStream mailContentStream =
-                mailSender.getEmailContentAsStream("/WEB-INF/registration/emailchange-info.txt",
-                        pathToEmailInfoContent,
-                        context);
-
-        if (mailContentStream == null) {
-            LOGGER.log(Level.SEVERE, "Cant open registermail-content.txt on classpath! Please configure!");
-            return new ResponseEntity<>(
-                    "{\"error\":\"Cant open registermail-content.txt on classpath! Please configure!\"}",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        mailSender.sendMail(emailChangeMailFrom, oldEmailAddress, emailChangeInfoMailSubject, mailContentStream, null);
-
-        return new ResponseEntity<>(user, HttpStatus.OK);
-    }
 }
