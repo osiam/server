@@ -57,7 +57,7 @@ class HttpClientHelperTest extends Specification {
         def statusLineMock = Mock(StatusLine)
 
         when:
-        def result = httpClientHelper.executeHttpGet("http://localhost:8080/test", null, null)
+        def result = httpClientHelper.executeHttpGet("http://localhost:8080/test")
 
         then:
         1 * httpClientMock.execute(_) >> httpResponseMock
@@ -76,7 +76,7 @@ class HttpClientHelperTest extends Specification {
         def statusLineMock = Mock(StatusLine)
 
         when:
-        def result = httpClientHelper.executeHttpGet("http://localhost:8080/test", "headerName", "headerValue")
+        def result = httpClientHelper.executeHttpGet("http://localhost:8080/test")
 
         then:
         1 * httpClientMock.execute(_) >> httpResponseMock
@@ -90,7 +90,7 @@ class HttpClientHelperTest extends Specification {
 
     def "should wrap IOException from httpClientHelper.executeHttpGet to RuntimeException if"() {
         when:
-        httpClientHelper.executeHttpGet("http://localhost:8080/test", null, null)
+        httpClientHelper.executeHttpGet("http://localhost:8080/test")
 
         then:
         1 * httpClientMock.execute(_) >> {throw new IOException()}
@@ -104,7 +104,7 @@ class HttpClientHelperTest extends Specification {
         def statusLineMock = Mock(StatusLine)
 
         when:
-        def result = httpClientHelper.executeHttpPut("http://localhost:8080/test", "paramName", "paramValue", null, null)
+        def result = httpClientHelper.executeHttpPut("http://localhost:8080/test", "paramName", "paramValue")
 
         then:
         1 * httpClientMock.execute(_) >> httpResponseMock
@@ -123,7 +123,7 @@ class HttpClientHelperTest extends Specification {
         def statusLineMock = Mock(StatusLine)
 
         when:
-        def result = httpClientHelper.executeHttpPut("http://localhost:8080/test", "paramName", "paramValue", "headerName", "headerValue")
+        def result = httpClientHelper.executeHttpPut("http://localhost:8080/test", "paramName", "paramValue")
 
         then:
         1 * httpClientMock.execute(_) >> httpResponseMock
@@ -142,7 +142,7 @@ class HttpClientHelperTest extends Specification {
         def statusLineMock = Mock(StatusLine)
 
         when:
-        def result = httpClientHelper.executeHttpPut("http://localhost:8080/test", "theBody", "headerName", "headerValue")
+        def result = httpClientHelper.executeHttpPut("http://localhost:8080/test", "theBody")
 
         then:
         1 * httpClientMock.execute(_) >> httpResponseMock
@@ -161,7 +161,7 @@ class HttpClientHelperTest extends Specification {
         def statusLineMock = Mock(StatusLine)
 
         when:
-        def result = httpClientHelper.executeHttpPost("http://localhost:8080/test", "theBody", "headerName", "headerValue")
+        def result = httpClientHelper.executeHttpPost("http://localhost:8080/test", "theBody")
 
         then:
         1 * httpClientMock.execute(_) >> httpResponseMock
@@ -175,7 +175,7 @@ class HttpClientHelperTest extends Specification {
 
     def "should wrap IOException from httpClientHelper.executeHttpPut to RuntimeException"() {
         when:
-        httpClientHelper.executeHttpPut("http://localhost:8080/test", "paramName", "paramValue", null, null)
+        httpClientHelper.executeHttpPut("http://localhost:8080/test", "paramName", "paramValue")
 
         then:
         1 * httpClientMock.execute(_) >> {throw new IOException()}
@@ -189,7 +189,7 @@ class HttpClientHelperTest extends Specification {
         def statusLineMock = Mock(StatusLine)
 
         when:
-        def result = httpClientHelper.executeHttpPatch("http://localhost:8080/test", "theBody", "headerName", "headerValue")
+        def result = httpClientHelper.executeHttpPatch("http://localhost:8080/test", "theBody")
 
         then:
         1 * httpClientMock.execute(_) >> httpResponseMock

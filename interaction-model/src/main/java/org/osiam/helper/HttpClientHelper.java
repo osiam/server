@@ -61,11 +61,10 @@ public class HttpClientHelper {
         client = new DefaultHttpClient(poolingClientConnectionManager);
     }
 
-    public HttpClientRequestResult executeHttpGet(String url, String headerName, String headerValue) {
+    public HttpClientRequestResult executeHttpGet(String url) {
         HttpClientRequestResult result;
         HttpGet request = new HttpGet(url);
 
-        request = addHeaderToRequest(headerName, headerValue, request);
         request = addDefaultHeaderToRequest(request);
 
         try {
@@ -79,9 +78,8 @@ public class HttpClientHelper {
         return result;
     }
 
-    public HttpClientRequestResult executeHttpPut(String url, String parameterName, String parameterValue, String headerName, String headerValue) {
+    public HttpClientRequestResult executeHttpPut(String url, String parameterName, String parameterValue) {
         HttpPut request = new HttpPut(url);
-        request = addHeaderToRequest(headerName, headerValue, request);
         request = addDefaultHeaderToRequest(request);
 
         List<NameValuePair> formParams = new ArrayList<>();
@@ -90,35 +88,25 @@ public class HttpClientHelper {
         return executeHttpRequest(request, null, formParams);
     }
 
-    public HttpClientRequestResult executeHttpPut(String url, String body, String headerName, String headerValue) {
+    public HttpClientRequestResult executeHttpPut(String url, String body) {
         HttpPut request = new HttpPut(url);
-        request = addHeaderToRequest(headerName, headerValue, request);
         request = addDefaultHeaderToRequest(request);
 
         return executeHttpRequest(request, body, null);
     }
 
-    public HttpClientRequestResult executeHttpPost(String url, String body, String headerName, String headerValue){
+    public HttpClientRequestResult executeHttpPost(String url, String body){
         HttpPost request = new HttpPost(url);
-        request = addHeaderToRequest(headerName, headerValue, request);
         request = addDefaultHeaderToRequest(request);
 
         return executeHttpRequest(request, body, null);
     }
 
-    public HttpClientRequestResult executeHttpPatch(String url, String body, String headerName, String headerValue) {
+    public HttpClientRequestResult executeHttpPatch(String url, String body) {
         HttpPatch request = new HttpPatch(url);
-        request = addHeaderToRequest(headerName, headerValue, request);
         request = addDefaultHeaderToRequest(request);
 
         return executeHttpRequest(request, body, null);
-    }
-
-    private <T extends HttpRequestBase> T addHeaderToRequest(String headerName, String headerValue, T request) {
-        if (headerName != null && headerValue != null) {
-            request.addHeader(headerName, headerValue);
-        }
-        return request;
     }
     
     private <T extends HttpRequestBase> T addDefaultHeaderToRequest(T request) {
