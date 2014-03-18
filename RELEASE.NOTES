@@ -1,5 +1,9 @@
 # OSIAM Server
 
+## 0.19 -2014-03-17
+- [refactore] The registration module has been moved to his own github repository: 
+  https://github.com/osiam/addon-self-administration
+  
 ## 0.18 -2014-03-04
 - [fix] BT-41 - Attribute filtering removes "schemas" attribute
 - [feature] OSNG-322 - Placeholder for registration emails
