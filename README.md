@@ -6,6 +6,8 @@ For more information and documentation visit the [repo's Wiki](https://github.co
 
 For additional information visit OSIAM's homepage at [www.osiam.org](https://www.osiam.org).
 
+The actual version can be found at http://maven-repo.evolvis.org/releases/org/osiam/osiam-server-parent/.
+
 #project structure
 
 This project gets build with maven, the module structure is
