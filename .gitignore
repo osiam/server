@@ -56,3 +56,4 @@ dist/
 *.pdf
 nosetests.xml
 osiam.wiki/
+.DS_Store
