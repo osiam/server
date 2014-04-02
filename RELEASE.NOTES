@@ -1,7 +1,13 @@
 # OSIAM Server
 
+## 0.20 -2014-04-02
+- [refactoring] The auth-server has a new interface with bootstrap, which could be customize.
+  For a detailed description and migration please click here:
+  https://github.com/osiam/server/wiki/Migration#from-019-to-020
+- [fix] BT-45 - https://jira.osiam.org/browse/BT-45
+
 ## 0.19 -2014-03-17
-- [refactore] The registration module has been moved to his own github repository: 
+- [refactoring] The registration module has been moved to his own github repository: 
   https://github.com/osiam/addon-self-administration
   
 ## 0.18 -2014-03-04
