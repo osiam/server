@@ -1,4 +1,4 @@
-package org.osiam.auth.template;
+package org.osiam.auth.template.resolvers;
 
 import java.io.InputStream;
 
@@ -34,11 +34,10 @@ public class OsiamWebContextResourceResolver implements IResourceResolver {
 
         final IContext context = templateProcessingParameters.getContext();
         if (!(context instanceof IWebContext)) {
-            throw new TemplateProcessingException(
-                    "Resource resolution by ServletContext with " +
-                            this.getClass().getName() + " can only be performed " +
-                            "when context implements " + IWebContext.class.getName() +
-                            " [current context: " + context.getClass().getName() + "]");
+            throw new TemplateProcessingException("Resource resolution by ServletContext with " +
+                    this.getClass().getName() + " can only be performed " +
+                    "when context implements " + IWebContext.class.getName() +
+                    " [current context: " + context.getClass().getName() + "]");
         }
 
         return ClassLoaderUtils.getClassLoader(OsiamWebContextResourceResolver.class).getResourceAsStream(

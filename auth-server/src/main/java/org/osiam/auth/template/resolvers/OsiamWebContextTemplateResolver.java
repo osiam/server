@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.auth.template;
+package org.osiam.auth.template.resolvers;
 
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.resourceresolver.IResourceResolver;
@@ -37,12 +37,12 @@ public class OsiamWebContextTemplateResolver extends TemplateResolver {
         super();
         super.setResourceResolver(new OsiamWebContextResourceResolver());
     }
-    
+
     @Override
     public void setResourceResolver(final IResourceResolver resourceResolver) {
         throw new ConfigurationException(
                 "Cannot set a resource resolver on " + this.getClass().getName() + ". If " +
-                "you want to set your own resource resolver, use " + TemplateResolver.class.getName() + 
-                "instead");
+                        "you want to set your own resource resolver, use " + TemplateResolver.class.getName() +
+                        "instead");
     }
 }
