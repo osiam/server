@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.storage.entities
+package org.osiam.auth.oauth_client
 
 import spock.lang.Specification
 

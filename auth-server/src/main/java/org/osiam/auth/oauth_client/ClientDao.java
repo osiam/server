@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.storage.dao;
+package org.osiam.auth.oauth_client;
 
 import java.util.List;
 
@@ -29,8 +29,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.osiam.resources.exceptions.ResourceNotFoundException;
-import org.osiam.storage.entities.ClientEntity;
+import org.osiam.auth.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Repository;
 
 @Repository

@@ -21,13 +21,12 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.storage.dao
+package org.osiam.auth.oauth_client
 
 import javax.persistence.EntityManager
 import javax.persistence.Query
 
-import org.osiam.resources.exceptions.ResourceNotFoundException
-import org.osiam.storage.entities.ClientEntity
+import org.osiam.auth.exception.ResourceNotFoundException
 
 import spock.lang.Specification
 
