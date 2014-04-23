@@ -21,59 +21,58 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.resources
+package org.osiam.security.authentication
 
 import org.joda.time.MutableDateTime
+
 import spock.lang.Specification
 
-/**
- * Unit-Tests for {@link ClientSpring}.
- *
- */
-class ClientSpringTest extends Specification {
 
-    def clientSpring = new ClientSpring()
+class OsiamClientDetailsSpec extends Specification {
+
+    OsiamClientDetails osiamClientDetails = new OsiamClientDetails()
 
     def "resource ids should be empty"() {
         when:
-        def ids = clientSpring.getResourceIds()
+        def ids = osiamClientDetails.getResourceIds()
         then:
         ids.empty
     }
 
     def "isSecretRequired should be true"() {
         when:
-        def result = clientSpring.isSecretRequired()
+        def result = osiamClientDetails.isSecretRequired()
         then:
         result
     }
 
     def "isScoped should be true"() {
         when:
-        def result = clientSpring.isScoped()
+        def result = osiamClientDetails.isScoped()
         then:
         result
     }
 
     def "getRegisteredRedirectUri should return a set which contains redirect_uri"() {
         given:
-        clientSpring.setRedirectUri("should_i_stay_or_should_i_go_now")
+        osiamClientDetails.setRedirectUri("should_i_stay_or_should_i_go_now")
         when:
-        def result = clientSpring.getRegisteredRedirectUri()
+        def result = osiamClientDetails.getRegisteredRedirectUri()
         then:
-        result == [clientSpring.getRedirectUri()] as Set
+        result == [
+            osiamClientDetails.getRedirectUri()] as Set
     }
 
     def "getAuthorities should be empty"() {
         when:
-        def result = clientSpring.getAuthorities()
+        def result = osiamClientDetails.getAuthorities()
         then:
         result.empty
     }
 
     def "getAdditionalInformation should be empty"() {
         when:
-        def result = clientSpring.getAdditionalInformation()
+        def result = osiamClientDetails.getAdditionalInformation()
         then:
         !result
     }
@@ -83,10 +82,10 @@ class ClientSpringTest extends Specification {
         def clientId = "client-id"
 
         when:
-        clientSpring.setId(clientId)
+        osiamClientDetails.setId(clientId)
 
         then:
-        clientSpring.getClientId() == clientId
+        osiamClientDetails.getClientId() == clientId
     }
 
     def "getId should work"() {
@@ -94,10 +93,10 @@ class ClientSpringTest extends Specification {
         def clientId = "client-id"
 
         when:
-        clientSpring.setId(clientId)
+        osiamClientDetails.setId(clientId)
 
         then:
-        clientSpring.getId() == clientId
+        osiamClientDetails.getId() == clientId
     }
 
     def "getClientSecret should work"() {
@@ -105,10 +104,10 @@ class ClientSpringTest extends Specification {
         def clientSecret = "client-secret"
 
         when:
-        clientSpring.setClientSecret(clientSecret)
+        osiamClientDetails.setClientSecret(clientSecret)
 
         then:
-        clientSpring.getClientSecret() == clientSecret
+        osiamClientDetails.getClientSecret() == clientSecret
     }
 
     def "getScope should work"() {
@@ -116,10 +115,10 @@ class ClientSpringTest extends Specification {
         def clientScope = ["scope1", "scope2"] as Set
 
         when:
-        clientSpring.setScope(clientScope)
+        osiamClientDetails.setScope(clientScope)
 
         then:
-        clientSpring.getScope() == clientScope
+        osiamClientDetails.getScope() == clientScope
     }
 
     def "getAuthorizedGrantTypes should work"() {
@@ -127,10 +126,10 @@ class ClientSpringTest extends Specification {
         def grantTypes = ["grantType1", "grantType2"] as Set
 
         when:
-        clientSpring.setGrants(grantTypes)
+        osiamClientDetails.setGrants(grantTypes)
 
         then:
-        clientSpring.getAuthorizedGrantTypes() == grantTypes
+        osiamClientDetails.getAuthorizedGrantTypes() == grantTypes
     }
 
     def "getAccessTokenValiditySeconds should work"() {
@@ -138,10 +137,10 @@ class ClientSpringTest extends Specification {
         def validitySeconds = 60
 
         when:
-        clientSpring.setAccessTokenValiditySeconds(validitySeconds)
+        osiamClientDetails.setAccessTokenValiditySeconds(validitySeconds)
 
         then:
-        clientSpring.getAccessTokenValiditySeconds() == validitySeconds
+        osiamClientDetails.getAccessTokenValiditySeconds() == validitySeconds
     }
 
     def "getRefreshTokenValiditySeconds should work"() {
@@ -149,10 +148,10 @@ class ClientSpringTest extends Specification {
         def validitySeconds = 99
 
         when:
-        clientSpring.setRefreshTokenValiditySeconds(validitySeconds)
+        osiamClientDetails.setRefreshTokenValiditySeconds(validitySeconds)
 
         then:
-        clientSpring.getRefreshTokenValiditySeconds() == validitySeconds
+        osiamClientDetails.getRefreshTokenValiditySeconds() == validitySeconds
     }
 
     def "getGrants should work"() {
@@ -160,10 +159,10 @@ class ClientSpringTest extends Specification {
         def grantTypes = ["grantType1", "grantType2"] as Set
 
         when:
-        clientSpring.setGrants(grantTypes)
+        osiamClientDetails.setGrants(grantTypes)
 
         then:
-        clientSpring.getGrants() == grantTypes
+        osiamClientDetails.getGrants() == grantTypes
     }
 
     def "getExpiry should work"() {
@@ -171,10 +170,10 @@ class ClientSpringTest extends Specification {
         def expiryDate = MutableDateTime.now().toDate()
 
         when:
-        clientSpring.setExpiry(expiryDate)
+        osiamClientDetails.setExpiry(expiryDate)
 
         then:
-        clientSpring.getExpiry() == expiryDate
+        osiamClientDetails.getExpiry() == expiryDate
     }
 
     def "isImplicit should work"() {
@@ -182,10 +181,10 @@ class ClientSpringTest extends Specification {
         def implicit = true as boolean
 
         when:
-        clientSpring.setImplicit(implicit)
+        osiamClientDetails.setImplicit(implicit)
 
         then:
-        clientSpring.isImplicit() == implicit
+        osiamClientDetails.isImplicit() == implicit
     }
 
     def "getValidityInSeconds should work"() {
@@ -193,22 +192,21 @@ class ClientSpringTest extends Specification {
         def validitySeconds = 333
 
         when:
-        clientSpring.setValidityInSeconds(validitySeconds)
+        osiamClientDetails.setValidityInSeconds(validitySeconds)
 
         then:
-        clientSpring.getValidityInSeconds() == validitySeconds
+        osiamClientDetails.getValidityInSeconds() == validitySeconds
     }
 
     def "should not throw null pointer exception if expiry is null"() {
         given:
-        clientSpring.setExpiry(null)
+        osiamClientDetails.setExpiry(null)
 
         when:
-        def result = clientSpring.getExpiry()
+        def result = osiamClientDetails.getExpiry()
 
         then:
         notThrown(NullPointerException)
         result == null
     }
-
 }

@@ -21,22 +21,22 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.resources;
+package org.osiam.security.authentication;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
-import java.util.*;
-
 /**
- * Serializable {@link ClientDetails} implementation.
- *
+ * OSIAM {@link ClientDetails} implementation.
  */
-@JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class ClientSpring implements ClientDetails {
+public class OsiamClientDetails implements ClientDetails {
 
     private static final long serialVersionUID = 4649122233093279685L;
 
@@ -100,7 +100,7 @@ public class ClientSpring implements ClientDetails {
 
     @Override
     public Collection<GrantedAuthority> getAuthorities() {
-        return Collections.EMPTY_SET;
+        return Collections.emptySet();
     }
 
     /**
@@ -190,6 +190,6 @@ public class ClientSpring implements ClientDetails {
     }
 
     public void setValidityInSeconds(long validity) {
-        this.validityInSeconds = validity;
+        validityInSeconds = validity;
     }
 }
