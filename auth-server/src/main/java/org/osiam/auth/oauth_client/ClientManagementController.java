@@ -21,14 +21,12 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.resources.controller;
+package org.osiam.auth.oauth_client;
 
 import java.io.IOException;
 
 import javax.inject.Inject;
 
-import org.osiam.storage.dao.ClientDao;
-import org.osiam.storage.entities.ClientEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;

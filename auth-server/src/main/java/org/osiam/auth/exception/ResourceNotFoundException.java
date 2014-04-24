@@ -21,22 +21,20 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.storage.entities;
+package org.osiam.auth.exception;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-@Entity
-@Table(name = "database_scheme_version")
-public class DBVersion {
+@ResponseStatus(value = HttpStatus.NOT_FOUND)
+public class ResourceNotFoundException extends OsiamException {
+    private static final long serialVersionUID = -690283630029161964L;
 
-    public static final double DB_VERSION = 0.05;
+    public ResourceNotFoundException(String s) {
+        super(s);
+    }
 
-    @Id
-    private double version = DB_VERSION;
-
-    public double getVersion() {
-        return version;
+    public ResourceNotFoundException(String s, Throwable cause) {
+        super(s, cause);
     }
 }

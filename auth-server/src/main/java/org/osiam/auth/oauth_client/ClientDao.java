@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.storage.dao;
+package org.osiam.auth.oauth_client;
 
 import java.util.List;
 
@@ -29,8 +29,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.osiam.resources.exceptions.ResourceNotFoundException;
-import org.osiam.storage.entities.ClientEntity;
+import org.osiam.auth.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -39,25 +38,25 @@ public class ClientDao {
     @PersistenceContext
     private EntityManager em;
 
-    public ClientEntity getClient(String id) {
+    public ClientEntity getClient(final String id) {
         return getClientById(id);
     }
 
-    public ClientEntity create(ClientEntity client) {
+    public ClientEntity create(final ClientEntity client) {
         em.persist(client);
         return client;
     }
 
-    public void delete(String id) {
+    public void delete(final String id) {
         em.remove(getClientById(id));
     }
 
-    public ClientEntity update(ClientEntity client, String id) {
+    public ClientEntity update(final ClientEntity client, final String id) {
         return em.merge(mergeClient(client, id));
     }
 
-    private ClientEntity mergeClient(ClientEntity client, String id) {
-        ClientEntity clientEntity = getClientById(id);
+    private ClientEntity mergeClient(final ClientEntity client, final String id) {
+        final ClientEntity clientEntity = getClientById(id);
 
         clientEntity.setRefreshTokenValiditySeconds(client.getRefreshTokenValiditySeconds());
         clientEntity.setAccessTokenValiditySeconds(client.getAccessTokenValiditySeconds());
@@ -72,10 +71,10 @@ public class ClientDao {
         return clientEntity;
     }
 
-    private ClientEntity getClientById(String id) {
-        Query query = em.createNamedQuery("getClientById");
+    private ClientEntity getClientById(final String id) {
+        final Query query = em.createNamedQuery("getClientById");
         query.setParameter("id", id);
-        List<?> result = query.getResultList();
+        final List<?> result = query.getResultList();
         if (result.isEmpty()) {
             throw new ResourceNotFoundException("Resource " + id + " not found.");
         }
