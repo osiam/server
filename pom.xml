@@ -37,6 +37,7 @@
         <module>interaction-model</module>
         <module>auth-server</module>
         <module>resource-server</module>
+        <module>distribution</module>
     </modules>
 
     <properties>
@@ -187,6 +188,17 @@
                         </execution>
                     </executions>
                 </plugin>
+
+                <plugin>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>2.4</version>
+                    <configuration>
+                        <descriptors>
+                            <descriptor>src/assemble/bin.xml</descriptor>
+                        </descriptors>
+                    </configuration>
+                </plugin>
+                
             </plugins>
         </pluginManagement>
 
@@ -221,6 +233,20 @@
                 <groupId>org.osiam</groupId>
                 <artifactId>osiam-interaction-model</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.osiam</groupId>
+                <artifactId>osiam-auth-server</artifactId>
+                <version>${project.version}</version>
+                <type>war</type>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.osiam</groupId>
+                <artifactId>osiam-resource-server</artifactId>
+                <version>${project.version}</version>
+                <type>war</type>
             </dependency>
 
             <!-- Used to convert ISO DateTime Strings to Date and vice versa (APACHE 2 License) -->
