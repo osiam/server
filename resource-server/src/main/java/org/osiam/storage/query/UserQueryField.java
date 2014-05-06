@@ -67,6 +67,7 @@ import org.osiam.storage.entities.UserEntity_;
 import org.osiam.storage.entities.X509CertificateEntity;
 
 public enum UserQueryField implements QueryField<UserEntity> {
+    
     EXTERNALID("externalid") {
         @Override
         public Predicate addFilter(Root<UserEntity> root,
@@ -336,19 +337,28 @@ public enum UserQueryField implements QueryField<UserEntity> {
         }
 
     },
-    EMAILS("emails") {
+    PASSWORD("password") {
         @Override
-        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
-                String value, CriteriaBuilder cb) {
-
-            SetJoin<UserEntity, EmailEntity> join = root.join(UserEntity_.emails, JoinType.LEFT);
-            return constraint.createPredicateForStringField(join.get(BaseMultiValuedAttributeEntityWithValue_.value),
-                    value, cb);
+        public Predicate addFilter(Root<UserEntity> root,
+                FilterConstraint constraint, String value, CriteriaBuilder cb) {
+            return constraint.createPredicateForStringField(root.get(UserEntity_.password), value, cb);
         }
 
         @Override
         public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
             throw handleSortByFieldNotSupported(toString());
+        }
+    },
+    EMAILS("emails") {
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
+                String value, CriteriaBuilder cb) {
+            return EMAILS_VALUE.addFilter(root, constraint, value, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            return EMAILS_VALUE.createSortByField(root, cb);
         }
 
     },
@@ -414,14 +424,12 @@ public enum UserQueryField implements QueryField<UserEntity> {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
-            SetJoin<UserEntity, PhoneNumberEntity> join = root.join(UserEntity_.phoneNumbers, JoinType.LEFT);
-            return constraint.createPredicateForStringField(join.get(BaseMultiValuedAttributeEntityWithValue_.value),
-                    value, cb);
+            return PHONENUMBERS_VALUE.addFilter(root, constraint, value, cb);
         }
 
         @Override
         public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
-            throw handleSortByFieldNotSupported(toString());
+            return PHONENUMBERS_VALUE.createSortByField(root, cb);
         }
     },
     PHONENUMBERS_VALUE("phonenumbers.value") {
@@ -476,15 +484,12 @@ public enum UserQueryField implements QueryField<UserEntity> {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
-            SetJoin<UserEntity, ImEntity> join = root.join(UserEntity_.ims, JoinType.LEFT);
-            return constraint.createPredicateForStringField(join.get(BaseMultiValuedAttributeEntityWithValue_.value),
-                    value, cb);
-
+            return IMS_VALUE.addFilter(root, constraint, value, cb);
         }
 
         @Override
         public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
-            throw handleSortByFieldNotSupported(toString());
+            return IMS_VALUE.createSortByField(root, cb);
         }
     },
     IMS_VALUE("ims.value") {
@@ -539,15 +544,12 @@ public enum UserQueryField implements QueryField<UserEntity> {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
-            SetJoin<UserEntity, PhotoEntity> join = root.join(UserEntity_.photos, JoinType.LEFT);
-            return constraint.createPredicateForStringField(join.get(BaseMultiValuedAttributeEntityWithValue_.value),
-                    value, cb); // NOSONAR - XEntity_.X will be filled by JPA provider
-
+            return PHOTOS_VALUE.addFilter(root, constraint, value, cb);
         }
 
         @Override
         public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
-            throw handleSortByFieldNotSupported(toString());
+            return PHOTOS_VALUE.createSortByField(root, cb);
         }
     },
     PHOTOS_VALUE("photos.value") {
@@ -557,7 +559,6 @@ public enum UserQueryField implements QueryField<UserEntity> {
             SetJoin<UserEntity, PhotoEntity> join = root.join(UserEntity_.photos, JoinType.LEFT);
             return constraint.createPredicateForStringField(join.get(BaseMultiValuedAttributeEntityWithValue_.value),
                     value, cb);
-
         }
 
         @Override
@@ -707,14 +708,12 @@ public enum UserQueryField implements QueryField<UserEntity> {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
-            SetJoin<UserEntity, EntitlementEntity> join = root.join(UserEntity_.entitlements, JoinType.LEFT);
-            return constraint.createPredicateForStringField(join.get(BaseMultiValuedAttributeEntityWithValue_.value),
-                    value, cb);
+            return ENTITLEMENTS_VALUE.addFilter(root, constraint, value, cb);
         }
 
         @Override
         public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
-            throw handleSortByFieldNotSupported(toString());
+            return ENTITLEMENTS_VALUE.createSortByField(root, cb);
         }
     },
     ENTITLEMENTS_VALUE("entitlements.value") {
@@ -767,14 +766,12 @@ public enum UserQueryField implements QueryField<UserEntity> {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
-            SetJoin<UserEntity, RoleEntity> join = root.join(UserEntity_.roles, JoinType.LEFT);
-            return constraint.createPredicateForStringField(join.get(BaseMultiValuedAttributeEntityWithValue_.value),
-                    value, cb);
+            return ROLES_VALUE.addFilter(root, constraint, value, cb);
         }
 
         @Override
         public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
-            throw handleSortByFieldNotSupported(toString());
+            return ROLES_VALUE.createSortByField(root, cb);
         }
     },
     ROLES_VALUE("roles.value") {
@@ -821,27 +818,24 @@ public enum UserQueryField implements QueryField<UserEntity> {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
-            SetJoin<UserEntity, X509CertificateEntity> join = root.join(UserEntity_.x509Certificates, JoinType.LEFT);
-            return constraint.createPredicateForStringField(join.get(BaseMultiValuedAttributeEntityWithValue_.value),
-                    value, cb);
+            return X509CERTIFICATES_VALUE.addFilter(root, constraint, value, cb);
         }
 
         @Override
         public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
-            throw handleSortByFieldNotSupported(toString());
+            return X509CERTIFICATES_VALUE.createSortByField(root, cb);
         }
     },
     GROUPS("groups") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
-            final SetJoin<UserEntity, GroupEntity> join = root.join(ResourceEntity_.groups, JoinType.LEFT);
-            return constraint.createPredicateForStringField(join.get(ResourceEntity_.id), value, cb);
+            return GROUPS_VALUE.addFilter(root, constraint, value, cb);
         }
 
         @Override
         public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
-            throw handleSortByFieldNotSupported(toString());
+            return GROUPS_VALUE.createSortByField(root, cb);
         }
     },
     GROUPS_VALUE("groups.value") {
