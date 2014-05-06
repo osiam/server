@@ -35,8 +35,7 @@ class ObjectMapperWithExtensionConfigTest extends Specification {
 
     def "try to deserialize and serialize a scim user with extensions"() {
         given:
-        Extension extension = new Extension("urn")
-        extension.addOrUpdateField("field1", "value1")
+        Extension extension = new Extension.Builder("urn").setField("field1", "value1").build()
         User user = new User.Builder("userName").addExtensions([extension]as Set).build()
 
         def mapper = new ObjectMapperWithExtensionConfig()

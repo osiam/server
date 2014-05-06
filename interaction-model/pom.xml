@@ -28,7 +28,7 @@
     <parent>
         <artifactId>osiam-server-parent</artifactId>
         <groupId>org.osiam</groupId>
-        <version>0.20</version>
+        <version>0.21</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -78,19 +78,6 @@
                 <version>1.8</version>
                 <executions>
                     <execution>
-                        <id>add-source</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>${basedir}/src/main/groovy</source>
-                                <source>${basedir}/src/main/java</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>add-test-source</id>
                         <phase>generate-test-sources</phase>
                         <goals>
@@ -99,7 +86,6 @@
                         <configuration>
                             <sources>
                                 <source>${basedir}/src/test/groovy</source>
-                                <source>${basedir}/src/test/java</source>
                             </sources>
                         </configuration>
                     </execution>

@@ -28,7 +28,7 @@
 
     <groupId>org.osiam</groupId>
     <artifactId>osiam-server-parent</artifactId>
-    <version>0.20</version>
+    <version>0.21</version>
     <packaging>pom</packaging>
 
     <name>OSIAM Server Parent</name>
@@ -37,6 +37,7 @@
         <module>interaction-model</module>
         <module>auth-server</module>
         <module>resource-server</module>
+        <module>distribution</module>
     </modules>
 
     <properties>
@@ -57,7 +58,7 @@
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <!-- set path for unit tests reports -->
 
-        <org.osiam.scim-schema.version>0.41</org.osiam.scim-schema.version>
+        <org.osiam.scim-schema.version>0.42-SNAPSHOT</org.osiam.scim-schema.version>
     </properties>
 
     <scm>
@@ -187,6 +188,17 @@
                         </execution>
                     </executions>
                 </plugin>
+
+                <plugin>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>2.4</version>
+                    <configuration>
+                        <descriptors>
+                            <descriptor>src/assemble/bin.xml</descriptor>
+                        </descriptors>
+                    </configuration>
+                </plugin>
+                
             </plugins>
         </pluginManagement>
 
@@ -221,6 +233,20 @@
                 <groupId>org.osiam</groupId>
                 <artifactId>osiam-interaction-model</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.osiam</groupId>
+                <artifactId>osiam-auth-server</artifactId>
+                <version>${project.version}</version>
+                <type>war</type>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.osiam</groupId>
+                <artifactId>osiam-resource-server</artifactId>
+                <version>${project.version}</version>
+                <type>war</type>
             </dependency>
 
             <!-- Used to convert ISO DateTime Strings to Date and vice versa (APACHE 2 License) -->
@@ -515,6 +541,12 @@
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>2.4</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>17.0</version>
             </dependency>
 
         </dependencies>
