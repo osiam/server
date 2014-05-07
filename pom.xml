@@ -34,7 +34,6 @@
     <name>OSIAM Server Parent</name>
 
     <modules>
-        <module>interaction-model</module>
         <module>auth-server</module>
         <module>resource-server</module>
         <module>distribution</module>
@@ -58,7 +57,7 @@
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <!-- set path for unit tests reports -->
 
-        <org.osiam.scim-schema.version>0.43-SNAPSHOT</org.osiam.scim-schema.version>
+        <org.osiam.connector4java.version>0.16-SNAPSHOT</org.osiam.connector4java.version>
     </properties>
 
     <scm>
@@ -198,7 +197,7 @@
                         </descriptors>
                     </configuration>
                 </plugin>
-                
+
             </plugins>
         </pluginManagement>
 
@@ -225,23 +224,17 @@
             <!-- OSIAM Dependencies -->
             <dependency>
                 <groupId>org.osiam</groupId>
-                <artifactId>scim-schema</artifactId>
-                <version>${org.osiam.scim-schema.version}</version>
+                <artifactId>connector4java</artifactId>
+                <version>${org.osiam.connector4java.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>org.osiam</groupId>
-                <artifactId>osiam-interaction-model</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            
             <dependency>
                 <groupId>org.osiam</groupId>
                 <artifactId>osiam-auth-server</artifactId>
                 <version>${project.version}</version>
                 <type>war</type>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.osiam</groupId>
                 <artifactId>osiam-resource-server</artifactId>
@@ -340,7 +333,7 @@
                 <artifactId>thymeleaf</artifactId>
                 <version>${org.thymeleaf-version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.thymeleaf</groupId>
                 <artifactId>thymeleaf-spring4</artifactId>

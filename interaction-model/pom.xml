@@ -95,10 +95,12 @@
     </build>
 
     <dependencies>
+    
         <dependency>
             <groupId>org.osiam</groupId>
-            <artifactId>scim-schema</artifactId>
+            <artifactId>connector4java</artifactId>
         </dependency>
+        
         <!-- Spring Security -->
         <dependency>
             <groupId>org.springframework.security.oauth</groupId>

@@ -23,28 +23,28 @@
 
 package org.osiam.security;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.provider.AuthorizationRequest;
+
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
 public class OAuth2AuthenticationSpring {
 
-    private AuthenticationSpring authenticationSpring;
+    private Authentication authentication;
 
-    private AuthorizationRequestSpring authorizationRequestSpring;
-
-    public AuthenticationSpring getAuthenticationSpring() {
-        return authenticationSpring;
+    private AuthorizationRequest authorizationRequest;
+    
+    public OAuth2AuthenticationSpring(AuthorizationRequest authorizationRequest, Authentication authentication) {
+        this.authorizationRequest = authorizationRequest;
+        this.authentication = authentication;
     }
 
-    public void setAuthenticationSpring(AuthenticationSpring authenticationSpring) {
-        this.authenticationSpring = authenticationSpring;
+    public Authentication getAuthentication() {
+        return authentication;
     }
 
-    public AuthorizationRequestSpring getAuthorizationRequestSpring() {
-        return authorizationRequestSpring;
-    }
-
-    public void setAuthorizationRequestSpring(AuthorizationRequestSpring authorizationRequestSpring) {
-        this.authorizationRequestSpring = authorizationRequestSpring;
+    public AuthorizationRequest getAuthorizationRequest() {
+        return authorizationRequest;
     }
 }
