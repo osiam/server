@@ -27,10 +27,10 @@ import javax.inject.Inject;
 
 import org.osiam.auth.oauth_client.OsiamAuthServerClientProvider;
 import org.osiam.auth.token.OsiamAccessTokenProvider;
-import org.osiam.client.connector.OsiamConnector;
+import org.osiam.client.OsiamConnector;
 import org.osiam.client.oauth.GrantType;
 import org.osiam.client.oauth.Scope;
-import org.osiam.client.query.StringQueryBuilder;
+import org.osiam.client.query.Query;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.resources.scim.UpdateUser;
 import org.osiam.resources.scim.User;
@@ -54,10 +54,11 @@ public class ResourceServerConnector {
 
     public User getUserByUsername(final String userName) {
         OsiamConnector osiamConnector = createOsiamConnector();
-        String queryString = new StringQueryBuilder().setFilter("userName eq \"" + userName + "\""
-                + " and active eq \"true\"").build();
-        SCIMSearchResult<User> result = osiamConnector.searchUsers(queryString,
-                osiamAccessTokenProvider.getAccessToken());
+        Query query = osiamConnector.createQueryBuilder()
+                .filter(String.format("userName eq \"%s\" and active eq \"true\"", userName))
+                .build();
+
+        SCIMSearchResult<User> result = osiamConnector.searchUsers(query, osiamAccessTokenProvider.getAccessToken());
         if (result.getTotalResults() != 1) {
             return null;
         } else {
@@ -77,10 +78,11 @@ public class ResourceServerConnector {
 
     public User searchUserByUserNameAndPassword(String userName, String hashedPassword) {
         OsiamConnector osiamConnector = createOsiamConnector();
-        String queryString = new StringQueryBuilder().setFilter("userName eq \"" + userName + "\""
-                + " and password eq \"" + hashedPassword + "\"").build();
-        SCIMSearchResult<User> result = osiamConnector.searchUsers(queryString,
-                osiamAccessTokenProvider.getAccessToken());
+        Query query = osiamConnector.createQueryBuilder()
+                .filter(String.format("userName eq \"%s\" and password eq \"%s\"", userName, hashedPassword))
+                .build();
+
+        SCIMSearchResult<User> result = osiamConnector.searchUsers(query, osiamAccessTokenProvider.getAccessToken());
         if (result.getTotalResults() != 1) {
             return null;
         } else {

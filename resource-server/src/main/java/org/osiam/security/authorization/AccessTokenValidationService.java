@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.osiam.client.connector.OsiamConnector;
+import org.osiam.client.OsiamConnector;
 import org.osiam.client.oauth.AccessToken;
 import org.osiam.client.oauth.GrantType;
 import org.osiam.client.oauth.Scope;
@@ -52,9 +52,9 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
 
     @Value("${org.osiam.resource-server.home}")
     private String resourceServerHome;
-    
+
     private static final String RESOURCE_SERVER_CLIENT_ID = "resource-server";
-    
+
     @Value("${org.osiam.resource-server.client.secret}")
     private String resourceServerClientSecret;
 
@@ -76,7 +76,7 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
 
         if (!accessToken.isClientOnly()) {
             User authUser = new User.Builder(accessToken.getUserName()).setId(accessToken.getUserId()).build();
-            
+
             auth = new UsernamePasswordAuthenticationToken(authUser, null, new ArrayList<GrantedAuthority>());
         }
 
