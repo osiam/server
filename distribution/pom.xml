@@ -32,7 +32,7 @@
         <version>0.22-SNAPSHOT</version>
     </parent>
 
-    <artifactId>server-distribution</artifactId>
+    <artifactId>osiam-server-distribution</artifactId>
     <packaging>pom</packaging>
     <name>OSIAM Server Distribution Creator</name>
 

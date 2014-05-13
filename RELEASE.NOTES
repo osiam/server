@@ -1,16 +1,16 @@
 # OSIAM Server
 
-## 0.20 -2014-04-02
+## 0.20 - 2014-04-02
 - [refactoring] The auth-server has a new interface with bootstrap, which could be customize.
   For a detailed description and migration please click here:
   https://github.com/osiam/server/wiki/Migration#from-019-to-020
 - [fix] BT-45 - https://jira.osiam.org/browse/BT-45
 
-## 0.19 -2014-03-17
+## 0.19 - 2014-03-17
 - [refactoring] The registration module has been moved to his own github repository: 
   https://github.com/osiam/addon-self-administration
   
-## 0.18 -2014-03-04
+## 0.18 - 2014-03-04
 - [fix] BT-41 - Attribute filtering removes "schemas" attribute
 - [feature] OSNG-322 - Placeholder for registration emails
   Added new template engine for emails, see how you could add your own email template files:
