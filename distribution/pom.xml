@@ -32,9 +32,9 @@
         <version>0.22-SNAPSHOT</version>
     </parent>
 
-    <artifactId>distribution</artifactId>
+    <artifactId>server-distribution</artifactId>
     <packaging>pom</packaging>
-    <name>Distribution creator</name>
+    <name>OSIAM Server Distribution Creator</name>
 
     <dependencies>
         <dependency>
