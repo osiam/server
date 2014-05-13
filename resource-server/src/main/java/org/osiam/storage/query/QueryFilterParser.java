@@ -21,20 +21,29 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.storage.dao;
+package org.osiam.storage.query;
 
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.osiam.storage.entities.ResourceEntity;
+import org.osiam.storage.parser.LogicalOperatorRulesLexer;
+import org.osiam.storage.parser.LogicalOperatorRulesParser;
+import org.springframework.stereotype.Service;
 
-public interface GenericDao<T extends ResourceEntity> {
+import com.google.common.base.Strings;
 
-    void create(T entity);
+@Service
+public class QueryFilterParser {
 
-    T getById(String id);
+    public ParseTree getParseTree(String filter) {
+        if (!Strings.isNullOrEmpty(filter)) {
+            return null;
+        }
 
-    T update(T entity);
+        LogicalOperatorRulesLexer lexer = new LogicalOperatorRulesLexer(new ANTLRInputStream(filter));
+        LogicalOperatorRulesParser parser = new LogicalOperatorRulesParser(new CommonTokenStream(lexer));
+        parser.addErrorListener(new OsiamAntlrErrorListener());
+        return parser.parse();
+    }
 
-    void delete(String id);
-
-    SearchResult<T> search(ParseTree filterTree, String sortBy, String sortOrder, int count, int startIndex);
 }
