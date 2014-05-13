@@ -32,9 +32,16 @@
         <format>tar.gz</format>
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
+    <files>
+        <file>
+            <source>../README.txt</source>
+        </file>
+        <file>
+            <source>../RELEASE.NOTES</source>
+        </file>
+    </files>
     <moduleSets>
         <moduleSet>
-
             <useAllReactorProjects>true</useAllReactorProjects>
 
             <includes>
