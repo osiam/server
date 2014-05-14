@@ -41,13 +41,13 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <org.hibernate-version>4.3.4.Final</org.hibernate-version>
+        <org.hibernate-version>4.3.5.Final</org.hibernate-version>
 
         <java.version>1.7</java.version>
-        <org.springframework-version>4.0.3.RELEASE</org.springframework-version>
-        <org.thymeleaf-version>2.1.2.RELEASE</org.thymeleaf-version>
+        <org.springframework-version>4.0.4.RELEASE</org.springframework-version>
+        <org.thymeleaf-version>2.1.3.RELEASE</org.thymeleaf-version>
         <org.springframework.security-version>3.2.3.RELEASE</org.springframework.security-version>
-        <org.aspectj-version>1.7.4</org.aspectj-version>
+        <org.aspectj-version>1.8.0</org.aspectj-version>
         <org.slf4j-version>1.7.6</org.slf4j-version>
         <metrics.version>3.0.2</metrics.version>
         <com.ryantenney.metrics-version>3.0.0</com.ryantenney.metrics-version>
@@ -101,6 +101,7 @@
                         </execution>
                     </executions>
                 </plugin>
+                
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
@@ -187,12 +188,6 @@
                         </execution>
                     </executions>
                 </plugin>
-
-                <plugin>
-                    <artifactId>maven-assembly-plugin</artifactId>
-                    <version>2.4</version>
-                </plugin>
-
             </plugins>
         </pluginManagement>
 
@@ -370,6 +365,12 @@
                 <artifactId>aspectjrt</artifactId>
                 <version>${org.aspectj-version}</version>
             </dependency>
+            
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjweaver</artifactId>
+                <version>${org.aspectj-version}</version>
+            </dependency>
 
             <!-- @Inject -->
             <dependency>
@@ -390,7 +391,7 @@
             <dependency>
                 <groupId>org.codehaus.groovy</groupId>
                 <artifactId>groovy-all</artifactId>
-                <version>2.2.2</version>
+                <version>2.3.0</version>
                 <scope>test</scope>
             </dependency>
 
@@ -429,7 +430,7 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-log4j12</artifactId>
-                <version>1.7.6</version>
+                <version>1.7.7</version>
                 <type>jar</type>
                 <scope>compile</scope>
             </dependency>
@@ -444,12 +445,6 @@
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
                 <version>9.3-1101-jdbc41</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.aspectj</groupId>
-                <artifactId>aspectjweaver</artifactId>
-                <version>1.7.4</version>
             </dependency>
 
             <!-- Codahale Metrics -->
@@ -483,45 +478,11 @@
                 <version>${org.hibernate-version}</version>
             </dependency>
 
-            <!-- JSTL for Tomcat -->
-            <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>jstl</artifactId>
-                <version>1.2</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.glassfish.web</groupId>
-                <artifactId>jstl-impl</artifactId>
-                <version>1.2</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>servlet-api</artifactId>
-                        <groupId>javax.servlet</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>jsp-api</artifactId>
-                        <groupId>javax.servlet.jsp</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>jstl-api</artifactId>
-                        <groupId>javax.servlet.jsp.jstl</groupId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <!-- Http client for the OAuth client and user endpoints -->
-            <dependency>
-                <groupId>org.apache.httpcomponents</groupId>
-                <artifactId>httpclient</artifactId>
-                <version>4.3.3</version>
-            </dependency>
-
             <!-- JSON -->
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>2.3.2</version>
+                <version>2.3.3</version>
             </dependency>
 
             <!-- IOUtils -->
@@ -539,11 +500,10 @@
 
         </dependencies>
     </dependencyManagement>
+
     <profiles>
         <profile>
             <id>coverage</id>
-            <properties>
-            </properties>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
