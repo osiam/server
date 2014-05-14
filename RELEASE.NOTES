@@ -1,5 +1,12 @@
 # OSIAM Server
 
+## 1.0 - 2014-05-15
+- [refactore] The token validation REST endpoint changed. If you want to validate an token,
+  you need to send the token directly in the header instead of putting in the URL.
+- [fix] The client secret and the redirect uri is not unique anymore
+  For a detailed description and migration please click here:
+  https://github.com/osiam/server/wiki/migration#from-021-to-10
+
 ## 0.20 - 2014-04-02
 - [refactoring] The auth-server has a new interface with bootstrap, which could be customize.
   For a detailed description and migration please click here:
