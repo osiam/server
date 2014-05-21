@@ -23,18 +23,14 @@
 
 package org.osiam.security.controller;
 
-import java.util.Collection;
-
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
-import org.osiam.resources.RoleSpring;
-import org.osiam.security.AuthenticationSpring;
-import org.osiam.security.AuthorizationRequestSpring;
-import org.osiam.security.OAuth2AuthenticationSpring;
+import org.osiam.client.oauth.AccessToken;
+import org.osiam.client.oauth.Scope;
+import org.osiam.resources.scim.User;
 import org.osiam.security.authentication.AuthenticationError;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
@@ -42,7 +38,7 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -58,58 +54,34 @@ public class TokenController {
     @Inject
     private DefaultTokenServices tokenServices;
 
-    @RequestMapping(value = "/validate/{token}", method = RequestMethod.GET)
+    @RequestMapping(value = "/validation", method = RequestMethod.POST)
     @ResponseBody
-    public OAuth2AuthenticationSpring validateToken(@PathVariable final String token) {
-        OAuth2Authentication oAuth2Authentication = tokenServices.loadAuthentication(token);
-
-        OAuth2AuthenticationSpring oAuth2AuthenticationSpring = new OAuth2AuthenticationSpring();
-        // In case of OAuth2 client credentials grant there is no user authentication
-        if (oAuth2Authentication.getUserAuthentication() != null) {
-            oAuth2AuthenticationSpring
-                    .setAuthenticationSpring(mappingFrom(oAuth2Authentication.getUserAuthentication()));
+    public AccessToken tokenValidation(@RequestHeader final String authorization) {
+        int lastIndexOf = authorization.lastIndexOf(' ');
+        String token = authorization.substring(lastIndexOf + 1);
+        OAuth2Authentication auth = tokenServices.loadAuthentication(token);
+        OAuth2AccessToken accessToken = tokenServices.getAccessToken(auth);
+        
+        AuthorizationRequest authReq = auth.getAuthorizationRequest();
+        AccessToken.Builder tokenBuilder = new AccessToken.Builder(token).setClientId(authReq.getClientId());
+        
+        if(auth.getUserAuthentication() != null && auth.getPrincipal() instanceof User) {
+            User user = (User) auth.getPrincipal();
+            tokenBuilder.setUserName(user.getUserName());
+            tokenBuilder.setUserId(user.getId());
         }
-        oAuth2AuthenticationSpring.setAuthorizationRequestSpring(mappingFrom(oAuth2Authentication
-                .getAuthorizationRequest()));
-
-        return oAuth2AuthenticationSpring;
-    }
-
-    private AuthorizationRequestSpring mappingFrom(AuthorizationRequest authorizationRequest) {
-        AuthorizationRequestSpring authorizationRequestSpring = new AuthorizationRequestSpring();
-        authorizationRequestSpring.setApprovalParameters(authorizationRequest.getApprovalParameters());
-        authorizationRequestSpring.setApproved(authorizationRequest.isApproved());
-        authorizationRequestSpring.setAuthorities(authorizationRequest.getAuthorities());
-        authorizationRequestSpring.setAuthorizationParameters(authorizationRequest.getAuthorizationParameters());
-        authorizationRequestSpring.setClientId(authorizationRequest.getClientId());
-        authorizationRequestSpring.setDenied(authorizationRequest.isDenied());
-        authorizationRequestSpring.setRedirectUri(authorizationRequest.getRedirectUri());
-        authorizationRequestSpring.setResourceIds(authorizationRequest.getResourceIds());
-        authorizationRequestSpring.setResponseTypes(authorizationRequest.getResponseTypes());
-        authorizationRequestSpring.setScope(authorizationRequest.getScope());
-        authorizationRequestSpring.setState(authorizationRequest.getState());
-        return authorizationRequestSpring;
-    }
-
-    private AuthenticationSpring mappingFrom(Authentication userAuthentication) {
-        AuthenticationSpring authenticationSpring = new AuthenticationSpring();
-        authenticationSpring.setPrincipal(userAuthentication.getPrincipal());
-        authenticationSpring.setName(userAuthentication.getName());
-        authenticationSpring.setAuthorities((Collection<? extends RoleSpring>) userAuthentication.getAuthorities());
-        authenticationSpring.setCredentials(userAuthentication.getCredentials());
-        authenticationSpring.setDetails(userAuthentication.getDetails());
-        authenticationSpring.setAuthenticated(userAuthentication.isAuthenticated());
-        return authenticationSpring;
-    }
-
-    @RequestMapping(value = "/{token}", method = RequestMethod.GET)
-    @ResponseBody
-    public OAuth2AccessToken getToken(@PathVariable final String token) {
-        return tokenServices.readAccessToken(token);
+        
+        tokenBuilder.setExpiresAt(accessToken.getExpiration());
+        
+        for (String scopeString : authReq.getScope()) {
+            tokenBuilder.addScope(new Scope(scopeString));
+        }
+        
+        return tokenBuilder.build();
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public AuthenticationError handleClientAuthenticationException(InvalidTokenException ex, HttpServletRequest request) {
         return new AuthenticationError("invalid_token", ex.getMessage());

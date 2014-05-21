@@ -80,11 +80,11 @@ public class ClientEntity {
     @JsonProperty
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
-    @Column(name = "redirect_uri", unique = true, nullable = false)
+    @Column(name = "redirect_uri", nullable = false)
     private String redirectUri;
 
     @JsonProperty("client_secret")
-    @Column(name = "client_secret", unique = true, nullable = false)
+    @Column(name = "client_secret", nullable = false)
     private String clientSecret = generateSecret();
 
     @JsonProperty
@@ -111,6 +111,29 @@ public class ClientEntity {
     public ClientEntity() {
     }
 
+    /**
+     * Used to Map Json to ClientEntity, because some Fields are generated.
+     * 
+     */
+    public ClientEntity(ClientEntity entity) {
+        if (entity.getId() != null) {
+            id = entity.getId();
+        }
+
+        if (entity.getClientSecret() != null) {
+            clientSecret = entity.getClientSecret();
+
+        }
+
+        accessTokenValiditySeconds = entity.getAccessTokenValiditySeconds();
+        refreshTokenValiditySeconds = entity.getRefreshTokenValiditySeconds();
+        redirectUri = entity.getRedirectUri();
+        scope = entity.getScope();
+        implicit = entity.isImplicit();
+        validityInSeconds = entity.getValidityInSeconds();
+        grants = !entity.getGrants().isEmpty() ? entity.getGrants() : generateGrants();
+    }
+
     public int getAccessTokenValiditySeconds() {
         return accessTokenValiditySeconds;
     }
@@ -131,26 +154,6 @@ public class ClientEntity {
         return grants;
     }
 
-    /* Used to Map Json to ClientEntity, because some Fields are generated. */
-    public ClientEntity(ClientEntity entity) {
-        if (entity.getId() != null) {
-            id = entity.getId();
-        }
-
-        if (entity.getClientSecret() != null) {
-            clientSecret = entity.getClientSecret();
-
-        }
-
-        accessTokenValiditySeconds = entity.getAccessTokenValiditySeconds();
-        refreshTokenValiditySeconds = entity.getRefreshTokenValiditySeconds();
-        redirectUri = entity.getRedirectUri();
-        scope = entity.getScope();
-        implicit = entity.isImplicit();
-        validityInSeconds = entity.getValidityInSeconds();
-        grants = !entity.getGrants().isEmpty() ? entity.getGrants() : generateGrants();
-    }
-
     private Set<String> generateGrants() {
         Set<String> result = new HashSet<>();
         Collections.addAll(result, "authorization_code", "refresh-token");
@@ -158,7 +161,6 @@ public class ClientEntity {
     }
 
     private String generateSecret() {
-        // TODO must be improved
         return UUID.randomUUID().toString();
     }
 

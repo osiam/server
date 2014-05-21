@@ -33,6 +33,9 @@ import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.osiam.resources.converter.GroupConverter;
 import org.osiam.resources.exceptions.ResourceExistsException;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
@@ -43,7 +46,13 @@ import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.storage.dao.GroupDao;
 import org.osiam.storage.dao.SearchResult;
 import org.osiam.storage.entities.GroupEntity;
+import org.osiam.storage.parser.LogicalOperatorRulesLexer;
+import org.osiam.storage.parser.LogicalOperatorRulesParser;
+import org.osiam.storage.query.OsiamAntlrErrorListener;
+import org.osiam.storage.query.QueryFilterParser;
 import org.springframework.stereotype.Service;
+
+import com.google.common.base.Strings;
 
 @Service
 public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
@@ -58,6 +67,9 @@ public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
 
     @Inject
     private GroupUpdater groupUpdater;
+    
+    @Inject
+    private QueryFilterParser queryFilterParser;
 
     @Override
     public Group create(Group group) {
@@ -104,8 +116,10 @@ public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
     public SCIMSearchResult<Group> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
         List<Group> groups = new ArrayList<>();
 
+        ParseTree filterTree = queryFilterParser.getParseTree(filter);
+
         // Decrease startIndex by 1 because scim pagination starts at 1 and JPA doesn't
-        SearchResult<GroupEntity> result = groupDao.search(filter, sortBy, sortOrder, count, startIndex - 1);
+        SearchResult<GroupEntity> result = groupDao.search(filterTree, sortBy, sortOrder, count, startIndex - 1);
 
         for (GroupEntity group : result.results) {
             groups.add(groupConverter.toScim(group));

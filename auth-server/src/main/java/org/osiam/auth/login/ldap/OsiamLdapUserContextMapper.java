@@ -26,13 +26,10 @@ package org.osiam.auth.login.ldap;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.osiam.auth.configuration.LdapConfiguration;
 import org.osiam.auth.exception.LdapConfigurationException;
 import org.osiam.resources.scim.Address;
@@ -48,62 +45,16 @@ import org.osiam.resources.scim.UpdateUser;
 import org.osiam.resources.scim.User;
 import org.osiam.resources.scim.X509Certificate;
 import org.springframework.ldap.core.DirContextOperations;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.ldap.ppolicy.PasswordPolicyControl;
-import org.springframework.security.ldap.ppolicy.PasswordPolicyResponseControl;
-import org.springframework.security.ldap.userdetails.LdapUserDetailsImpl;
 import org.springframework.security.ldap.userdetails.LdapUserDetailsMapper;
 
 import com.google.common.base.Strings;
 
 public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
 
-    private final Log logger = LogFactory.getLog(LdapUserDetailsMapper.class);
-    private String passwordAttributeName = "userPassword";
     private Map<String, String> scimLdapAttributes;
 
     public OsiamLdapUserContextMapper(Map<String, String> scimLdapAttributes) {
         this.scimLdapAttributes = scimLdapAttributes;
-    }
-
-    @Override
-    public OsiamLdapUserDetailsImpl mapUserFromContext(DirContextOperations ctx, String username,
-            Collection<? extends GrantedAuthority> authorities) {
-        String dn = ctx.getNameInNamespace();
-
-        logger.debug("Mapping user details from context with DN: " + dn);
-
-        LdapUserDetailsImpl.Essence essence = new LdapUserDetailsImpl.Essence();
-        essence.setDn(dn);
-
-        Object passwordValue = ctx.getObjectAttribute(passwordAttributeName);
-
-        if (passwordValue != null) {
-            essence.setPassword(mapPassword(passwordValue));
-        }
-
-        essence.setUsername(username);
-
-        // Add the supplied authorities
-
-        for (GrantedAuthority authority : authorities) {
-            essence.addAuthority(authority);
-        }
-
-        // Check for PPolicy data
-
-        PasswordPolicyResponseControl ppolicy = (PasswordPolicyResponseControl) ctx
-                .getObjectAttribute(PasswordPolicyControl.OID);
-
-        if (ppolicy != null) {
-            essence.setTimeBeforeExpiration(ppolicy.getTimeBeforeExpiration());
-            essence.setGraceLoginsRemaining(ppolicy.getGraceLoginsRemaining());
-        }
-
-        OsiamLdapUserDetailsImpl ldapUser = new OsiamLdapUserDetailsImpl(
-                (LdapUserDetailsImpl) essence.createUserDetails());
-
-        return ldapUser;
     }
 
     public User mapUser(DirContextOperations ldapUserData) {
@@ -137,14 +88,14 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
                         .setType(new Email.Type(LdapConfiguration.LDAP_PROVIDER));
                 List<Email> emails = new ArrayList<Email>();
                 emails.add(emailBuilder.build());
-                builder.setEmails(emails);
+                builder.addEmails(emails);
                 break;
             case "entitlement":
                 Entitlement.Builder entitlementBuilder = new Entitlement.Builder().setValue(ldapValue)
                         .setType(new Entitlement.Type(LdapConfiguration.LDAP_PROVIDER));
                 List<Entitlement> entitlements = new ArrayList<Entitlement>();
                 entitlements.add(entitlementBuilder.build());
-                builder.setEntitlements(entitlements);
+                builder.addEntitlements(entitlements);
                 break;
             case "externalId":
                 builder.setExternalId(ldapValue);
@@ -154,7 +105,7 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
                         .setType(new Im.Type(LdapConfiguration.LDAP_PROVIDER));
                 List<Im> ims = new ArrayList<Im>();
                 ims.add(imBuilder.build());
-                builder.setIms(ims);
+                builder.addIms(ims);
                 break;
             case "locale":
                 builder.setLocale(ldapValue);
@@ -167,7 +118,7 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
                         .setType(new PhoneNumber.Type(LdapConfiguration.LDAP_PROVIDER));
                 List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>();
                 phoneNumbers.add(phoneNumberBuilder.build());
-                builder.setPhoneNumbers(phoneNumbers);
+                builder.addPhoneNumbers(phoneNumbers);
                 break;
             case "photo":
                 Photo.Builder photoBuilder;
@@ -176,7 +127,7 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
                             .setType(new Photo.Type(LdapConfiguration.LDAP_PROVIDER));
                     List<Photo> photos = new ArrayList<Photo>();
                     photos.add(photoBuilder.build());
-                    builder.setPhotos(photos);
+                    builder.addPhotos(photos);
                 } catch (URISyntaxException e) {
                     throw new LdapConfigurationException("Could not map the ldap attibute '"
                             + ldapAttribute + "' with the value '" + ldapValue
@@ -194,7 +145,7 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
                         .setType(new Role.Type(LdapConfiguration.LDAP_PROVIDER));
                 List<Role> roles = new ArrayList<Role>();
                 roles.add(roleBuilder.build());
-                builder.setRoles(roles);
+                builder.addRoles(roles);
                 break;
             case "timezone":
                 builder.setTimezone(ldapValue);
@@ -210,7 +161,7 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
                         .setType(new X509Certificate.Type(LdapConfiguration.LDAP_PROVIDER));
                 List<X509Certificate> x509Certificates = new ArrayList<X509Certificate>();
                 x509Certificates.add(x509CertificateBuilder.build());
-                builder.setX509Certificates(x509Certificates);
+                builder.addX509Certificates(x509Certificates);
                 break;
             default:
                 if (!scimAttribute.startsWith("address.") && !scimAttribute.startsWith("name.")) {
@@ -220,7 +171,7 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
             }
         }
 
-        builder.setAddresses(getAddresses(ldapUserData));
+        builder.addAddresses(getAddresses(ldapUserData));
         builder.setName(getName(ldapUserData));
 
         return builder.build();

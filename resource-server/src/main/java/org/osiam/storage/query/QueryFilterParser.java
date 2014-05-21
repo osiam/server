@@ -21,33 +21,29 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.security
+package org.osiam.storage.query;
 
-import org.osiam.resources.RoleSpring
-import spock.lang.Specification
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.osiam.storage.parser.LogicalOperatorRulesLexer;
+import org.osiam.storage.parser.LogicalOperatorRulesParser;
+import org.springframework.stereotype.Service;
 
-class AuthenticationSpringTest extends Specification {
+import com.google.common.base.Strings;
 
-    def authenticationSpring = new AuthenticationSpring()
+@Service
+public class QueryFilterParser {
 
-    def "should inherit springs Authentication"() {
-        given:
-        def roles = [new RoleSpring()] as Set
+    public ParseTree getParseTree(String filter) {
+        if (Strings.isNullOrEmpty(filter)) {
+            return null;
+        }
 
-        when:
-        authenticationSpring.setAuthenticated(true)
-        authenticationSpring.setAuthorities(roles)
-        authenticationSpring.setCredentials("theCredentials")
-        authenticationSpring.setDetails("theDetails")
-        authenticationSpring.setName("name")
-        authenticationSpring.setPrincipal("thePrincipal")
-
-        then:
-        authenticationSpring.isAuthenticated()
-        authenticationSpring.getAuthorities() == roles
-        authenticationSpring.getCredentials() == "theCredentials"
-        authenticationSpring.getDetails() == "theDetails"
-        authenticationSpring.getName() == "name"
-        authenticationSpring.getPrincipal() == "thePrincipal"
+        LogicalOperatorRulesLexer lexer = new LogicalOperatorRulesLexer(new ANTLRInputStream(filter));
+        LogicalOperatorRulesParser parser = new LogicalOperatorRulesParser(new CommonTokenStream(lexer));
+        parser.addErrorListener(new OsiamAntlrErrorListener());
+        return parser.parse();
     }
+
 }
