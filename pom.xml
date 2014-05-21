@@ -28,7 +28,7 @@
 
     <groupId>org.osiam</groupId>
     <artifactId>osiam-server-parent</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>pom</packaging>
 
     <name>OSIAM Server Parent</name>
@@ -57,7 +57,7 @@
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <!-- set path for unit tests reports -->
 
-        <org.osiam.connector4java.version>1.1-SNAPSHOT</org.osiam.connector4java.version>
+        <org.osiam.connector4java.version>1.0</org.osiam.connector4java.version>
     </properties>
 
     <scm>
