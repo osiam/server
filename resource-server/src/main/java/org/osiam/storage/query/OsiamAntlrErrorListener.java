@@ -23,9 +23,12 @@
 
 package org.osiam.storage.query;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+
 import java.util.BitSet;
 
 import org.antlr.v4.runtime.ANTLRErrorListener;
+import org.antlr.v4.runtime.InputMismatchException;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
@@ -46,6 +49,12 @@ public class OsiamAntlrErrorListener implements ANTLRErrorListener {
      */
     @Override
     public void syntaxError(Recognizer<?, ?> recognizer, @Nullable Object offendingSymbol, int line, int charPositionInLine, String msg, @Nullable RecognitionException e) {
+        if(e instanceof InputMismatchException
+                && msg.endsWith(" expecting VALUE")
+                && !msg.contains("\"")){
+            msg += ". Please make sure that all values are surrounded by \"s.";
+        }
+        
         throw new IllegalArgumentException(msg);
     }
 
