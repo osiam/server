@@ -23,8 +23,6 @@
 
 package org.osiam.storage.query;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-
 import java.util.BitSet;
 
 import org.antlr.v4.runtime.ANTLRErrorListener;
