@@ -46,13 +46,13 @@ public class OsiamAntlrErrorListener implements ANTLRErrorListener {
      * The method is overridden to throw an exception if the parsed input has an invalid syntax.
      */
     @Override
-    public void syntaxError(Recognizer<?, ?> recognizer, @Nullable Object offendingSymbol, int line, int charPositionInLine, String msg, @Nullable RecognitionException e) {
-        if(e instanceof InputMismatchException
-                && msg.endsWith(" expecting VALUE")
-                && !msg.contains("\"")){
-            msg += ". Please make sure that all values are surrounded by \"s.";
+    public void syntaxError(Recognizer<?, ?> recognizer, @Nullable Object offendingSymbol, int line,
+            int charPositionInLine, String msg, @Nullable RecognitionException e) {
+        if (e instanceof InputMismatchException
+                && msg.endsWith(" expecting VALUE")) {
+            msg += ". Please make sure that all values are surrounded by double quotes.";
         }
-        
+
         throw new IllegalArgumentException(msg);
     }
 
@@ -61,11 +61,11 @@ public class OsiamAntlrErrorListener implements ANTLRErrorListener {
      * <p/>
      * This is not an error. Its only a report, like a warning.
      * <p/>
-     * This method is called by the parser when a full-context prediction
-     * results in an ambiguity.
+     * This method is called by the parser when a full-context prediction results in an ambiguity.
      */
     @Override
-    public void reportAmbiguity(@NotNull Parser recognizer, @NotNull DFA dfa, int startIndex, int stopIndex, boolean exact, @NotNull BitSet ambigAlts, @NotNull ATNConfigSet configs) {
+    public void reportAmbiguity(@NotNull Parser recognizer, @NotNull DFA dfa, int startIndex, int stopIndex,
+            boolean exact, @NotNull BitSet ambigAlts, @NotNull ATNConfigSet configs) {
     }
 
     /**
@@ -73,11 +73,12 @@ public class OsiamAntlrErrorListener implements ANTLRErrorListener {
      * <p/>
      * This is not an error. Its only a report, like a warning.
      * <p/>
-     * This method is called when an SLL conflict occurs and the parser is about
-     * to use the full context information to make an LL decision.
+     * This method is called when an SLL conflict occurs and the parser is about to use the full context information to
+     * make an LL decision.
      */
     @Override
-    public void reportAttemptingFullContext(@NotNull Parser recognizer, @NotNull DFA dfa, int startIndex, int stopIndex, @Nullable BitSet conflictingAlts, @NotNull ATNConfigSet configs) {
+    public void reportAttemptingFullContext(@NotNull Parser recognizer, @NotNull DFA dfa, int startIndex,
+            int stopIndex, @Nullable BitSet conflictingAlts, @NotNull ATNConfigSet configs) {
     }
 
     /**
@@ -85,10 +86,10 @@ public class OsiamAntlrErrorListener implements ANTLRErrorListener {
      * <p/>
      * This is not an error. Its only a report, like a warning.
      * <p/>
-     * This method is called by the parser when a full-context prediction has a
-     * unique result.
+     * This method is called by the parser when a full-context prediction has a unique result.
      */
     @Override
-    public void reportContextSensitivity(@NotNull Parser recognizer, @NotNull DFA dfa, int startIndex, int stopIndex, int prediction, @NotNull ATNConfigSet configs) {
+    public void reportContextSensitivity(@NotNull Parser recognizer, @NotNull DFA dfa, int startIndex, int stopIndex,
+            int prediction, @NotNull ATNConfigSet configs) {
     }
 }
