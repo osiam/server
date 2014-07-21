@@ -29,7 +29,7 @@
     <parent>
         <groupId>org.osiam</groupId>
         <artifactId>osiam-server-parent</artifactId>
-        <version>0.22-SNAPSHOT</version>
+        <version>1.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>osiam-server-distribution</artifactId>
@@ -48,12 +48,11 @@
             <type>war</type>
         </dependency>
     </dependencies>
-    
+
     <profiles>
         <profile>
             <id>distribution</id>
             <build>
-                <finalName>osiam-server-${project.version}-dist</finalName>
                 <plugins>
                     <plugin>
                         <artifactId>maven-assembly-plugin</artifactId>
@@ -66,6 +65,7 @@
                                     <goal>single</goal>
                                 </goals>
                                 <configuration>
+                                    <appendAssemblyId>false</appendAssemblyId>
                                     <descriptors>
                                         <descriptor>src/assembly/distribution.xml</descriptor>
                                     </descriptors>
