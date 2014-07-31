@@ -44,6 +44,7 @@
     <bean id="oauthAccessDeniedHandler"
           class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler"/>
 
+
     <mvc:annotation-driven/>
 
     <mvc:default-servlet-handler/>

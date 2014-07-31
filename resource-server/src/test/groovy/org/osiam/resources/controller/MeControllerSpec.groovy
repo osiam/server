@@ -29,6 +29,7 @@ import org.joda.time.format.DateTimeFormatter
 import org.joda.time.format.ISODateTimeFormat
 import org.osiam.resources.scim.User;
 import org.osiam.security.authorization.AccessTokenValidationService
+import org.osiam.security.helper.AccessTokenHelper;
 import org.osiam.storage.dao.UserDao
 import org.osiam.storage.entities.EmailEntity
 import org.osiam.storage.entities.MetaEntity
@@ -105,40 +106,35 @@ class MeControllerSpec extends Specification {
         result.getEmail() == null
     }
 
-    def 'should throw exception when no access_token was submitted'() {
-        given:
-        request.getParameter('access_token') >> null
-        when:
-        underTest.getInformation(request)
-        then:
-        def e = thrown(IllegalArgumentException)
-        e.message == 'No access_token submitted!'
-    }
-
     def 'should get access_token in bearer format'() {
         given:
         User principal = new User.Builder('username').setId('theUserId').build()
         def userId = 'theUserId'
+        def token = 'access_token'
+        request.getHeader('Authorization') >> 'Bearer ' + token;
 
         when:
         def result = underTest.getInformation(request)
 
         then:
-        1 * request.getParameter('access_token') >> null
-        1 * request.getHeader('Authorization') >> 'Bearer access_token'
-        1 * accessTokenValidationService.loadAuthentication('access_token') >> authentication
+        1 * request.getParameter(token) >> null
+        1 * accessTokenValidationService.loadAuthentication(token) >> authentication
         1 * userAuthentication.getPrincipal() >> principal
         1 * userDao.getById(principal.id) >> user
         result
     }
 
     def 'should throw exception if principal is not a String'() {
+        given:
+        def token = 'access_token'
+        request.getHeader('Authorization') >> 'Bearer ' + token;
+
         when:
         underTest.getInformation(request)
+
         then:
         1 * request.getParameter('access_token') >> null
-        1 * request.getHeader('Authorization') >> 'Bearer access_token'
-        1 * accessTokenValidationService.loadAuthentication('access_token') >> authentication
+        1 * accessTokenValidationService.loadAuthentication(token) >> authentication
         1 * userAuthentication.getPrincipal() >> new Object()
         def e = thrown(IllegalArgumentException)
         e.message == 'User was not authenticated with OSIAM.'
@@ -151,14 +147,15 @@ class MeControllerSpec extends Specification {
                 userName: 'fpref')
         User principal = new User.Builder('username').setId('theUserId').build()
         def userId = 'theUserId'
+        def token = 'access_token'
+        request.getHeader('Authorization') >> 'Bearer ' + token;
 
         when:
         def result = underTest.getInformation(request)
 
         then:
-        1 * request.getParameter('access_token') >> null
-        1 * request.getHeader('Authorization') >> 'Bearer access_token'
-        1 * accessTokenValidationService.loadAuthentication('access_token') >> authentication
+        1 * request.getParameter(token) >> null
+        1 * accessTokenValidationService.loadAuthentication(token) >> authentication
         1 * userAuthentication.getPrincipal() >> principal
         1 * userDao.getById(principal.id) >> user
         result.getEmail() == null
@@ -173,14 +170,15 @@ class MeControllerSpec extends Specification {
         locale: 'de_DE', userName: 'fpref')
         User principal = new User.Builder('username').setId('theUserId').build()
         def userId = 'theUserId'
+        def token = 'access_token'
+        request.getHeader('Authorization') >> 'Bearer ' + token;
 
         when:
         def result = underTest.getInformation(request)
 
         then:
-        1 * request.getParameter('access_token') >> null
-        1 * request.getHeader('Authorization') >> 'Bearer access_token'
-        1 * accessTokenValidationService.loadAuthentication('access_token') >> authentication
+        1 * request.getParameter(token) >> null
+        1 * accessTokenValidationService.loadAuthentication(token) >> authentication
         1 * userAuthentication.getPrincipal() >> principal
         1 * userDao.getById(principal.id) >> user
         result.getName() == null

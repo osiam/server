@@ -33,6 +33,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.osiam.client.exception.ConflictException;
 import org.osiam.resources.scim.User;
 import org.osiam.security.authorization.AccessTokenValidationService;
+import org.osiam.security.helper.AccessTokenHelper;
 import org.osiam.storage.dao.UserDao;
 import org.osiam.storage.entities.EmailEntity;
 import org.osiam.storage.entities.NameEntity;
@@ -110,15 +111,7 @@ public class MeController {
 
     private String getAccessToken(HttpServletRequest request) {
         String accessToken = request.getParameter("access_token");
-        return accessToken != null ? accessToken : getBearerToken(request);
-    }
-
-    private String getBearerToken(HttpServletRequest request) {
-        String authorization = request.getHeader("Authorization");
-        if (authorization == null) {
-            throw new IllegalArgumentException("No access_token submitted!");
-        }
-        return authorization.substring("Bearer ".length(), authorization.length());
+        return accessToken != null ? accessToken : AccessTokenHelper.getBearerToken(request);
     }
 
     public static class FacebookInformationConstruct {

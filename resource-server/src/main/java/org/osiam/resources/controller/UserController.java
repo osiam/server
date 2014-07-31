@@ -38,6 +38,8 @@ import org.osiam.resources.provisioning.SCIMUserProvisioning;
 import org.osiam.resources.scim.Meta;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.resources.scim.User;
+import org.osiam.security.authorization.AccessTokenValidationService;
+import org.osiam.security.helper.AccessTokenHelper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,6 +72,9 @@ public class  UserController {
     @Inject
     private JsonInputValidator jsonInputValidator;
 
+    @Inject
+    private AccessTokenValidationService accessTokenService;
+
     private RequestParamHelper requestParamHelper = new RequestParamHelper();
 
     private AttributesRemovalHelper attributesRemovalHelper = new AttributesRemovalHelper();
@@ -101,15 +106,18 @@ public class  UserController {
     public User replace(@PathVariable final String id, HttpServletRequest request, HttpServletResponse response) throws IOException {
         User user = jsonInputValidator.validateJsonUser(request);
         User createdUser = scimUserProvisioning.replace(id, user);
+        checkAndHandleDeactivation(id, user, request);
         return setLocationUriAndCreateUserForOutput(request, response, createdUser);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PATCH) // NOSONAR - duplicate literals unnecessary
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public User update(@PathVariable final String id, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public User update(@PathVariable final String id, HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
         User user = jsonInputValidator.validateJsonUser(request);
         User createdUser = scimUserProvisioning.update(id, user);
+        checkAndHandleDeactivation(id, user, request);
         return setLocationUriAndCreateUserForOutput(request, response, createdUser);
     }
 
@@ -142,5 +150,15 @@ public class  UserController {
         response.setHeader("Location", requestUrl);
         Meta newMeta = new Meta.Builder(createdUser.getMeta()).setLocation(requestUrl).build();
         return new User.Builder(createdUser).setMeta(newMeta).build();
+    }
+
+    /*
+     * Checks whether the given user was deactivated and performs necessary subsequent actions.
+     */
+    private void checkAndHandleDeactivation(String id, User updateUser, HttpServletRequest request) {
+        if (updateUser.isActive() != null && !updateUser.isActive()) {
+            String bearer = AccessTokenHelper.getBearerToken(request);
+            accessTokenService.revokeAccessTokens(id, bearer);
+        }
     }
 }
