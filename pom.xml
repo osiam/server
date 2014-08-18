@@ -51,6 +51,7 @@
         <org.slf4j-version>1.7.6</org.slf4j-version>
         <metrics.version>3.0.2</metrics.version>
         <com.ryantenney.metrics-version>3.0.1</com.ryantenney.metrics-version>
+        <org.pitest.pitest-maven.version>1.0.0</org.pitest.pitest-maven.version>
 
         <sonar.core.codeCoveragePlugin>cobertura</sonar.core.codeCoveragePlugin>
         <!-- force sonar to reuse reports generated during build cycle -->
@@ -187,6 +188,21 @@
                             </goals>
                         </execution>
                     </executions>
+                </plugin>
+                <!-- Mutation testing support using http://pitest.org -->
+                <plugin>
+                    <groupId>org.pitest</groupId>
+                    <artifactId>pitest-maven</artifactId>
+                    <version>${org.pitest.pitest-maven.version}</version>
+                    <configuration>
+                        <mutationThreshold>50</mutationThreshold>
+                        <targetClasses>
+                            <param>org.osiam.*</param>
+                        </targetClasses>
+                        <targetTests>
+                            <param>org.osiam.*</param>
+                        </targetTests>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
