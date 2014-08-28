@@ -2,6 +2,7 @@
 
 ## 1.2 - 2014-09-30
 - release because of fixes in addon-self-administration
+- [feature] Introduced an interface to get the extension definitions (/osiam/extension-definition) 
 
 ## 1.1 - 2014-09-19
 - [feature] support for mysql as database
