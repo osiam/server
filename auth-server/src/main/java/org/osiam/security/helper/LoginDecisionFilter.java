@@ -47,7 +47,7 @@ public class LoginDecisionFilter extends AbstractAuthenticationProcessingFilter 
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response){
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
         if (postOnly && !request.getMethod().equals("POST")) {
             throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
         }
@@ -81,11 +81,11 @@ public class LoginDecisionFilter extends AbstractAuthenticationProcessingFilter 
 
     /**
      * Provided so that subclasses may configure what is put into the authentication request's details property.
-     * 
+     *
      * @param request
-     *            that an authentication request is being created for
+     *        that an authentication request is being created for
      * @param authRequest
-     *            the authentication request object that should have its details set
+     *        the authentication request object that should have its details set
      */
     protected void setDetails(HttpServletRequest request, UsernamePasswordAuthenticationToken authRequest) {
         authRequest.setDetails(authenticationDetailsSource.buildDetails(request));

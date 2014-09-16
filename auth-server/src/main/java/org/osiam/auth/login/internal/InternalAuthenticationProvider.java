@@ -24,17 +24,27 @@
 package org.osiam.auth.login.internal;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import org.osiam.auth.login.ResourceServerConnector;
 import org.osiam.resources.scim.Role;
 import org.osiam.resources.scim.User;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
+import org.springframework.security.authentication.event.AbstractAuthenticationEvent;
+import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
+import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -42,7 +52,16 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
-public class InternalAuthenticationProvider implements AuthenticationProvider {
+public class InternalAuthenticationProvider implements AuthenticationProvider, ApplicationListener<AbstractAuthenticationEvent> {
+
+    @Value("${org.osiam.auth-server.tempLock.count:0}")
+    private Integer maxLoginFailures;
+
+    @Value("${org.osiam.auth-server.tempLock.timeout:0}")
+    private Integer lockTimeout;
+
+    private final Map<String, Integer> accessCounter = Collections.synchronizedMap(new HashMap<String, Integer>());
+    private final Map<String, Date> lastFailedLogin = Collections.synchronizedMap(new HashMap<String, Date>());
 
     @Inject
     private ResourceServerConnector resourceServerConnector;
@@ -66,13 +85,15 @@ public class InternalAuthenticationProvider implements AuthenticationProvider {
             throw new BadCredentialsException("InternalAuthenticationProvider: Empty Password");
         }
 
+        assertUserNotLocked(username);
+
         // Determine username
         User user = resourceServerConnector.getUserByUsername(username);
 
         if (user == null) {
             throw new BadCredentialsException("The user with the username '" + username + "' doesn't exist!");
         }
-        
+
         if (!user.isActive()) {
             throw new DisabledException("The user with the username '" + username + "' is disabled!");
         }
@@ -84,9 +105,9 @@ public class InternalAuthenticationProvider implements AuthenticationProvider {
         }
 
         User authUser = new User.Builder(username).setId(user.getId()).build();
-        
+
         List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
-        
+
         for (Role role : user.getRoles()) {
             grantedAuthorities.add(new SimpleGrantedAuthority(role.getValue()));
         }
@@ -99,4 +120,71 @@ public class InternalAuthenticationProvider implements AuthenticationProvider {
         return InternalAuthentication.class.isAssignableFrom(authentication);
     }
 
+    private void assertUserNotLocked(String username) {
+        if(isLockMechanismDisabled()) {
+            return;
+        }
+
+        Date logindate = lastFailedLogin.get(username);
+
+        if(logindate != null && isWaitTimeOver(logindate)) {
+            accessCounter.remove(username);
+            lastFailedLogin.remove(username);
+        }
+        if (accessCounter.get(username) != null && accessCounter.get(username) >= maxLoginFailures) {
+            throw new LockedException("The user '" + username + "' is temporary locked.");
+        }
+    }
+
+    private boolean isWaitTimeOver(Date startWaitingDate) {
+        return new Date().getTime() - startWaitingDate.getTime() >= (lockTimeout*1000);
+    }
+
+    private boolean isLockMechanismDisabled() {
+        return maxLoginFailures <= 0;
+    }
+
+    @Override
+    public void onApplicationEvent(AbstractAuthenticationEvent appEvent) {
+        String currentUserName = extractUserName(appEvent);
+        if (currentUserName == null || isLockMechanismDisabled()) {
+            return;
+        }
+
+        if (appEvent instanceof AuthenticationSuccessEvent &&
+            accessCounter.containsKey(currentUserName) &&
+            accessCounter.get(currentUserName) < maxLoginFailures) {
+
+            accessCounter.remove(currentUserName);
+            lastFailedLogin.remove(currentUserName);
+        }
+
+        if (appEvent instanceof AuthenticationFailureBadCredentialsEvent) {
+            if (accessCounter.containsKey(currentUserName)) {
+                accessCounter.put(currentUserName, accessCounter.get(currentUserName) + 1);
+            } else {
+                accessCounter.put(currentUserName, 1);
+            }
+            lastFailedLogin.put(currentUserName, new Date());
+        }
+    }
+
+    private String extractUserName(AbstractAuthenticationEvent appEvent) {
+        if (appEvent.getSource() != null && appEvent.getSource() instanceof InternalAuthentication) {
+            InternalAuthentication internalAuth = (InternalAuthentication) appEvent.getSource();
+
+            if (internalAuth.getPrincipal() != null) {
+
+                if (internalAuth.getPrincipal() instanceof User) {
+                    User user = (User) internalAuth.getPrincipal();
+                    return user.getUserName();
+                }
+                if (internalAuth.getPrincipal() instanceof String) {
+                    return (String) internalAuth.getPrincipal();
+                }
+            }
+        }
+
+        return null;
+    }
 }

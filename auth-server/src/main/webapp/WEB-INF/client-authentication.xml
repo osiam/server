@@ -88,5 +88,4 @@
           class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
         <property name="realmName" value="authorization-server/client"/>
     </bean>
-
 </beans>
