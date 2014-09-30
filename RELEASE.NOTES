@@ -1,5 +1,32 @@
 # OSIAM Server
 
+## 1.2 - 2014-09-30
+- release because of fixes in addon-self-administration
+
+## 1.1 - 2014-09-19
+- [feature] support for mysql as database
+- [feature] prevent users from login after N failed attempts
+- [feature] revocation of access tokens
+  It is now possible to revoke access tokens by using the following service
+  endpoints:
+  * auth-server/token/revocation
+    For revocation of the access token sent as bearer token in the
+    Authorization header
+  * auth-server/token/revocation/<uuid of user>
+    For revocation of all access tokens that were issued to or in behalf of a
+    given user. This endpoint is protected.
+- [feature] revoke all access tokens of a deactivated/deleted user
+- [enhancement] Force UTF-8 encoding of requests and responses
+- [enhancement] better error message on search
+  When searching for resources and forgetting the surrounding double quotes for
+  values, a non-understandable error message was responded. the error message
+  was changed to explicitly tell that the error occurred due to missing
+  double quotes.
+- [enhancement] updated dependencies: Spring 4.1.0, Spring Security 3.2.5,
+  Spring Metrics 3.0.2, Jackson 2.4.2, Hibernate 4.3.6, AspectJ 1.8.2,
+  Joda Time 2.4, Joda Convert 1.7, Apache Commons Logging 1.2, Guava 18.0,
+  Postgres JDBC Driver 9.3-1102-jdbc41
+
 ## 1.0 - 2014-05-15
 - [refactore] The token validation REST endpoint changed. If you want to validate an token,
   you need to send the token directly in the header instead of putting in the URL.
@@ -14,9 +41,9 @@
 - [fix] BT-45 - https://jira.osiam.org/browse/BT-45
 
 ## 0.19 - 2014-03-17
-- [refactoring] The registration module has been moved to his own github repository: 
+- [refactoring] The registration module has been moved to his own github repository:
   https://github.com/osiam/addon-self-administration
-  
+
 ## 0.18 - 2014-03-04
 - [fix] BT-41 - Attribute filtering removes "schemas" attribute
 - [feature] OSNG-322 - Placeholder for registration emails
