@@ -22,7 +22,8 @@
     ~ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.osiam</groupId>
@@ -63,8 +64,8 @@
     <scm>
         <connection>scm:git://git@github.com/osiam/server.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/osiam/server.git</developerConnection>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
     <distributionManagement>
         <repository>
@@ -102,7 +103,7 @@
                         </execution>
                     </executions>
                 </plugin>
-                
+
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
@@ -240,7 +241,7 @@
             <dependency>
                 <groupId>org.osiam</groupId>
                 <artifactId>connector4java</artifactId>
-                <version>1.2-SNAPSHOT</version>
+                <version>1.2</version>
             </dependency>
 
             <dependency>
@@ -268,14 +269,14 @@
                 <artifactId>joda-convert</artifactId>
                 <version>1.7</version>
             </dependency>
-            
+
             <!-- Spring OAuth2 -->
             <dependency>
                 <groupId>org.springframework.security.oauth</groupId>
                 <artifactId>spring-security-oauth2</artifactId>
                 <version>1.0.5.RELEASE</version>
             </dependency>
-            
+
             <!-- Spring -->
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -393,7 +394,7 @@
                 <artifactId>aspectjrt</artifactId>
                 <version>${org.aspectj-version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.aspectj</groupId>
                 <artifactId>aspectjweaver</artifactId>
