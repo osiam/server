@@ -1,5 +1,14 @@
 # OSIAM Server
 
+## 1.3 - 2014-10-17
+- [fix] Umlauts encoding problems
+- [fix] Infinite recursion when filtering or sorting by x509certivicates.value
+- [fix] Sorting by name sub-attribute breaks the result list
+- [enhancement] change nameing l10n to i18n
+
+  For a detailed description and migration see:
+  https://github.com/osiam/server/wiki/Migration#from-12-to-13
+
 ## 1.2 - 2014-09-30
 - release because of fixes in addon-self-administration
 - [feature] Introduced an interface to get the extension definitions (/osiam/extension-definition) 
@@ -32,12 +41,12 @@
 - [refactore] The token validation REST endpoint changed. If you want to validate an token,
   you need to send the token directly in the header instead of putting in the URL.
 - [fix] The client secret and the redirect uri is not unique anymore
-  For a detailed description and migration please click here:
+  For a detailed description and migration see:
   https://github.com/osiam/server/wiki/migration#from-021-to-10
 
 ## 0.20 - 2014-04-02
 - [refactoring] The auth-server has a new interface with bootstrap, which could be customize.
-  For a detailed description and migration please click here:
+  For a detailed description and migration see:
   https://github.com/osiam/server/wiki/Migration#from-019-to-020
 - [fix] BT-45 - https://jira.osiam.org/browse/BT-45
 
