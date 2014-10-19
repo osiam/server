@@ -27,4 +27,4 @@ This project gets build with maven, the module structure is
 
 # Issue tracker for the Server
 
-Issues, bugs and feature requests can be brought to us using [OSIAM's issue tracker](https://jira.osiam.org/browse/BT).
+Issues, bugs and feature requests can be brought to us using [OSIAM's issue tracker](https://github.com/osiam/server/issues).
