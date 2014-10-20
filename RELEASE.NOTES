@@ -4,7 +4,7 @@
 - [fix] Umlauts encoding problems
 - [fix] Infinite recursion when filtering or sorting by x509certivicates.value
 - [fix] Sorting by name sub-attribute breaks the result list
-- [enhancement] change nameing l10n to i18n
+- [fix] Wrong directory name for translations
 
   For a detailed description and migration see:
   https://github.com/osiam/server/wiki/Migration#from-12-to-13
