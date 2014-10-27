@@ -38,6 +38,25 @@
         <module>distribution</module>
     </modules>
 
+    <scm>
+        <connection>scm:git://git@github.com/osiam/server.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/osiam/server.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>osiam-repository</id>
+            <name>public evolvis release repository</name>
+            <url>scpexe://maven-repo.evolvis.org:/var/www/maven_repo/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>OSIAM-NG-SNAPSHOT-repository</id>
+            <name>public evolvis release repository</name>
+            <url>scpexe://maven-repo.evolvis.org:/var/www/maven_repo/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <org.hibernate-version>4.3.6.Final</org.hibernate-version>
@@ -60,187 +79,13 @@
         <mysql-connector-java.version>5.1.32</mysql-connector-java.version>
     </properties>
 
-    <scm>
-        <connection>scm:git://git@github.com/osiam/server.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/osiam/server.git</developerConnection>
-        <tag>HEAD</tag>
-    </scm>
-
-    <distributionManagement>
-        <repository>
-            <id>osiam-repository</id>
-            <name>public evolvis release repository</name>
-            <url>scpexe://maven-repo.evolvis.org:/var/www/maven_repo/releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>OSIAM-NG-SNAPSHOT-repository</id>
-            <name>public evolvis release repository</name>
-            <url>scpexe://maven-repo.evolvis.org:/var/www/maven_repo/snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
-
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>1.3.1</version>
-                    <executions>
-                        <execution>
-                            <id>enforce-versions</id>
-                            <goals>
-                                <goal>enforce</goal>
-                            </goals>
-                            <configuration>
-                                <rules>
-                                    <requireMavenVersion>
-                                        <version>3.0.4</version>
-                                    </requireMavenVersion>
-                                </rules>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.1</version>
-                    <extensions>true</extensions>
-                    <configuration>
-                        <compilerId>groovy-eclipse-compiler</compilerId>
-                        <verbose>false</verbose>
-                        <source>${java.version}</source>
-                        <target>${java.version}</target>
-                        <encoding>${project.build.sourceEncoding}</encoding>
-                    </configuration>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.codehaus.groovy</groupId>
-                            <artifactId>groovy-eclipse-batch</artifactId>
-                            <version>2.1.8-01</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>org.codehaus.groovy</groupId>
-                            <artifactId>groovy-eclipse-compiler</artifactId>
-                            <version>2.8.0-01</version>
-                        </dependency>
-                    </dependencies>
-                </plugin>
-
-                <!-- Surefire: will execute all unit tests including Spock specs and will ignore system tests -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.16</version>
-                    <configuration>
-                        <argLine>-XX:-UseSplitVerifier</argLine>
-                        <parallel>classes</parallel>
-                        <threadCount>3</threadCount>
-                        <includes>
-                            <include>**/*Test.*</include>
-                            <include>**/*Spec.*</include>
-                        </includes>
-                    </configuration>
-                </plugin>
-
-                <!-- Eclipse support -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-eclipse-plugin</artifactId>
-                    <version>2.9</version>
-                    <configuration>
-                        <additionalProjectnatures>
-                            <projectnature>org.eclipse.jdt.groovy.core.groovyNature</projectnature>
-                        </additionalProjectnatures>
-                        <!-- Source includes is necessary to allow groovy files in the java folder, else eclipse will throw
-                            a filtering exception -->
-                        <sourceIncludes>
-                            <sourceInclude>**/*.groovy</sourceInclude>
-                        </sourceIncludes>
-                        <!-- Download sources will make maven download and attach source files where available -->
-                        <downloadSources>true</downloadSources>
-                        <downloadJavadocs>true</downloadJavadocs>
-                    </configuration>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>2.6</version>
-                    <configuration>
-                        <encoding>UTF-8</encoding>
-                    </configuration>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>2.2.1</version>
-                    <inherited>true</inherited>
-                    <executions>
-                        <execution>
-                            <id>attach-sources</id>
-                            <phase>verify</phase>
-                            <goals>
-                                <goal>jar-no-fork</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <!-- Mutation testing support using http://pitest.org -->
-                <plugin>
-                    <groupId>org.pitest</groupId>
-                    <artifactId>pitest-maven</artifactId>
-                    <version>${org.pitest.pitest-maven.version}</version>
-                    <configuration>
-                        <mutationThreshold>50</mutationThreshold>
-                        <targetClasses>
-                            <param>org.osiam.*</param>
-                        </targetClasses>
-                        <targetTests>
-                            <param>org.osiam.*</param>
-                        </targetTests>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-
-        <plugins>
-
-            <!-- Needed due to a problem with SSH -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.8.1</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.maven.wagon</groupId>
-                        <artifactId>wagon-ssh-external</artifactId>
-                        <version>2.6</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.5</version>
-                <configuration>
-                    <tagNameFormat>v@{project.version}</tagNameFormat>
-                </configuration>
-            </plugin>
-
-        </plugins>
-    </build>
-
     <dependencyManagement>
         <dependencies>
             <!-- OSIAM Dependencies -->
             <dependency>
                 <groupId>org.osiam</groupId>
                 <artifactId>connector4java</artifactId>
-                <version>1.4-SNAPSHOT</version>
+                <version>1.3.1</version>
             </dependency>
 
             <dependency>
@@ -534,6 +379,161 @@
 
         </dependencies>
     </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>1.3.1</version>
+                    <executions>
+                        <execution>
+                            <id>enforce-versions</id>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <requireMavenVersion>
+                                        <version>3.0.4</version>
+                                    </requireMavenVersion>
+                                </rules>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.1</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <compilerId>groovy-eclipse-compiler</compilerId>
+                        <verbose>false</verbose>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.codehaus.groovy</groupId>
+                            <artifactId>groovy-eclipse-batch</artifactId>
+                            <version>2.1.8-01</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.codehaus.groovy</groupId>
+                            <artifactId>groovy-eclipse-compiler</artifactId>
+                            <version>2.8.0-01</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+
+                <!-- Surefire: will execute all unit tests including Spock specs and will ignore system tests -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.16</version>
+                    <configuration>
+                        <argLine>-XX:-UseSplitVerifier</argLine>
+                        <parallel>classes</parallel>
+                        <threadCount>3</threadCount>
+                        <includes>
+                            <include>**/*Test.*</include>
+                            <include>**/*Spec.*</include>
+                        </includes>
+                    </configuration>
+                </plugin>
+
+                <!-- Eclipse support -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-eclipse-plugin</artifactId>
+                    <version>2.9</version>
+                    <configuration>
+                        <additionalProjectnatures>
+                            <projectnature>org.eclipse.jdt.groovy.core.groovyNature</projectnature>
+                        </additionalProjectnatures>
+                        <!-- Source includes is necessary to allow groovy files in the java folder, else eclipse will throw
+                            a filtering exception -->
+                        <sourceIncludes>
+                            <sourceInclude>**/*.groovy</sourceInclude>
+                        </sourceIncludes>
+                        <!-- Download sources will make maven download and attach source files where available -->
+                        <downloadSources>true</downloadSources>
+                        <downloadJavadocs>true</downloadJavadocs>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>2.6</version>
+                    <configuration>
+                        <encoding>UTF-8</encoding>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>2.2.1</version>
+                    <inherited>true</inherited>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>jar-no-fork</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <!-- Mutation testing support using http://pitest.org -->
+                <plugin>
+                    <groupId>org.pitest</groupId>
+                    <artifactId>pitest-maven</artifactId>
+                    <version>${org.pitest.pitest-maven.version}</version>
+                    <configuration>
+                        <mutationThreshold>50</mutationThreshold>
+                        <targetClasses>
+                            <param>org.osiam.*</param>
+                        </targetClasses>
+                        <targetTests>
+                            <param>org.osiam.*</param>
+                        </targetTests>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+
+            <!-- Needed due to a problem with SSH -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.1</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.wagon</groupId>
+                        <artifactId>wagon-ssh-external</artifactId>
+                        <version>2.6</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <tagNameFormat>v@{project.version}</tagNameFormat>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
 
     <profiles>
         <profile>
