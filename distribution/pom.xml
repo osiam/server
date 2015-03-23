@@ -34,7 +34,10 @@
 
     <artifactId>osiam-server-distribution</artifactId>
     <packaging>pom</packaging>
+
     <name>OSIAM Server Distribution Creator</name>
+    <description>The server distribution creates a package with the two modules auth- and resource-server</description>
+    <url>https://github.com/osiam/server/tree/master/distribution</url>
 
     <dependencies>
         <dependency>
