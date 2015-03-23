@@ -84,7 +84,7 @@
             <dependency>
                 <groupId>org.osiam</groupId>
                 <artifactId>connector4java</artifactId>
-                <version>1.4</version>
+                <version>1.5-SNAPSHOT</version>
             </dependency>
 
             <dependency>
@@ -378,6 +378,23 @@
 
         </dependencies>
     </dependencyManagement>
+
+    <repositories>
+        <repository>
+            <id>osiam releases repo</id>
+            <url>https://maven-repo.evolvis.org/releases</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>osiam snapshots repo</id>
+            <url>https://maven-repo.evolvis.org/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+    </repositories>
 
     <build>
         <pluginManagement>
