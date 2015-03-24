@@ -22,8 +22,9 @@
     ~ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 -->
 
-<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+<assembly xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
 
     <id>distribution</id>
 
@@ -35,7 +36,6 @@
     </formats>
 
     <files>
-
         <file>
             <source>../README.txt</source>
         </file>
@@ -43,11 +43,9 @@
         <file>
             <source>../RELEASE.NOTES</source>
         </file>
-
     </files>
 
     <moduleSets>
-
         <moduleSet>
             <useAllReactorProjects>true</useAllReactorProjects>
 
@@ -59,7 +57,9 @@
             <binaries>
                 <outputDirectory>/${module.artifactId}</outputDirectory>
                 <unpack>false</unpack>
-                <outputFileNameMapping>${module.artifactId}${dashClassifier?}.${module.extension}</outputFileNameMapping>
+                <outputFileNameMapping>
+                    ${module.artifactId}${dashClassifier?}.${module.extension}
+                </outputFileNameMapping>
             </binaries>
 
             <sources>
@@ -74,9 +74,6 @@
                     </fileSet>
                 </fileSets>
             </sources>
-
         </moduleSet>
-
     </moduleSets>
-
 </assembly>

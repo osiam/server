@@ -32,6 +32,27 @@
     <packaging>pom</packaging>
 
     <name>OSIAM Server Parent</name>
+    <description>
+        OSIAM maven server parent project with the three modules auth-server, resource-server, and distribution
+    </description>
+    <url>https://github.com/osiam/server</url>
+    <licenses>
+        <license>
+            <name>The MIT License (MIT)</name>
+            <url>http://opensource.org/licenses/MIT</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>OSIAM Team</name>
+            <email>info@osiam.org</email>
+            <timezone>+1</timezone>
+            <organization>tarent solutions GmbH</organization>
+            <organizationUrl>http://www.tarent.de</organizationUrl>
+        </developer>
+    </developers>
 
     <modules>
         <module>auth-server</module>
@@ -75,7 +96,6 @@
         <!-- force sonar to reuse reports generated during build cycle -->
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <!-- set path for unit tests reports -->
-
     </properties>
 
     <dependencyManagement>
@@ -375,7 +395,6 @@
                 <artifactId>guava</artifactId>
                 <version>18.0</version>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
 
@@ -525,7 +544,6 @@
         </pluginManagement>
 
         <plugins>
-
             <!-- Needed due to a problem with SSH -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -547,7 +565,6 @@
                     <tagNameFormat>v@{project.version}</tagNameFormat>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
 
