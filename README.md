@@ -1,4 +1,5 @@
-# OSIAM Server
+OSIAM Server [![Build Status](https://travis-ci.org/osiam/server.png?branch=master)](https://travis-ci.org/osiam/server)
+============
 
 OSIAM is a secure identity management backend providing REST based services for
 authentication and authorization. We achieve this by implementing two important
