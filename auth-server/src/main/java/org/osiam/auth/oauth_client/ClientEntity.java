@@ -26,6 +26,7 @@ package org.osiam.auth.oauth_client;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -37,7 +38,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.Lob;
+import javax.persistence.MapKeyColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
@@ -105,10 +108,23 @@ public class ClientEntity {
     @Column(nullable = false)
     private long validityInSeconds;
 
-    @JsonProperty
-    private Date expiry;
 
-    public ClientEntity() {
+    @ElementCollection(fetch = FetchType.EAGER)
+    @JoinTable(name="osiam_session", joinColumns=@JoinColumn(name="client_internal_id"))
+    @MapKeyColumn(name="user_id")
+    @Column(name="session_expiry")
+    private Map<String, Date> expiryDates;
+
+
+    public Map<String, Date> getExpiryDates() {
+		return expiryDates;
+	}
+
+	public void setExpiryDates(Map<String, Date> sessionExpiry) {
+		this.expiryDates = sessionExpiry;
+	}
+
+	public ClientEntity() {
     }
 
     /**
@@ -224,11 +240,4 @@ public class ClientEntity {
         this.validityInSeconds = validity;
     }
 
-    public Date getExpiry() {
-        return expiry != null ? (Date) expiry.clone() : null;
-    }
-
-    public void setExpiry(Date expiry) {
-        this.expiry = expiry != null ? (Date) expiry.clone() : null;
-    }
 }

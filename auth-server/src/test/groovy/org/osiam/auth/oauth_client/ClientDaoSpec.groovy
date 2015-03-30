@@ -90,13 +90,16 @@ class ClientDaoSpec extends Specification {
     }
 
     def "should be able to update a client"() {
+	def HashMap<String,Date> datesMap = new HashMap<String,Date>()
+	datesMap.put("UUID",new Date(System.currentTimeMillis()))
+
         given:
         def newClient = new ClientEntity()
         newClient.setRefreshTokenValiditySeconds(123)
         newClient.setAccessTokenValiditySeconds(123)
         newClient.setRedirectUri("uri")
         newClient.setScope(["bla", "blub"] as Set)
-        newClient.setExpiry(new Date(System.currentTimeMillis()))
+        newClient.setExpiryDates(datesMap)
         newClient.setValidityInSeconds(123)
         newClient.setImplicit(true)
 

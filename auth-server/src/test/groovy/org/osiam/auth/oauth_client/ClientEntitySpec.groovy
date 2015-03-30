@@ -23,6 +23,10 @@
 
 package org.osiam.auth.oauth_client
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashMap.Entry
+import org.osiam.bundled.org.joda.time.DateTimeUtils.SystemMillisProvider;
 import spock.lang.Specification
 
 class ClientEntitySpec extends Specification {
@@ -75,23 +79,26 @@ class ClientEntitySpec extends Specification {
         under_test.getValidityInSeconds() == 100
     }
 
-    def "should be able to set the day on which approval was granted"() {
-        given:
-        def date = new Date(1000)
+    def "should be able to set the day on which approval was granted, if user is new"() {
+		given:
+		def Date newExpiryDate = new Date(System.currentTimeMillis() + 10000)
+		def HashMap<String,Date> datesMap = new HashMap<String,Date>()
+		datesMap.put("UUID",new Date(System.currentTimeMillis() - 10000))
+		under_test.setExpiryDates(datesMap)
 
-        when:
-        under_test.setExpiry(date)
+		when:
+		under_test.getExpiryDates().put("UUID",newExpiryDate)
 
-        then:
-        under_test.getExpiry() == date
+		then:
+		under_test.getExpiryDates().get("UUID") == newExpiryDate
     }
 
     def "should not throw null pointer exception if expiry is null"() {
         given:
-        under_test.setExpiry(null)
+        under_test.setExpiryDates(null)
 
         when:
-        def result = under_test.getExpiry()
+        def result = under_test.getExpiryDates()
 
         then:
         notThrown(NullPointerException)

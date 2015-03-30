@@ -48,11 +48,15 @@ public class OsiamClientDetailsService implements ClientDetailsService {
     }
 
     @Transactional
-    public void updateClientExpiry(final String clientId, final Date newExpiry) {
-        clientDao.getClient(clientId).setExpiry(newExpiry);
+	public void updateExpiryDate(final String clientId, final String UUID, final Date newExpiry) {
+		clientDao.getClient(clientId).getExpiryDates().put(UUID, newExpiry);
     }
 
-    private OsiamClientDetails toOsiamClientDetails(final ClientEntity client) {
+    public Date getExpiryDate(final String clientId, final String UUID) {
+		return clientDao.getClient(clientId).getExpiryDates().get(UUID);
+    }
+
+	private OsiamClientDetails toOsiamClientDetails(final ClientEntity client) {
         final OsiamClientDetails clientDetails = new OsiamClientDetails();
 
         clientDetails.setId(client.getId());
@@ -63,7 +67,7 @@ public class OsiamClientDetailsService implements ClientDetailsService {
         clientDetails.setAccessTokenValiditySeconds(client.getAccessTokenValiditySeconds());
         clientDetails.setRefreshTokenValiditySeconds(client.getRefreshTokenValiditySeconds());
         clientDetails.setImplicit(client.isImplicit());
-        clientDetails.setExpiry(client.getExpiry());
+        clientDetails.setExpiryDates(client.getExpiryDates());
         clientDetails.setValidityInSeconds(client.getValidityInSeconds());
 
         return clientDetails;

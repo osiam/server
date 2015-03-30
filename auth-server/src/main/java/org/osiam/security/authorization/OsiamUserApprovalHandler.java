@@ -28,6 +28,7 @@ import java.util.Date;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.osiam.resources.scim.User;
 import org.osiam.security.authentication.OsiamClientDetails;
 import org.osiam.security.authentication.OsiamClientDetailsService;
 import org.springframework.security.core.Authentication;
@@ -43,7 +44,7 @@ import org.springframework.security.oauth2.provider.approval.DefaultUserApproval
 @Named("userApprovalHandler")
 public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
 
-    private static final int MILLISECONDS = 1000;
+    private static final int SECONDS = 1000;
 
     @Inject
     private OsiamClientDetailsService osiamClientDetailsService;
@@ -63,15 +64,14 @@ public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
     public AuthorizationRequest updateBeforeApproval(final AuthorizationRequest authorizationRequest,
             final Authentication userAuthentication) {
         // check if "user_oauth_approval" is in the authorizationRequests approvalParameters and the (size != 0)
-        // -> true for accessConfirmation -> save actual date
+        // updates user expiry date only when authorization made by user
         if (authorizationRequest.getApprovalParameters().containsKey("user_oauth_approval")
                 && authorizationRequest.getApprovalParameters().get("user_oauth_approval").equals("true")) {
 
             final OsiamClientDetails client = getClientDetails(authorizationRequest);
-            final Date date = new Date(System.currentTimeMillis() + client.getValidityInSeconds() * MILLISECONDS);
-            client.setExpiry(date);
-
-            osiamClientDetailsService.updateClientExpiry(authorizationRequest.getClientId(), client.getExpiry());
+            final String UUID = ((User)userAuthentication.getPrincipal()).getId();
+            final Date date = new Date(System.currentTimeMillis() + client.getValidityInSeconds() * SECONDS);
+            osiamClientDetailsService.updateExpiryDate(authorizationRequest.getClientId(), UUID, date);
         }
         return super.updateBeforeApproval(authorizationRequest, userAuthentication);
     }
@@ -87,14 +87,17 @@ public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
      */
     @Override
     public boolean isApproved(final AuthorizationRequest authorizationRequest, final Authentication userAuthentication) {
-        // check if implicit is configured in client or if user already confirmed approval once and validity time is not
-        // over
+    	// asks for authorization after authentication if:
+		// client is not implicit, user is new or session expiry date of user already reached.
         final OsiamClientDetails client = getClientDetails(authorizationRequest);
+        final String UUID = ((User)userAuthentication.getPrincipal()).getId();
+
         if (userAuthentication.isAuthenticated() && client.isImplicit()) {
-            return true;
+        	return true;
         } else if (userAuthentication.isAuthenticated()
-                && client.getExpiry() != null && client.getExpiry().compareTo(new Date()) >= 0) {
-            return true;
+				&& client.getExpiryDates().get(UUID) != null
+				&& client.getExpiryDates().get(UUID).compareTo(new Date()) >= 0) {
+        	return true;
         }
         return false;
     }
