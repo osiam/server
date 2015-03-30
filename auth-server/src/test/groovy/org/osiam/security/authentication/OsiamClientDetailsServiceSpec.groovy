@@ -23,6 +23,12 @@
 
 package org.osiam.security.authentication
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.osiam.auth.oauth_client.ClientDao
 import org.osiam.auth.oauth_client.ClientEntity
 import org.osiam.client.oauth.Scope
@@ -34,6 +40,9 @@ class OsiamClientDetailsServiceSpec extends Specification {
     ClientDao clientDao = Mock()
     OsiamClientDetailsService osiamClientDetailsService = new OsiamClientDetailsService(clientDao: clientDao)
     def clientId = 'client-id'
+	def String UUID = 'UUIDValue'
+	def final Date newExpiryDate = new Date(System.currentTimeMillis() + 1000000)
+
 
     def 'loading client details returns a correct converted OsiamClientDetails instance'() {
         given:
@@ -47,18 +56,18 @@ class OsiamClientDetailsServiceSpec extends Specification {
         isEqual(result, clientEntity)
     }
 
-    def 'updating the client expiry actually calls setExpiry on entity'() {
-        given:
-        ClientEntity clientEntity = Mock()
-        def newExpiry = new Date()
 
-        when:
-        osiamClientDetailsService.updateClientExpiry(clientId, newExpiry)
+	def 'get Expiry Date works'(){
+		given:
+		ClientEntity clientEntity = createFullClientEntity(clientId)
+		clientDao.getClient(clientId) >> clientEntity
 
-        then:
-        1 * clientDao.getClient(clientId) >> clientEntity
-        1 * clientEntity.setExpiry(newExpiry)
-    }
+		when:
+		Date expectedDate = osiamClientDetailsService.getExpiryDate(clientId,UUID)
+
+		then:
+		expectedDate == newExpiryDate
+	}
 
     void isEqual(OsiamClientDetails result, ClientEntity clientEntity) {
         assert result.getId() == clientEntity.getId()
@@ -69,11 +78,16 @@ class OsiamClientDetailsServiceSpec extends Specification {
         assert result.getAccessTokenValiditySeconds() == clientEntity.getAccessTokenValiditySeconds()
         assert result.getRefreshTokenValiditySeconds() == clientEntity.getRefreshTokenValiditySeconds()
         assert result.isImplicit() == clientEntity.isImplicit()
-        assert result.getExpiry() == clientEntity.getExpiry()
+		assert areEqualMaps(result.getExpiryDates(), clientEntity.getExpiryDates())
         assert result.getValidityInSeconds() == clientEntity.getValidityInSeconds()
     }
 
     ClientEntity createFullClientEntity(clientId){
+
+		def HashMap<String,Date> datesMap = new HashMap<String,Date>()
+		datesMap.put(UUID, newExpiryDate)
+		datesMap.put("anotherUUID", new Date(System.currentTimeMillis() - 100000))
+
         ClientEntity result = new ClientEntity()
         result.setId(clientId)
         result.setClientSecret('secret')
@@ -83,8 +97,21 @@ class OsiamClientDetailsServiceSpec extends Specification {
         result.setAccessTokenValiditySeconds(10000)
         result.setRefreshTokenValiditySeconds(100000)
         result.setImplicit(false)
-        result.setExpiry(new Date())
+		result.setExpiryDates(datesMap)
         result.setValidityInSeconds(1000)
         return result
     }
+
+	static boolean areEqualMaps(HashMap<String,Date> map1, HashMap<String,Date> map2){
+		if(map1.size() != map2.size())
+			return false;
+		Iterator<Entry<String, Date>> itr = map1.entrySet().iterator();
+		while(itr.hasNext()){
+			@SuppressWarnings("rawtypes")
+			Map.Entry entry = (Map.Entry) itr.next();
+			if(map2.get(entry.getKey()) != entry.getValue())
+				return false;
+		}
+		return true;
+	}
 }

@@ -23,6 +23,8 @@
 
 package org.osiam.security.authorization
 
+import org.osiam.auth.oauth_client.ClientEntity
+import org.osiam.resources.scim.User
 import org.osiam.security.authentication.OsiamClientDetails
 import org.osiam.security.authentication.OsiamClientDetailsService
 import org.springframework.security.core.Authentication
@@ -36,19 +38,23 @@ class OsiamUserApprovalHandlerSpec extends Specification {
     OsiamUserApprovalHandler osiamUserApprovalHandler = new OsiamUserApprovalHandler(osiamClientDetailsService: osiamClientDetailsService)
     AuthorizationRequest authorizationRequestMock = Mock()
     Authentication authenticationMock = Mock()
+	final String UUIDVar = "UUIDValue"
 
     def 'should only add approval date if it is the correct state and user approved successfully'() {
         given:
         OsiamClientDetails client = new OsiamClientDetails()
         authorizationRequestMock.getClientId() >> 'example-client'
         authorizationRequestMock.getApprovalParameters() >> ['user_oauth_approval':'true']
+		User userMock = Mock()
+		userMock.id >> UUIDVar
+		authenticationMock.getPrincipal() >> userMock
 
         when:
         osiamUserApprovalHandler.updateBeforeApproval(authorizationRequestMock, authenticationMock)
 
         then:
         1 * osiamClientDetailsService.loadClientByClientId('example-client') >> client
-        1 * osiamClientDetailsService.updateClientExpiry('example-client', _)
+		1 * osiamClientDetailsService.updateExpiryDate('example-client', _, _)
     }
 
     def 'should not add approval date if approval param map is empty and not containing key user_oauth_approval'() {
@@ -60,7 +66,7 @@ class OsiamUserApprovalHandlerSpec extends Specification {
         osiamUserApprovalHandler.updateBeforeApproval(authorizationRequestMock, authenticationMock)
 
         then:
-        0 * osiamClientDetailsService.updateClientExpiry(_, _)
+        0 * osiamClientDetailsService.updateExpiryDate(_, _, _)
         true
     }
 
@@ -71,9 +77,11 @@ class OsiamUserApprovalHandlerSpec extends Specification {
 
         when:
         osiamUserApprovalHandler.updateBeforeApproval(authorizationRequestMock, authenticationMock)
-
+		User userMock = Mock()
+		userMock.id >> UUIDVar
+		authenticationMock.getPrincipal() >> userMock
         then:
-        0 * 0 * osiamClientDetailsService.updateClientExpiry(_, _)
+        0 * 0 * osiamClientDetailsService.updateExpiryDate(_, _, _)
         true
     }
 
@@ -84,6 +92,9 @@ class OsiamUserApprovalHandlerSpec extends Specification {
         osiamClientDetailsService.loadClientByClientId('example-client') >> clientMock
         authenticationMock.isAuthenticated() >> true
         clientMock.isImplicit() >> true
+		User userMock = Mock()
+		userMock.id >> UUIDVar
+		authenticationMock.getPrincipal() >> userMock
 
         when:
         def result = osiamUserApprovalHandler.isApproved(authorizationRequestMock, authenticationMock)
@@ -98,9 +109,14 @@ class OsiamUserApprovalHandlerSpec extends Specification {
         authorizationRequestMock.getClientId() >> 'example-client'
         osiamClientDetailsService.loadClientByClientId('example-client') >> clientMock
         authenticationMock.isAuthenticated() >> true
-        clientMock.getExpiry() >> new Date(System.currentTimeMillis() + (1337 * 1000))
+		def HashMap<String,Date> test = new HashMap<String,Date>()
+		test.put(UUIDVar,new Date(System.currentTimeMillis() + 100000))
+		clientMock.getExpiryDates() >> test
+		User userMock = Mock()
+        userMock.id >> UUIDVar
+        authenticationMock.getPrincipal() >> userMock
 
-        when:
+		when:
         def result = osiamUserApprovalHandler.isApproved(authorizationRequestMock, authenticationMock)
 
         then:
@@ -108,12 +124,19 @@ class OsiamUserApprovalHandlerSpec extends Specification {
     }
 
     def 'should return false if implicit is not configured and user never approved the client before'() {
+		//TODO After implicit functionality is implemented in code, check this test again
+		// if isImplicit is set to true, the test should fail
         given:
         OsiamClientDetails clientMock = Mock()
         authorizationRequestMock.getClientId() >> 'example-client'
         osiamClientDetailsService.loadClientByClientId('example-client') >> clientMock
         clientMock.isImplicit() >> false
-        clientMock.getExpiry() >> null
+		def HashMap<String,Date> test = new HashMap<String,Date>()
+		test.put(UUIDVar,new Date(System.currentTimeMillis() - 100000))
+        clientMock.getExpiryDates() >> null
+		User userMock = Mock()
+		userMock.id >> UUIDVar
+		authenticationMock.getPrincipal() >> userMock
 
         when:
         def result = osiamUserApprovalHandler.isApproved(authorizationRequestMock, authenticationMock)
@@ -123,12 +146,19 @@ class OsiamUserApprovalHandlerSpec extends Specification {
     }
 
     def 'should return false if implicit is not configured and user approval date is expired'() {
+		//TODO After implicit functionality is implemented in code, check this test again
+		// if isImplicit is set to false and date to ... - 100000, the test should fail
         given:
         OsiamClientDetails clientMock = Mock()
         authorizationRequestMock.getClientId() >> 'example-client'
         osiamClientDetailsService.loadClientByClientId('example-client') >> clientMock
         clientMock.isImplicit() >> false
-        clientMock.getExpiry() >> new Date(System.currentTimeMillis() - 100000)
+		def HashMap<String,Date> test = new HashMap<String,Date>()
+		test.put(UUIDVar,new Date(System.currentTimeMillis() + 100000))
+		clientMock.getExpiryDates() >> test
+		User userMock = Mock()
+		userMock.id >> UUIDVar
+		authenticationMock.getPrincipal() >> userMock
 
         when:
         def result = osiamUserApprovalHandler.isApproved(authorizationRequestMock, authenticationMock)

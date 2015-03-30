@@ -69,7 +69,7 @@ CREATE TABLE osiam_client_scopes (
     scope character varying(255)
 );
 
---
+
 -- TOC entry 1906 (class 2606 OID 34632)
 -- Dependencies: 162 162 2111
 -- Name: osiam_client_pkey; Type: CONSTRAINT; Schema: public; Owner: -

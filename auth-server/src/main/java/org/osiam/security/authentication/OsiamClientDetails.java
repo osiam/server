@@ -47,7 +47,7 @@ public class OsiamClientDetails implements ClientDetails {
     private String redirectUri;
     private Integer accessTokenValiditySeconds;
     private Integer refreshTokenValiditySeconds;
-    private Date expiry;
+    private Map<String, Date> expiryDates;
     private boolean implicit;
     private long validityInSeconds;
 
@@ -169,12 +169,12 @@ public class OsiamClientDetails implements ClientDetails {
         this.refreshTokenValiditySeconds = refreshTokenValiditySeconds;
     }
 
-    public Date getExpiry() {
-        return expiry != null ? (Date) expiry.clone() : null;
+    public Map<String, Date> getExpiryDates() {
+        return expiryDates;
     }
 
-    public void setExpiry(Date expiry) {
-        this.expiry = expiry != null ? (Date) expiry.clone() : null;
+    public void setExpiryDates(Map<String, Date> expiry) {
+        this.expiryDates = expiry;
     }
 
     public boolean isImplicit() {
