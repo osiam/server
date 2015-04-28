@@ -93,7 +93,7 @@ and unpack the sources
 **NOTE:** This section describes setting up the databse using PostgreSQL. If you want to use MySQL instead PostgreSQL, then check this [page](Create-and-initialize-MySQL-Database-for-OSIAM-server.md).
 
 
-First add the user osiam and the database osiam to the PostgreSQL database.
+First add the user ong and the database ong to the PostgreSQL database.
 
 Start the database commandline:
 
@@ -101,40 +101,40 @@ Start the database commandline:
 
 and run the following commands:
 
-    postgres=# CREATE USER osiam WITH PASSWORD '<YOURPASSWORD>';
-    postgres=# CREATE DATABASE osiam;
-    postgres=# GRANT ALL PRIVILEGES ON DATABASE osiam TO osiam;
+    postgres=# CREATE USER ong WITH PASSWORD '<YOURPASSWORD>';
+    postgres=# CREATE DATABASE ong;
+    postgres=# GRANT ALL PRIVILEGES ON DATABASE ong TO ong;
     postgres=# \q
 
 to create the user and the database, granting the user full access to the database and finally quitting the database commandline.
 
-Go to the directory where you unpacked the sources. **Note:** The following statements have to be executed as the osiam database user.
+Go to the directory where you unpacked the sources. **Note:** The following statements have to be executed as the ong database user.
 
 If you already have an old setup delete all tables by calling 
 
-    $ psql -f ./resource-server/src/main/sql/drop_all.sql -U osiam
-    $ psql -f ./auth-server/src/main/sql/drop_all.sql -U osiam
+    $ psql -f ./resource-server/src/main/sql/drop_all.sql -U ong
+    $ psql -f ./auth-server/src/main/sql/drop_all.sql -U ong
 
 Now initialize the database by calling 
 
-    $ psql -f ./resource-server/src/main/sql/init_ddl.sql -U osiam
-    $ psql -f ./auth-server/src/main/sql/init_ddl.sql -U osiam
+    $ psql -f ./resource-server/src/main/sql/init_ddl.sql -U ong
+    $ psql -f ./auth-server/src/main/sql/init_ddl.sql -U ong
 
 Next you need to insert some basic data to the database by calling, 
 
 **but please change the auth server client secret!**
 
-    $ psql -f ./resource-server/src/main/sql/init_data.sql -U osiam
-    $ psql -f ./auth-server/src/main/sql/init_data.sql -U osiam
+    $ psql -f ./resource-server/src/main/sql/init_data.sql -U ong
+    $ psql -f ./auth-server/src/main/sql/init_data.sql -U ong
 
 If you want to setup a test environment where you have some basic data to play with, you can create some scopes, grants, a test client and a simple user by calling
 
-    $ psql -f ./resource-server/src/main/sql/example_data.sql -U osiam
-    $ psql -f ./auth-server/src/main/sql/example_data.sql -U osiam
+    $ psql -f ./resource-server/src/main/sql/example_data.sql -U ong
+    $ psql -f ./auth-server/src/main/sql/example_data.sql -U ong
 
-If your Linux user is not 'osiam' you may get an an error message like
+If your Linux user is not 'ong' you may get an an error message like
 
-    psql: FATAL:  Peer authentication failed for user "osiam"
+    psql: FATAL:  Peer authentication failed for user "ong"
 
 In that case you must change the local authentication method for postgreSQL in
 
@@ -165,7 +165,7 @@ The auth-server/src/main/sql/example_data.sql script sets an default client in t
 <tr><td>Client scopes</td><td>GET POST PUT PATCH DELETE</td></tr>
 </table>
 
-The base64 encoded value for the default client's ID and secrect is `ZXhhbXBsZS1jbGllbnQ6c2VjcmV0`.
+The base64 encoded value for the default client's ID and secret is `ZXhhbXBsZS1jbGllbnQ6c2VjcmV0`
 
 ## Configuring Scim Extension
 The previously executed init script will also add the tables to manage scim extensions.
@@ -243,8 +243,6 @@ org.osiam.auth-server.db.password=<YOUR_PASSWORD>
 # OSIAM authentication-server configuration
 # Home URL (needed for self reference)
 org.osiam.auth-server.home=http://localhost:8080/osiam-auth-server
-org.osiam.auth-server.tempLock.count:<Number of attempts>
-org.osiam.auth-server.tempLock.timeout:<Time user is blocked in seconds>
 
 # OSIAM resource server configuration
 org.osiam.resource-server.home=http://localhost:8080/osiam-resource-server
@@ -371,11 +369,11 @@ The attributes are explained [here](api_documentation.md#authorization-request) 
 
 If the user who redirect to the **/oauth/authorize** is not logged in, he will be redirect to the login page of the OSIAM auth-server. If you configured the server like recommended [here](#deployment-into-the-application-server), the not logged in user will be land on this login page: /osiam-auth-server/login which is made with the template engine [thymeleaf](http://www.thymeleaf.org/) and the [bootstrap css framework](http://getbootstrap.com/).
 
-If you like to customize the files just edit them or create your own. Just have a look at the folder [/auth-server/templates/web](https://github.com/osiam/server/tree/master/auth-server/defaultConfiguration/auth-server/templates/web). There are three HTML files, which will be rendered for the specific case.
+If you like to customize the files just edit them or create your own. Just have a look at the folder [/auth-server/templates/web](https://github.com/osiam/server/tree/master/auth-server/src/main/deploy/auth-server/templates/web). There are three HTML files, which will be rendered for the specific case.
 
-The [login.html](https://github.com/osiam/server/blob/master/auth-server/defaultConfiguration/auth-server/templates/web/login.html) shows the two import fields to log in as a user: username and password. Also an login provider pick list will be shown when the LDAP login is activated (described below).
+The [login.html](https://github.com/osiam/server/blob/master/auth-server/src/main/deploy/auth-server/templates/web/login.html) shows the two import fields to log in as a user: username and password. Also an login provider pick list will be shown when the LDAP login is activated (described below).
 
-If the login failed, an error will be shown above the form, but only if the attribute 'loginError' is true. The message 'login.error' comes from the language message property file. You can find the message key in the [/auth-server/l10n/login.properties](https://github.com/osiam/server/blob/master/auth-server/defaultConfiguration/auth-server/l10n/login.properties). This file is for the standard language english. In the login.html you have access to all message keys with the thymeleaf expression language '#{message.key}', which you specify in the message files. You can write your own messages in the files or also support new languages by create e.g. login_es_ES.properties. 
+If the login failed, an error will be shown above the form, but only if the attribute 'loginError' is true. The message 'login.error' comes from the language message property file. You can find the message key in the [/auth-server/l10n/login.properties](https://github.com/osiam/server/blob/master/auth-server/src/main/deploy/auth-server/l10n/login.properties). This file is for the standard language english. In the login.html you have access to all message keys with the thymeleaf expression language '#{message.key}', which you specify in the message files. You can write your own messages in the files or also support new languages by create e.g. login_es_ES.properties. 
 
 I you like to enable the LDAP login you have to set the correct [configuration](#configuring-ldap-login). 
 
@@ -385,7 +383,7 @@ If you create your own login.html file, just be sure that you set the correct ac
 
 If you don't set this field the default selection will be "internal" for the internal authentication. 
 
-The [access_confirmation.html](https://github.com/osiam/server/blob/master/auth-server/defaultConfiguration/auth-server/templates/web/access_confirmation.html) will be rendered if the user should give your application the access to his data (mostly his access token). This page only show two buttons. One for authorize and the other to deny the access to his data by your application. If you create your own page, please be sure to send the decision of the user to the endpoint /osiam-auth-server/oauth/authorize as POST with the parameter 'user_oauth_approval' which can be true or false. If there is any internal error and the user comes to this page, it will be shown an error which has access to the current client object: 
+The [access_confirmation.html](https://github.com/osiam/server/blob/master/auth-server/src/main/deploy/auth-server/templates/web/access_confirmation.html) will be rendered if the user should give your application the access to his data (mostly his access token). This page only show two buttons. One for authorize and the other to deny the access to his data by your application. If you create your own page, please be sure to send the decision of the user to the endpoint /osiam-auth-server/oauth/authorize as POST with the parameter 'user_oauth_approval' which can be true or false. If there is any internal error and the user comes to this page, it will be shown an error which has access to the current client object: 
 
 `<p th:text="#{confirmation.request.description(${client.clientId})}">`
 
@@ -395,7 +393,7 @@ In this case the message key 'confirmation.request.description' is called like a
 
 If you like to add more information, you have access to the whole client object!
 
-The last template file [oauth_error.html](https://github.com/osiam/server/blob/master/auth-server/defaultConfiguration/auth-server/templates/web/oauth_error.html) you can modify or replace, just shown a unspecific error to the user if any internal error appears. You can show your own message if you change the message of the key 'oauth.error.message'
+The last template file [oauth_error.html](https://github.com/osiam/server/blob/master/auth-server/src/main/deploy/auth-server/templates/web/oauth_error.html) you can modify or replace, just shown a unspecific error to the user if any internal error appears. You can show your own message if you change the message of the key 'oauth.error.message'
 
 So if the user comes from your application and logged in correct, he will redirect to the /osiam-auth-server/oauth/confirm_access page if the implicit approval is set to false where he could confirm the access to his datas or if implicit approval set to true he will directly redirect back to your application.
 
@@ -443,7 +441,7 @@ If set to false the user data will only be copied with the first login.
 
 ##### org.osiam.auth.ldap.mapping
 
-The given Attributes will be copied from the LDAP user into the OSIAM resource server. The attributes are allways an pair of ```<scim attribute>:<ldap attribtue>```. At the start of the auth server this configuration will be checked and an exception will be thrown if not all 'scim attributes' can be reconized.
+The given Attributes will be copied from the LDAP user into the OSIAM resource server. The attributes are always an pair of ```<scim attribute>:<ldap attribute>```. At the start of the auth server this configuration will be checked and an exception will be thrown if not all 'scim attributes' can be recognized.
 
 Example: 
 ```
