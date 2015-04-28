@@ -11,7 +11,7 @@ open standards:
 OSIAM is published under the MIT licence, giving you the greatest freedom possible to
 utilize OSIAM in you project or product.
 
-For technical information and documentation visit the [wiki](https://github.com/osiam/server/wiki).
+For technical information and documentation visit the [OSIAM documentation](https://github.com/osiam/server/tree/master/docs).
 For additional information visit our official website at [www.osiam.org](https://www.osiam.org).
 
 The current version can be found at http://maven-repo.evolvis.org/releases/org/osiam/osiam-server-parent/.
@@ -20,8 +20,8 @@ The current version can be found at http://maven-repo.evolvis.org/releases/org/o
 
 OSIAM is built with Apache Maven. The module structure is:
 
-* resource-server -- contains the source for the OSIAM Resource Server -> [Wiki](https://github.com/osiam/server/wiki)
-* auth-server -- contains the source for the OSIAM Auth Server -> [Wiki](https://github.com/osiam/server/wiki)
+* resource-server -- contains the source for the OSIAM Resource Server -> [OSIAM documentation](https://github.com/osiam/server/tree/master/docs)
+* auth-server -- contains the source for the OSIAM Auth Server -> [OSIAM documentation](https://github.com/osiam/server/tree/master/docs)
 * distribution -- creates and deploys the distribution archives
 
 # Requirements
