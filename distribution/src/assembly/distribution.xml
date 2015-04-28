@@ -68,10 +68,6 @@
                         <directory>src/main/deploy</directory>
                         <outputDirectory>/configuration</outputDirectory>
                     </fileSet>
-                    <fileSet>
-                        <directory>src/main/sql</directory>
-                        <outputDirectory>/sql</outputDirectory>
-                    </fileSet>
                 </fileSets>
             </sources>
         </moduleSet>

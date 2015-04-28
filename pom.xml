@@ -279,6 +279,12 @@
                 <scope>provided</scope>
             </dependency>
 
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-core</artifactId>
+                <version>3.2.1</version>
+            </dependency>
+
             <!-- Groovy SDK LICENSE: Apache 2.0 according to http://grepcode.com/snapshot/repo1.maven.org/maven2/org.codehaus.groovy/groovy-all/2.0.4 -->
             <dependency>
                 <groupId>org.codehaus.groovy</groupId>
