@@ -37,7 +37,7 @@
 
     <files>
         <file>
-            <source>../README.txt</source>
+            <source>src/main/resources/README.txt</source>
         </file>
 
         <file>

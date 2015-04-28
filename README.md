@@ -1,15 +1,15 @@
 OSIAM Server [![Build Status](https://travis-ci.org/osiam/server.png?branch=master)](https://travis-ci.org/osiam/server)
 ============
 
-OSIAM is a secure identity management backend providing REST based services for
+OSIAM is a secure identity management solution providing REST based services for
 authentication and authorization. We achieve this by implementing two important
 open standards:
 
 * [OAuth 2.0](http://oauth.net/2/)
 * [SCIM v2](http://www.simplecloud.info/) (still in draft phase)
 
-OSIAM is published under the MIT licence, giving you the maximum freedom to
-utilize OSIAM within you project or product.
+OSIAM is published under the MIT licence, giving you the greatest freedom possible to
+utilize OSIAM in you project or product.
 
 For technical information and documentation visit the [wiki](https://github.com/osiam/server/wiki).
 For additional information visit our official website at [www.osiam.org](https://www.osiam.org).
