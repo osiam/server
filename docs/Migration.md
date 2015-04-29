@@ -1,4 +1,4 @@
-## from 1.3.x to 1.4
+## from 1.3.x to 2.0
 
 Flyway was added to support schema upgrades for the next versions. To distinguish between the currently supported database systems you have to change the files `/etc/osiam/resource-server.properties` and `/etc/osiam/auth-server.properties` like this:
 

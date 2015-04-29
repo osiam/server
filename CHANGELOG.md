@@ -1,5 +1,22 @@
 # OSIAM Server
 
+## 2.0 - 2015-04-29
+
+**Breaking changes!**
+
+This release introduces breaking changes, due to the introduction of automatic
+database schema updates powered by Flyway. See the
+[migration notes](docs/Migration.md#from-13x-to-20) for further details.
+
+- [feature] Support automatic database migrations
+- [feature] create JAR containing the classes of app
+- [fix] lower constraint index lengths for MySQL
+- [fix] replace Windows line endings with Unix ones in SQL scripts
+- [change] decrease default verbosity
+- [change] bump dependency versions
+- [docs] move documentation from Wiki to repo
+- [docs] rename file RELEASE.NOTES to CHANGELOG.md
+
 ## 1.3.2 - 2014-11-24
 - release because of fixes in addon-administration
 
