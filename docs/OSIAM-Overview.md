@@ -118,10 +118,10 @@ To get a basic overview of OSIAMs API the following section shows lists of the H
 </table>
 
 ## Community resources overview
-Beside this page and the other pages in the GitHub Wikis you can retrieve additional information from various places:
+Beside this overview and the README you can retrieve additional information from various places:
 
-### Homepage
-Visit the homepage for general information about OSIAM including news and events where we can meetup:
+### Website
+Visit the website for general information about OSIAM
 * https://www.osiam.org
 
 ### The Forum
@@ -167,4 +167,4 @@ OSIAM has been up and running under various operating system (Fedora, CentOS, Wi
 
 ### Databases
 OSIAM uses database abstraction technologies (Hibernate) that enables us to support a wide variety of databases. For production you should only use certified platforms:
-* min: PostgreSQL 9.3
+* min: PostgreSQL 9.1

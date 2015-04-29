@@ -39,7 +39,7 @@ If you have an existing and older installation, you are using different version 
 
 ## The operating system
 
-For the installation of OSIAM you can work with one database for the auth- and the resource-server or each service can have his own database. This wiki describes how to install OSIAM on one System.  
+For the installation of OSIAM you can work with one database for the auth- and the resource-server or each service can have his own database.
 
 For this document we are working with the user "osiam". In principle you can work with your own non privileged user to follow the steps in this document.
 
@@ -59,14 +59,18 @@ You should be able to find some processes running under the postgres user and at
 We recommend to choose the latest OSIAM release version. You can easily download the distribution as .zip or .tar.gz file here:
 * Release Repository: http://maven-repo.evolvis.org/releases/org/osiam/osiam-distribution
 
-This include the resource server, auth server and addon-self-administration, every project in his own folder with all configuration and sql files.
+This include the resource-server, auth-server, addon-self-administration and addon-administration, every project has
+it's own folder with the configuration and sql files.
 
-If you just want the use the server components, then download the server distribution without the addon-self-administration here:
+If you just want the use the server components, then download the server distribution without the addons here:
 * Release Repository: http://maven-repo.evolvis.org/releases/org/osiam/osiam-server-distribution
 
-Both distributions have in common, that the included projects are packed as .war files, have a configuration and sql folder. Before you start, you have to copy the files and folders inside the configuration folder to the shared loader of your application server, like described [here](#deployment-into-the-application-server).
+Both distributions have in common, that the included projects are packed as .war files and a configuration folder.
+Before you start, you have to copy the files and folders inside the configuration folder to the shared loader of your
+application server, like described [here](#deployment-into-the-application-server).
 
-You have to import the sql files inside the /sql folder, into your running database, like described [here](#database-setup). Please check also the migration files, if you already installed OSIAM before.
+You have to setup your database, like described [here](#database-setup). Please check also the migration files,
+if you already installed OSIAM before.
 
 * GitHub Release Tags: https://github.com/osiam/server/releases
 
@@ -90,8 +94,9 @@ and unpack the sources
 
 ## Database setup
 
-**NOTE:** This section describes setting up the databse using PostgreSQL. If you want to use MySQL instead PostgreSQL, then check this [page](Create-and-initialize-MySQL-Database-for-OSIAM-server.md).
+**NOTE:** This section describes setting up the database using PostgreSQL. If you want to use MySQL, then check this [page](Create-and-initialize-MySQL-Database-for-OSIAM-server.md).
 
+This database need to be setup before you deploy the server applications!
 
 First add the user ong and the database ong to the PostgreSQL database.
 
@@ -108,31 +113,7 @@ and run the following commands:
 
 to create the user and the database, granting the user full access to the database and finally quitting the database commandline.
 
-Go to the directory where you unpacked the sources. **Note:** The following statements have to be executed as the ong database user.
-
-If you already have an old setup delete all tables by calling 
-
-    $ psql -f ./resource-server/src/main/sql/drop_all.sql -U ong
-    $ psql -f ./auth-server/src/main/sql/drop_all.sql -U ong
-
-Now initialize the database by calling 
-
-    $ psql -f ./resource-server/src/main/sql/init_ddl.sql -U ong
-    $ psql -f ./auth-server/src/main/sql/init_ddl.sql -U ong
-
-Next you need to insert some basic data to the database by calling, 
-
-**but please change the auth server client secret!**
-
-    $ psql -f ./resource-server/src/main/sql/init_data.sql -U ong
-    $ psql -f ./auth-server/src/main/sql/init_data.sql -U ong
-
-If you want to setup a test environment where you have some basic data to play with, you can create some scopes, grants, a test client and a simple user by calling
-
-    $ psql -f ./resource-server/src/main/sql/example_data.sql -U ong
-    $ psql -f ./auth-server/src/main/sql/example_data.sql -U ong
-
-If your Linux user is not 'ong' you may get an an error message like
+If your Linux user is not 'ong' you may get an error message like
 
     psql: FATAL:  Peer authentication failed for user "ong"
 
@@ -149,14 +130,14 @@ and replace the "peer" with "md5". Afterwards restart the database and rerun the
     $ /etc/init.d/postgresql restart
 
 ## Default setup
-The resource-server/src/main/sql/example_data.sql script sets one default User in the database for the new OSIAM instance.
+The resource-server creates on startup the following user
 
 <table>
-<tr><td>Username</td><td>marissa</td></tr>
+<tr><td>Username</td><td>admin</td></tr>
 <tr><td>Password</td><td>koala</td></tr>
 </table>
 
-The auth-server/src/main/sql/example_data.sql script sets an default client in the database for the new OSIAM instance.
+The auth-server sets a default client in the database for the new OSIAM instance.
 
 <table>
 <tr><td>Client ID</td><td>example client</td></tr>
@@ -168,10 +149,12 @@ The auth-server/src/main/sql/example_data.sql script sets an default client in t
 The base64 encoded value for the default client's ID and secret is `ZXhhbXBsZS1jbGllbnQ6c2VjcmV0`
 
 ## Configuring Scim Extension
-The previously executed init script will also add the tables to manage scim extensions.
-At the moment you can register an extension and all users will have this additional selfdefined fields. There are no pure scim core schema users anymore. The additional fields could be empty, so it will be optional for the users to fill them out with values.
+At the moment you can register an extension and all users will have this additional self-defined fields.
+There are no pure scim core schema users anymore. The additional fields could be empty, so it will be
+optional for the users to fill them out with values.
 
-To add some selfdefined fields your previously have to define an extension with an URN. This URN must be unique. Here is an example of such an insert for postgres:
+To add some self-defined fields your previously have to define an extension with an URN. This URN must be unique.
+Here is an example of such an insert for postgres:
 
 `INSERT INTO scim_extension VALUES (<UNIQUE_EXTENSION_ID>, <UNIQUE_URN>)`
 
@@ -209,6 +192,7 @@ OSIAM needs to be instructed on how to connect to the database and some addition
 
 ```
 # Database properties
+org.osiam.resource-server.db.vendor=postgresql
 org.osiam.resource-server.db.driver=org.postgresql.Driver
 org.osiam.resource-server.db.dialect=org.hibernate.dialect.PostgresPlusDialect
 org.osiam.resource-server.db.url=jdbc:postgresql://localhost:5432/ong
@@ -216,7 +200,7 @@ org.osiam.resource-server.db.username=ong
 org.osiam.resource-server.db.password=<YOUR_PASSWORD>
 
 # OSIAM resource server configuration
-org.osiam.resource-server.profiling=true
+org.osiam.resource-server.profiling=false
 
 # Home URL (needed for self reference)
 org.osiam.resource-server.home=http://localhost:8080/osiam-resource-server
@@ -227,13 +211,13 @@ org.osiam.resource-server.home=http://localhost:8080/osiam-resource-server
 org.osiam.auth-server.home=http://localhost:8080/osiam-auth-server
 ```
 
-You can find the properties file here:
-https://github.com/osiam/server/blob/master/resource-server/src/main/deploy
+The example properties file is also on [GitHub](https://github.com/osiam/server/blob/master/resource-server/src/main/deploy/resource-server.properties)
 
-and you have to create the file `/etc/osiam/auth-server.properties` with content based on this example:
+You also have to create the file `/etc/osiam/auth-server.properties` with content based on this example:
 
 ```
 # Database properties
+org.osiam.resource-server.db.vendor=postgresql
 org.osiam.auth-server.db.driver=org.postgresql.Driver
 org.osiam.auth-server.db.dialect=org.hibernate.dialect.PostgresPlusDialect
 org.osiam.auth-server.db.url=jdbc:postgresql://localhost:5432/ong
@@ -262,8 +246,8 @@ org.osiam.auth-server.ldap.mapping=userName:uid\
 ,displayName:displayName\
 ```
 
-To provide the html template, css and message property files, you have to copy the 'auth-server' folder, which is in the src/main/deploy folder in the auth-server project:
-https://github.com/osiam/server/blob/master/auth-server/src/main/deploy
+To provide the html template, css and message property files, you have to copy the 'auth-server' folder, which is in
+the [src/main/deploy](https://github.com/osiam/server/blob/master/auth-server/src/main/deploy) folder of the auth-server project
 
 To customize these files and add the 'Authorization Code Grant' to your application, please have a look at [this](#configuring-login-with-authorization-code-grant) section.
 
@@ -339,7 +323,7 @@ Delete default client
 
 Get the default user‘s ID
 
-    curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X GET ‘localhost:8080/osiam-resource-server/Users?access_token=$YOUR_ACCESSTOKEN&filter=userName%20eq%20"marissa"'
+    curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X GET ‘localhost:8080/osiam-resource-server/Users?access_token=$YOUR_ACCESSTOKEN&filter=userName%20eq%20"admin"'
 
 Extract the ID of the requested (default) user and use it in the following request to update the user with your preferred user credentials:
 
@@ -351,7 +335,7 @@ SCIM and OAuth 2.0 are standards that require SSL to be enabled. An exhaustive e
 
 ### Next steps
 
-Now you are ready to work with OSIAM, either using a [connector](README.md#connector-based-integration) or directly the [API](api_documentation.md) itself.
+Now you are ready to work with OSIAM, either using a [connector](README.md#connector-based-integration) or directly the [API](api_documentation.md#http-api-documentation) itself.
 
 ## Configuring Login with Authorization Code Grant
 
@@ -405,7 +389,7 @@ For detailed information about LDAP please look [here](http://www.zytrax.com/boo
 
 You have to configure the auth server like illustrated in the [chapter](#configuring-login-with-authorization-code-grant) before!
 
-First you have to set the LDAP configuration in the [auth-server.properties](https://github.com/osiam/server/blob/develop/auth-server/src/main/deploy/auth-server.properties) as described [here](#configuring-osiam).
+First you have to set the LDAP configuration in the [auth-server.properties](https://github.com/osiam/server/blob/master/auth-server/src/main/deploy/auth-server.properties) as described [here](#configuring-osiam).
 
 The property fields are:
 

@@ -1,6 +1,7 @@
-TODO: update with repository location as soon, as we have published the debian packages.
+The debian package sources are integrated in the [distribution repository](https://github.com/osiam/distribution).
 
-For a simple installation we provide `.deb` packages. They should work on all recent debian based distributions and are mostly tested with ubuntu 12.04 and debian weezy.
+For a simple installation we provide `.deb` packages. They should work on all recent debian based distributions and
+are mostly tested with ubuntu 12.04 and debian weezy.
 
 ### With OSIAM apt repository
 
@@ -19,15 +20,14 @@ If you prefer to do the database configuration by hand, simply choose this optio
 
 ### Import basic data
 
-If you want to have basic data for testing, execute the following sqls:
+When starting the applications there is already [basic data](detailed_reference_installation.md#default-setup)
+imported by Flyway.
 
-    sudo -u postgres psql osiam < /usr/share/osiam/sql/osiam-resource-server/example_data.sql
-    sudo -u postgres psql osiam < /usr/share/osiam/sql/osiam-auth-server/example_data.sql
 
 ## Basic Installation Architecture
 ### Packages
 
-We have devided OSIAM in the following packages:
+We have divided OSIAM in the following packages:
 
 * **osiam-common:** OSIAM common package. This package contains the tomcat instance configuring for all osiam services.
 * **osiam-auth-server:** OSIAM authorisation server. The server component for login  and ticket granting.

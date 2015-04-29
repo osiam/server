@@ -140,7 +140,7 @@ The parameters are similar to the access token request from the authorization co
 An example based on [OSIAM's default setup](detailed_reference_installation.md#default-setup):
 
 ```sh
-curl -H "Authorization: Basic ZXhhbXBsZS1jbGllbnQ6c2VjcmV0" -X POST -d "grant_type=password&username=marissa&password=koala&scope=GET POST PUT PATCH DELETE" http://localhost:8080/osiam-auth-server/oauth/token
+curl -H "Authorization: Basic ZXhhbXBsZS1jbGllbnQ6c2VjcmV0" -X POST -d "grant_type=password&username=admin&password=koala&scope=GET POST PUT PATCH DELETE" http://localhost:8080/osiam-auth-server/oauth/token
 ```
 
 ### Client Credentials Grant
@@ -412,7 +412,7 @@ the response will be the created user.
 e.g.:
 
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X POST LOCALHOST:8080/osiam-resource-server/Users -d '{"schemas":["urn:scim:schemas:core:1.0"],"externalId":"marissa","userName":"Arthur Dent","password":""}'
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X POST LOCALHOST:8080/osiam-resource-server/Users -d '{"schemas":["urn:scim:schemas:core:1.0"],"externalId":"admin","userName":"Arthur Dent","password":""}'
 ```
 
 See [scim 2 rest spec](http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.1) for further details.
@@ -428,7 +428,7 @@ the response will be the replaced user in json format.
 
 e.g.:
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PUT OSIAMHOST:8080/osiam-resource-server/Users/$ID -d '{"schemas":["urn:scim:schemas:core:1.0"], "externalId":"marissa","userName":"Arthur Dent","password":""}'
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PUT OSIAMHOST:8080/osiam-resource-server/Users/$ID -d '{"schemas":["urn:scim:schemas:core:1.0"], "externalId":"admin","userName":"Arthur Dent","password":""}'
 ```
 
 See [scim 2 rest spec](http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.3.1) for further details.
@@ -444,7 +444,7 @@ the response will be the updated user in json format.
 
 e.g.:
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PATCH OSIAMHOST:8080/osiam-resource-server/Users/$ID -d '{"schemas":["urn:scim:schemas:core:1.0"], "externalId":"marissa","userName":"Arthur Dent","password":""}'
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PATCH OSIAMHOST:8080/osiam-resource-server/Users/$ID -d '{"schemas":["urn:scim:schemas:core:1.0"], "externalId":"admin","userName":"Arthur Dent","password":""}'
 ```
 See [scim 2 rest spec](http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.3.2) for further details.
 
@@ -497,7 +497,7 @@ the response will be the created group in json format.
 e.g.:
 
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X POST OSIAMHOST:8080/osiam-resource-server/Groups -d '{"schemas":["urn:scim:schemas:core:1.0"],"displayName":"marissasGroup"}'
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X POST OSIAMHOST:8080/osiam-resource-server/Groups -d '{"schemas":["urn:scim:schemas:core:1.0"],"displayName":"adminsGroup"}'
 ```
 
 See [scim 2 rest spec](http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.1) for further details.
@@ -530,7 +530,7 @@ the response will be the updated group in json format.
 e.g.:
 
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PATCH OSIAMHOST:8080/osiam-resource-server/Groups/$ID -d '{"schemas":["urn:scim:schemas:core:1.0"], "displayName":"marissasGroup"}'
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PATCH OSIAMHOST:8080/osiam-resource-server/Groups/$ID -d '{"schemas":["urn:scim:schemas:core:1.0"], "displayName":"adminsGroup"}'
 ```
 See [scim 2 rest spec](http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.3.2) for further details.
 
@@ -664,7 +664,7 @@ The response is like the result of facebooks /me:
     "first_name":"Issa",
     "last_name":"Mar",
     "link":"not supported.",
-    "userName":"marissa",
+    "userName":"admin",
     "gender":"female",
     "email":"mari@ssa.ma",
     "timezone":2,
