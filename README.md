@@ -14,14 +14,14 @@ utilize OSIAM in you project or product.
 For technical information and documentation visit the [OSIAM documentation](https://github.com/osiam/server/tree/master/docs).
 For additional information visit our official website at [www.osiam.org](https://www.osiam.org).
 
-The current version can be found at http://maven-repo.evolvis.org/releases/org/osiam/osiam-server-parent/.
+The current version can be found at the [evolvis maven repo](http://maven-repo.evolvis.org/releases/org/osiam/osiam-server-parent).
 
 # Project Structure
 
 OSIAM is built with Apache Maven. The module structure is:
 
-* resource-server -- contains the source for the OSIAM Resource Server -> [OSIAM documentation](https://github.com/osiam/server/tree/master/docs)
-* auth-server -- contains the source for the OSIAM Auth Server -> [OSIAM documentation](https://github.com/osiam/server/tree/master/docs)
+* resource-server -- contains the source for the OSIAM Resource Server
+* auth-server -- contains the source for the OSIAM Auth Server
 * distribution -- creates and deploys the distribution archives
 
 # Requirements
