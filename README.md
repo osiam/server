@@ -1,4 +1,4 @@
-OSIAM Server [![Build Status](https://travis-ci.org/osiam/server.png?branch=master)](https://travis-ci.org/osiam/server)
+OSIAM Server [![Circle CI](https://circleci.com/gh/osiam/server.svg?style=svg)](https://circleci.com/gh/osiam/server)
 ============
 
 OSIAM is a secure identity management solution providing REST based services for
