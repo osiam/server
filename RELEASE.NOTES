@@ -1,5 +1,9 @@
 # OSIAM Server
 
+## 0.17.2 - 2015-05-05
+
+- [fix] remove update of hibernate sequence as it does not exist anymore
+
 ## 0.17 - 2014-02-17
 - [fix] BT-36 - Query with NOT clause on extension fields returns wrong results
 - [feature] OSNG-215 - Develop PATCH "Delete" support on extensions
