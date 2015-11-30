@@ -30,7 +30,7 @@
     <parent>
         <artifactId>osiam-server-parent</artifactId>
         <groupId>org.osiam</groupId>
-        <version>0.17.2</version>
+        <version>0.17.3-SNAPSHOT</version>
     </parent>
 
     <artifactId>osiam-interaction-model</artifactId>
