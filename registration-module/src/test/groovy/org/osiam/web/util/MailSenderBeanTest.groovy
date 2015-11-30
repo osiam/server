@@ -87,7 +87,7 @@ class MailSenderBeanTest extends Specification {
         def thePrimaryMail = "primary@mail.com"
 
         def theEmail = new Email.Builder().setPrimary(true).setValue(thePrimaryMail).build()
-        def user = new User.Builder("theMan").setEmails([theEmail] as List).build()
+        def user = new User.Builder("theMan").addEmails([theEmail] as List).build()
 
         when:
         def email = mailSenderBean.extractPrimaryEmail(user)
@@ -101,7 +101,7 @@ class MailSenderBeanTest extends Specification {
         def thePrimaryMail = "primary@mail.com"
 
         def theEmail = new Email.Builder().setPrimary(false).setValue(thePrimaryMail).build()
-        def user = new User.Builder("theMan").setEmails([theEmail] as List).build()
+        def user = new User.Builder("theMan").addEmails([theEmail] as List).build()
 
         when:
         def email = mailSenderBean.extractPrimaryEmail(user)

@@ -278,12 +278,13 @@ class LostPasswordControllerTest extends Specification {
     def getUserAsStringWithExtension(String otp) {
         def emails = new Email.Builder().setPrimary(true).setValue('email@example.org').build()
 
-        Extension extension = new Extension(urn)
-        extension.addOrUpdateField("oneTimePassword", otp)
+        def extension = new Extension.Builder(urn)
+                .setField("oneTimePassword", otp)
+                .build()
 
         def user = new User.Builder("George")
                 .setPassword("password")
-                .setEmails([emails])
+                .addEmails([emails])
                 .addExtension(extension)
                 .setActive(false)
                 .build()

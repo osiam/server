@@ -114,7 +114,7 @@ public class LostPasswordController {
     /**
      * This endpoint generates an one time password and send an confirmation email including the one time password to
      * users primary email
-     * 
+     *
      * @param authorization
      *        authZ header with valid access token
      * @param userId
@@ -152,7 +152,7 @@ public class LostPasswordController {
     /**
      * Method to get an HTML form with the appropriate input fields for changing the password. Form includes the already
      * known values for userId and otp.
-     * 
+     *
      * @param oneTimePassword
      *        the one time password from confirmation email
      * @param userId
@@ -186,7 +186,7 @@ public class LostPasswordController {
 
     /**
      * Method to change the users password if the preconditions are satisfied.
-     * 
+     *
      * @param authorization
      *        authZ header with valid access token
      * @param oneTimePassword
@@ -247,8 +247,9 @@ public class LostPasswordController {
     }
 
     private User buildUserForUpdate(String oneTimePassword) {
-        Extension extension = new Extension(registrationExtensionUrnProvider.getExtensionUrn());
-        extension.addOrUpdateField(this.oneTimePassword, oneTimePassword);
+        Extension extension = new Extension.Builder(registrationExtensionUrnProvider.getExtensionUrn())
+                .setField(this.oneTimePassword, oneTimePassword)
+                .build();
         return new User.Builder().addExtension(extension).build();
     }
 

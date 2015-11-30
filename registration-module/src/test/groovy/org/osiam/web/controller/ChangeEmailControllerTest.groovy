@@ -23,10 +23,6 @@
 
 package org.osiam.web.controller
 
-import javax.servlet.ServletContext
-import javax.servlet.ServletOutputStream
-import javax.servlet.http.HttpServletResponse
-
 import org.osiam.helper.HttpClientHelper
 import org.osiam.helper.HttpClientRequestResult
 import org.osiam.helper.ObjectMapperWithExtensionConfig
@@ -35,8 +31,11 @@ import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.User
 import org.osiam.web.util.*
 import org.springframework.http.HttpStatus
-
 import spock.lang.Specification
+
+import javax.servlet.ServletContext
+import javax.servlet.ServletOutputStream
+import javax.servlet.http.HttpServletResponse
 
 class ChangeEmailControllerTest extends Specification {
 
@@ -137,11 +136,11 @@ class ChangeEmailControllerTest extends Specification {
     }
 
     def getUserAsString() {
-        def emails = new Email.Builder().setPrimary(true).setValue('email@example.org').build() 
+        def emails = new Email.Builder().setPrimary(true).setValue('email@example.org').build()
 
         def user = new User.Builder("Boy George")
                 .setPassword("password")
-                .setEmails([emails])
+                .addEmails([emails])
                 .setActive(false)
                 .build()
 
@@ -288,15 +287,16 @@ class ChangeEmailControllerTest extends Specification {
     def getUserWithTempEmailAsString(confToken) {
         def primary = new Email.Builder().setPrimary(true).setValue('email@example.org').build()
         def email = new Email.Builder().setPrimary(true).setValue('nonPrimary@example.org').build()
-        
 
-        def extension = new Extension(urn)
-        extension.addOrUpdateField(confirmTokenField, confToken)
-        extension.addOrUpdateField(tempMailField, "newemail@example.org")
+
+        def extension = new Extension.Builder(urn)
+                .setField(confirmTokenField, confToken)
+                .setField(tempMailField, "newemail@example.org")
+                .build()
 
         def user = new User.Builder("Boy George")
                 .setPassword("password")
-                .setEmails([primary, email] as List)
+                .addEmails([primary, email] as List)
                 .setActive(false)
                 .addExtension(extension)
                 .build()

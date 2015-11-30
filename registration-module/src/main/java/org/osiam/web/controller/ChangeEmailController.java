@@ -149,7 +149,7 @@ public class ChangeEmailController {
     /**
      * Saving the new E-Mail temporary, generating confirmation token and sending an E-Mail to the old registered
      * address.
-     * 
+     *
      * @param authorization
      *        Authorization header with HTTP Bearer authorization and a valid access token
      * @param newEmailValue
@@ -197,7 +197,7 @@ public class ChangeEmailController {
 
     /**
      * Validating the confirm token and saving the new email value as primary email if the validation was successful.
-     * 
+     *
      * @param authorization
      *        Authorization header with HTTP Bearer authorization and a valid access token
      * @param userId
@@ -258,9 +258,10 @@ public class ChangeEmailController {
     private String buildUserForUpdateAsString(String newEmailValue, String confirmationToken) throws IOException {
 
         // add the confirmation token to the extension and add the new email value to the tempMail extension field
-        Extension extension = new Extension(registrationExtensionUrnProvider.getExtensionUrn());
-        extension.addOrUpdateField(confirmationTokenField, confirmationToken);
-        extension.addOrUpdateField(tempEmail, newEmailValue);
+        Extension extension = new Extension.Builder(registrationExtensionUrnProvider.getExtensionUrn())
+                .setField(confirmationTokenField, confirmationToken)
+                .setField(tempEmail, newEmailValue)
+                .build();
 
         // add extensions to user
         User updateUser = new User.Builder().addExtension(extension).build();
@@ -306,7 +307,10 @@ public class ChangeEmailController {
         deletionSet.add(extension.getUrn() + "." + tempEmail);
         Meta meta = new Meta.Builder().setAttributes(deletionSet).build();
         // add mails and extensions to user
-        User updateUser = new User.Builder().setEmails(emails).setMeta(meta).build();
+        User updateUser = new User.Builder()
+                .addEmails(emails)
+                .setMeta(meta)
+                .build();
 
         return mapper.writeValueAsString(updateUser);
     }

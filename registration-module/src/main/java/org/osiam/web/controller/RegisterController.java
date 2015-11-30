@@ -245,12 +245,11 @@ public class RegisterController {
         builder.setActive(false);
 
         // Add user to role 'USER' to be able to login afterwards
-        List<Role> roles = new ArrayList<>();
-        roles.add(new Role.Builder().setValue("USER").build());
-        builder.setRoles(roles);
+        builder.addRole(new Role.Builder().setValue("USER").build());
 
-        Extension extension = new Extension(registrationExtensionUrnProvider.getExtensionUrn());
-        extension.addOrUpdateField(activationTokenField, activationToken);
+        Extension extension = new Extension.Builder(registrationExtensionUrnProvider.getExtensionUrn())
+                .setField(activationTokenField, activationToken)
+                .build();
         builder.addExtension(extension);
 
         return builder.build();
