@@ -1,5 +1,9 @@
 # OSIAM Server
 
+## 0.17.3 - 2015-11-30
+
+- [change] Update scim-schema to 1.5
+
 ## 0.17.2 - 2015-05-05
 
 - [fix] remove update of hibernate sequence as it does not exist anymore
