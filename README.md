@@ -8,4 +8,3 @@ This repo has been split. You can find the auth- and resource-server repos here:
 For more general information about OSIAM look at the following places:
 
 * OSIAM main repo: https://github.com/osiam/osiam
-* OSIAM's website: https://www.osiam.org
