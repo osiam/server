@@ -85,7 +85,7 @@
         <version.hibernate>4.3.9.Final</version.hibernate>
         <version.spring>4.1.6.RELEASE</version.spring>
         <version.thymeleaf>2.1.4.RELEASE</version.thymeleaf>
-        <version.spring.security>3.2.7.RELEASE</version.spring.security>
+        <version.spring.security>5.3.3.RELEASE</version.spring.security>
         <version.aspectj>1.8.5</version.aspectj>
         <version.slf4j>1.7.12</version.slf4j>
         <version.metrics>3.0.2</version.metrics>
