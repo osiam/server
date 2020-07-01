@@ -89,7 +89,7 @@
         <version.aspectj>1.8.5</version.aspectj>
         <version.slf4j>1.7.12</version.slf4j>
         <version.metrics>3.0.2</version.metrics>
-        <version.mysql.connector.java>5.1.35</version.mysql.connector.java>
+        <version.mysql.connector.java>8.0.16</version.mysql.connector.java>
 
         <sonar.core.codeCoveragePlugin>cobertura</sonar.core.codeCoveragePlugin>
         <!-- force sonar to reuse reports generated during build cycle -->
